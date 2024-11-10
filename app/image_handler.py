@@ -11,6 +11,7 @@ import logging
 import pillow_jxl
 
 from .main import ROOT_DIR
+from .drhead_loader import open_srgb
 
 
 THUMBNAIL_SIZE = (300, 300)
@@ -89,13 +90,13 @@ async def ensure_thumbnail(image_path: Path) -> Path:
     """Create thumbnail if it doesn't exist and return its path."""
     # Create a directory structure in thumbnails that mirrors the source
     rel_path = image_path.relative_to(ROOT_DIR)
-    thumbnail_path = THUMBNAIL_DIR / rel_path.parent / f"{utils.get_safe_filename(image_path.name)}_thumb.jpg"
+    thumbnail_path = THUMBNAIL_DIR / rel_path.parent / f"{utils.get_safe_filename(image_path.name)}_thumb.webp"
     
     if not thumbnail_path.exists():
         thumbnail_path.parent.mkdir(parents=True, exist_ok=True)
-        with Image.open(image_path) as img:
-            img.thumbnail(THUMBNAIL_SIZE)
-            img.save(thumbnail_path, "JPEG")
+        with open_srgb(image_path) as img:
+            img.thumbnail(THUMBNAIL_SIZE, resample=Image.Resampling.LANCZOS)
+            img.save(thumbnail_path, "WEBP", quality=80, method=6)
     
     return thumbnail_path
 
