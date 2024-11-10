@@ -1,0 +1,7 @@
+fastapi
+python-multipart
+pillow
+aiofiles
+jinja2
+uvicorn
+python-magic
