@@ -34,7 +34,9 @@ pip install -r requirements.txt
 
 4. Run the application:
 ```bash
-uvicorn app.main:app --reload
+
+ROOT_DIR=$HOME/datasets RELOAD=true ./venv/bin/python -m app
+ROOT_DIR=$HOME/datasets uvicorn app.main:app --reload --log-level=trace
 ```
 
 The application will be available at `http://localhost:8000`
