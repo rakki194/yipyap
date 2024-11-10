@@ -11,6 +11,7 @@
             hx-get="/{{ current_path }}"
             hx-target="#gallery"
             hx-include="[name='view-mode'],[name='sort-by']"
+            value="{{ current_search or '' }}"
         >
         <select 
             name="view-mode"
@@ -18,8 +19,8 @@
             hx-target="#gallery"
             hx-include="[name='search'],[name='sort-by']"
         >
-            <option value="grid">Grid View</option>
-            <option value="list">List View</option>
+            <option value="grid" {% if view_mode == 'grid' %}selected{% endif %}>Grid View</option>
+            <option value="list" {% if view_mode == 'list' %}selected{% endif %}>List View</option>
         </select>
         <select 
             name="sort-by"
@@ -27,14 +28,14 @@
             hx-target="#gallery"
             hx-include="[name='search'],[name='view-mode']"
         >
-            <option value="name">Name</option>
-            <option value="date">Date Modified</option>
-            <option value="size">Size</option>
+            <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Name</option>
+            <option value="date" {% if current_sort == 'date' %}selected{% endif %}>Date Modified</option>
+            <option value="size" {% if current_sort == 'size' %}selected{% endif %}>Size</option>
         </select>
     </div>
 </div>
 
-<div id="gallery" class="gallery" hx-target="this">
+<div id="gallery" class="gallery" hx-target="this" class="gallery {% if view_mode == 'list' %}list-view{% endif %}">
     {% if parent_path != current_path %}
     <div class="item directory">
         <a href="/{{ parent_path }}" class="directory-link">

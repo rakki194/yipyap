@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-content">
+        <i class="ri-error-warning-line"></i>
+        <h1>{{ status_code }}</h1>
+        <p>{{ detail }}</p>
+        <a href="/" class="error-home-link">Return Home</a>
+    </div>
+</div>
+{% endblock %} 

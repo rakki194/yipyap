@@ -4,44 +4,58 @@ from PIL import Image
 import magic
 import shutil
 from . import utils
-from typing import List, Dict
+from typing import List, Dict, Optional
 import os
 
 THUMBNAIL_SIZE = (300, 300)
 THUMBNAIL_DIR = Path("static/thumbnails")
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif'}
 
-async def scan_directory(directory: Path) -> List[Dict]:
-    """Scan directory and return both subdirectories and images."""
+async def scan_directory(
+    directory: Path,
+    search: Optional[str] = None,
+    sort_by: str = "name",
+    page: int = 1,
+    page_size: int = 50
+) -> Dict:
+    """Scan directory with pagination."""
     items = []
+    total_items = 0
     
     try:
-        for entry in sorted(directory.iterdir()):
-            item = {
-                'name': entry.name,
-                'path': str(entry.relative_to(Path.cwd())),
-                'type': 'directory' if entry.is_dir() else 'file',
-                'modified': entry.stat().st_mtime
-            }
-            
-            if entry.is_file():
-                if entry.suffix.lower() in ALLOWED_EXTENSIONS:
-                    item.update({
-                        'type': 'image',
-                        'thumbnail': str((await ensure_thumbnail(entry)).relative_to(Path("static"))),
-                        'size': entry.stat().st_size,
-                        'mime': magic.from_file(str(entry), mime=True)
-                    })
-                elif not entry.name.endswith('.caption'):  # Skip caption files
-                    item['type'] = 'file'
-            
+        entries = list(directory.iterdir())
+        total_items = len(entries)
+        
+        # Apply filtering
+        if search:
+            entries = [e for e in entries if search.lower() in e.name.lower()]
+        
+        # Apply sorting
+        entries.sort(key=lambda x: (
+            not x.is_dir(),
+            x.name.lower() if sort_by == "name"
+            else x.stat().st_mtime if sort_by == "date"
+            else x.stat().st_size
+        ))
+        
+        # Apply pagination
+        start_idx = (page - 1) * page_size
+        end_idx = start_idx + page_size
+        paginated_entries = entries[start_idx:end_idx]
+        
+        for entry in paginated_entries:
+            item = await create_item_dict(entry)
             items.append(item)
             
     except PermissionError:
-        # Handle permission errors gracefully
         pass
     
-    return items
+    return {
+        "items": items,
+        "total": total_items,
+        "page": page,
+        "pages": (total_items + page_size - 1) // page_size
+    }
 
 async def get_image_info(path: Path) -> dict:
     """Get information about a single image."""

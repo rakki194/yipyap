@@ -5,3 +5,5 @@ aiofiles
 jinja2
 uvicorn
 python-magic
+slowapi
+python-magic
