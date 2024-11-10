@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="controls">
+    <div class="filters">
+        <input 
+            type="text" 
+            name="search" 
+            placeholder="Filter..."
+            hx-trigger="keyup changed delay:500ms"
+            hx-get="/{{ current_path }}"
+            hx-target="#gallery"
+            hx-include="[name='view-mode'],[name='sort-by']"
+        >
+        <select 
+            name="view-mode"
+            hx-get="/{{ current_path }}"
+            hx-target="#gallery"
+            hx-include="[name='search'],[name='sort-by']"
+        >
+            <option value="grid">Grid View</option>
+            <option value="list">List View</option>
+        </select>
+        <select 
+            name="sort-by"
+            hx-get="/{{ current_path }}"
+            hx-target="#gallery"
+            hx-include="[name='search'],[name='view-mode']"
+        >
+            <option value="name">Name</option>
+            <option value="date">Date Modified</option>
+            <option value="size">Size</option>
+        </select>
+    </div>
+</div>
+
+<div id="gallery" class="gallery" hx-target="this">
+    {% if parent_path != current_path %}
+    <div class="item directory">
+        <a href="/{{ parent_path }}" class="directory-link">
+            <i class="ri-arrow-up-line"></i>
+            <span>Parent Directory</span>
+        </a>
+    </div>
+    {% endif %}
+
+    {% for item in items %}
+        {% if item.type == 'directory' %}
+        <div class="item directory">
+            <a href="/{{ item.path }}" class="directory-link">
+                <i class="ri-folder-line"></i>
+                <span>{{ item.name }}</span>
+            </a>
+        </div>
+        {% elif item.type == 'image' %}
+        <div class="item image"
+             hx-get="/{{ item.path }}"
+             hx-target="#image-modal"
+             hx-trigger="click">
+            <div class="thumbnail">
+                <img src="/static/{{ item.thumbnail }}" alt="{{ item.name }}" loading="lazy">
+            </div>
+            <div class="info">
+                <span class="name">{{ item.name }}</span>
+                <span class="meta">{{ item.size|filesizeformat }} • {{ item.modified|datetime }}</span>
+            </div>
+        </div>
+        {% else %}
+        <div class="item file">
+            <i class="ri-file-line"></i>
+            <span>{{ item.name }}</span>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div id="image-modal" class="modal">
+    <!-- Modal content will be loaded here -->
+</div>
+{% endblock %}

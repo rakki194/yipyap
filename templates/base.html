@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Browser</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="breadcrumb">
+                {% for crumb in current_path.split('/') %}
+                    {% if loop.first %}
+                        <a href="/">home</a>
+                    {% else %}
+                        / <a href="/{{ '/'.join(current_path.split('/')[:loop.index]) }}">{{ crumb }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </header>
+        
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

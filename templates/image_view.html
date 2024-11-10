@@ -1,0 +1,27 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h2>{{ image.name }}</h2>
+        <button class="close" onclick="document.getElementById('image-modal').classList.remove('show')">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+        <img src="/{{ image.path }}" alt="{{ image.name }}">
+        
+        <div class="image-info">
+            <div class="metadata">
+                <p>Size: {{ image.size|filesizeformat }}</p>
+                <p>Modified: {{ image.modified|datetime }}</p>
+                <p>Type: {{ image.mime }}</p>
+            </div>
+            
+            <div class="caption-editor">
+                <textarea
+                    hx-put="/caption/{{ image.path }}"
+                    hx-trigger="change delay:1s"
+                    hx-ext="json-enc"
+                >{{ caption }}</textarea>
+                <div class="caption-status"></div>
+            </div>
+        </div>
+    </div>
+</div>
