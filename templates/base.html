@@ -13,13 +13,14 @@
     <div class="container">
         <header>
             <div class="breadcrumb">
-                {% for crumb in current_path.split('/') %}
-                    {% if loop.first %}
-                        <a href="/">home</a>
-                    {% else %}
-                        / <a href="/{{ '/'.join(current_path.split('/')[:loop.index]) }}">{{ crumb }}</a>
-                    {% endif %}
-                {% endfor %}
+                <a href="/">home</a>
+                {% if current_path %}
+                    {% for crumb in current_path.split('/') %}
+                        {% if crumb %}
+                            / <a href="/{{ '/'.join(current_path.split('/')[:loop.index]) }}">{{ crumb }}</a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             </div>
         </header>
         

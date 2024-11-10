@@ -92,19 +92,25 @@ def is_image_file(path: Path) -> bool:
 
 async def create_item_dict(entry: Path) -> Dict:
     """Create dictionary with item information."""
-    item = {
-        'name': entry.name,
-        'path': str(entry.relative_to(Path.cwd())),
-        'type': 'directory' if entry.is_dir() else 'file',
-        'modified': entry.stat().st_mtime,
-        'size': entry.stat().st_size if entry.is_file() else 0
-    }
-    
-    if entry.is_file():
-        if entry.suffix.lower() in ALLOWED_EXTENSIONS:
-            item.update({
-                'type': 'image',
-                'thumbnail': str((await ensure_thumbnail(entry)).relative_to(Path("static"))),
-                'mime': magic.from_file(str(entry), mime=True)
-            })
-    return item
+    try:
+        root_dir = Path(os.getenv("ROOT_DIR", Path.cwd()))
+        if not utils.is_path_safe(entry, root_dir):
+            return None
+
+        item = {
+            'name': entry.name,
+            'path': str(entry.relative_to(root_dir)),
+            'type': 'directory' if entry.is_dir() else 'file',
+            'modified': entry.stat().st_mtime,
+            'size': entry.stat().st_size if entry.is_file() else 0
+        }
+        
+        if entry.is_file():
+            if entry.suffix.lower() in ALLOWED_EXTENSIONS:
+                item.update({
+                    'type': 'image',
+                    'thumbnail': str((await ensure_thumbnail(entry)).relative_to(Path("static")))
+                })
+        return item
+    except Exception:
+        return None

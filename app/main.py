@@ -13,6 +13,11 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from . import image_handler, caption_handler, utils
 import sys  # Add this import
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 # Initialize FastAPI first
 app = FastAPI()
@@ -62,21 +67,28 @@ async def browse(
 ):
     try:
         target_path = (ROOT_DIR / path).resolve()
+        logger.debug(f"Browsing path: {target_path}")
+
         if not str(target_path).startswith(str(ROOT_DIR)):
+            logger.warning(f"Access denied for path: {target_path}")
             raise HTTPException(status_code=403, detail="Access denied")
 
         if not target_path.exists():
+            logger.warning(f"Path not found: {target_path}")
             raise HTTPException(status_code=404, detail="Path not found")
 
         if target_path.is_file():
+            logger.debug(f"Viewing file: {target_path}")
             return await view_file(request, target_path)
         
         # Get directory items with sorting and filtering
+        logger.debug(f"Scanning directory: {target_path}")
         items = await image_handler.scan_directory(
             directory=target_path,
             search=search,
             sort_by=sort_by
         )
+        logger.debug(f"Found {len(items['items'])} items in directory: {target_path}")
 
         return templates.TemplateResponse(
             "gallery.html",
@@ -92,6 +104,7 @@ async def browse(
         )
 
     except Exception as e:
+        logger.error(f"Error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 async def view_file(request: Request, file_path: Path):
@@ -132,12 +145,17 @@ async def http_exception_handler(request: Request, exc: HTTPException):
             status_code=exc.status_code,
             content={"error": exc.detail}
         )
+    
+    # Extract path from request
+    path = request.path_params.get("path", "")
+    
     return templates.TemplateResponse(
         "error.html",
         {
             "request": request,
             "status_code": exc.status_code,
-            "detail": exc.detail
+            "detail": exc.detail,
+            "current_path": path  # Add current_path to context
         },
         status_code=exc.status_code
     )
