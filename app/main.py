@@ -11,8 +11,9 @@ from fastapi import Depends
 from fastapi.security import HTTPBasic
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+# Overload ROOT_DIR with environment variable if provided
+ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd()))
 from . import image_handler, caption_handler, utils
-import sys  # Add this import
 import logging
 
 # Configure logging
@@ -29,9 +30,6 @@ app.state.limiter = limiter
 # Mount static files and templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-
-# Overload ROOT_DIR with environment variable if provided
-ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd()))
 
 def create_jinja_env(templates):
     def format_datetime(timestamp):
@@ -88,7 +86,14 @@ async def browse(
             search=search,
             sort_by=sort_by
         )
-        logger.debug(f"Found {len(items['items'])} items in directory: {target_path}")
+
+        # Filter out non-image items
+        items['items'] = [item for item in items['items'] if item['type'] == 'image' or item['type'] == 'directory']
+        
+        logger.debug(f"Found {len(items['items'])} image items in directory: {target_path}")
+        if logger.isEnabledFor(logging.DEBUG):
+            import pprint
+            logger.debug(f"Items for {target_path} ({len(items['items'])} items): {pprint.pformat(items)}")
 
         return templates.TemplateResponse(
             "gallery.html",
@@ -96,13 +101,12 @@ async def browse(
                 "request": request,
                 "current_path": path,
                 "parent_path": str(Path(path).parent),
-                "items": items,
+                "items": items['items'],
                 "view_mode": view_mode,
                 "current_sort": sort_by,
                 "current_search": search
             }
         )
-
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -159,3 +163,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         },
         status_code=exc.status_code
     )
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app, log_level="trace", reload=True) 

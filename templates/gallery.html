@@ -36,7 +36,7 @@
 </div>
 
 <div id="gallery" class="gallery {% if view_mode == 'list' %}list-view{% endif %}" hx-target="this">
-    {% if parent_path != current_path %}
+    {% if parent_path != current_path and current_path != '' %}
     <div class="item directory">
         <a href="/{{ parent_path }}" class="directory-link">
             <i class="ri-arrow-up-line"></i>

@@ -6,10 +6,18 @@ import shutil
 from . import utils
 from typing import List, Dict, Optional
 import os
+import logging
+
+import pillow_jxl
+
+from .main import ROOT_DIR
+
 
 THUMBNAIL_SIZE = (300, 300)
 THUMBNAIL_DIR = Path("static/thumbnails")
-ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif'}
+ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.jxl'}
+
+logger = logging.getLogger('uvicorn.error')
 
 async def scan_directory(
     directory: Path,
@@ -23,12 +31,15 @@ async def scan_directory(
     total_items = 0
     
     try:
+        logger.debug(f"Scanning directory: {directory}")
         entries = list(directory.iterdir())
         total_items = len(entries)
+        logger.debug(f"Total items found: {total_items}")
         
         # Apply filtering
         if search:
             entries = [e for e in entries if search.lower() in e.name.lower()]
+            logger.debug(f"Filtered entries: {len(entries)} matching '{search}'")
         
         # Apply sorting
         entries.sort(key=lambda x: (
@@ -42,13 +53,15 @@ async def scan_directory(
         start_idx = (page - 1) * page_size
         end_idx = start_idx + page_size
         paginated_entries = entries[start_idx:end_idx]
-        
+        logger.debug(f"Paginated entries from {start_idx} to {end_idx}")
+
         for entry in paginated_entries:
             item = await create_item_dict(entry)
             items.append(item)
-            
-    except PermissionError:
-        pass
+            logger.debug(f"Added item: {item}")
+
+    except PermissionError as e:
+        logger.error(f"Permission error: {e}")
     
     return {
         "items": items,
@@ -65,7 +78,7 @@ async def get_image_info(path: Path) -> dict:
     thumbnail_path = await ensure_thumbnail(path)
     return {
         'name': path.name,
-        'path': str(path.relative_to(Path.cwd())),
+        'path': str(path.relative_to(ROOT_DIR)),
         'thumbnail': str(thumbnail_path.relative_to(Path("static"))),
         'size': path.stat().st_size,
         'modified': path.stat().st_mtime,
@@ -75,7 +88,7 @@ async def get_image_info(path: Path) -> dict:
 async def ensure_thumbnail(image_path: Path) -> Path:
     """Create thumbnail if it doesn't exist and return its path."""
     # Create a directory structure in thumbnails that mirrors the source
-    rel_path = image_path.relative_to(Path.cwd())
+    rel_path = image_path.relative_to(ROOT_DIR)
     thumbnail_path = THUMBNAIL_DIR / rel_path.parent / f"{utils.get_safe_filename(image_path.name)}_thumb.jpg"
     
     if not thumbnail_path.exists():
@@ -93,13 +106,13 @@ def is_image_file(path: Path) -> bool:
 async def create_item_dict(entry: Path) -> Dict:
     """Create dictionary with item information."""
     try:
-        root_dir = Path(os.getenv("ROOT_DIR", Path.cwd()))
-        if not utils.is_path_safe(entry, root_dir):
+        if not utils.is_path_safe(entry, ROOT_DIR):
+            logger.warning(f"Path is not safe: {entry}")
             return None
 
         item = {
             'name': entry.name,
-            'path': str(entry.relative_to(root_dir)),
+            'path': str(entry.relative_to(ROOT_DIR)),
             'type': 'directory' if entry.is_dir() else 'file',
             'modified': entry.stat().st_mtime,
             'size': entry.stat().st_size if entry.is_file() else 0
@@ -111,6 +124,8 @@ async def create_item_dict(entry: Path) -> Dict:
                     'type': 'image',
                     'thumbnail': str((await ensure_thumbnail(entry)).relative_to(Path("static")))
                 })
+                logger.debug(f"Item is an image: {item}")
         return item
-    except Exception:
+    except Exception as e:
+        logger.exception(f"Error creating item dict for {entry}: {e}")
         return None
