@@ -1,4 +1,5 @@
 fastapi
+python-magic
 python-multipart
 pillow
 aiofiles

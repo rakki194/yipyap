@@ -89,3 +89,22 @@ async def ensure_thumbnail(image_path: Path) -> Path:
 def is_image_file(path: Path) -> bool:
     """Check if file is an image based on extension."""
     return path.suffix.lower() in ALLOWED_EXTENSIONS
+
+async def create_item_dict(entry: Path) -> Dict:
+    """Create dictionary with item information."""
+    item = {
+        'name': entry.name,
+        'path': str(entry.relative_to(Path.cwd())),
+        'type': 'directory' if entry.is_dir() else 'file',
+        'modified': entry.stat().st_mtime,
+        'size': entry.stat().st_size if entry.is_file() else 0
+    }
+    
+    if entry.is_file():
+        if entry.suffix.lower() in ALLOWED_EXTENSIONS:
+            item.update({
+                'type': 'image',
+                'thumbnail': str((await ensure_thumbnail(entry)).relative_to(Path("static"))),
+                'mime': magic.from_file(str(entry), mime=True)
+            })
+    return item

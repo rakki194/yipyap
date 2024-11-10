@@ -11,25 +11,33 @@ from fastapi import Depends
 from fastapi.security import HTTPBasic
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from . import image_handler, caption_handler, utils
+import sys  # Add this import
 
+# Initialize FastAPI first
+app = FastAPI()
+
+# Initialize limiter after app
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 
-app = FastAPI()
+# Mount static files and templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Use current working directory as root
-ROOT_DIR = Path.cwd()
+# Overload ROOT_DIR with environment variable if provided
+ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd()))
 
 def create_jinja_env(templates):
-    @templates.app_template_filter('datetime')
     def format_datetime(timestamp):
         return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
 
-    @templates.app_template_filter('filesizeformat')
     def format_filesize(size):
         return utils.get_human_readable_size(size)
+
+    # Register filters in the environment
+    templates.env.filters["datetime"] = format_datetime
+    templates.env.filters["filesizeformat"] = format_filesize
 
 # Add after creating templates
 create_jinja_env(templates)

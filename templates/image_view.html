@@ -25,3 +25,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'image-modal') {
+            evt.detail.target.classList.add('show');
+        }
+    });
+</script>
