@@ -34,8 +34,6 @@ pip install -r requirements.txt
 
 4. Run the application:
 ```bash
-
-ROOT_DIR=$HOME/datasets RELOAD=true ./venv/bin/python -m app
 ROOT_DIR=$HOME/datasets uvicorn app.main:app --reload --log-level=trace
 ```
 
@@ -43,13 +41,13 @@ The application will be available at `http://localhost:8000`
 
 ## Usage
 
-1. Navigate to `http://localhost:8000` to start browsing the current working directory
+1. Navigate to `http://localhost:8000` to start browsing the current working directory.
 2. Use the controls at the top to:
    - Search for files
    - Switch between grid and list views
    - Sort items by name, date, or size
-3. Click on images to view them in full size and edit captions
-4. Navigate directories using the breadcrumb trail or directory links
+3. Click on images to view them in full size and edit captions.
+4. Navigate directories using the breadcrumb trail or directory links.
 
 ## Developer Documentation
 
@@ -60,8 +58,8 @@ image-browser/
 ├── app/
 │   ├── __init__.py      # Package initialization
 │   ├── main.py          # FastAPI application and routes
-│   ├── image_handler.py # Image processing and directory scanning
-│   ├── caption_handler.py# Caption file management
+│   ├── image_handler.py  # Image processing and directory scanning
+│   ├── caption_handler.py # Caption file management
 │   └── utils.py         # Utility functions
 ├── static/
 │   ├── css/
@@ -138,6 +136,30 @@ endLine: 106
 - Images use lazy loading
 - Search has debounce delay
 - HTMX requests target specific elements
+
+### URL Patterns Handled (main.py)
+
+The following URL patterns are handled by the FastAPI application in `main.py`:
+
+- **GET /thumbnail/{path:path}**: Serves cached thumbnails for images.
+- **GET /preview/{path:path}**: Generates and serves a preview image (larger than thumbnail, smaller than original).
+- **GET /download/{path:path}**: Allows downloading of the original image file.
+- **GET /{path:path}**: Handles browsing of directories, including search, sorting, and pagination.
+
+### Caching Mechanisms (data_access.py)
+
+The application implements caching in `data_access.py` to improve performance and reduce redundant processing:
+
+1. **Image Info Caching**:
+   - Image information is cached in a SQLite database, including metadata such as size, dimensions, and thumbnail data.
+   - If the image has not been modified since the last cache entry, the cached data is returned instead of reprocessing the image.
+
+2. **Directory Caching**:
+   - Directory listings are cached to avoid repeated scans of the filesystem.
+   - Cached entries include basic file information and are updated only if the directory's last modified time changes.
+
+3. **Thumbnail Caching**:
+   - Thumbnails are generated and stored in the cache to serve requests quickly without regenerating them each time.
 
 ## License
 

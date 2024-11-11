@@ -11,19 +11,16 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="breadcrumb">
-                <a href="/">home</a>
-                {% if current_path %}
-                    {% for crumb in current_path.split('/') %}
-                        {% if crumb %}
-                            / <a href="/{{ '/'.join(current_path.split('/')[:loop.index]) }}">{{ crumb }}</a>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </div>
-        </header>
-        
+        <nav class="breadcrumb">
+            <a href="/">home</a>
+            {% if current_path %}
+                {% for crumb in current_path.split('/') %}
+                    {% if crumb %}
+                        / <a href="/{{ '/'.join(current_path.split('/')[:loop.index]) }}">{{ crumb }}</a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </nav>
         {% block content %}{% endblock %}
     </div>
 </body>
