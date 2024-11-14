@@ -1,30 +1,27 @@
-from pathlib import Path
-from typing import Dict, Optional, List, Literal
-from dataclasses import dataclass
-import magic
-from PIL import Image
-import shutil
 import logging
-
-from pydantic import BaseModel
-from . import utils
-from .drhead_loader import open_srgb
 import hashlib
-import aiofiles
+import threading
 import sqlite3
 import json
-from datetime import datetime, timedelta
-from functools import lru_cache
-import asyncio
-from contextlib import asynccontextmanager
 from io import BytesIO
+from collections import defaultdict
+from pathlib import Path
+from stat import S_ISDIR, S_ISREG
+from typing import Dict, Optional, List, Tuple
+from datetime import datetime, timezone
+import asyncio
+import aiofiles
 
+import magic
 import pillow_jxl
 
+from .drhead_loader import open_srgb
 from .models import ImageModel, DirectoryModel
 
 
 logger = logging.getLogger("uvicorn.error")
+
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl"}
 
 
 class ImageDataSource:
@@ -51,8 +48,6 @@ class ImageDataSource:
         page_size: int = 50,
     ) -> Dict:
         raise NotImplementedError
-
-    ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl"}
 
     def is_image_file(self, path: Path) -> bool:
         """Check if file is an allowed image type"""
@@ -82,199 +77,234 @@ class CachedFileSystemDataSource(ImageDataSource):
         self.thumbnail_size = thumbnail_size
         self.preview_size = preview_size
         self.db_path = db_path
+        self.db_connnections = {}
         self._init_db()
+        self.directory_cache = {}
 
     def _init_db(self):
         logger.info(f"Initializing database at {self.db_path}")
-        with sqlite3.connect(self.db_path) as conn:
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS image_info (
-                    path TEXT PRIMARY KEY,
-                    md5sum TEXT NOT NULL,
-                    info JSON NOT NULL,
-                    thumbnail_webp BLOB NOT NULL,
-                    last_modified REAL NOT NULL,
-                    cached_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
+        conn = self._get_connection()
+        conn.execute(
             """
+            CREATE TABLE IF NOT EXISTS image_info (
+                directory TEXT NOT NULL,
+                name TEXT NOT NULL,
+                info JSON NOT NULL,
+                cache_time INTEGER NOT NULL,
+                thumbnail_webp BLOB NOT NULL,
+                PRIMARY KEY (directory, name)
             )
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS directory_cache (
-                    path TEXT PRIMARY KEY,
-                    entries JSON NOT NULL,
-                    last_modified REAL NOT NULL,
-                    cached_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
             """
-            )
-            conn.commit()
+        )
+        conn.commit()
 
-    @asynccontextmanager
-    async def _db_connection(self):
-        conn = sqlite3.connect(self.db_path)
-        try:
-            yield conn
-        finally:
-            conn.close()
+    def _get_connection(self):
+        thread_id = threading.get_ident()
+        conn = self.db_connnections.get(thread_id)
+        if conn is None:
+            self.db_connnections[thread_id] = conn = sqlite3.connect(self.db_path)
+            conn.execute("PRAGMA busy_timeout = 30000")
+        return conn
 
-    async def _compute_md5(self, path: Path) -> str:
+    def _compute_md5(self, path: Path) -> str:
         """Compute MD5 hash of file"""
         md5 = hashlib.md5()
-        async with aiofiles.open(path, "rb") as f:
-            while chunk := await f.read(8192):
+        with open(path, "rb") as f:
+            while chunk := f.read(8192):
                 md5.update(chunk)
         return md5.hexdigest()
 
     async def get_thumbnail(self, path: str) -> Optional[bytes]:
         """Get thumbnail webp data from cache"""
-        async with self._db_connection() as conn:
-            result = conn.execute(
-                "SELECT thumbnail_webp FROM image_info WHERE path LIKE ?",
-                (str(path).replace(".webp", "%"),),
-            ).fetchone()
-            return result[0] if result else None
+        conn = self._get_connection()
+        result = conn.execute(
+            "SELECT thumbnail_webp FROM image_info WHERE directory = ? AND name LIKE ?",
+            (str(path.parent), path.name.replace(".webp", "%")),
+        ).fetchone()
+        return result[0] if result else None
 
-    async def get_image_info(self, path: Path) -> ImageModel:
+    def get_image_info(self, directory: Path, item: Dict) -> ImageModel:
         """Get image info with caching"""
+        path = directory / item["name"]
         logger.debug(f"Getting image info with caching for {path}")
-        async with self._db_connection() as conn:
-            result = conn.execute(
-                "SELECT info, thumbnail_webp, md5sum, last_modified FROM image_info WHERE path = ?",
-                (str(path),),
-            ).fetchone()
 
-            current_mtime = path.stat().st_mtime
+        conn = self._get_connection()
+        result = conn.execute(
+            "SELECT info, cache_time FROM image_info WHERE directory = ? AND name = ?",
+            (str(directory), item["name"]),
+        ).fetchone()
 
-            if result and result[3] == current_mtime:
-                # Cache hit
-                info_dict = json.loads(result[0])
-                return ImageModel(**info_dict)
+        current_mtime = item["mtime"]
 
-            # Cache miss - generate new info
-            md5sum = await self._compute_md5(path)
+        if result:
+            cache_mtime = datetime.fromtimestamp(result[1], tz=timezone.utc)
+            if cache_mtime >= current_mtime:
+                return ImageModel(**json.loads(result[0]))
 
-            # Generate thumbnail in memory
-            with open_srgb(path, force_load=False) as img:
-                width, height = img.size
-                aspect_ratio = width / height
+        # Cache miss - generate new info
+        md5sum = self._compute_md5(path)
 
-                # Create thumbnail
-                img.thumbnail(self.thumbnail_size)
-                thumbnail_width, thumbnail_height = img.size
+        # Get captions:
+        captions = []
+        for ext, caption_name in item["captions"].items():
+            caption_path = directory / caption_name
+            with open(caption_path, "r") as f:
+                caption = f.read()
+            assert ext[0] == "."
+            captions.append((ext[1:], caption))
 
-                thumbnail_buffer = BytesIO()
-                img.save(thumbnail_buffer, format="WebP", quality=80)
-                thumbnail_data = thumbnail_buffer.getvalue()
+        # Generate thumbnail in memory
+        with open_srgb(path, force_load=False) as img:
+            width, height = img.size
 
-            # Create thumbnail URL
-            thumbnail_url = f"/thumbnail/{str(path.relative_to(self.root_dir))}"
-            info = ImageModel(
-                name=path.name,
-                path=str(path.relative_to(self.root_dir)),
-                size=path.stat().st_size,
-                modified=current_mtime,
-                mime=magic.from_file(str(path), mime=True),
-                width=width,
-                height=height,
-                aspect_ratio=aspect_ratio,
-                thumbnail_width=thumbnail_width,
-                thumbnail_height=thumbnail_height,
-                thumbnail_url=thumbnail_url,
-            )
+            # Create thumbnail
+            img.thumbnail(self.thumbnail_size)
 
-            # Cache everything
-            conn.execute(
-                """
-                INSERT OR REPLACE INTO image_info 
-                (path, md5sum, info, thumbnail_webp, last_modified) 
-                VALUES (?, ?, ?, ?, ?)
-                """,
-                (
-                    str(path),
-                    md5sum,
-                    json.dumps(info.__dict__),
-                    thumbnail_data,
-                    current_mtime,
-                ),
-            )
-            conn.commit()
+            thumbnail_buffer = BytesIO()
+            img.save(thumbnail_buffer, format="WebP", quality=80)
+            thumbnail_data = thumbnail_buffer.getvalue()
 
-            return info
+        info = ImageModel(
+            name=path.name,
+            mtime=item["mtime"].isoformat(),
+            size=item["size"],
+            md5sum=md5sum,
+            mime=magic.from_file(str(path), mime=True),
+            width=width,
+            height=height,
+            captions=captions,
+        )
 
-    async def scan_directory(
+        # Cache image info and thumbnail
+        conn.execute(
+            """
+            INSERT OR REPLACE INTO image_info 
+            (directory, name, info, cache_time, thumbnail_webp) 
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                str(directory),
+                path.name,
+                json.dumps(info.__dict__),
+                int(datetime.now(timezone.utc).timestamp()),
+                thumbnail_data,
+            ),
+        )
+        conn.commit()
+
+        return info
+
+    def _scan_directory(
         self,
         directory: Path,
-        search: Optional[str] = None,
-        sort_by: str = "name",
-        page: int = 1,
-        page_size: int = 50,
-    ) -> Dict:
-        """Scan directory with caching - only basic file info"""
-        logger.debug(f"Scanning directory with caching: {directory}")
-
-        items = []
-        image_tasks = []
-
+    ) -> List[Dict]:
+        entries = list()
+        mtimes = dict()
+        all_side_car_files = defaultdict(dict)
         for entry in directory.iterdir():
-            if entry.is_dir():
-                items.append(
-                    DirectoryModel(
-                        name=entry.name,
-                        path=str(entry.relative_to(self.root_dir)),
-                        type="directory",
-                    ).model_dump()
-                )
-            elif entry.suffix.lower() in {".jpg", ".jpeg", ".png", ".gif", ".jxl"}:
-                image_tasks.append(self.get_image_info(entry))
+            name = entry.name
+            stat = entry.stat()
+            st_mode = stat.st_mode
 
-        # Process all images in parallel
-        if image_tasks:
-            image_results = await asyncio.gather(*image_tasks, return_exceptions=True)
-            for result in image_results:
-                if not isinstance(result, Exception):
-                    items.append(result.model_dump())
+            if S_ISDIR(st_mode):
+                d = {
+                    "type": "directory",
+                    "name": name,
+                    "mtime": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
+                }
+            elif S_ISREG(st_mode):
+                suffix = entry.suffix.lower()
+                if suffix in IMAGE_EXTENSIONS:
+                    stem = name.partition(".")[0]
+                    d = {
+                        "stem": stem,
+                        "type": "file",
+                        "size": stat.st_size,
+                    }
+                    mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
+                elif suffix in {".caption", ".txt", ".tags"}:
+                    stem = name.partition(".")[0]
+                    all_side_car_files[stem][suffix] = name
+                    mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
+                    continue
                 else:
-                    logger.error(f"Error processing image: {result}")
+                    continue
+            else:
+                continue
+            d["name"] = name
+            entries.append(d)
 
-        # Apply search filter if needed
-        if search:
-            search = search.lower()
-            items = [item for item in items if search in item["name"].lower()]
+        for entry in entries:
+            if entry["type"] == "file":
+                side_car_files = all_side_car_files.get(entry["stem"], {})
+                entry["captions"] = side_car_files
+                entry["mtime"] = datetime.fromtimestamp(
+                    mtimes[entry["stem"]], tz=timezone.utc
+                )
 
-        # Pagination
+        return sorted(entries, key=lambda x: (x["type"], x["name"]))
+
+    def scan_directory(
+        self,
+        directory: Path,
+    ) -> List[Dict]:
+        directory_mtime = directory.stat().st_mtime
+        items = None
+        from_cache = self.directory_cache.get(directory)
+        if from_cache is not None:
+            from_cache, cache_mtime = from_cache
+            if directory_mtime <= cache_mtime:
+                items = from_cache
+        if items is None:
+            items = list(self._scan_directory(directory))
+            self.directory_cache[directory] = (items, directory_mtime)
+
+        return items, directory_mtime
+
+    def analyze_dir(
+        self, directory: Path, page: int = 1, page_size: int = 50
+    ) -> Tuple[Dict, List[Dict], List[asyncio.Future]]:
+        items, directory_mtime = self.scan_directory(directory)
+
+        # Apply pagination to items:
         total = len(items)
         start = (page - 1) * page_size
         end = start + page_size
+        items = items[start:end]
 
-        return {
-            "items": items[start:end],
-            "total": total,
+        loop = asyncio.get_event_loop()
+        run = loop.run_in_executor
+
+        dir_items = []
+        futures = []
+        folder_names = list()
+        images_names = list()
+        for item in items:
+            if item["type"] == "directory":
+                dir_items.append(
+                    DirectoryModel(
+                        name=item["name"],
+                        mtime=item["mtime"].isoformat(),
+                        type="directory",
+                    )
+                )
+                folder_names.append(item["name"])
+                continue
+            else:
+                futures.append(run(None, self.get_image_info, directory, item))
+                images_names.append(item["name"])
+        header = {
+            "mtime": datetime.fromtimestamp(
+                directory_mtime, tz=timezone.utc
+            ).isoformat(),
             "page": page,
             "pages": (total + page_size - 1) // page_size,
-        }
-
-    def _paginate_results(self, items: List[Dict], page: int, page_size: int) -> Dict:
-        total = len(items)
-        start = (page - 1) * page_size
-        end = start + page_size
-
-        return {
-            "items": items[start:end],
+            "folders": folder_names,
+            "images": images_names,
             "total": total,
-            "page": page,
-            "pages": (total + page_size - 1) // page_size,
         }
 
-    async def get_caption(self, path: Path) -> str:
-        """Get image caption from .caption file"""
-        caption_path = path.with_suffix(".caption")
-        if not caption_path.exists():
-            return ""
-
-        async with aiofiles.open(caption_path, "r") as f:
-            return await f.read()
+        return header, dir_items, futures
 
     async def save_caption(self, path: Path, caption: str) -> None:
         """Save image caption to .caption file"""
@@ -283,11 +313,20 @@ class CachedFileSystemDataSource(ImageDataSource):
 
     async def get_preview(self, path: Path) -> bytes:
         """Generate preview image (larger than thumbnail, smaller than original)"""
+        directory = path.parent
+        items, _ = self.scan_directory(directory)
+        stem = path.stem
+        for item in items:
+            if item["stem"] == stem:
+                path = directory / item["name"]
+                break
+        else:
+            return None
         try:
             with open_srgb(path) as img:
                 img.thumbnail(self.preview_size)
                 output = BytesIO()
-                img.save(output, format="WebP", quality=85, method=6)
+                img.save(output, format="WebP", quality=70, method=6)
                 output.seek(0)
 
             return output.getvalue()

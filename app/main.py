@@ -1,16 +1,16 @@
+import asyncio
+import json
 from pathlib import Path
-from typing import Optional
 import logging
 import os
 
-from fastapi import FastAPI, Request, HTTPException, Query
-from fastapi.responses import FileResponse, Response
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 
 from .data_access import CachedFileSystemDataSource
-from .models import BrowseResponse
 from . import utils
 
 logger = logging.getLogger("uvicorn.error")
@@ -24,7 +24,7 @@ TemplateResponse = templates.TemplateResponse
 # Initialize data source
 ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd()))
 THUMBNAIL_SIZE = (300, 300)
-PREVIEW_SIZE = (600, 600)
+PREVIEW_SIZE = (1024, 1024)
 data_source = CachedFileSystemDataSource(ROOT_DIR, THUMBNAIL_SIZE, PREVIEW_SIZE)
 
 if True or os.getenv("DEVELOPMENT"):  # FIXME: remove True
@@ -37,19 +37,31 @@ if True or os.getenv("DEVELOPMENT"):  # FIXME: remove True
     )
 
 
-@app.get("/api/browse", response_model=BrowseResponse)
+@app.get("/api/browse")
 async def browse(
-    path: str = "", page: int = Query(1, ge=1), search: Optional[str] = None
+    path: str = "", page: int = Query(1, ge=1), page_size: int = Query(50, ge=1)
 ):
     target_path = (ROOT_DIR / path).resolve()
     if not utils.is_path_safe(target_path, ROOT_DIR):
         raise HTTPException(status_code=403, detail="Access denied")
 
-    result = await data_source.scan_directory(
-        directory=target_path, search=search, page=page
+    header, items, futures = data_source.analyze_dir(
+        directory=target_path, page=page, page_size=page_size
     )
 
-    return {"items": result["items"], "totalPages": result["pages"]}
+    async def stream_response():
+        yield f"{json.dumps(header)}\n"
+        for item in items:
+            yield f"{json.dumps(item.model_dump())}\n"
+        for future in asyncio.as_completed(futures):
+            res = await future
+            yield f"{json.dumps(res.model_dump())}\n"
+
+    # Sends header and items as a ndjson chuncked response
+    return StreamingResponse(
+        stream_response(),
+        media_type="application/json",
+    )
 
 
 @app.get("/thumbnail/{path:path}")

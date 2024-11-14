@@ -4,6 +4,10 @@ import sys
 import os
 import signal
 import uvicorn
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -13,7 +17,7 @@ def main():
     if is_dev:
         # Check if npm dependencies are installed
         if not Path("node_modules").exists():
-            print("Installing frontend dependencies...")
+            logger.info("Installing frontend dependencies...")
             subprocess.run(["npm", "install"], check=True)
 
         # Start the Vite dev server
@@ -27,7 +31,7 @@ def main():
         )
 
         def cleanup(signum, frame):
-            print("\nShutting down development servers...")
+            logger.info("Shutting down development servers...")
             frontend.terminate()
             sys.exit(0)
 
