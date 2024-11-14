@@ -1,8 +1,60 @@
-# from .main import app
-from .main import app
+from pathlib import Path
+import subprocess
+import sys
 import os
+import signal
+import uvicorn
 
-if __name__ == '__main__':
-    import uvicorn
-    reload = os.getenv("RELOAD", "false").lower()[:1] in "1yt"
-    uvicorn.run('app.main:app' if reload else app, log_level="trace", reload=reload)    
+
+def main():
+    # Determine environment
+    is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
+
+    if is_dev:
+        # Check if npm dependencies are installed
+        if not Path("node_modules").exists():
+            print("Installing frontend dependencies...")
+            subprocess.run(["npm", "install"], check=True)
+
+        # Start the Vite dev server
+        env = os.environ.copy()
+        env["NODE_ENV"] = "development"
+        frontend = subprocess.Popen(
+            ["npm", "run", "dev"],
+            env=env,
+            # stdout=subprocess.PIPE,
+            # stderr=subprocess.PIPE
+        )
+
+        def cleanup(signum, frame):
+            print("\nShutting down development servers...")
+            frontend.terminate()
+            sys.exit(0)
+
+        signal.signal(signal.SIGINT, cleanup)
+        signal.signal(signal.SIGTERM, cleanup)
+
+        # Start uvicorn with reload
+        reload = os.getenv("RELOAD", "true").lower()[:1] in "1yt"
+        uvicorn.run(
+            "app.main:app",
+            host="localhost",
+            port=8000,
+            log_level="debug" if reload else "info",
+            reload=reload,
+        )
+
+        frontend.terminate()
+    else:
+        # Production mode - serve static files directly
+        uvicorn.run(
+            "app.main:app",
+            host="0.0.0.0",
+            port=int(os.getenv("PORT", "8000")),
+            log_level="info",
+            reload=False,
+        )
+
+
+if __name__ == "__main__":
+    main()

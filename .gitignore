@@ -1,6 +1,6 @@
 # python cache files
 __pycache__/
-thumbnails/
+node_modules/
 venv/
 
 

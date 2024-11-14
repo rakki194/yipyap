@@ -49,6 +49,48 @@ The application will be available at `http://localhost:8000`
 3. Click on images to view them in full size and edit captions.
 4. Navigate directories using the breadcrumb trail or directory links.
 
+## Development
+
+### Quick Start
+
+1. Install Python dependencies:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. Run the development server:
+```bash
+python -m app
+```
+
+This will:
+- Install npm dependencies if needed
+- Start the Vite dev server (port 3000)
+- Start the FastAPI backend (port 8000)
+- Open your browser to http://localhost:3000
+- Enable hot reload for both frontend and backend
+
+### Environment Variables
+
+- `ENVIRONMENT`: Set to "development" or "production" (default: "development")
+- `RELOAD`: Enable hot reload, "true" or "false" (default: "true" in development)
+- `ROOT_DIR`: Root directory for images (default: current directory)
+- `PORT`: Server port in production (default: 8000)
+
+## Deployment
+
+1. Build the frontend:
+```bash
+npm run build
+```
+
+2. Start the production server:
+```bash
+ENVIRONMENT=production ROOT_DIR=/path/to/images python -m app
+```
+
 ## Developer Documentation
 
 ### Project Structure
@@ -141,10 +183,67 @@ endLine: 106
 
 The following URL patterns are handled by the FastAPI application in `main.py`:
 
+- **GET /api/browse**: Handles browsing of directories, including search, sorting, and pagination.
+  - **Query Parameters**:
+    - `path`: The current directory path to browse.
+    - `page`: The current page number for pagination.
+    - `sort`: The sorting criteria (name, date, size).
+    - `search`: The search term for filtering items.
+  - **Response Schema**: 
+    ```json
+    {
+      "items": [
+        {
+          "type": "image" | "directory",
+          "name": "string",
+          "path": "string",
+          "thumbnail_path": "string",
+          "size": "number",
+          "modified": "string",
+          "mime": "string",
+          "width": "number",
+          "height": "number",
+          "aspect_ratio": "number",
+          "thumbnail_width": "number",
+          "thumbnail_height": "number"
+        }
+      ],
+      "totalPages": "number"
+    }
+    ```
+
 - **GET /thumbnail/{path:path}**: Serves cached thumbnails for images.
-- **GET /preview/{path:path}**: Generates and serves a preview image (larger than thumbnail, smaller than original).
+  - **Response**: Image file
+
+- **GET /preview/{path:path}**: Serves preview-sized images.
+  - **Response**: Image file
+
 - **GET /download/{path:path}**: Allows downloading of the original image file.
-- **GET /{path:path}**: Handles browsing of directories, including search, sorting, and pagination.
+  - **Response**: Image file download
+
+- **PUT /caption/{path:path}**: Updates the caption for a specific image.
+  - **Request Body**:
+    ```json
+    {
+      "caption": "string"
+    }
+    ```
+  - **Response Schema**: 
+    ```json
+    {
+      "status": "string"
+    }
+    ```
+
+### Additional API Calls from Frontend
+
+1. **Fetching Data for Gallery**:
+   - The frontend makes a call to `/api/browse` to fetch items for the gallery based on the current path, page, sort criteria, and search term.
+
+2. **Saving Captions**:
+   - The frontend sends a PUT request to `/caption/{path}` to save the caption for an image when it is edited.
+
+These additional endpoints and their functionalities are crucial for the frontend to operate correctly, allowing for dynamic browsing, searching, and caption management within the image browser application.
 
 ### Caching Mechanisms (data_access.py)
 
