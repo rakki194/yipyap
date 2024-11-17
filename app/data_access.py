@@ -16,7 +16,7 @@ import magic
 import pillow_jxl
 
 from .drhead_loader import open_srgb
-from .models import ImageModel, DirectoryModel
+from .models import ImageModel, DirectoryModel, BrowseHeader
 
 
 logger = logging.getLogger("uvicorn.error")
@@ -139,7 +139,7 @@ class CachedFileSystemDataSource(ImageDataSource):
         if result:
             cache_mtime = datetime.fromtimestamp(result[1], tz=timezone.utc)
             if cache_mtime >= current_mtime:
-                return ImageModel(**json.loads(result[0]))
+                return ImageModel.model_validate_json(result[0])
 
         # Cache miss - generate new info
         md5sum = self._compute_md5(path)
@@ -166,7 +166,7 @@ class CachedFileSystemDataSource(ImageDataSource):
 
         info = ImageModel(
             name=path.name,
-            mtime=item["mtime"].isoformat(),
+            mtime=item["mtime"],
             size=item["size"],
             md5sum=md5sum,
             mime=magic.from_file(str(path), mime=True),
@@ -185,7 +185,7 @@ class CachedFileSystemDataSource(ImageDataSource):
             (
                 str(directory),
                 path.name,
-                json.dumps(info.__dict__),
+                info.model_dump_json(),
                 int(datetime.now(timezone.utc).timestamp()),
                 thumbnail_data,
             ),
@@ -197,30 +197,37 @@ class CachedFileSystemDataSource(ImageDataSource):
     def _scan_directory(
         self,
         directory: Path,
-    ) -> List[Dict]:
-        entries = list()
+    ) -> List[DirectoryModel | Dict]:
+        dir_entries = list()
+        img_entries = list()
         mtimes = dict()
         all_side_car_files = defaultdict(dict)
         for entry in directory.iterdir():
             name = entry.name
+            if name.startswith("."):
+                continue
             stat = entry.stat()
             st_mode = stat.st_mode
 
             if S_ISDIR(st_mode):
-                d = {
-                    "type": "directory",
-                    "name": name,
-                    "mtime": datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
-                }
+                dir_entries.append(
+                    DirectoryModel(
+                        name=name,
+                        mtime=datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
+                    )
+                )
             elif S_ISREG(st_mode):
                 suffix = entry.suffix.lower()
                 if suffix in IMAGE_EXTENSIONS:
                     stem = name.partition(".")[0]
-                    d = {
-                        "stem": stem,
-                        "type": "file",
-                        "size": stat.st_size,
-                    }
+                    img_entries.append(
+                        {
+                            "name": name,
+                            "stem": stem,
+                            "type": "image",
+                            "size": stat.st_size,
+                        }
+                    )
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
                 elif suffix in {".caption", ".txt", ".tags"}:
                     stem = name.partition(".")[0]
@@ -231,23 +238,20 @@ class CachedFileSystemDataSource(ImageDataSource):
                     continue
             else:
                 continue
-            d["name"] = name
-            entries.append(d)
 
-        for entry in entries:
-            if entry["type"] == "file":
-                side_car_files = all_side_car_files.get(entry["stem"], {})
-                entry["captions"] = side_car_files
-                entry["mtime"] = datetime.fromtimestamp(
-                    mtimes[entry["stem"]], tz=timezone.utc
-                )
+        for entry in img_entries:
+            side_car_files = all_side_car_files.get(entry["stem"], {})
+            entry["captions"] = side_car_files
+            entry["mtime"] = datetime.fromtimestamp(
+                mtimes[entry["stem"]], tz=timezone.utc
+            )
 
-        return sorted(entries, key=lambda x: (x["type"], x["name"]))
+        return dir_entries, img_entries
 
     def scan_directory(
         self,
         directory: Path,
-    ) -> List[Dict]:
+    ) -> Tuple[float, List[DirectoryModel], List[Dict]]:
         directory_mtime = directory.stat().st_mtime
         items = None
         from_cache = self.directory_cache.get(directory)
@@ -259,52 +263,78 @@ class CachedFileSystemDataSource(ImageDataSource):
             items = list(self._scan_directory(directory))
             self.directory_cache[directory] = (items, directory_mtime)
 
-        return items, directory_mtime
+        return directory_mtime, *items
 
     def analyze_dir(
-        self, directory: Path, page: int = 1, page_size: int = 50
-    ) -> Tuple[Dict, List[Dict], List[asyncio.Future]]:
-        items, directory_mtime = self.scan_directory(directory)
+        self,
+        directory: Path,
+        page: int = 1,
+        page_size: int = 50,
+        http_head: bool = False,
+        if_modified_since: Optional[datetime] = None,
+    ) -> Tuple[BrowseHeader, Optional[List[Dict]], Optional[List[asyncio.Future]]]:
+        # For HEAD requests, we need total items but don't need to process them
+        directory_mtime, dir_items, img_items = self.scan_directory(directory)
+        mtime_dt = datetime.fromtimestamp(directory_mtime, tz=timezone.utc)
+        total = len(img_items) + len(dir_items)
 
         # Apply pagination to items:
-        total = len(items)
         start = (page - 1) * page_size
         end = start + page_size
-        items = items[start:end]
+
+        dir_count = len(dir_items)
+
+        # Calculate how many items to take from each list
+        if start < dir_count:
+            # Start is in directory items
+            dir_start = start
+            dir_end = min(end, dir_count)
+            img_start = 0
+            img_end = end - dir_count if end > dir_count else 0
+        else:
+            # Start is in image items
+            dir_start = dir_end = 0
+            img_start = start - dir_count
+            img_end = end - dir_count
+
+        dir_names = [d.name for d in dir_items]
+        img_names = [i["name"] for i in img_items]
+        assert (dir_names + img_names)[start:end] == dir_names[
+            dir_start:dir_end
+        ] + img_names[img_start:img_end]
+
+        dir_items = dir_items[dir_start:dir_end]
+        img_items = img_items[img_start:img_end]
+
+        # Gets names and update mtime
+        folder_names = [f.name for f in dir_items]
+        image_names = []
+        for item in img_items:
+            mtime_dt = max(mtime_dt, item["mtime"])
+            image_names.append(item["name"])
+
+        browser_header = BrowseHeader(
+            mtime=mtime_dt,
+            page=page,
+            pages=(total + page_size - 1) // page_size,
+            folders=folder_names,
+            images=image_names,
+            total=total,
+        )
+
+        if http_head or (
+            if_modified_since and mtime_dt.replace(microsecond=0) <= if_modified_since
+        ):
+            return browser_header, None, None
 
         loop = asyncio.get_event_loop()
         run = loop.run_in_executor
 
-        dir_items = []
-        futures = []
-        folder_names = list()
-        images_names = list()
-        for item in items:
-            if item["type"] == "directory":
-                dir_items.append(
-                    DirectoryModel(
-                        name=item["name"],
-                        mtime=item["mtime"].isoformat(),
-                        type="directory",
-                    )
-                )
-                folder_names.append(item["name"])
-                continue
-            else:
-                futures.append(run(None, self.get_image_info, directory, item))
-                images_names.append(item["name"])
-        header = {
-            "mtime": datetime.fromtimestamp(
-                directory_mtime, tz=timezone.utc
-            ).isoformat(),
-            "page": page,
-            "pages": (total + page_size - 1) // page_size,
-            "folders": folder_names,
-            "images": images_names,
-            "total": total,
-        }
+        image_info_futures = [
+            run(None, self.get_image_info, directory, item) for item in img_items
+        ]
 
-        return header, dir_items, futures
+        return browser_header, dir_items, image_info_futures
 
     async def save_caption(self, path: Path, caption: str) -> None:
         """Save image caption to .caption file"""
@@ -314,7 +344,7 @@ class CachedFileSystemDataSource(ImageDataSource):
     async def get_preview(self, path: Path) -> bytes:
         """Generate preview image (larger than thumbnail, smaller than original)"""
         directory = path.parent
-        items, _ = self.scan_directory(directory)
+        _, _, items = self.scan_directory(directory)
         stem = path.stem
         for item in items:
             if item["stem"] == stem:

@@ -1,14 +1,14 @@
 import asyncio
-import json
 from pathlib import Path
 import logging
 import os
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from email.utils import parsedate_to_datetime, format_datetime
 
 from .data_access import CachedFileSystemDataSource
 from . import utils
@@ -39,28 +39,61 @@ if True or os.getenv("DEVELOPMENT"):  # FIXME: remove True
 
 @app.get("/api/browse")
 async def browse(
-    path: str = "", page: int = Query(1, ge=1), page_size: int = Query(50, ge=1)
+    request: Request,
+    path: str = "",
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1),
 ):
     target_path = (ROOT_DIR / path).resolve()
     if not utils.is_path_safe(target_path, ROOT_DIR):
         raise HTTPException(status_code=403, detail="Access denied")
 
-    header, items, futures = data_source.analyze_dir(
-        directory=target_path, page=page, page_size=page_size
+    # Parse If-Modified-Since header if present
+    if_modified_since = None
+    if_modified_since_header = request.headers.get("if-modified-since")
+    if if_modified_since_header:
+        if_modified_since = parsedate_to_datetime(if_modified_since_header)
+
+    # Check if this is a HEAD request
+    is_head = request.method == "HEAD"
+
+    browser_header, items, futures = data_source.analyze_dir(
+        directory=target_path,
+        page=page,
+        page_size=page_size,
+        http_head=is_head,
+        if_modified_since=if_modified_since,
     )
 
+    last_modified = format_datetime(browser_header.mtime, usegmt=True)
+    headers = {
+        "Last-Modified": last_modified,
+        "Cache-Control": "public, max-age=0, must-revalidate",
+    }
+
+    # If items is None, it means we should return 304 Not Modified
+    if items is None and if_modified_since:
+        logger.info(f"304 Not Modified: {path}:{page} {last_modified}")
+        return Response(status_code=304, headers=headers)
+
+    # For HEAD requests, return just the header
+    if is_head:
+        return Response(
+            content=browser_header.model_dump_json(),  # Use Pydantic's json method for serialization
+            media_type="application/json",
+            headers=headers,
+        )
+
     async def stream_response():
-        yield f"{json.dumps(header)}\n"
+        yield f"{browser_header.model_dump_json()}\n"  # Use Pydantic's json method for serialization
         for item in items:
-            yield f"{json.dumps(item.model_dump())}\n"
+            yield f"{item.model_dump_json()}\n"
         for future in asyncio.as_completed(futures):
             res = await future
-            yield f"{json.dumps(res.model_dump())}\n"
+            yield f"{res.model_dump_json()}\n"
 
-    # Sends header and items as a ndjson chuncked response
     return StreamingResponse(
-        stream_response(),
-        media_type="application/json",
+        stream_response(), media_type="application/ndjson", headers=headers
     )
 
 

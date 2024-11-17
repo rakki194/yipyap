@@ -1,4 +1,5 @@
 from typing import List, Tuple, Union, Literal
+from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, Field
 
@@ -15,7 +16,16 @@ class CaptionUpdate(BaseModel):
 class BaseItem(BaseModel):
     type: str
     name: str
-    mtime: str
+    mtime: datetime
+
+
+class BrowseHeader(BaseModel):
+    mtime: datetime  # Modification time as a datetime object
+    page: int
+    pages: int
+    folders: List[str]
+    images: List[str]
+    total: int
 
 
 class ImageModel(BaseItem):
@@ -33,5 +43,5 @@ class DirectoryModel(BaseItem):
 
 
 class BrowseResponse(BaseModel):
-    items: List[Union[ImageModel, DirectoryModel]]
+    items: List[Union[BrowseHeader, ImageModel, DirectoryModel]]
     totalPages: int
