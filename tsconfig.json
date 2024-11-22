@@ -1,17 +1,22 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "target": "ESNext",
-        "module": "ESNext",
-        "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "jsx": "preserve",
-        "jsxImportSource": "solid-js",
-        "types": [
-            "vite/client"
-        ],
-        "noEmit": true,
-        "isolatedModules": true
-    }
+  "compilerOptions": {
+    "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": ["vite/client"],
+    "paths": {
+      "~/*": ["./src/*"]
+      //     "@solid-primitives/*": [
+      //         "/home/kade/repos/solid-primitives/packages/*/src"
+      //     ]
+    },
+    "noEmit": true,
+    "isolatedModules": true
+  }
+  // "include": ["src", "/home/kade/repos/solid-primitives/packages/*/src"]
 }

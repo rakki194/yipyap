@@ -6,14 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "check": "tsc --noEmit"
   },
   "dependencies": {
+    "@fluentui/svg-icons": "^1.1.265",
+    "@solid-primitives/event-listener": "^2.3.3",
+    "@solid-primitives/intersection-observer": "^2.1.6",
+    "@solid-primitives/keyboard": "^1.2.8",
+    "@solid-primitives/resize-observer": "^2.0.26",
+    "@solid-primitives/scheduled": "^1.4.4",
+    "@solidjs/router": "^0.15.1",
+    "@types/node": "^22.9.0",
     "solid-js": "^1.9.0",
-    "@solid-primitives/scheduled": "^1.4.4"
-  },
-  "devDependencies": {
-    "vite": "^5.4.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
     "vite-plugin-solid": "^2.10.0"
   }
 }

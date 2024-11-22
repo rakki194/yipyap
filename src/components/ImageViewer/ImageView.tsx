@@ -1,26 +1,51 @@
 // src/components/ImageViewer/ImageView.tsx
-import { onMount } from 'solid-js';
-import type { ImageInfo } from '../../types';
+import { ImageData } from "~/resources/browse";
+import { createMemo, createSignal, onMount, Show } from "solid-js";
 
 interface ImageViewProps {
-  image: ImageInfo;
+  path: string;
+  name: string;
+  image: ImageData;
 }
 
 export const ImageView = (props: ImageViewProps) => {
-  let imgRef: HTMLImageElement;
+  const webpPath = createMemo(() => {
+    let webpName = props.name.replace(/\.\w+$/, ".webp");
+    return `${props.path}/${webpName}`;
+  });
+  const [showThumbnail, setShowThumbnail] = createSignal(true);
+
+  let previewRef: HTMLImageElement;
+  let ref!: HTMLDivElement;
+
+  const onPreviewLoad = () => {
+    ref.classList.add("loaded");
+    setTimeout(() => setShowThumbnail(false), 600);
+  };
 
   onMount(() => {
-    if (imgRef.complete) {
-      imgRef.classList.add('loaded');
+    if (previewRef!.complete) {
+      ref.classList.add("loaded");
+      setShowThumbnail(false);
     }
   });
 
   return (
-    <img 
-      ref={imgRef!}
-      src={`/preview/${props.image.path}`} 
-      alt={props.image.name}
-      onLoad={(e) => e.currentTarget.classList.add('loaded')}
-    />
+    <div class="image-container" ref={ref!}>
+      <Show when={showThumbnail()}>
+        <img
+          class="thumbnail"
+          src={`/thumbnail/${webpPath()}`}
+          alt={props.name}
+        />
+      </Show>
+      <img
+        ref={previewRef!}
+        class="preview"
+        src={`/preview/${webpPath()}`}
+        alt={props.name}
+        onLoad={onPreviewLoad}
+      />
+    </div>
   );
 };

@@ -1,50 +1,63 @@
 // src/components/ImageViewer/CaptionEditor.tsx
-import { createSignal, createEffect } from 'solid-js';
-import { debounce } from '@solid-primitives/scheduled';
+import { createSignal, createEffect, For } from "solid-js";
+import { debounce } from "@solid-primitives/scheduled";
+import { Captions } from "../../resources/browse";
 
 interface CaptionEditorProps {
   path: string;
-  initialCaption?: string;
+  captions: Captions;
 }
 
 export const CaptionEditor = (props: CaptionEditorProps) => {
-  const [caption, setCaption] = createSignal(props.initialCaption || '');
-  const [status, setStatus] = createSignal('');
+  const [captions, setCaptions] = createSignal(props.captions || "");
+  const [status, setStatus] = createSignal("");
 
   const saveCaption = debounce(async (value: string) => {
     try {
       const response = await fetch(`/caption/${props.path}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ caption: value }),
       });
-      
+
       if (response.ok) {
-        setStatus('Saved');
-        setTimeout(() => setStatus(''), 2000);
+        setStatus("Saved");
+        setTimeout(() => setStatus(""), 2000);
       } else {
-        setStatus('Error saving');
+        setStatus("Error saving");
       }
     } catch (error) {
-      setStatus('Error saving');
+      setStatus("Error saving");
     }
   }, 1000);
 
   createEffect(() => {
-    if (caption() !== props.initialCaption) {
-      saveCaption(caption());
+    if (captions() !== props.captions) {
+      // saveCaption(captions());
+      console.log("captions changed", captions());
     }
   });
 
   return (
     <div class="caption-editor">
-      <textarea
-        value={caption()}
-        onInput={(e) => setCaption(e.currentTarget.value)}
-        placeholder="Add a caption..."
-      />
+      <For each={captions()}>
+        {(caption, getIdx) => (
+          <textarea
+            value={caption[1]}
+            onInput={(e) => {
+              const idx = getIdx();
+              setCaptions((prev) =>
+                prev.map((c, i) =>
+                  i === idx ? [c[0], e.currentTarget.value] : c
+                )
+              );
+            }}
+            placeholder="Add a caption..."
+          />
+        )}
+      </For>
       <div class="caption-status">{status()}</div>
     </div>
   );

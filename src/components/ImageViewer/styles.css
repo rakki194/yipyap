@@ -1,0 +1,147 @@
+.modal-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.modal-header {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.close {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  & > .image-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    & > img {
+      position: absolute;
+      object-fit: cover;
+    }
+
+    & > img.preview {
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    &.loaded > img.preview {
+      opacity: 1;
+    }
+  }
+
+  &.vertical > .image-container > img {
+    width: 100%;
+    top: 0px;
+  }
+
+  &.horizontal > .image-container > img {
+    height: 100%;
+    left: 0px;
+  }
+}
+
+.image-info {
+  position: absolute;
+  bottom: var(--spacing);
+  left: var(--spacing);
+  right: var(--spacing);
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.7);
+  padding: var(--spacing);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.metadata {
+  margin-bottom: 10px;
+}
+
+.caption-editor {
+  width: 100%;
+  margin-top: var(--spacing);
+}
+
+.caption-editor textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: var(--spacing);
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.caption-editor textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.caption-status {
+  height: 20px;
+  margin-top: var(--spacing);
+  font-size: 0.8em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+  z-index: 10;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.download-btn {
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 4px;
+  background: var(--bg-color);
+  transition: background 0.2s;
+}
+
+.download-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

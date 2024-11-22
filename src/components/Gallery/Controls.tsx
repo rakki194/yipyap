@@ -1,26 +1,18 @@
 // src/components/Gallery/Controls.tsx
-import { createSignal, createEffect } from 'solid-js';
-import { debounce } from '@solid-primitives/scheduled';
+import { createSignal, createEffect } from "solid-js";
+import { debounce } from "@solid-primitives/scheduled";
+import { useGallery } from "../../contexts/GalleryContext";
 
-interface ControlsProps {
-  currentPath: string;
-  currentSearch: string;
-  viewMode: 'grid' | 'list';
-  currentSort: 'name' | 'date' | 'size';
-  onSearch: (value: string) => void;
-  onViewModeChange: (mode: 'grid' | 'list') => void;
-  onSortChange: (sort: 'name' | 'date' | 'size') => void;
-}
+export const Controls = () => {
+  const { state, actions } = useGallery();
+  const [searchValue, setSearchValue] = createSignal(state.search);
 
-export const Controls = (props: ControlsProps) => {
-  const [searchValue, setSearchValue] = createSignal(props.currentSearch);
-  
   const debouncedSearch = debounce((value: string) => {
-    props.onSearch(value);
+    actions.setSearch(value);
   }, 500);
 
   createEffect(() => {
-    if (searchValue() !== props.currentSearch) {
+    if (searchValue() !== state.search) {
       debouncedSearch(searchValue());
     }
   });
@@ -28,25 +20,29 @@ export const Controls = (props: ControlsProps) => {
   return (
     <div class="controls">
       <div class="filters">
-        <input 
-          type="text" 
-          name="search" 
+        <input
+          type="text"
+          name="search"
           placeholder="Search..."
           value={searchValue()}
           onInput={(e) => setSearchValue(e.currentTarget.value)}
         />
-        <select 
+        <select
           name="view-mode"
-          value={props.viewMode}
-          onChange={(e) => props.onViewModeChange(e.currentTarget.value as 'grid' | 'list')}
+          value={state.viewMode}
+          onChange={(e) =>
+            actions.setViewMode(e.currentTarget.value as "grid" | "list")
+          }
         >
           <option value="grid">Grid</option>
           <option value="list">List</option>
         </select>
-        <select 
+        <select
           name="sort-by"
-          value={props.currentSort}
-          onChange={(e) => props.onSortChange(e.currentTarget.value as 'name' | 'date' | 'size')}
+          value={state.sort}
+          onChange={(e) =>
+            actions.setSort(e.currentTarget.value as "name" | "date" | "size")
+          }
         >
           <option value="name">Name</option>
           <option value="date">Modified</option>
