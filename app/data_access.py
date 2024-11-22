@@ -219,7 +219,7 @@ class CachedFileSystemDataSource(ImageDataSource):
             elif S_ISREG(st_mode):
                 suffix = entry.suffix.lower()
                 if suffix in IMAGE_EXTENSIONS:
-                    stem = name.partition(".")[0]
+                    stem = entry.stem
                     img_entries.append(
                         {
                             "name": name,
@@ -230,7 +230,7 @@ class CachedFileSystemDataSource(ImageDataSource):
                     )
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
                 elif suffix in {".caption", ".txt", ".tags"}:
-                    stem = name.partition(".")[0]
+                    stem = entry.stem
                     all_side_car_files[stem][suffix] = name
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
                     continue
@@ -319,7 +319,7 @@ class CachedFileSystemDataSource(ImageDataSource):
             pages=(total + page_size - 1) // page_size,
             folders=folder_names,
             images=image_names,
-            total=total,
+            total_items=total,
         )
 
         if http_head or (

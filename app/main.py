@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory="templates")
 TemplateResponse = templates.TemplateResponse
 
 # Initialize data source
-ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd()))
+ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd())).resolve()
 THUMBNAIL_SIZE = (300, 300)
 PREVIEW_SIZE = (1024, 1024)
 data_source = CachedFileSystemDataSource(ROOT_DIR, THUMBNAIL_SIZE, PREVIEW_SIZE)
@@ -44,9 +44,7 @@ async def browse(
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1),
 ):
-    target_path = (ROOT_DIR / path).resolve()
-    if not utils.is_path_safe(target_path, ROOT_DIR):
-        raise HTTPException(status_code=403, detail="Access denied")
+    target_path = utils.resolve_path(path, ROOT_DIR)
 
     # Parse If-Modified-Since header if present
     if_modified_since = None
@@ -99,9 +97,7 @@ async def browse(
 
 @app.get("/thumbnail/{path:path}")
 async def get_thumbnail(path: str):
-    image_path = (ROOT_DIR / path).resolve()
-    if not utils.is_path_safe(image_path, ROOT_DIR):
-        raise HTTPException(status_code=403, detail="Access denied")
+    image_path = utils.resolve_path(path, ROOT_DIR)
 
     thumbnail_data = await data_source.get_thumbnail(image_path)
     return Response(
@@ -113,9 +109,7 @@ async def get_thumbnail(path: str):
 
 @app.get("/preview/{path:path}")
 async def get_preview(path: str):
-    image_path = (ROOT_DIR / path).resolve()
-    if not utils.is_path_safe(image_path, ROOT_DIR):
-        raise HTTPException(status_code=403, detail="Access denied")
+    image_path = utils.resolve_path(path, ROOT_DIR)
 
     preview_data = await data_source.get_preview(image_path)
     return Response(
@@ -128,9 +122,7 @@ async def get_preview(path: str):
 @app.get("/download/{path:path}")
 async def download_image(path: str):
     try:
-        image_path = (ROOT_DIR / path).resolve()
-        if not utils.is_path_safe(image_path, ROOT_DIR):
-            raise HTTPException(status_code=403, detail="Access denied")
+        image_path = utils.resolve_path(path, ROOT_DIR)
 
         return FileResponse(
             image_path,
@@ -144,9 +136,7 @@ async def download_image(path: str):
 @app.put("/caption/{path:path}")
 async def update_caption(path: str, caption_update: str):
     try:
-        image_path = (ROOT_DIR / path).resolve()
-        if not utils.is_path_safe(image_path, ROOT_DIR):
-            raise HTTPException(status_code=403, detail="Access denied")
+        image_path = utils.resolve_path(path, ROOT_DIR)
 
         await data_source.save_caption(image_path, caption_update.caption)
         return {"status": "success"}

@@ -25,7 +25,7 @@ class BrowseHeader(BaseModel):
     pages: int
     folders: List[str]
     images: List[str]
-    total: int
+    total_items: int
 
 
 class ImageModel(BaseItem):
