@@ -11,6 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 def main():
+    # Set default environment variables
+    os.environ.setdefault("ENVIRONMENT", "development")
+    os.environ.setdefault("ROOT_DIR", os.path.expanduser("$HOME/datasets"))
+    os.environ.setdefault("RELOAD", "true")
+    os.environ.setdefault("DEV_PORT", "1984")
+
     # Determine environment
     is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
 
@@ -18,7 +24,7 @@ def main():
         # Check if npm dependencies are installed
         if not Path("node_modules").exists():
             logger.info("Installing frontend dependencies...")
-            subprocess.run(["npm", "install"], check=True)
+            subprocess.run(["npm", "install", "--include=dev"], check=True)
 
         # Start the Vite dev server
         env = os.environ.copy()

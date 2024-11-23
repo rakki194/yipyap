@@ -33,7 +33,7 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-    port: 3000,
+    port: process.env.DEV_PORT ? Number(process.env.DEV_PORT) : 5173,
   },
   resolve: {
     alias: {

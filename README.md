@@ -67,9 +67,9 @@ python -m app
 
 This will:
 - Install npm dependencies if needed
-- Start the Vite dev server (port 3000)
+- Start the Vite dev server (port 5173)
 - Start the FastAPI backend (port 8000)
-- Open your browser to http://localhost:3000
+- Open your browser to http://localhost:5173
 - Enable hot reload for both frontend and backend
 
 ### Environment Variables
