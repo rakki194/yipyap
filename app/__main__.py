@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def main():
     # Set default environment variables
     os.environ.setdefault("ENVIRONMENT", "development")
-    os.environ.setdefault("ROOT_DIR", os.path.expanduser("$HOME/datasets"))
+    os.environ.setdefault("ROOT_DIR", os.path.expanduser("~/datasets"))
     os.environ.setdefault("RELOAD", "true")
     os.environ.setdefault("DEV_PORT", "1984")
 
