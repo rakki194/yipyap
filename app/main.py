@@ -6,7 +6,6 @@ import os
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from email.utils import parsedate_to_datetime, format_datetime
 
@@ -18,8 +17,6 @@ logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
-TemplateResponse = templates.TemplateResponse
 
 # Initialize data source
 ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd())).resolve()

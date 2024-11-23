@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 def main():
     # Set default environment variables
-    os.environ.setdefault("ENVIRONMENT", "development")
+    is_dev = (
+        os.environ.setdefault("ENVIRONMENT", "development").lower() == "development"
+    )
     os.environ.setdefault("ROOT_DIR", os.path.expanduser("~/datasets"))
     os.environ.setdefault("RELOAD", "true")
-    os.environ.setdefault("DEV_PORT", "1984")
-
-    # Determine environment
-    is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
+    dev_port = int(os.environ.setdefault("DEV_PORT", "1984"))
+    backend_port = int(os.environ.setdefault("BACKED_PORT", str(dev_port + 1)))
 
     if is_dev:
         # Check if npm dependencies are installed
@@ -30,7 +30,17 @@ def main():
         env = os.environ.copy()
         env["NODE_ENV"] = "development"
         frontend = subprocess.Popen(
-            ["npm", "run", "dev"],
+            [
+                "npm",
+                "exec",
+                "vite",
+                "--",
+                "--host",
+                "--port",
+                str(dev_port),
+                "--strictPort",
+                "--clearScreen=false",
+            ],
             env=env,
             # stdout=subprocess.PIPE,
             # stderr=subprocess.PIPE
@@ -49,7 +59,7 @@ def main():
         uvicorn.run(
             "app.main:app",
             host="localhost",
-            port=8000,
+            port=backend_port,
             log_level="debug" if reload else "info",
             reload=reload,
         )
@@ -60,7 +70,7 @@ def main():
         uvicorn.run(
             "app.main:app",
             host="0.0.0.0",
-            port=int(os.getenv("PORT", "8000")),
+            port=int(backend_port),
             log_level="info",
             reload=False,
         )
