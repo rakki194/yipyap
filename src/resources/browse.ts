@@ -200,8 +200,10 @@ export function createGalleryRessourceCached(
       }
       const samePath = path === prev_value.path;
       if (
-        (prev_value.total_pages >= 0 && page > prev_value.total_pages) ||
-        (samePath && prev_value.pages[page] !== undefined && !refetching)
+        // (prev_value.total_pages >= 0 && page > prev_value.total_pages) ||
+        samePath &&
+        prev_value.pages[page] !== undefined &&
+        !refetching
       ) {
         console.log("skipping fetch", { path, page });
         return prev_value as BrowsePagesCached;

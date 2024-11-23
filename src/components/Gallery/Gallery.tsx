@@ -5,15 +5,15 @@ import { ImageGrid } from "./ImageGrid";
 import { ImageModal } from "../ImageViewer/ImageModal";
 import { useGallery } from "~/contexts/GalleryContext";
 import type { ImageItem } from "~/resources/browse";
+import { createShortcut } from "@solid-primitives/keyboard";
 
 export const Gallery = () => {
   const { state, windowSize, actions, data, params } = useGallery();
-  const [editedImage, setEditedImage] = createSignal<ImageItem | null>(null);
   let gridRef: HTMLDivElement | undefined;
 
-  createEffect(() => {
-    console.log("Gallery -> editedImage", editedImage());
-  });
+  createShortcut(["ArrowRight"], actions.selectNext);
+  createShortcut(["ArrowLeft"], actions.selectPrev);
+  createShortcut(["Enter"], actions.toggleEdit);
 
   return (
     <>
@@ -28,15 +28,15 @@ export const Gallery = () => {
               <ImageGrid
                 items={data().items}
                 path={params.path}
-                onImageClick={setEditedImage}
+                onImageClick={actions.edit}
                 gridRef={(el) => (gridRef = el)}
               />
             </div>
 
             <ImageModal
               path={params.path}
-              image={editedImage()}
-              onClose={() => setEditedImage(null)}
+              image={actions.editedImage}
+              onClose={() => actions.setMode("view")}
             />
           </>
         )}

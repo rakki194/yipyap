@@ -17,7 +17,7 @@ import type { ImageItem as ImageItemType, AnyItem } from "~/resources/browse";
 interface ImageGridProps {
   items: AnyItem[];
   path: string;
-  onImageClick: (image: ImageItemType) => void;
+  onImageClick: (idx: number) => void;
   gridRef: (el: HTMLDivElement) => void;
 }
 
@@ -46,7 +46,7 @@ export const ImageGrid = (props: ImageGridProps) => {
               path={path}
               selected={state.selected === getIdx()}
               onClick={() => {
-                props.onImageClick(item);
+                props.onImageClick(getIdx());
                 actions.select(getIdx());
               }}
               ref={ref}
