@@ -5,12 +5,22 @@ import SunIcon from "@fluentui/svg-icons/icons/weather_sunny_24_regular.svg?raw"
 import MoonIcon from "@fluentui/svg-icons/icons/weather_moon_24_regular.svg?raw";
 
 export const Breadcrumb = (props: { path: string }) => {
-  const [isDark, setIsDark] = createSignal(document.body.classList.contains('dark-mode'));
+  const getInitialTheme = () => {
+    const savedTheme = document.cookie.match(/theme=(light|dark)/)?.[1];
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    return document.body.classList.contains('dark-mode');
+  };
+
+  const [isDark, setIsDark] = createSignal(getInitialTheme());
   const crumbs = () => props.path.split("/").filter(Boolean) || [];
 
   const toggleDarkMode = () => {
+    const newIsDark = !isDark();
     document.body.classList.toggle('dark-mode');
-    setIsDark(!isDark());
+    document.cookie = `theme=${newIsDark ? 'dark' : 'light'}; max-age=${60 * 60 * 24 * 365}; path=/`;
+    setIsDark(newIsDark);
   };
 
   return (
