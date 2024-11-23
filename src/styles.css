@@ -1,13 +1,33 @@
 :root {
-  --bg-color: hsl(0, 0%, 75%);
-  --card-bg: hsl(0, 0%, 50%);
-  --text-primary: hsl(0, 0%, 66%);
-  --text-secondary: hsl(0, 0%, 33%);
-  --border: #eaeaea;
-  --accent: #2196f3;
-  --spacing: 0.25rem;
+  --bg-color: hsl(0, 0%, 95%);
+  --card-bg: hsl(0, 0%, 90%);
+  --text-primary: hsl(0, 0%, 20%);
+  --text-secondary: hsl(0, 0%, 40%);
+  --border: hsl(0, 0%, 87%);
+  --accent: hsl(298, 100%, 39%);
+  --spacing: 0.7rem;
   --half-spacing: calc(var(--spacing) / 2);
   --double-spacing: calc(var(--spacing) * 2);
+  --border-radius: 2px;
+  --container-max-width: 1600px;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+  --shadow-accent: var(--accent);
+  --shadow-default: 0 2px 4px var(--shadow-color);
+  --shadow-hover: 0 4px 6px var(--shadow-accent);
+  --hover-transform: translateY(-4px);
+  --overlay-bg: rgba(0, 0, 0, 0.2);
+  --overlay-backdrop: blur(1px) brightness(0.5) saturate(0.5);
+  --text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --grid-item-min-width: 250px;
+  --directory-item-min-width: 125px;
+  --directory-aspect-ratio: 4/1;
+  --icon-size: 20px;
+  --loader-size: 30px;
+  --loader-border-width: 3px;
+  --transition-duration: 0.3s;
+  --transition-timing: ease;
+  --image-scale: 1;
+  --scroll-track: 0;
 }
 
 * {
@@ -29,7 +49,7 @@ svg {
 }
 
 .container {
-  max-width: 1600px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
   padding: var(--spacing);
 }
@@ -63,17 +83,27 @@ input,
 select {
   padding: var(--spacing);
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--border-radius);
   min-width: 100px;
 }
 
 /* Grid Layout */
 .responsive-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: var(--spacing);
   width: 100%;
   padding: var(--spacing);
+  container-type: inline-size;
+}
+
+/* Create a separate directory grid container */
+.directory-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+  gap: var(--double-spacing);
+  margin-bottom: var(--double-spacing);
 }
 
 .gallery > .responsive-grid > .item {
@@ -83,15 +113,19 @@ select {
   justify-content: center;
   align-items: center;
   aspect-ratio: 1;
-  border-radius: var(--spacing);
+  border-radius: var(--border-radius);
   overflow: hidden;
-  box-shadow: 0 1px 2px #000;
-  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth transition */
+  box-shadow: var(--shadow-default);
+  transition: 
+    box-shadow var(--transition-duration) var(--transition-timing),
+    transform var(--transition-duration) var(--transition-timing);
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 
   &:hover,
   &.selected {
-    box-shadow: 0 calc(var(--half-spacing) + 1px) 2px #00000096;
-    transform: translateY(calc(-1 * var(--half-spacing)));
+    box-shadow: var(--shadow-hover);
+    transform: var(--hover-transform);
   }
 
   &.image:hover > .overlay {
@@ -107,11 +141,11 @@ select {
     right: 0;
     bottom: 0;
     box-shadow: inset 0 0 0 0 white;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow var(--transition-duration) var(--transition-timing);
   }
 
   &.selected::after {
-    box-shadow: inset 0 0 16px rgb(43, 160, 255);
+    box-shadow: inset 0 0 16px var(--accent);
   }
 
   & > img {
@@ -129,37 +163,65 @@ select {
       right: 0;
       bottom: 0;
       padding: var(--spacing);
-      background: rgba(0, 0, 0, 0.25);
-      backdrop-filter: blur(5px) brightness(0.5) saturate(0.5);
+      background: var(--overlay-bg);
+      backdrop-filter: var(--overlay-backdrop);
       opacity: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.3s ease;
+      transition: opacity var(--transition-duration) var(--transition-timing);
 
       > p {
-        font-size: 13px;
-        font-weight: 500;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        color: white;
+        text-shadow: var(--text-shadow);
+        font-size: 14px;
+        max-width: 90%;
+        text-align: center;
       }
     }
   }
 
   &.directory {
+    aspect-ratio: var(--directory-aspect-ratio);
+    width: 100%;
+    margin: 0;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
     padding: var(--spacing);
+    transition: background-color var(--transition-duration) var(--transition-timing), transform var(--transition-duration) var(--transition-timing);
+
+    &:hover {
+      background-color: var(--accent);
+      transform: var(--hover-transform);
+
+      a {
+        color: white; 
+      }
+
+      svg {
+        fill: white;
+      }
+    }
+
+    svg {
+      margin-right: 10px;
+      transition: fill var(--transition-duration) var(--transition-timing);
+    }
 
     a {
+      text-decoration: none;
+      width: 100%;
+      height: 100%;
+      padding: var(--spacing);
       display: flex;
       align-items: center;
-      gap: var(--spacing);
-      color: inherit;
-      text-decoration: none;
+      justify-content: center;
+      color: var(--text-primary);
+      transition: color var(--transition-duration) var(--transition-timing);
 
       i {
-        font-size: 24px;
-        color: var(--text-secondary);
+        font-size: var(--icon-size);        
       }
     }
   }
@@ -173,10 +235,52 @@ select {
 .thumbnail-wrapper {
   img {
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: opacity var(--transition-duration) var(--transition-timing);
 
     &.loaded {
       opacity: 1;
     }
   }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--loader-size);
+    height: var(--loader-size);
+    border: var(--loader-border-width) solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin var(--transition-duration) linear infinite;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: hsl(0, 0%, 15%);
+    --card-bg: hsl(0, 0%, 20%);
+    --text-primary: hsl(0, 0%, 80%);
+    --text-secondary: hsl(0, 0%, 60%);
+    --border: #333;
+  }
+}
+
+.dark-mode {
+  --bg-color: hsl(0, 0%, 15%);
+  --card-bg: hsl(0, 0%, 20%);
+  --text-primary: hsl(0, 0%, 80%);
+  --text-secondary: hsl(0, 0%, 60%);
+  --border: #333;
+}
+
+/* Keep the individual hover effects clean and simple */
+.item:hover {
+  transform: var(--hover-transform);
+  box-shadow: var(--shadow-hover);
 }
