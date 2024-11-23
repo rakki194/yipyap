@@ -3,37 +3,43 @@ import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import { resolve } from "path";
 
+const DEV_PORT = process.env.DEV_PORT ? Number(process.env.DEV_PORT) : 5173;
+const BACKED_PORT = process.env.BACKED_PORT
+  ? Number(process.env.BACKED_PORT)
+  : 8000;
+const BACKED_HOST = `http://localhost:${BACKED_PORT}`;
+
 export default defineConfig({
   root: "src",
   plugins: [solidPlugin()],
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8000",
+        target: BACKED_HOST,
         changeOrigin: true,
       },
       "/config": {
-        target: "http://localhost:8000",
+        target: BACKED_HOST,
         changeOrigin: true,
       },
       "/preview": {
-        target: "http://localhost:8000",
+        target: BACKED_HOST,
         changeOrigin: true,
       },
       "/thumbnail": {
-        target: "http://localhost:8000",
+        target: BACKED_HOST,
         changeOrigin: true,
       },
       "/download": {
-        target: "http://localhost:8000",
+        target: BACKED_HOST,
         changeOrigin: true,
       },
       "/caption": {
-        target: "http://localhost:8000",
+        target: BACKED_HOST,
         changeOrigin: true,
       },
     },
-    port: process.env.DEV_PORT ? Number(process.env.DEV_PORT) : 5173,
+    port: DEV_PORT,
   },
   resolve: {
     alias: {
