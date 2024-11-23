@@ -1,7 +1,7 @@
 // src/components/Gallery/Controls.tsx
 import { createSignal, createEffect } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
-import { useGallery } from "../../contexts/GalleryContext";
+import { useGallery } from "~/contexts/GalleryContext";
 
 export const Controls = () => {
   const { state, actions } = useGallery();

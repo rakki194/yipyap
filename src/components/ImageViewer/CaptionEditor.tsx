@@ -1,7 +1,7 @@
 // src/components/ImageViewer/CaptionEditor.tsx
 import { createSignal, createEffect, For } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
-import { Captions } from "../../resources/browse";
+import { Captions } from "~/resources/browse";
 
 interface CaptionEditorProps {
   path: string;

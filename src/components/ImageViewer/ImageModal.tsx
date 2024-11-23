@@ -7,9 +7,9 @@ import { CaptionEditor } from "./CaptionEditor";
 import type {
   ImageItem as ImageItemType,
   ImageData,
-} from "../../resources/browse";
+} from "~/resources/browse";
 import "./styles.css";
-import { useGallery } from "../../contexts/GalleryContext";
+import { useGallery } from "~/contexts/GalleryContext";
 
 interface ImageModalProps {
   path: string;

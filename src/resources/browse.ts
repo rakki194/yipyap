@@ -4,12 +4,13 @@ import {
   Accessor,
   createResource,
   createSignal,
+  InitializedResourceReturn,
   Resource,
   Setter,
   untrack,
 } from "solid-js";
 
-export interface FolderHeader {
+interface FolderHeader {
   mtime: string; // ISO format date string
   page: number;
   pages: number;
@@ -58,7 +59,7 @@ export type AnyItem = DirectoryItem | ImageItem;
 //     ? BaseItem & { loaded: false, (): ReturnType<T> }
 //     : never;
 
-export function fetchPage(
+function fetchPage(
   path: string,
   page: number,
   onHeader: (data: FolderHeader) => void,
@@ -66,7 +67,7 @@ export function fetchPage(
   onError: (error: Error) => void
 ): Promise<void> {
   return fetchStreamingJson(
-    `/api/browse?path=${path}&page=${page}&page_size=10`,
+    `/api/browse?path=${path}&page=${page}&page_size=32`,
     (item, idx) => {
       if (idx === 0) {
         onHeader(item as FolderHeader);
@@ -146,12 +147,12 @@ export function fetchPageItemsAsSignals(
 }
 
 type NavState = { path: string; page: number };
-export type NameToItem = Map<string, AnyItem>;
+type NameToItem = Map<string, AnyItem>;
 type PageToItems = Record<number, NameToItem>;
 
 export function createGalleryRessource(
   getNavState: Accessor<NavState>
-): Resource<BrowsePageResult> {
+): InitializedResourceReturn<BrowsePageResult> {
   const items = new Map<string, AnyItem>();
   const initialValue = {
     ...untrack(getNavState),
@@ -160,64 +161,70 @@ export function createGalleryRessource(
     mtime: "",
     items,
   };
-  const [pageInfo] = createResource<BrowsePageResult, NavState>(
+  return createResource<BrowsePageResult, NavState>(
     getNavState,
     ({ path, page }, { value, refetching }) =>
       fetchPageItemsAsSignals(path, page),
     { initialValue }
   );
-
-  return pageInfo;
 }
 
 export type BrowsePagesCached = {
   path: string;
-  pages: PageToItems;
-  total_pages: number;
   mtime: string;
+  total_pages: number;
   total_items: number;
+  pages: PageToItems;
+  items: AnyItem[];
 };
 
 export function createGalleryRessourceCached(
   getNavState: Accessor<NavState>
-): Resource<BrowsePagesCached> {
+): InitializedResourceReturn<BrowsePagesCached> {
   const initialValue = {
     path: untrack(getNavState).path,
+    mtime: "",
     total_pages: -1,
     total_items: -1,
-    mtime: "",
     pages: {},
+    items: [],
   };
-  const [pageInfo] = createResource<BrowsePagesCached, NavState>(
+  return createResource<BrowsePagesCached, NavState>(
     getNavState,
-    async ({ path, page }, { value: prev_value, refetching }) => {
+    async (
+      { path, page },
+      { value: prev_value, refetching }
+    ): Promise<BrowsePagesCached> => {
       if (prev_value === undefined) {
         throw new Error("value is undefined");
       }
+      const samePath = path === prev_value.path;
       if (
         (prev_value.total_pages >= 0 && page > prev_value.total_pages) ||
-        (path === prev_value.path &&
-          prev_value.pages[page] !== undefined &&
-          !refetching)
+        (samePath && prev_value.pages[page] !== undefined && !refetching)
       ) {
         console.log("skipping fetch", { path, page });
         return prev_value as BrowsePagesCached;
       }
 
       const result = await fetchPageItemsAsSignals(path, page);
+
+      const pages = samePath ? { ...prev_value.pages } : {};
+      pages[page] = result.items;
+      const items = Object.values(pages).reduce((acc, pageItems) => {
+        acc.push(...pageItems.values());
+        return acc;
+      }, [] as AnyItem[]);
+
       return {
         path,
-        pages: {
-          ...(path === prev_value.path ? prev_value.pages : {}),
-          [page]: result.items,
-        },
         total_pages: result.total_pages,
-        mtime: result.mtime,
         total_items: result.total_items,
+        mtime: result.mtime,
+        pages,
+        items,
       };
     },
     { initialValue }
   );
-
-  return pageInfo;
 }

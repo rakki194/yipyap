@@ -4,17 +4,22 @@ import {
   ParentComponent,
   on,
   createEffect,
+  Resource,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useParams, useLocation, useSearchParams } from "@solidjs/router";
 import { createWindowSize, Size } from "@solid-primitives/resize-observer";
+import {
+  createGalleryRessourceCached,
+  BrowsePagesCached,
+} from "~/resources/browse";
 
 interface GalleryState {
   viewMode: "grid" | "list";
   sort: "name" | "date" | "size";
   search: string;
   page: number;
-  selected: string | null;
+  selected: number | null;
 }
 
 interface GalleryContextValue {
@@ -24,14 +29,16 @@ interface GalleryContextValue {
     setSort: (sort: "name" | "date" | "size") => void;
     setSearch: (search: string) => void;
     setPage: (page: number) => void;
+    select: (idx: number) => void;
   };
   windowSize: Readonly<Size>;
   params: { path: string };
+  data: Resource<BrowsePagesCached>;
 }
 
 // call in reactive contexts only
 export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
-  const location = useLocation();
+  // const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams<{
     view?: "grid" | "list";
     sort?: "name" | "date" | "size";
@@ -45,7 +52,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     sort: searchParams.sort || "name",
     search: searchParams.search || "",
     page: Number(searchParams.page) || 1,
-    selected: searchParams.edit || null,
+    selected: null,
   });
 
   const params = useParams<{ path: string }>();
@@ -62,6 +69,13 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       },
       { defer: true }
     )
+  );
+
+  const [data, { refetch, mutate: setData }] = createGalleryRessourceCached(
+    () => ({
+      path: params.path || "/",
+      page: state.page,
+    })
   );
 
   const windowSize = createWindowSize();
@@ -84,9 +98,12 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       setState("page", page);
       // setSearchParams({ page: page.toString() });
     },
+    select: (idx: number) => {
+      setState("selected", idx);
+    },
   };
 
-  return { state, actions, windowSize, params };
+  return { state, actions, windowSize, params, data };
 }
 
 export /*FIXME*/ const GalleryContext = createContext<GalleryContextValue>();

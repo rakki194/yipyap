@@ -1,6 +1,6 @@
 // src/components/ImageViewer/ImageInfo.tsx
-import { formatFileSize } from "../../utils/format";
-import type { ImageData } from "../../resources/browse";
+import { formatFileSize } from "~/utils/format";
+import type { ImageData } from "~/resources/browse";
 
 interface ImageInfoProps {
   image: ImageData;
