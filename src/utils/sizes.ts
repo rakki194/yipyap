@@ -13,16 +13,17 @@ const fetchSizes = async () => {
   return response.json() as Promise<ConfigResponse>;
 };
 
-export const [sizes] = createResource<ConfigResponse>(fetchSizes);
+export const createConfigResource = () =>
+  createResource<ConfigResponse>(fetchSizes);
 
-export const getThumbnailSize = () => sizes()?.thumbnail_size;
-export const getPreviewSize = () => sizes()?.preview_size;
-
-export const getThumbnailComputedSize = (item: {
-  width: number;
-  height: number;
-}) => {
-  const [maxWidth, maxHeight] = getThumbnailSize() || [300, 300];
+export const getThumbnailComputedSize = (
+  item: {
+    width: number;
+    height: number;
+  },
+  maxSize: [number, number] = [300, 300]
+) => {
+  const [maxWidth, maxHeight] = maxSize;
   const originalWidth = item.width;
   const originalHeight = item.height;
 

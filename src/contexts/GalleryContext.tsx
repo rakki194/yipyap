@@ -14,7 +14,11 @@ import {
   createGalleryRessourceCached,
   BrowsePagesCached,
   ImageItem,
+  ImageData,
 } from "~/resources/browse";
+import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
+
+export type { Size };
 
 interface GalleryState {
   viewMode: "grid" | "list";
@@ -26,24 +30,29 @@ interface GalleryState {
 }
 
 interface GalleryContextValue {
-  state: GalleryState;
-  actions: {
-    setViewMode: (mode: "grid" | "list") => void;
-    setSort: (sort: "name" | "date" | "size") => void;
-    setSearch: (search: string) => void;
-    setPage: (page: number) => void;
-    select: (idx: number | null) => void;
-    selectNext: () => void;
-    selectPrev: () => void;
-    setMode: (mode: "view" | "edit") => void;
-    toggleEdit: () => void;
-    editedImage: ImageItem | null;
-    // Select + switch to edit mode
-    edit: (idx: number) => boolean;
-  };
-  windowSize: Readonly<Size>;
+  setViewMode: (mode: "grid" | "list") => void;
+  setSort: (sort: "name" | "date" | "size") => void;
+  setSearch: (search: string) => void;
+  setPage: (page: number) => void;
+
+  selectedImage: ImageItem | null;
+  select: (idx: number | null) => void;
+  selectNext: () => void;
+  selectPrev: () => void;
+
+  editedImage: ImageData | null;
+  setMode: (mode: "view" | "edit") => void;
+  toggleEdit: () => void;
+  // Select + switch to edit mode
+  edit: (idx: number) => boolean;
+
+  getPreviewSize: (image: Size) => Size;
+  getThumbnailSize: (image: Size) => Size;
+
   params: { path: string };
+  windowSize: Readonly<Size>;
   data: Resource<BrowsePagesCached>;
+  state: GalleryState;
 }
 
 // call in reactive contexts only
@@ -86,6 +95,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     )
   );
 
+  const [config, refetchConfig] = createConfigResource();
   // Our data source for directory listings. Calls the`/browse` and memoize pages.
   const [data, { refetch, mutate: setData }] = createGalleryRessourceCached(
     () => ({
@@ -103,6 +113,10 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       return true;
     } else if (idx >= 0 && idx < data().items.length) {
       setState("selected", idx);
+      const item = data().items[idx];
+      if (item.next_page !== undefined) {
+        setState("page", item.next_page);
+      }
       return true;
     } else {
       return false;
@@ -134,12 +148,13 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
   });
 
   const getEditedImage = createMemo(() => {
-    console.log("state.mode", state.mode);
     if (state.mode != "edit") return null;
-    return getSelectedImage();
+    const item = getSelectedImage();
+    if (item === null) return null;
+    return item() || null;
   });
 
-  const actions = {
+  return {
     setViewMode: (mode: "grid" | "list") => {
       setState("viewMode", mode);
       // setSearchParams({ view: mode });
@@ -180,13 +195,15 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     get editedImage() {
       return getEditedImage();
     },
-    get windowSize() {
-      return windowSize;
-    },
+    getPreviewSize: (image) =>
+      getThumbnailComputedSize(image, config()?.preview_size || [300, 300]),
+    getThumbnailSize: (image) =>
+      getThumbnailComputedSize(image, config()?.thumbnail_size || [1024, 1024]),
+    windowSize,
+    params,
+    data,
+    state,
   };
-
-  // FIXME: we should create some convenience view projection of the public using createMemo for the application state
-  return { state, actions, windowSize, params, data };
 }
 
 export /*FIXME*/ const GalleryContext = createContext<GalleryContextValue>();

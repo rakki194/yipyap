@@ -8,36 +8,44 @@ import type { ImageItem } from "~/resources/browse";
 import { createShortcut } from "@solid-primitives/keyboard";
 
 export const Gallery = () => {
-  const { state, windowSize, actions, data, params } = useGallery();
+  const gallery = useGallery();
   let gridRef: HTMLDivElement | undefined;
 
-  createShortcut(["ArrowRight"], actions.selectNext);
-  createShortcut(["ArrowLeft"], actions.selectPrev);
-  createShortcut(["Enter"], actions.toggleEdit);
+  createShortcut(["ArrowRight"], gallery.selectNext);
+  createShortcut(["ArrowLeft"], gallery.selectPrev);
+  createShortcut(["Enter"], gallery.toggleEdit);
 
   return (
     <>
       <Controls />
-      <Show when={data()} fallback={<div>Loading {params.path}...</div>}>
+      <Show
+        when={gallery.data()}
+        fallback={<div>Loading {gallery.params.path}...</div>}
+      >
         {(data) => (
           <>
             <div
               id="gallery"
-              class={`gallery ${state.viewMode === "list" ? "list-view" : ""}`}
+              class={`gallery ${
+                gallery.state.viewMode === "list" ? "list-view" : ""
+              }`}
             >
               <ImageGrid
                 items={data().items}
-                path={params.path}
-                onImageClick={actions.edit}
+                path={gallery.params.path}
+                onImageClick={gallery.edit}
                 gridRef={(el) => (gridRef = el)}
               />
             </div>
-
-            <ImageModal
-              path={params.path}
-              image={actions.editedImage}
-              onClose={() => actions.setMode("view")}
-            />
+            <Show when={gallery.editedImage && gallery.editedImage}>
+              {(image) => (
+                <ImageModal
+                  image={image()}
+                  path={gallery.params.path}
+                  onClose={() => gallery.setMode("view")}
+                />
+              )}
+            </Show>
           </>
         )}
       </Show>

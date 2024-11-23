@@ -51,7 +51,7 @@
       transition: opacity 0.5s;
     }
 
-    &.loaded > img.preview {
+    img.preview.loaded {
       opacity: 1;
     }
   }

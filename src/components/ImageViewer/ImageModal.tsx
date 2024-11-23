@@ -1,73 +1,74 @@
 // src/components/ImageViewer/ImageModal.tsx
-import { Show, createEffect, createMemo } from "solid-js";
+import { createMemo } from "solid-js";
 import { createShortcut } from "@solid-primitives/keyboard";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
 import { CaptionEditor } from "./CaptionEditor";
-import type {
-  ImageItem as ImageItemType,
-  ImageData,
-} from "~/resources/browse";
+import type { ImageData } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
 
 interface ImageModalProps {
   path: string;
-  image: ImageItemType | null;
+  image: ImageData;
   onClose: () => void;
 }
 
 export const ImageModal = (props: ImageModalProps) => {
+  const gallery = useGallery();
+
+  const getLayout = createMemo(() =>
+    computeLayout(props.image, gallery.windowSize)
+  );
+
   createShortcut(["Escape"], () => props.onClose());
 
   return (
-    <Show when={props.image && props.image()}>
-      {(image) => (
-        <div class="modal-content">
-          <ModalHeader
-            name={props.image!.name}
-            image={image()}
-            path={props.path}
-            onClose={props.onClose}
-          />
-          <ModelBody
-            name={props.image!.name}
-            image={image()}
-            path={props.path}
-          />
-        </div>
-      )}
-    </Show>
+    <div class="modal-content">
+      <ModalHeader
+        image={props.image}
+        path={gallery.params.path}
+        onClose={props.onClose}
+      />
+      <ModelBody
+        image={props.image}
+        path={gallery.params.path}
+        layout={getLayout().layout}
+      />
+    </div>
   );
 };
 
-const ModelBody = (props: { path: string; name: string; image: ImageData }) => {
+const ModelBody = (props: {
+  path: string;
+  image: ImageData;
+  layout: LayoutStr;
+}) => {
   const { windowSize } = useGallery();
 
-  const getLayout = createMemo(() => computeLayout(props.image, windowSize));
   return (
-    <div class="modal-body" classList={{ [getLayout().layout]: true }}>
-      <ImageView path={props.path} name={props.name} image={props.image} />
-      <div class="image-info">
+    <div class="modal-body" classList={{ [props.layout]: true }}>
+      <ImageView path={props.path} image={props.image} />
+
+      {/* <div class="image-info">
         <ImageInfo image={props.image} />
         <CaptionEditor path={props.path} captions={props.image.captions} />
-      </div>
+      </div> */}
     </div>
   );
 };
 
 const ModalHeader = (props: {
-  image: ImageData | null;
+  image: ImageData;
   onClose: () => void;
   path: string;
-  name: string;
 }) => {
   return (
     <div class="modal-header">
-      <h2>{props.name}</h2>
+      <h2>{props.image?.name}</h2>
       <div class="modal-actions">
         <a
-          href={`/download/${props.path}/${props.name}`}
+          href={`/download/${props.path}/${props.image.name}`}
           class="download-btn"
           download
         >

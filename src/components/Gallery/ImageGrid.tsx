@@ -1,6 +1,5 @@
 // src/components/Gallery/ImageGrid.tsx
 import { For, onCleanup, onMount, Show, createEffect } from "solid-js";
-import type { JSX } from "solid-js";
 import { A } from "@solidjs/router";
 
 import FolderIcon from "@fluentui/svg-icons/icons/folder_24_regular.svg?raw";
@@ -11,7 +10,6 @@ import SubtitlesIcon from "@fluentui/svg-icons/icons/subtitles_24_regular.svg?ra
 
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
-import { getThumbnailComputedSize } from "~/utils/sizes";
 import type { ImageItem as ImageItemType, AnyItem } from "~/resources/browse";
 
 interface ImageGridProps {
@@ -22,13 +20,13 @@ interface ImageGridProps {
 }
 
 export const ImageGrid = (props: ImageGridProps) => {
-  const { state, actions } = useGallery();
+  const gallery = useGallery();
 
-  const addObserved = makeIntersectionObserver(actions.setPage);
+  const addObserved = makeIntersectionObserver(gallery.setPage);
 
-  createEffect(() => {
-    console.log("ImageGrid::state.selected", state.selected);
-  });
+  // createEffect(() => {
+  //   console.log("ImageGrid::state.selected", gallery.state.selected);
+  // });
 
   return (
     <div class="responsive-grid" ref={props.gridRef}>
@@ -44,10 +42,10 @@ export const ImageGrid = (props: ImageGridProps) => {
             <ImageItem
               item={item}
               path={path}
-              selected={state.selected === getIdx()}
+              selected={gallery.state.selected === getIdx()}
               onClick={() => {
                 props.onImageClick(getIdx());
-                actions.select(getIdx());
+                gallery.select(getIdx());
               }}
               ref={ref}
             />
@@ -72,10 +70,10 @@ function makeIntersectionObserver<T>(
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting && entry.boundingClientRect.top > 0) {
-        console.log("observed:", entry.boundingClientRect);
+        // console.log("observed:", entry.boundingClientRect);
         const page = observer_map.get(entry.target);
         if (page) {
-          console.log(entry, "page", page);
+          // console.log(entry, "page", page);
           callback(page);
         }
       }
@@ -107,6 +105,7 @@ export const ImageItem = (props: {
   selected: boolean;
 }) => {
   // createEffect(() => console.log('ImageItem', props.item()))
+  const gallery = useGallery();
   return (
     <div
       class="item image"
@@ -120,8 +119,7 @@ export const ImageItem = (props: {
         {(item) => {
           const thumbnailPath = props.path.replace(/\.[^/.]+$/, ".webp");
           const aspectRatio = item.width / item.height;
-
-          const { width, height } = getThumbnailComputedSize(item);
+          const { width, height } = gallery.getThumbnailSize(item);
 
           let imgRef!: HTMLImageElement;
           onMount(() => {

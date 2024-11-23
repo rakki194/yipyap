@@ -3,16 +3,17 @@ import { createSignal, createEffect } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { useGallery } from "~/contexts/GalleryContext";
 
+// FIXME: this is outdated
 export const Controls = () => {
-  const { state, actions } = useGallery();
-  const [searchValue, setSearchValue] = createSignal(state.search);
+  const gallery = useGallery();
+  const [searchValue, setSearchValue] = createSignal(gallery.state.search);
 
   const debouncedSearch = debounce((value: string) => {
-    actions.setSearch(value);
+    gallery.setSearch(value);
   }, 500);
 
   createEffect(() => {
-    if (searchValue() !== state.search) {
+    if (searchValue() !== gallery.state.search) {
       debouncedSearch(searchValue());
     }
   });
@@ -29,9 +30,9 @@ export const Controls = () => {
         />
         <select
           name="view-mode"
-          value={state.viewMode}
+          value={gallery.state.viewMode}
           onChange={(e) =>
-            actions.setViewMode(e.currentTarget.value as "grid" | "list")
+            gallery.setViewMode(e.currentTarget.value as "grid" | "list")
           }
         >
           <option value="grid">Grid</option>
@@ -39,9 +40,9 @@ export const Controls = () => {
         </select>
         <select
           name="sort-by"
-          value={state.sort}
+          value={gallery.state.sort}
           onChange={(e) =>
-            actions.setSort(e.currentTarget.value as "name" | "date" | "size")
+            gallery.setSort(e.currentTarget.value as "name" | "date" | "size")
           }
         >
           <option value="name">Name</option>

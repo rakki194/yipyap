@@ -5,12 +5,12 @@ import {
   createResource,
   createSignal,
   InitializedResourceReturn,
-  Resource,
   Setter,
   untrack,
 } from "solid-js";
 
 interface FolderHeader {
+  file_name: string;
   mtime: string; // ISO format date string
   page: number;
   pages: number;
@@ -19,12 +19,18 @@ interface FolderHeader {
   total_items: number; // Total number of items
 }
 
-export interface DirectoryData {
+interface BaseData {
+  type: "directory" | "image";
+  name: string;
   mtime: string;
 }
 
-export interface ImageData {
-  mtime: string;
+export interface DirectoryData extends BaseData {
+  type: "directory";
+}
+
+export interface ImageData extends BaseData {
+  type: "image";
   size: number; // Size of the image
   mime: string; // MIME type of the image
   md5sum: string; // MD5 checksum of the image
@@ -35,8 +41,11 @@ export interface ImageData {
 
 export type Captions = [string, string][];
 
+type AnyData = DirectoryData | ImageData;
+
+// unlike *Data, *Item can be in a loading state signaled by the call operator returning undefined
 interface BaseItem {
-  file_name: string;
+  file_name: string; // We can't overload `name` because the resource does
   type: "directory" | "image";
   next_page?: number;
   // Accessor for the potentially loaded item data
@@ -63,7 +72,7 @@ function fetchPage(
   path: string,
   page: number,
   onHeader: (data: FolderHeader) => void,
-  onItem: (data: AnyItem) => void,
+  onItem: (data: AnyData) => void,
   onError: (error: Error) => void
 ): Promise<void> {
   return fetchStreamingJson(
@@ -72,7 +81,7 @@ function fetchPage(
       if (idx === 0) {
         onHeader(item as FolderHeader);
       } else {
-        onItem(item as AnyItem);
+        onItem(item as AnyData);
       }
     }
   ).catch(onError);
@@ -93,10 +102,7 @@ export function fetchPageItemsAsSignals(
 ): Promise<BrowsePageResult> {
   return new Promise<BrowsePageResult>((resolve, reject) => {
     const items = new Map<string, AnyItem>();
-    const setters = {} as Record<
-      string,
-      Setter<ImageData | DirectoryData | undefined>
-    >;
+    const setters = {} as Record<string, Setter<AnyData | undefined>>;
     fetchPage(
       path,
       page,
@@ -110,7 +116,7 @@ export function fetchPageItemsAsSignals(
             type: "directory" as const,
           });
           items.set(folder_name, last_item);
-          setters[folder_name] = setItem;
+          setters[folder_name] = setItem as Setter<AnyData | undefined>;
         }
         for (const file_name of folderHeader.images) {
           const [item, setItem] = createSignal<ImageData>();
@@ -120,9 +126,7 @@ export function fetchPageItemsAsSignals(
             type: "image" as const,
           });
           items.set(file_name, last_item);
-          setters[file_name] = setItem as Setter<
-            ImageData | DirectoryData | undefined
-          >;
+          setters[file_name] = setItem as Setter<AnyData | undefined>;
         }
         last_item &&
           page + 1 <= folderHeader.pages &&
@@ -205,7 +209,7 @@ export function createGalleryRessourceCached(
         prev_value.pages[page] !== undefined &&
         !refetching
       ) {
-        console.log("skipping fetch", { path, page });
+        // console.log("skipping fetch", { path, page });
         return prev_value as BrowsePagesCached;
       }
 

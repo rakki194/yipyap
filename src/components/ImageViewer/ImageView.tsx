@@ -1,49 +1,74 @@
 // src/components/ImageViewer/ImageView.tsx
 import { ImageData } from "~/resources/browse";
-import { createMemo, createSignal, onMount, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  on,
+  onMount,
+  Show,
+} from "solid-js";
 
 interface ImageViewProps {
   path: string;
-  name: string;
   image: ImageData;
 }
 
 export const ImageView = (props: ImageViewProps) => {
   const webpPath = createMemo(() => {
-    let webpName = props.name.replace(/\.\w+$/, ".webp");
+    let webpName = props.image.name.replace(/\.\w+$/, ".webp");
     return `${props.path}/${webpName}`;
   });
-  const [showThumbnail, setShowThumbnail] = createSignal(true);
+  const [loaded, setLoaded] = createSignal(false);
 
+  // The full version img element
   let previewRef: HTMLImageElement;
+  // The container div element
   let ref!: HTMLDivElement;
 
-  const onPreviewLoad = () => {
-    ref.classList.add("loaded");
-    setTimeout(() => setShowThumbnail(false), 600);
-  };
+  // The image changed, reset the state
+  createEffect(
+    on(
+      () => props.image,
+      () => {
+        // console.log('ImageView::name changed', {old, new: new_})
+        setLoaded(false);
+      }
+    )
+  );
 
   onMount(() => {
+    // console.log('ImageView::onMount', {...props, ref, previewRef, webpPath: webpPath()})
     if (previewRef!.complete) {
-      ref.classList.add("loaded");
-      setShowThumbnail(false);
+      setLoaded(true);
     }
   });
 
+  const onPreviewLoad = () => {
+    setLoaded(true);
+  };
+
   return (
     <div class="image-container" ref={ref!}>
-      <Show when={showThumbnail()}>
-        <img
-          class="thumbnail"
-          src={`/thumbnail/${webpPath()}`}
-          alt={props.name}
-        />
-      </Show>
+      <img
+        class="thumbnail"
+        style={{
+          "aspect-ratio": `${props.image.width} / ${props.image.height}`,
+        }}
+        src={`/thumbnail/${webpPath()}`}
+        alt={props.image.name}
+      />
       <img
         ref={previewRef!}
         class="preview"
+        style={{
+          "aspect-ratio": `${props.image.width} / ${props.image.height}`,
+        }}
+        classList={{
+          loaded: loaded(),
+        }}
         src={`/preview/${webpPath()}`}
-        alt={props.name}
+        alt={props.image.name}
         onLoad={onPreviewLoad}
       />
     </div>
