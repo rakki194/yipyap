@@ -11,9 +11,11 @@ from typing import Dict, Optional, List, Tuple
 from datetime import datetime, timezone
 import asyncio
 import aiofiles
-
+from natsort import os_sort_keygen as natsort_keygen
 import magic
+
 import pillow_jxl
+
 
 from .drhead_loader import open_srgb
 from .models import ImageModel, DirectoryModel, BrowseHeader
@@ -246,6 +248,9 @@ class CachedFileSystemDataSource(ImageDataSource):
                 mtimes[entry["stem"]], tz=timezone.utc
             )
 
+        dir_entries.sort(key=natsort_keygen(lambda x: x.name))
+        img_entries.sort(key=natsort_keygen(lambda x: x["name"]))
+        print(f"Listing {directory}: {dir_entries} {img_entries}")
         return dir_entries, img_entries
 
     def scan_directory(
