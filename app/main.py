@@ -131,12 +131,18 @@ async def download_image(path: str):
 
 
 @app.put("/caption/{path:path}")
-async def update_caption(path: str, caption_update: str):
+async def update_caption(path: str, caption_data: dict):
+    """Update caption file content for an image"""
     try:
         image_path = utils.resolve_path(path, ROOT_DIR)
+        caption_type = caption_data.get("type")
+        caption_text = caption_data.get("caption")
 
-        await data_source.save_caption(image_path, caption_update.caption)
-        return {"status": "success"}
+        if not caption_type or not caption_text:
+            raise HTTPException(status_code=400, detail="Missing caption type or text")
+
+        await data_source.save_caption(image_path, caption_text, caption_type)
+        return {"success": True}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

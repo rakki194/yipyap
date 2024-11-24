@@ -16,6 +16,7 @@ import TypeIcon from "@fluentui/svg-icons/icons/document_24_regular.svg?raw";
 import DimensionsIcon from "@fluentui/svg-icons/icons/image_24_regular.svg?raw";
 import DownloadIcon from "@fluentui/svg-icons/icons/arrow_download_24_regular.svg?raw";
 import DismissIcon from "@fluentui/svg-icons/icons/dismiss_24_regular.svg?raw";
+import SpinnerIcon from "@fluentui/svg-icons/icons/spinner_ios_20_regular.svg?raw";
 // Export all icons
 export {
   HomeIcon,
@@ -35,6 +36,7 @@ export {
   DimensionsIcon,
   DownloadIcon,
   DismissIcon,
+  SpinnerIcon,
 };
 
 // Export caption icons map

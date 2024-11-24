@@ -1,15 +1,21 @@
 // src/components/ImageViewer/ImageModal.tsx
-import { createEffect, on, createMemo, createSignal, JSX } from "solid-js";
+import {
+  createEffect,
+  on,
+  createMemo,
+  createSignal,
+  Index,
+  JSX,
+} from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
-import { CaptionsEditor } from "./CaptionEditor";
+import { CaptionInput } from "./CaptionEditor";
 import type { ImageData } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
 import { DownloadIcon, DismissIcon } from "~/components/icons";
 
 interface ImageModalProps {
-  path: string;
   image: ImageData;
   onClose: () => void;
 }
@@ -28,28 +34,20 @@ export const ImageModal = (props: ImageModalProps) => {
         path={gallery.params.path}
         onClose={props.onClose}
       />
-      <ModelBody
-        image={props.image}
-        path={gallery.params.path}
-        layout={getLayout()}
-      />
+      <ModelBody image={props.image} layout={getLayout()} />
     </div>
   );
 };
 
-const ModelBody = (props: {
-  path: string;
-  image: ImageData;
-  layout: LayoutInfo;
-}) => {
+const ModelBody = (props: { image: ImageData; layout: LayoutInfo }) => {
   let refImageInfo!: HTMLDivElement;
   const [focused, setFocused] = createSignal(false);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
 
   // Update the style of the image info based on the layout and focus
   createEffect(
-    on([() => props.layout, focused], ([layout, focused], prev_input) => {
-      if (!focused || (prev_input && layout !== prev_input[0])) {
+    on([() => props.image.name, focused], ([name, focused], prev_input) => {
+      if (!focused || name !== prev_input?.[0]) {
         setStyle(undefined);
         return;
       }
@@ -78,7 +76,7 @@ const ModelBody = (props: {
 
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
-      <ImageView path={props.path} image={props.image} />
+      <ImageView image={props.image} />
 
       <div
         class="image-info"
@@ -89,7 +87,11 @@ const ModelBody = (props: {
         onFocusOut={() => setFocused(false)}
       >
         <ImageInfo image={props.image} />
-        <CaptionsEditor path={props.path} captions={props.image.captions} />
+        <div class="caption-editor">
+          <Index each={props.image.captions}>
+            {(caption, idx) => <CaptionInput caption={caption()} />}
+          </Index>
+        </div>
       </div>
     </div>
   );

@@ -341,10 +341,55 @@ class CachedFileSystemDataSource(ImageDataSource):
 
         return browser_header, dir_items, image_info_futures
 
-    async def save_caption(self, path: Path, caption: str) -> None:
-        """Save image caption to .caption file"""
-        async with aiofiles.open(path, "w") as f:
-            await f.write(caption)
+    async def save_caption(self, path: Path, caption: str, caption_type: str) -> None:
+        """Save image caption to file and update cache"""
+        try:
+            # Construct caption file path by replacing image extension with .{caption_type}
+            caption_path = path.with_suffix(f".{caption_type}")
+
+            # Save to file
+            async with aiofiles.open(caption_path, "w") as f:
+                await f.write(caption)
+            logger.info(f"Saved caption to {caption_path}")
+
+            # Update cache
+            directory = path.parent
+            name = path.name  # Original image name with extension
+
+            conn = self._get_connection()
+            result = conn.execute(
+                "SELECT info FROM image_info WHERE directory = ? AND name = ?",
+                (str(directory), name),
+            ).fetchone()
+
+            if result:
+                info = ImageModel.model_validate_json(result[0])
+                # Update the caption in the cached info
+                new_captions = [
+                    (t, c) if t != caption_type else (t, caption)
+                    for t, c in info.captions
+                ]
+                info.captions = new_captions
+
+                # Update cache
+                conn.execute(
+                    """
+                    UPDATE image_info 
+                    SET info = ?, cache_time = ?
+                    WHERE directory = ? AND name = ?
+                    """,
+                    (
+                        info.model_dump_json(),
+                        int(datetime.now(timezone.utc).timestamp()),
+                        str(directory),
+                        name,
+                    ),
+                )
+                conn.commit()
+
+        except Exception as e:
+            logger.error(f"Error saving caption for {path}: {e}")
+            raise
 
     async def get_preview(self, path: Path) -> bytes:
         """Generate preview image (larger than thumbnail, smaller than original)"""

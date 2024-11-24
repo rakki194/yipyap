@@ -71,7 +71,6 @@ export const Gallery = () => {
             >
               <ImageGrid
                 items={data().items}
-                path={gallery.params.path}
                 onImageClick={gallery.edit}
                 gridRef={(el) => (gridRef = el)}
               />
@@ -80,7 +79,6 @@ export const Gallery = () => {
               {(image) => (
                 <ImageModal
                   image={image()}
-                  path={gallery.params.path}
                   onClose={() => gallery.setMode("view")}
                 />
               )}

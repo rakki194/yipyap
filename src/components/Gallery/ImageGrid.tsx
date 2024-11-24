@@ -2,14 +2,7 @@
 import { For, onCleanup, onMount, Show, createEffect } from "solid-js";
 import { A } from "@solidjs/router";
 
-import {
-  FolderIcon,
-  UpIcon,
-  TagIcon,
-  NotepadIcon,
-  SubtitlesIcon,
-  captionIconsMap,
-} from "~/components/icons";
+import { FolderIcon, UpIcon, captionIconsMap } from "~/components/icons";
 
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
@@ -17,19 +10,13 @@ import type { ImageItem as ImageItemType, AnyItem } from "~/resources/browse";
 
 interface ImageGridProps {
   items: AnyItem[];
-  path: string;
   onImageClick: (idx: number) => void;
   gridRef: (el: HTMLDivElement) => void;
 }
 
 export const ImageGrid = (props: ImageGridProps) => {
   const gallery = useGallery();
-
   const addObserved = makeIntersectionObserver(gallery.setPage);
-
-  // createEffect(() => {
-  //   console.log("ImageGrid::state.selected", gallery.state.selected);
-  // });
 
   return (
     <div class="responsive-grid" ref={props.gridRef}>
@@ -40,11 +27,9 @@ export const ImageGrid = (props: ImageGridProps) => {
           if (next_page !== undefined) {
             onMount(() => addObserved(ref, next_page));
           }
-          const path = `${props.path}/${item.file_name}`;
           return item.type === "image" ? (
             <ImageItem
               item={item}
-              path={path}
               selected={gallery.state.selected === getIdx()}
               onClick={() => {
                 props.onImageClick(getIdx());
@@ -53,7 +38,11 @@ export const ImageGrid = (props: ImageGridProps) => {
               ref={ref}
             />
           ) : (
-            <DirectoryItem name={item.file_name} path={path} ref={ref} />
+            <DirectoryItem
+              name={item.file_name}
+              path={gallery.params.path}
+              ref={ref}
+            />
           );
           // console.log('For::item', { ...item, value: item() }, getIdx(), el);
         }}
@@ -96,7 +85,6 @@ function makeIntersectionObserver<T>(
 
 export const ImageItem = (props: {
   item: ImageItemType;
-  path: string;
   onClick: () => void;
   ref: HTMLDivElement;
   selected: boolean;
@@ -114,7 +102,7 @@ export const ImageItem = (props: {
     >
       <Show when={props.item()} keyed>
         {(item) => {
-          const thumbnailPath = props.path.replace(/\.[^/.]+$/, ".webp");
+          const thumbnailName = item.name.replace(/\.[^/.]+$/, ".webp");
           const aspectRatio = item.width / item.height;
           const { width, height } = gallery.getThumbnailSize(item);
 
@@ -128,7 +116,7 @@ export const ImageItem = (props: {
           return (
             <img
               ref={imgRef!}
-              src={`/thumbnail/${thumbnailPath}`}
+              src={`/thumbnail/${gallery.params.path}/${thumbnailName}`}
               loading="lazy"
               width={width}
               height={height}
@@ -173,7 +161,7 @@ export const DirectoryItem = (props: {
 }) => {
   return (
     <div class="item directory" ref={props.ref}>
-      <A href={`/gallery/${props.path}`} class="directory-link">
+      <A href={`/gallery/${props.path}/${props.name}`} class="directory-link">
         <span innerHTML={props.name === ".." ? UpIcon : FolderIcon} />
         <span>{props.name}</span>
       </A>

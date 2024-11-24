@@ -65,7 +65,6 @@ interface GalleryContextValue {
 }
 
 export interface SaveCaption {
-  path: string;
   caption: string;
   type: string;
 }
@@ -120,31 +119,31 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       page: state.page,
     }));
   const saveCaption = action(async (data: SaveCaption) => {
+    const image = untrack(getEditedImage);
+    if (!image) return new Error("No image to save caption for");
     try {
-      const response = await fetch(`/caption/${data.path}`, {
+      // console.log("saveCaption", { path: params.path, image, ...data });
+      const response = await fetch(`/caption/${params.path}/${image.name}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ caption: data.caption, type: data.type }),
       });
 
       if (!response.ok) {
-        return new Error("Failed to save caption");
+        return new Error(`${response.status}: ${response.statusText}`);
       }
 
       // Update local state after successful save
-      const image = getEditedImage();
-      if (image) {
-        const setter = untrack(() => backendData().setters[image.name]);
-        if (setter) {
-          // Update the captions array with the new caption
-          const newCaptions = image.captions.map(([type, caption]) =>
-            type === data.type ? [type, data.caption] : [type, caption]
-          );
-          setter({
-            ...image,
-            captions: newCaptions as Captions,
-          });
-        }
+      const setter = untrack(() => backendData().setters[image.name]);
+      if (setter) {
+        // Update the captions array with the new caption
+        const newCaptions = image.captions.map(([type, caption]) =>
+          type === data.type ? [type, data.caption] : [type, caption]
+        );
+        setter({
+          ...image,
+          captions: newCaptions as Captions,
+        });
       }
 
       return { success: true };
