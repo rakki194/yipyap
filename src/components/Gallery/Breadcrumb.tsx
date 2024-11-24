@@ -1,16 +1,14 @@
 import { createSignal, For } from "solid-js";
 import { A } from "@solidjs/router";
-import HomeIcon from "@fluentui/svg-icons/icons/home_24_regular.svg?raw";
-import SunIcon from "@fluentui/svg-icons/icons/weather_sunny_24_regular.svg?raw";
-import MoonIcon from "@fluentui/svg-icons/icons/weather_moon_24_regular.svg?raw";
+import { HomeIcon, SunIcon, MoonIcon } from "~/components/icons";
 
 export const Breadcrumb = (props: { path: string }) => {
   const getInitialTheme = () => {
     const savedTheme = document.cookie.match(/theme=(light|dark)/)?.[1];
     if (savedTheme) {
-      return savedTheme === 'dark';
+      return savedTheme === "dark";
     }
-    return document.body.classList.contains('dark-mode');
+    return document.body.classList.contains("dark-mode");
   };
 
   const [isDark, setIsDark] = createSignal(getInitialTheme());
@@ -18,8 +16,10 @@ export const Breadcrumb = (props: { path: string }) => {
 
   const toggleDarkMode = () => {
     const newIsDark = !isDark();
-    document.body.classList.toggle('dark-mode');
-    document.cookie = `theme=${newIsDark ? 'dark' : 'light'}; max-age=${60 * 60 * 24 * 365}; path=/`;
+    document.body.classList.toggle("dark-mode");
+    document.cookie = `theme=${newIsDark ? "dark" : "light"}; max-age=${
+      60 * 60 * 24 * 365
+    }; path=/`;
     setIsDark(newIsDark);
   };
 
@@ -44,8 +44,8 @@ export const Breadcrumb = (props: { path: string }) => {
             }}
           </For>
         </div>
-        <button 
-          class="theme-toggle" 
+        <button
+          class="theme-toggle"
           onClick={toggleDarkMode}
           title={isDark() ? "Switch to light mode" : "Switch to dark mode"}
         >

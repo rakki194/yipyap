@@ -2,10 +2,12 @@
 import { formatFileSize } from "~/utils/format";
 import type { ImageData } from "~/resources/browse";
 // Import Fluent icons
-import SizeIcon from "@fluentui/svg-icons/icons/data_usage_24_regular.svg?raw";
-import TimeIcon from "@fluentui/svg-icons/icons/calendar_24_regular.svg?raw";
-import TypeIcon from "@fluentui/svg-icons/icons/document_24_regular.svg?raw";
-import DimensionsIcon from "@fluentui/svg-icons/icons/image_24_regular.svg?raw";
+import {
+  SizeIcon,
+  TimeIcon,
+  TypeIcon,
+  DimensionsIcon,
+} from "~/components/icons";
 
 interface ImageInfoProps {
   image: ImageData;
@@ -41,7 +43,9 @@ export const ImageInfo = (props: ImageInfoProps) => {
             <span class="icon" innerHTML={DimensionsIcon} />
             <span>Dimensions</span>
           </td>
-          <td>{props.image.width}×{props.image.height}</td>
+          <td>
+            {props.image.width}×{props.image.height}
+          </td>
         </tr>
       </tbody>
     </table>

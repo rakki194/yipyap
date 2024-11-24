@@ -93,6 +93,7 @@
 
 .caption-editor {
   width: 100%;
+  max-width: 50rem;
   margin-top: var(--spacing);
 }
 

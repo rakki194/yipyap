@@ -2,9 +2,7 @@
 import { createSignal, For } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { Captions } from "~/resources/browse";
-import EditIcon from "@fluentui/svg-icons/icons/edit_24_regular.svg?raw";
-import SaveIcon from "@fluentui/svg-icons/icons/checkmark_24_regular.svg?raw";
-import ErrorIcon from "@fluentui/svg-icons/icons/error_circle_24_regular.svg?raw";
+import { EditIcon, SaveIcon, ErrorIcon } from "~/components/icons";
 
 interface CaptionEditorProps {
   path: string;
@@ -65,8 +63,8 @@ export const CaptionEditor = (props: CaptionEditorProps) => {
               rows="3"
             />
             {status() && (
-              <span 
-                class={`status-icon ${status()}`} 
+              <span
+                class={`status-icon ${status()}`}
                 innerHTML={getStatusIcon()}
               />
             )}

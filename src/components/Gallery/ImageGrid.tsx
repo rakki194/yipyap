@@ -2,11 +2,14 @@
 import { For, onCleanup, onMount, Show, createEffect } from "solid-js";
 import { A } from "@solidjs/router";
 
-import FolderIcon from "@fluentui/svg-icons/icons/folder_24_regular.svg?raw";
-import UpIcon from "@fluentui/svg-icons/icons/location_arrow_up_20_regular.svg?raw";
-import TagIcon from "@fluentui/svg-icons/icons/tag_24_regular.svg?raw";
-import NotepadIcon from "@fluentui/svg-icons/icons/notepad_24_regular.svg?raw";
-import SubtitlesIcon from "@fluentui/svg-icons/icons/subtitles_24_regular.svg?raw";
+import {
+  FolderIcon,
+  UpIcon,
+  TagIcon,
+  NotepadIcon,
+  SubtitlesIcon,
+  captionIconsMap,
+} from "~/components/icons";
 
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
@@ -91,12 +94,6 @@ function makeIntersectionObserver<T>(
   return addObserved;
 }
 
-const iconsMap = {
-  txt: NotepadIcon,
-  tags: TagIcon,
-  caption: SubtitlesIcon,
-};
-
 export const ImageItem = (props: {
   item: ImageItemType;
   path: string;
@@ -154,7 +151,9 @@ export const ImageItem = (props: {
                   {(c) => (
                     <span
                       title={c}
-                      innerHTML={iconsMap[c as keyof typeof iconsMap]}
+                      innerHTML={
+                        captionIconsMap[c as keyof typeof captionIconsMap]
+                      }
                     ></span>
                   )}
                 </For>

@@ -6,7 +6,7 @@ import { CaptionEditor } from "./CaptionEditor";
 import type { ImageData } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
-import DownloadIcon from "@fluentui/svg-icons/icons/arrow_download_24_regular.svg?raw";
+import { DownloadIcon } from "~/components/icons";
 
 interface ImageModalProps {
   path: string;
