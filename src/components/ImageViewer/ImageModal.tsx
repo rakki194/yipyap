@@ -6,6 +6,7 @@ import { CaptionEditor } from "./CaptionEditor";
 import type { ImageData } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
+import DownloadIcon from "@fluentui/svg-icons/icons/arrow_download_24_regular.svg?raw";
 
 interface ImageModalProps {
   path: string;
@@ -108,7 +109,7 @@ const ModalHeader = (props: {
           class="download-btn"
           download
         >
-          <i class="ri-download-line" />
+          <div innerHTML={DownloadIcon} />
         </a>
         <button class="close" onClick={props.onClose}>
           &times;

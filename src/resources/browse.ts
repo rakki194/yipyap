@@ -39,6 +39,8 @@ export interface ImageData extends BaseData {
   captions: Captions; // Array of tuples for captions
 }
 
+// Captions is an array of tuples of strings
+// The first string is the suffix of the caption, the second is the caption text.
 export type Captions = [string, string][];
 
 type AnyData = DirectoryData | ImageData;
