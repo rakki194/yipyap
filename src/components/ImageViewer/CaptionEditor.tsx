@@ -1,5 +1,5 @@
 // src/components/ImageViewer/CaptionEditor.tsx
-import { createSignal, For, Show, Index } from "solid-js";
+import { createSignal, Show, Index } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { Captions } from "~/resources/browse";
 import {
@@ -15,6 +15,7 @@ interface CaptionEditorProps {
 }
 
 const CaptionInput = (props: {
+  type: string;
   value: string;
   onInput: (value: string) => void;
   status: string;
@@ -33,7 +34,11 @@ const CaptionInput = (props: {
   return (
     <div class="caption-input-wrapper">
       <div class="caption-icons">
-        <span innerHTML={EditIcon} />
+        <span
+          innerHTML={
+            captionIconsMap[props.type as keyof typeof captionIconsMap]
+          }
+        />
         <span innerHTML={EditIcon} />
       </div>
       <textarea
@@ -78,6 +83,7 @@ export const CaptionsEditor = (props: CaptionEditorProps) => {
         {(caption, idx) => (
           <CaptionInput
             value={caption()[1]}
+            type={caption()[0]}
             status={status()}
             onInput={(newValue: string) => {
               setCaptions((prev) =>

@@ -185,7 +185,11 @@ select:focus {
       right: 0;
       bottom: 0;
       padding: var(--spacing);
-      background: linear-gradient(to bottom, transparent 0%, var(--overlay-bg) 100%);
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        var(--overlay-bg) 100%
+      );
       opacity: 0;
       display: flex;
       flex-direction: column;
@@ -224,7 +228,7 @@ select:focus {
       transform: var(--hover-transform);
 
       a {
-        color: white; 
+        color: white;
       }
 
       svg {
@@ -249,7 +253,7 @@ select:focus {
       transition: all var(--transition-duration) var(--transition-timing);
 
       i {
-        font-size: var(--icon-size);        
+        font-size: var(--icon-size);
       }
     }
   }
@@ -271,7 +275,7 @@ select:focus {
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -286,7 +290,9 @@ select:focus {
 }
 
 @keyframes spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -430,17 +436,18 @@ select:focus {
   box-shadow: var(--shadow-default);
 }
 
-.caption-icon {
+.caption-icons {
   display: flex;
   align-items: center;
-  width: var(--icon-size);
-  height: var(--icon-size);
+  flex-direction: column;
 }
 
-.caption-icon svg {
+.caption-icons svg {
   width: 100%;
   height: 100%;
   fill: var(--text-secondary);
+  width: var(--icon-size);
+  height: var(--icon-size);
 }
 
 .caption-input-wrapper textarea {
@@ -487,6 +494,10 @@ select:focus {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
