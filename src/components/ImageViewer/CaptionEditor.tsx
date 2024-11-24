@@ -16,27 +16,37 @@ interface CaptionEditorProps {
   captions: Captions;
 }
 
-const CaptionInput = (props: {
-  type: string;
-  value: string;
-  path: string;
-  onInput: (value: string) => void;
-}) => {
+export const CaptionsEditor = (props: CaptionEditorProps) => {
+  return (
+    <div class="caption-editor">
+      <Index each={props.captions}>
+        {(caption, idx) => (
+          <CaptionInput
+            value={caption()[1]}
+            type={caption()[0]}
+            path={props.path}
+          />
+        )}
+      </Index>
+    </div>
+  );
+};
+
+const CaptionInput = (props: { type: string; value: string; path: string }) => {
   const { saveCaption } = useGallery();
   const save = useAction(saveCaption);
   const submission = useSubmission(saveCaption);
 
-  const debouncedSave = debounce((data: SaveCaption) => {
-    props.onInput(data.caption);
-    save(data);
-  }, 500);
-
-  const handleInput = (value: string) => {
-    debouncedSave({
+  const debouncedSave = debounce((value: string) => {
+    save({
       path: props.path,
       caption: value,
       type: props.type,
     });
+  }, 500);
+
+  const handleInput = (value: string) => {
+    debouncedSave(value);
   };
 
   const getStatusIcon = () => {
@@ -64,29 +74,6 @@ const CaptionInput = (props: {
       <Show when={getStatusIcon()}>
         {(getStatusIcon) => <span innerHTML={getStatusIcon()} />}
       </Show>
-    </div>
-  );
-};
-
-export const CaptionsEditor = (props: CaptionEditorProps) => {
-  const [captions, setCaptions] = createSignal(props.captions || []);
-
-  return (
-    <div class="caption-editor">
-      <Index each={captions()}>
-        {(caption, idx) => (
-          <CaptionInput
-            value={caption()[1]}
-            type={caption()[0]}
-            path={props.path}
-            onInput={(newValue: string) => {
-              setCaptions((prev) =>
-                prev.map((c, i) => (i === idx ? [c[0], newValue] : c))
-              );
-            }}
-          />
-        )}
-      </Index>
     </div>
   );
 };

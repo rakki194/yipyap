@@ -22,6 +22,7 @@ import {
   BrowsePagesCached,
   ImageItem,
   ImageData,
+  Captions,
 } from "~/resources/browse";
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 
@@ -113,12 +114,11 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
 
   const [config, refetchConfig] = createConfigResource();
   // Our data source for directory listings. Calls the`/browse` and memoize pages.
-  const [data, { refetch, mutate: setData }] = createGalleryRessourceCached(
-    () => ({
+  const [backendData, { refetch, mutate: setData }] =
+    createGalleryRessourceCached(() => ({
       path: params.path || "/",
       page: state.page,
-    })
-  );
+    }));
   const saveCaption = action(async (data: SaveCaption) => {
     try {
       const response = await fetch(`/caption/${data.path}`, {
@@ -130,6 +130,23 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       if (!response.ok) {
         return new Error("Failed to save caption");
       }
+
+      // Update local state after successful save
+      const image = getEditedImage();
+      if (image) {
+        const setter = untrack(() => backendData().setters[image.name]);
+        if (setter) {
+          // Update the captions array with the new caption
+          const newCaptions = image.captions.map(([type, caption]) =>
+            type === data.type ? [type, data.caption] : [type, caption]
+          );
+          setter({
+            ...image,
+            captions: newCaptions as Captions,
+          });
+        }
+      }
+
       return { success: true };
     } catch (error) {
       return new Error("Failed to save caption");
@@ -143,9 +160,9 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       setState("selected", null);
       setState("mode", "view");
       return true;
-    } else if (idx >= 0 && idx < untrack(data).items.length) {
+    } else if (idx >= 0 && idx < untrack(backendData).items.length) {
       setState("selected", idx);
-      const item = untrack(data).items[idx];
+      const item = untrack(backendData).items[idx];
       if (item.next_page !== undefined) {
         setState("page", item.next_page);
       }
@@ -171,7 +188,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
 
   const getSelectedImage = createMemo(() => {
     if (state.selected === null) return null;
-    const image = data().items[state.selected];
+    const image = backendData().items[state.selected];
     if (image && image.type === "image") {
       return image;
     } else {
@@ -211,7 +228,9 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     selectPrev: () => {
       select(
         untrack(() =>
-          state.selected === null ? data().items.length - 1 : state.selected - 1
+          state.selected === null
+            ? backendData().items.length - 1
+            : state.selected - 1
         )
       );
     },
@@ -235,7 +254,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       getThumbnailComputedSize(image, config()?.thumbnail_size || [1024, 1024]),
     windowSize,
     params,
-    data,
+    data: backendData,
     state,
     saveCaption,
   };

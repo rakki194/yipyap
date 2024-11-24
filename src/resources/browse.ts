@@ -185,6 +185,7 @@ export type BrowsePagesCached = {
   total_items: number;
   pages: PageToItems;
   items: AnyItem[];
+  setters: Record<string, Setter<AnyData | undefined>>;
 };
 
 export function createGalleryRessourceCached(
@@ -197,6 +198,7 @@ export function createGalleryRessourceCached(
     total_items: -1,
     pages: {},
     items: [],
+    setters: {},
   };
   return createResource<BrowsePagesCached, NavState>(
     getNavState,
@@ -234,6 +236,7 @@ export function createGalleryRessourceCached(
         mtime: result.mtime,
         pages,
         items,
+        setters: result.setters,
       };
     },
     { initialValue }
