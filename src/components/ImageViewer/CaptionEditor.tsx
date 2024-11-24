@@ -1,15 +1,55 @@
 // src/components/ImageViewer/CaptionEditor.tsx
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show, Index } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { Captions } from "~/resources/browse";
-import { EditIcon, SaveIcon, ErrorIcon } from "~/components/icons";
+import {
+  EditIcon,
+  SaveIcon,
+  ErrorIcon,
+  captionIconsMap,
+} from "~/components/icons";
 
 interface CaptionEditorProps {
   path: string;
   captions: Captions;
 }
 
-export const CaptionEditor = (props: CaptionEditorProps) => {
+const CaptionInput = (props: {
+  value: string;
+  onInput: (value: string) => void;
+  status: string;
+}) => {
+  const getStatusIcon = () => {
+    switch (props.status) {
+      case "saved":
+        return SaveIcon;
+      case "error":
+        return ErrorIcon;
+      default:
+        return;
+    }
+  };
+
+  return (
+    <div class="caption-input-wrapper">
+      <div class="caption-icons">
+        <span innerHTML={EditIcon} />
+        <span innerHTML={EditIcon} />
+      </div>
+      <textarea
+        value={props.value}
+        onInput={(e) => props.onInput(e.currentTarget.value)}
+        placeholder="Add a caption..."
+        rows="3"
+      />
+      <Show when={getStatusIcon()}>
+        {(getStatusIcon) => <span innerHTML={getStatusIcon()} />}
+      </Show>
+    </div>
+  );
+};
+
+export const CaptionsEditor = (props: CaptionEditorProps) => {
   const [captions, setCaptions] = createSignal(props.captions || []);
   const [status, setStatus] = createSignal("");
 
@@ -32,45 +72,22 @@ export const CaptionEditor = (props: CaptionEditorProps) => {
     }
   }, 1000);
 
-  const getStatusIcon = () => {
-    switch (status()) {
-      case "saved":
-        return SaveIcon;
-      case "error":
-        return ErrorIcon;
-      default:
-        return "";
-    }
-  };
-
   return (
     <div class="caption-editor">
-      <For each={captions()}>
-        {(caption, getIdx) => (
-          <div class="caption-input-wrapper">
-            <span class="caption-icon" innerHTML={EditIcon} />
-            <textarea
-              value={caption[1]}
-              onInput={(e) => {
-                const idx = getIdx();
-                const newValue = e.currentTarget.value;
-                setCaptions((prev) =>
-                  prev.map((c, i) => (i === idx ? [c[0], newValue] : c))
-                );
-                saveCaption(newValue);
-              }}
-              placeholder="Add a caption..."
-              rows="3"
-            />
-            {status() && (
-              <span
-                class={`status-icon ${status()}`}
-                innerHTML={getStatusIcon()}
-              />
-            )}
-          </div>
+      <Index each={captions()}>
+        {(caption, idx) => (
+          <CaptionInput
+            value={caption()[1]}
+            status={status()}
+            onInput={(newValue: string) => {
+              setCaptions((prev) =>
+                prev.map((c, i) => (i === idx ? [c[0], newValue] : c))
+              );
+              saveCaption(newValue);
+            }}
+          />
         )}
-      </For>
+      </Index>
     </div>
   );
 };

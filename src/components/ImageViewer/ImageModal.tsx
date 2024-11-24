@@ -2,7 +2,7 @@
 import { createEffect, on, createMemo, createSignal, JSX } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
-import { CaptionEditor } from "./CaptionEditor";
+import { CaptionsEditor } from "./CaptionEditor";
 import type { ImageData } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -89,7 +89,7 @@ const ModelBody = (props: {
         onFocusOut={() => setFocused(false)}
       >
         <ImageInfo image={props.image} />
-        <CaptionEditor path={props.path} captions={props.image.captions} />
+        <CaptionsEditor path={props.path} captions={props.image.captions} />
       </div>
     </div>
   );
