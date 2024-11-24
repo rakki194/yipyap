@@ -6,6 +6,7 @@ import {
   createEffect,
   Resource,
   createMemo,
+  untrack,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useParams, useLocation, useSearchParams } from "@solidjs/router";
@@ -111,9 +112,9 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       setState("selected", null);
       setState("mode", "view");
       return true;
-    } else if (idx >= 0 && idx < data().items.length) {
+    } else if (idx >= 0 && idx < untrack(data).items.length) {
       setState("selected", idx);
-      const item = data().items[idx];
+      const item = untrack(data).items[idx];
       if (item.next_page !== undefined) {
         setState("page", item.next_page);
       }
@@ -125,7 +126,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
 
   const setMode = (mode: "view" | "edit") => {
     if (mode === "edit") {
-      if (getSelectedImage() !== null) {
+      if (untrack(getSelectedImage) !== null) {
         setState("mode", "edit");
       } else {
         return false;
@@ -174,16 +175,18 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     },
     select,
     selectNext: () => {
-      select(state.selected === null ? 0 : state.selected + 1);
+      select(untrack(() => (state.selected === null ? 0 : state.selected + 1)));
     },
     selectPrev: () => {
       select(
-        state.selected === null ? data().items.length - 1 : state.selected - 1
+        untrack(() =>
+          state.selected === null ? data().items.length - 1 : state.selected - 1
+        )
       );
     },
     setMode,
     toggleEdit: () => {
-      setMode(state.mode === "edit" ? "view" : "edit");
+      setMode(untrack(() => (state.mode === "edit" ? "view" : "edit")));
     },
     edit: (idx: number) => {
       select(idx);
