@@ -31,6 +31,11 @@
   left: 0;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
   z-index: 10;
+  height: 3rem;
+  font-family: monospace;
+  font-size: 0.6rem;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
 
   @media (prefers-color-scheme: light) {
     background: linear-gradient(
@@ -38,10 +43,14 @@
       rgba(255, 255, 255, 0.8),
       transparent
     );
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
   }
 
   .dark-mode & {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
   }
 }
 

@@ -213,6 +213,7 @@ select:focus {
 
       svg {
         fill: var(--bg-color);
+        filter: drop-shadow(1px 1px 0.1px var(--text-primary));
         transition: all var(--transition-duration) var(--transition-timing);
       }
     }
