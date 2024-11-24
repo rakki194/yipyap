@@ -8,6 +8,8 @@ import {
   ErrorIcon,
   captionIconsMap,
 } from "~/components/icons";
+import { action, useAction, useSubmission } from "@solidjs/router";
+import { SaveCaption, useGallery } from "~/contexts/GalleryContext";
 
 interface CaptionEditorProps {
   path: string;
@@ -17,18 +19,30 @@ interface CaptionEditorProps {
 const CaptionInput = (props: {
   type: string;
   value: string;
+  path: string;
   onInput: (value: string) => void;
-  status: string;
 }) => {
+  const { saveCaption } = useGallery();
+  const save = useAction(saveCaption);
+  const submission = useSubmission(saveCaption);
+
+  const debouncedSave = debounce((data: SaveCaption) => {
+    props.onInput(data.caption);
+    save(data);
+  }, 500);
+
+  const handleInput = (value: string) => {
+    debouncedSave({
+      path: props.path,
+      caption: value,
+      type: props.type,
+    });
+  };
+
   const getStatusIcon = () => {
-    switch (props.status) {
-      case "saved":
-        return SaveIcon;
-      case "error":
-        return ErrorIcon;
-      default:
-        return;
-    }
+    if (!submission.result) return;
+    if (submission.result instanceof Error) return ErrorIcon;
+    return SaveIcon;
   };
 
   return (
@@ -43,7 +57,7 @@ const CaptionInput = (props: {
       </div>
       <textarea
         value={props.value}
-        onInput={(e) => props.onInput(e.currentTarget.value)}
+        onInput={(e) => handleInput(e.currentTarget.value)}
         placeholder="Add a caption..."
         rows="3"
       />
@@ -56,26 +70,6 @@ const CaptionInput = (props: {
 
 export const CaptionsEditor = (props: CaptionEditorProps) => {
   const [captions, setCaptions] = createSignal(props.captions || []);
-  const [status, setStatus] = createSignal("");
-
-  const saveCaption = debounce(async (value: string) => {
-    try {
-      const response = await fetch(`/caption/${props.path}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ caption: value }),
-      });
-
-      if (response.ok) {
-        setStatus("saved");
-        setTimeout(() => setStatus(""), 2000);
-      } else {
-        setStatus("error");
-      }
-    } catch (error) {
-      setStatus("error");
-    }
-  }, 1000);
 
   return (
     <div class="caption-editor">
@@ -84,12 +78,11 @@ export const CaptionsEditor = (props: CaptionEditorProps) => {
           <CaptionInput
             value={caption()[1]}
             type={caption()[0]}
-            status={status()}
+            path={props.path}
             onInput={(newValue: string) => {
               setCaptions((prev) =>
                 prev.map((c, i) => (i === idx ? [c[0], newValue] : c))
               );
-              saveCaption(newValue);
             }}
           />
         )}

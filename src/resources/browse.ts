@@ -96,6 +96,7 @@ export type BrowsePageResult = {
   total_items: number;
   mtime: string;
   items: Map<string, AnyItem>;
+  setters: Record<string, Setter<AnyData | undefined>>;
 };
 
 export function fetchPageItemsAsSignals(
@@ -141,6 +142,7 @@ export function fetchPageItemsAsSignals(
           total_items: folderHeader.total_items,
           mtime: folderHeader.mtime,
           items,
+          setters,
         });
       },
       (item) => {
@@ -166,6 +168,7 @@ export function createGalleryRessource(
     total_items: -1,
     mtime: "",
     items,
+    setters: {},
   };
   return createResource<BrowsePageResult, NavState>(
     getNavState,

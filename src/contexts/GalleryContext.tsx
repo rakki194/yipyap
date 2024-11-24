@@ -9,7 +9,13 @@ import {
   untrack,
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import { useParams, useLocation, useSearchParams } from "@solidjs/router";
+import {
+  useParams,
+  useLocation,
+  useSearchParams,
+  action,
+  Action,
+} from "@solidjs/router";
 import { createWindowSize, Size } from "@solid-primitives/resize-observer";
 import {
   createGalleryRessourceCached,
@@ -54,6 +60,13 @@ interface GalleryContextValue {
   windowSize: Readonly<Size>;
   data: Resource<BrowsePagesCached>;
   state: GalleryState;
+  saveCaption: Action<[SaveCaption], Error | { success: boolean }>;
+}
+
+export interface SaveCaption {
+  path: string;
+  caption: string;
+  type: string;
 }
 
 // call in reactive contexts only
@@ -96,6 +109,8 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     )
   );
 
+  // Data sources, actions
+
   const [config, refetchConfig] = createConfigResource();
   // Our data source for directory listings. Calls the`/browse` and memoize pages.
   const [data, { refetch, mutate: setData }] = createGalleryRessourceCached(
@@ -104,6 +119,22 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       page: state.page,
     })
   );
+  const saveCaption = action(async (data: SaveCaption) => {
+    try {
+      const response = await fetch(`/caption/${data.path}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ caption: data.caption, type: data.type }),
+      });
+
+      if (!response.ok) {
+        return new Error("Failed to save caption");
+      }
+      return { success: true };
+    } catch (error) {
+      return new Error("Failed to save caption");
+    }
+  });
 
   const windowSize = createWindowSize();
 
@@ -206,6 +237,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     params,
     data,
     state,
+    saveCaption,
   };
 }
 
