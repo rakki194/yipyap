@@ -269,19 +269,7 @@ select:focus {
   object-fit: cover;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-color: hsl(0, 0%, 15%);
-    --card-bg: hsl(0, 0%, 20%);
-    --text-primary: hsl(0, 0%, 80%);
-    --text-secondary: hsl(0, 0%, 60%);
-    --border: #333;
-    --accent: #bf97d6;
-    --secondary-bg: hsl(0, 0%, 18%);
-  }
-}
-
-.dark-mode {
+:root[data-theme="dark"] {
   --bg-color: hsl(0, 0%, 15%);
   --card-bg: hsl(0, 0%, 20%);
   --text-primary: hsl(0, 0%, 80%);
@@ -289,6 +277,17 @@ select:focus {
   --border: #333;
   --accent: #bf97d6;
   --secondary-bg: hsl(0, 0%, 18%);
+}
+
+:root[data-theme="light"] {
+  --accent: #8839ef;
+  --bg-color: #eff1f5;
+  --secondary-bg: #e0e3e7;
+  --card-bg: #ccd0da;
+  --text-primary: #4c4f69;
+  --text-secondary: #5c5f77;
+  --border: var(--card-bg);
+  --border-secondary: var(--accent);
 }
 
 /* Keep the individual hover effects clean and simple */

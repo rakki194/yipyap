@@ -11,15 +11,13 @@ const Layout: ParentComponent = (props) => {
 
 const initializeTheme = () => {
   const savedTheme = document.cookie.match(/theme=(light|dark)/)?.[1];
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark-mode');
-  } else if (savedTheme === 'light') {
-    document.body.classList.remove('dark-mode');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme) {
+    document.documentElement.dataset.theme = savedTheme;
   } else {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (prefersDark) {
-      document.body.classList.add('dark-mode');
-    }
+    document.documentElement.dataset.theme = prefersDark ? 'dark' : 'light';
+    document.cookie = `theme=${prefersDark ? "dark" : "light"}; max-age=${60 * 60 * 24 * 365}; path=/`;
   }
 };
 

@@ -4,11 +4,7 @@ import { HomeIcon, SunIcon, MoonIcon } from "~/components/icons";
 
 export const Breadcrumb = (props: { path: string }) => {
   const getInitialTheme = () => {
-    const savedTheme = document.cookie.match(/theme=(light|dark)/)?.[1];
-    if (savedTheme) {
-      return savedTheme === "dark";
-    }
-    return document.body.classList.contains("dark-mode");
+    return document.documentElement.dataset.theme === 'dark';
   };
 
   const [isDark, setIsDark] = createSignal(getInitialTheme());
@@ -16,10 +12,13 @@ export const Breadcrumb = (props: { path: string }) => {
 
   const toggleDarkMode = () => {
     const newIsDark = !isDark();
-    document.body.classList.toggle("dark-mode");
+    
+    document.documentElement.dataset.theme = newIsDark ? 'dark' : 'light';
+    
     document.cookie = `theme=${newIsDark ? "dark" : "light"}; max-age=${
       60 * 60 * 24 * 365
-    }; path=/`;
+    }; path=/; SameSite=Strict`;
+    
     setIsDark(newIsDark);
   };
 
