@@ -1,26 +1,12 @@
 import { createSignal, For } from "solid-js";
 import { A } from "@solidjs/router";
 import { HomeIcon, SunIcon, MoonIcon } from "~/components/icons";
+import { useTheme } from "~/contexts/Theme";
 
 export const Breadcrumb = (props: { path: string }) => {
-  const getInitialTheme = () => {
-    return document.documentElement.dataset.theme === 'dark';
-  };
-
-  const [isDark, setIsDark] = createSignal(getInitialTheme());
   const crumbs = () => props.path.split("/").filter(Boolean) || [];
-
-  const toggleDarkMode = () => {
-    const newIsDark = !isDark();
-    
-    document.documentElement.dataset.theme = newIsDark ? 'dark' : 'light';
-    
-    document.cookie = `theme=${newIsDark ? "dark" : "light"}; max-age=${
-      60 * 60 * 24 * 365
-    }; path=/; SameSite=Strict`;
-    
-    setIsDark(newIsDark);
-  };
+  const theme = useTheme();
+  const isDark = () => theme.theme === "dark";
 
   return (
     <nav class="breadcrumb">
@@ -45,7 +31,7 @@ export const Breadcrumb = (props: { path: string }) => {
         </div>
         <button
           class="theme-toggle"
-          onClick={toggleDarkMode}
+          onClick={theme.toggleTheme}
           title={isDark() ? "Switch to light mode" : "Switch to dark mode"}
         >
           <span innerHTML={isDark() ? SunIcon : MoonIcon} />
