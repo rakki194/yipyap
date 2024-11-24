@@ -15,7 +15,7 @@ import TimeIcon from "@fluentui/svg-icons/icons/calendar_24_regular.svg?raw";
 import TypeIcon from "@fluentui/svg-icons/icons/document_24_regular.svg?raw";
 import DimensionsIcon from "@fluentui/svg-icons/icons/image_24_regular.svg?raw";
 import DownloadIcon from "@fluentui/svg-icons/icons/arrow_download_24_regular.svg?raw";
-
+import DismissIcon from "@fluentui/svg-icons/icons/dismiss_24_regular.svg?raw";
 // Export all icons
 export {
   HomeIcon,
@@ -34,6 +34,7 @@ export {
   TypeIcon,
   DimensionsIcon,
   DownloadIcon,
+  DismissIcon,
 };
 
 // Export caption icons map

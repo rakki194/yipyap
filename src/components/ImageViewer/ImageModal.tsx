@@ -6,7 +6,7 @@ import { CaptionEditor } from "./CaptionEditor";
 import type { ImageData } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
-import { DownloadIcon } from "~/components/icons";
+import { DownloadIcon, DismissIcon } from "~/components/icons";
 
 interface ImageModalProps {
   path: string;
@@ -112,7 +112,7 @@ const ModalHeader = (props: {
           <div innerHTML={DownloadIcon} />
         </a>
         <button class="close" onClick={props.onClose}>
-          &times;
+          <div innerHTML={DismissIcon} />
         </button>
       </div>
     </div>
