@@ -1,5 +1,5 @@
 // src/components/ImageViewer/ImageModal.tsx
-import { createEffect, createMemo, createSignal, JSX } from "solid-js";
+import { createEffect, on, createMemo, createSignal, JSX } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
 import { CaptionEditor } from "./CaptionEditor";
@@ -44,36 +44,36 @@ const ModelBody = (props: {
   let refImageInfo!: HTMLDivElement;
   const [focused, setFocused] = createSignal(false);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
-  createEffect(() => {
-    // console.log("ImageInfo::getStyle()", {
-    //   barWidth: refImageInfo.offsetWidth,
-    //   barHeight: refImageInfo.offsetHeight,
-    //   ...props.layout,
-    // });
-    if (!focused()) {
-      setStyle({});
-      return;
-    }
-    if (props.layout.layout === "horizontal") {
-      const offset = props.layout.free_width - refImageInfo.offsetWidth;
-      if (offset > 0) {
+
+  // Update the style of the image info based on the layout and focus
+  createEffect(
+    on([() => props.layout, focused], ([layout, focused], prev_input) => {
+      if (!focused || (prev_input && layout !== prev_input[0])) {
         setStyle(undefined);
-      } else {
-        setStyle({
-          transform: `translateX(${offset}px)`,
-        });
+        return;
       }
-    } else {
-      const offset = props.layout.free_height - refImageInfo.offsetHeight;
-      if (offset > 0) {
-        setStyle(undefined);
+
+      if (props.layout.layout === "horizontal") {
+        const offset = props.layout.free_width - refImageInfo.offsetWidth;
+        if (offset >= 0) {
+          setStyle(undefined);
+        } else {
+          setStyle({
+            transform: `translateX(${offset}px)`,
+          });
+        }
       } else {
-        setStyle({
-          transform: `translateY(${offset}px)`,
-        });
+        const offset = props.layout.free_height - refImageInfo.offsetHeight;
+        if (offset >= 0) {
+          setStyle(undefined);
+        } else {
+          setStyle({
+            transform: `translateY(${offset}px)`,
+          });
+        }
       }
-    }
-  });
+    })
+  );
 
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
@@ -82,6 +82,7 @@ const ModelBody = (props: {
       <div
         class="image-info"
         ref={refImageInfo}
+        tabIndex="0"
         style={getStyle()}
         onFocusIn={() => setFocused(true)}
         onFocusOut={() => setFocused(false)}
