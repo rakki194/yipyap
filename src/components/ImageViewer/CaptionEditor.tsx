@@ -33,12 +33,12 @@ export const CaptionEditor = (props: CaptionEditorProps) => {
     }
   }, 1000);
 
-  createEffect(() => {
-    if (captions() !== props.captions) {
-      // saveCaption(captions());
-      console.log("captions changed", captions());
-    }
-  });
+  // createEffect(() => {
+  //   if (captions() !== props.captions) {
+  //     // saveCaption(captions());
+  //     console.log("captions changed", captions());
+  //   }
+  // });
 
   return (
     <div class="caption-editor">

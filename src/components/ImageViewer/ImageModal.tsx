@@ -1,6 +1,5 @@
 // src/components/ImageViewer/ImageModal.tsx
-import { createMemo } from "solid-js";
-import { createShortcut } from "@solid-primitives/keyboard";
+import { createEffect, createMemo, createSignal, JSX } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
 import { CaptionEditor } from "./CaptionEditor";
@@ -21,8 +20,6 @@ export const ImageModal = (props: ImageModalProps) => {
     computeLayout(props.image, gallery.windowSize)
   );
 
-  createShortcut(["Escape"], () => props.onClose());
-
   return (
     <div class="modal-content">
       <ModalHeader
@@ -33,7 +30,7 @@ export const ImageModal = (props: ImageModalProps) => {
       <ModelBody
         image={props.image}
         path={gallery.params.path}
-        layout={getLayout().layout}
+        layout={getLayout()}
       />
     </div>
   );
@@ -42,18 +39,56 @@ export const ImageModal = (props: ImageModalProps) => {
 const ModelBody = (props: {
   path: string;
   image: ImageData;
-  layout: LayoutStr;
+  layout: LayoutInfo;
 }) => {
-  const { windowSize } = useGallery();
+  let refImageInfo!: HTMLDivElement;
+  const [focused, setFocused] = createSignal(false);
+  const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
+  createEffect(() => {
+    // console.log("ImageInfo::getStyle()", {
+    //   barWidth: refImageInfo.offsetWidth,
+    //   barHeight: refImageInfo.offsetHeight,
+    //   ...props.layout,
+    // });
+    if (!focused()) {
+      setStyle({});
+      return;
+    }
+    if (props.layout.layout === "horizontal") {
+      const offset = props.layout.free_width - refImageInfo.offsetWidth;
+      if (offset > 0) {
+        setStyle(undefined);
+      } else {
+        setStyle({
+          transform: `translateX(${offset}px)`,
+        });
+      }
+    } else {
+      const offset = props.layout.free_height - refImageInfo.offsetHeight;
+      if (offset > 0) {
+        setStyle(undefined);
+      } else {
+        setStyle({
+          transform: `translateY(${offset}px)`,
+        });
+      }
+    }
+  });
 
   return (
-    <div class="modal-body" classList={{ [props.layout]: true }}>
+    <div class="modal-body" classList={{ [props.layout.layout]: true }}>
       <ImageView path={props.path} image={props.image} />
 
-      {/* <div class="image-info">
+      <div
+        class="image-info"
+        ref={refImageInfo}
+        style={getStyle()}
+        onFocusIn={() => setFocused(true)}
+        onFocusOut={() => setFocused(false)}
+      >
         <ImageInfo image={props.image} />
         <CaptionEditor path={props.path} captions={props.image.captions} />
-      </div> */}
+      </div>
     </div>
   );
 };
@@ -84,17 +119,29 @@ const ModalHeader = (props: {
 
 type Size = { width: number; height: number };
 type LayoutStr = "horizontal" | "vertical";
-type LayoutInfo = Size & { scale: number; layout: LayoutStr };
+type LayoutInfo = Size & {
+  scale: number;
+  layout: LayoutStr;
+  free_width: number;
+  free_height: number;
+};
 
 function computeLayout(
   image: ImageData,
   windowSize: Readonly<Size>
 ): LayoutInfo {
+  const { width: viewWidth, height: viewHeight } = windowSize;
   if (image === null) {
     //FIXME: we don't need this
-    return { width: 0, height: 0, scale: 0, layout: "vertical" };
+    return {
+      width: 0,
+      height: 0,
+      scale: 0,
+      layout: "vertical",
+      free_width: viewWidth,
+      free_height: viewHeight,
+    };
   }
-  const { width: viewWidth, height: viewHeight } = windowSize;
   const { width: imageWidth, height: imageHeight } = image!;
 
   const width_scale = viewWidth / imageWidth;
@@ -110,6 +157,8 @@ function computeLayout(
   }
   const width = imageWidth * scale;
   const height = imageHeight * scale;
+  const free_width = viewWidth - width;
+  const free_height = viewHeight - height;
 
-  return { width, height, scale, layout };
+  return { width, height, scale, layout, free_width, free_height };
 }

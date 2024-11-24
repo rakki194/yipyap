@@ -1,13 +1,6 @@
 // src/components/ImageViewer/ImageView.tsx
 import { ImageData } from "~/resources/browse";
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  on,
-  onMount,
-  Show,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, on, onMount } from "solid-js";
 
 interface ImageViewProps {
   path: string;
@@ -51,14 +44,6 @@ export const ImageView = (props: ImageViewProps) => {
   return (
     <div class="image-container" ref={ref!}>
       <img
-        class="thumbnail"
-        style={{
-          "aspect-ratio": `${props.image.width} / ${props.image.height}`,
-        }}
-        src={`/thumbnail/${webpPath()}`}
-        alt={props.image.name}
-      />
-      <img
         ref={previewRef!}
         class="preview"
         style={{
@@ -70,6 +55,15 @@ export const ImageView = (props: ImageViewProps) => {
         src={`/preview/${webpPath()}`}
         alt={props.image.name}
         onLoad={onPreviewLoad}
+      />
+
+      <img
+        class="thumbnail"
+        style={{
+          "aspect-ratio": `${props.image.width} / ${props.image.height}`,
+        }}
+        src={`/thumbnail/${webpPath()}`}
+        alt={props.image.name}
       />
     </div>
   );
