@@ -52,6 +52,7 @@
       object-fit: cover;
       width: 100%;
       height: 100%;
+      transition: aspect-ratio var(--transition-duration);
     }
 
     & > img.thumbnail {
@@ -64,9 +65,11 @@
       position: relative;
       z-index: 1;
       opacity: 0;
-      transition: opacity 0.5s;
+
       &.loaded {
         opacity: 1;
+        transition: opacity var(--transition-duration),
+          aspect-ratio var(--transition-duration);
       }
     }
   }
