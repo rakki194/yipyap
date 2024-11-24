@@ -9,6 +9,10 @@ import {
 } from "~/components/icons";
 import { useAction, useSubmission } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
+import { createSignal } from "solid-js";
+
+// Add a shared signal to track which textarea is focused
+const [focusedType, setFocusedType] = createSignal<string | null>(null);
 
 export const CaptionInput = (props: { caption: [string, string] }) => {
   const { saveCaption } = useGallery();
@@ -36,7 +40,13 @@ export const CaptionInput = (props: { caption: [string, string] }) => {
   };
 
   return (
-    <div class="caption-input-wrapper">
+    <div 
+      class="caption-input-wrapper"
+      classList={{
+        'focused': focusedType() === props.caption[0],
+        'collapsed': focusedType() !== null && focusedType() !== props.caption[0]
+      }}
+    >
       <div class="caption-icons">
         <span
           innerHTML={
@@ -49,6 +59,8 @@ export const CaptionInput = (props: { caption: [string, string] }) => {
         value={props.caption[1]}
         onInput={(e) => handleInput(e.currentTarget.value)}
         placeholder="Add a caption..."
+        onFocus={() => setFocusedType(props.caption[0])}
+        onBlur={() => setFocusedType(null)}
       />
     </div>
   );

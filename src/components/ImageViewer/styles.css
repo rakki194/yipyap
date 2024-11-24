@@ -27,27 +27,21 @@
   width: 100%;
   padding: var(--spacing);
   position: absolute;
-  height: 3rem;
   top: 0;
   left: 0;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
   z-index: 10;
-  color: var(--text-primary);
-  text-shadow: 0 0 2px var(--bg-color);
-  filter: drop-shadow(0 0 1px var(--bg-color));
-  font-family: monospace;
-  font-size: 0.6rem;
 
   @media (prefers-color-scheme: light) {
     background: linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0.8),
+      rgba(255, 255, 255, 0.8),
       transparent
     );
   }
 
   .dark-mode & {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.6), transparent);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
   }
 }
 
@@ -134,6 +128,37 @@
 .caption-editor {
   width: 100%;
   margin-top: var(--spacing);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.caption-input-wrapper {
+  display: flex;
+  gap: var(--spacing);
+  flex: 1;
+  min-height: 150px;
+  transition: flex 0.3s ease;
+}
+
+.caption-input-wrapper.collapsed {
+  flex: 0.2; /* Collapsed size */
+  min-height: 50px; /* Smaller minimum height when collapsed */
+}
+
+.caption-input-wrapper.focused {
+  flex: 2; /* Give more space to focused textarea */
+}
+
+.caption-input-wrapper.collapsed textarea {
+  min-height: 50px;
+}
+
+.caption-icons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
 }
 
 .caption-editor textarea {
@@ -143,8 +168,10 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   padding: var(--spacing);
-  resize: vertical;
-  min-height: 60px;
+  resize: none;
+  height: 100%;
+  min-height: 100%;
+  max-height: unset;
   font-family: inherit;
 }
 
