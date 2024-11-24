@@ -18,7 +18,7 @@ import {
 } from "@solidjs/router";
 import { createWindowSize, Size } from "@solid-primitives/resize-observer";
 import {
-  createGalleryRessourceCached,
+  createGalleryResourceCached,
   BrowsePagesCached,
   ImageItem,
   ImageData,
@@ -114,7 +114,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
   const [config, refetchConfig] = createConfigResource();
   // Our data source for directory listings. Calls the`/browse` and memoize pages.
   const [backendData, { refetch, mutate: setData }] =
-    createGalleryRessourceCached(() => ({
+    createGalleryResourceCached(() => ({
       path: params.path || "/",
       page: state.page,
     }));

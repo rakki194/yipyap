@@ -188,7 +188,7 @@ export type BrowsePagesCached = {
   setters: Record<string, Setter<AnyData | undefined>>;
 };
 
-export function createGalleryRessourceCached(
+export function createGalleryResourceCached(
   getNavState: Accessor<NavState>
 ): InitializedResourceReturn<BrowsePagesCached> {
   const initialValue = {
