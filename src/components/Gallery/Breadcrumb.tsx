@@ -1,12 +1,23 @@
 import { createSignal, For } from "solid-js";
 import { A } from "@solidjs/router";
-import { HomeIcon, SunIcon, MoonIcon } from "~/components/icons";
-import { useTheme } from "~/contexts/Theme";
+import { HomeIcon, SunIcon, MoonIcon, CloudIcon } from "~/components/icons";
+import { useTheme, getNextTheme, Theme } from "~/contexts/Theme";
+
+function getThemeIcon(theme: Theme) {
+  switch (theme) {
+    case "light":
+      return SunIcon;
+    case "gray":
+      return CloudIcon;
+    case "dark":
+      return MoonIcon;
+  }
+}
 
 export const Breadcrumb = (props: { path: string }) => {
   const crumbs = () => props.path.split("/").filter(Boolean) || [];
   const theme = useTheme();
-  const isDark = () => theme.theme === "dark";
+  const [hovered, setHovered] = createSignal(false);
 
   return (
     <nav class="breadcrumb">
@@ -32,9 +43,15 @@ export const Breadcrumb = (props: { path: string }) => {
         <button
           class="theme-toggle"
           onClick={theme.toggleTheme}
-          title={isDark() ? "Switch to light mode" : "Switch to dark mode"}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          title={`Switch to ${getNextTheme(theme.theme)} mode`}
         >
-          <span innerHTML={isDark() ? SunIcon : MoonIcon} />
+          <span
+            innerHTML={getThemeIcon(
+              hovered() ? getNextTheme(theme.theme) : theme.theme
+            )}
+          />
         </button>
       </div>
     </nav>

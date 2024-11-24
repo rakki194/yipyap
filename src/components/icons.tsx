@@ -1,6 +1,7 @@
 // Import all icons
 import HomeIcon from "@fluentui/svg-icons/icons/home_24_regular.svg?raw";
 import SunIcon from "@fluentui/svg-icons/icons/weather_sunny_24_regular.svg?raw";
+import CloudIcon from "@fluentui/svg-icons/icons/weather_cloudy_24_regular.svg?raw";
 import MoonIcon from "@fluentui/svg-icons/icons/weather_moon_24_regular.svg?raw";
 import FolderIcon from "@fluentui/svg-icons/icons/folder_24_regular.svg?raw";
 import UpIcon from "@fluentui/svg-icons/icons/location_arrow_up_20_regular.svg?raw";
@@ -21,6 +22,7 @@ import SpinnerIcon from "@fluentui/svg-icons/icons/spinner_ios_20_regular.svg?ra
 export {
   HomeIcon,
   SunIcon,
+  CloudIcon,
   MoonIcon,
   FolderIcon,
   UpIcon,

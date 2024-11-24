@@ -1,23 +1,33 @@
 import { createSignal, createRenderEffect } from "solid-js";
 import { createSingletonRoot } from "@solid-primitives/rootless";
 
-type Theme = "light" | "dark";
+export type Theme = "light" | "gray" | "dark";
+const themes: Theme[] = ["light", "gray", "dark"];
+
+export function getNextTheme(theme: Theme): Theme {
+  switch (theme) {
+    case "light":
+      return "gray";
+    case "gray":
+      return "dark";
+    case "dark":
+      return "light";
+  }
+}
 
 export const useTheme = createSingletonRoot(() => {
   const [theme, setTheme] = createSignal<Theme>(getInitialTheme());
 
   createRenderEffect(() => {
     const currentTheme = theme();
-
     // Update localStorage
     localStorage.setItem("theme", currentTheme);
-
     // Update HTML dataset
     document.documentElement.dataset.theme = currentTheme;
   });
 
   const toggleTheme = () => {
-    setTheme((current) => (current === "light" ? "dark" : "light"));
+    setTheme(getNextTheme);
   };
 
   return {
@@ -32,19 +42,22 @@ export const useTheme = createSingletonRoot(() => {
 function getInitialTheme(): Theme {
   // Check localStorage first
   const stored = localStorage.getItem("theme");
-  if (stored === "light" || stored === "dark") {
-    return stored;
+  if (stored && themes.includes(stored as Theme)) {
+    return stored as Theme;
   }
 
   // Then check HTML dataset
-  if (document.documentElement.dataset.theme === "dark") {
-    return "dark";
+  const dsTheme = document.documentElement.dataset.theme;
+  if (dsTheme && themes.includes(dsTheme as Theme)) {
+    return dsTheme as Theme;
   }
 
   // Finally, check system preference
   if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
     return "dark";
+  } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+    return "light";
   }
 
-  return "light";
+  return "gray";
 }

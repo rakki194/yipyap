@@ -290,6 +290,16 @@ select:focus {
   --border-secondary: var(--accent);
 }
 
+:root[data-theme="gray"] {
+  --bg-color: hsl(0, 0%, 50%);
+  --card-bg: hsl(0, 0%, 45%);
+  --text-primary: hsl(0, 0%, 95%);
+  --text-secondary: hsl(0, 0%, 85%);
+  --border: hsl(0, 0%, 40%);
+  --accent: hsl(280, 40%, 70%);
+  --secondary-bg: hsl(0, 0%, 47%);
+}
+
 /* Keep the individual hover effects clean and simple */
 .item:hover {
   transform: var(--hover-transform);
