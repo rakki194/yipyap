@@ -9,7 +9,6 @@ import { useAction } from "@solidjs/router";
 export const Gallery = () => {
   const gallery = useGallery();
   const deleteImageAction = useAction(gallery.deleteImage);
-  let gridRef: HTMLDivElement | undefined;
 
   const keyDownHandler = (event: KeyboardEvent) => {
     if (!event) return;
@@ -61,33 +60,18 @@ export const Gallery = () => {
   return (
     <>
       <Controls />
-      <Show
-        when={gallery.data()}
-        fallback={<div>Loading {gallery.params.path}...</div>}
+
+      <div
+        id="gallery"
+        class={`gallery ${
+          gallery.state.viewMode === "list" ? "list-view" : ""
+        }`}
       >
-        {(data) => (
-          <>
-            <div
-              id="gallery"
-              class={`gallery ${
-                gallery.state.viewMode === "list" ? "list-view" : ""
-              }`}
-            >
-              <ImageGrid
-                items={data().items}
-                onImageClick={gallery.edit}
-                gridRef={(el) => (gridRef = el)}
-              />
-            </div>
-            <Show when={gallery.editedImage}>
-              {(image) => (
-                <ImageModal
-                  image={image()}
-                  onClose={() => gallery.setMode("view")}
-                />
-              )}
-            </Show>
-          </>
+        <ImageGrid data={gallery.data()} onImageClick={gallery.edit} />
+      </div>
+      <Show when={gallery.editedImage}>
+        {(image) => (
+          <ImageModal image={image()} onClose={() => gallery.setMode("view")} />
         )}
       </Show>
     </>

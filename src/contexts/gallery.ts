@@ -1,4 +1,4 @@
-import { on, createEffect, untrack, mergeProps } from "solid-js";
+import { on, createEffect, untrack, mergeProps, batch } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useParams, useSearchParams, action } from "@solidjs/router";
 import { createWindowSize, Size } from "@solid-primitives/resize-observer";
@@ -54,11 +54,12 @@ export function makeGalleryState() {
       () => params.path,
       (path, prevPath) => {
         if (path !== prevPath) {
-          setState("page", 1);
-          selection.select(null);
+          batch(() => {
+            setState("page", 1);
+            selection.select(null);
+          });
         }
-      },
-      { defer: true }
+      }
     )
   );
 
@@ -188,19 +189,28 @@ export function makeGalleryState() {
     deleteImage,
   };
 
-  if (import.meta.env.DEV)
-    createEffect(() => {
+  if (import.meta.env.DEV) {
+    createEffect(() =>
       console.debug(
         "GalleryState update",
         filterFunctions({
           ...gallery,
           ...selection,
         })
-      );
-    });
+      )
+    );
+    createEffect(() => console.debug("backendData", backendData()));
+    createEffect(() =>
+      console.debug("backend resource status", {
+        state: backendData.state,
+        loading: backendData.loading,
+        error: backendData.error,
+      })
+    );
+  }
 
   if (import.meta.env.DEV)
-    console.log(
+    console.debug(
       "Initialized GalleryState context",
       filterFunctions({
         ...gallery,

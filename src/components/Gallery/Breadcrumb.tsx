@@ -1,6 +1,12 @@
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { A } from "@solidjs/router";
-import { HomeIcon, SunIcon, MoonIcon, CloudIcon } from "~/components/icons";
+import {
+  HomeIcon,
+  SunIcon,
+  MoonIcon,
+  CloudIcon,
+  SpinnerIcon,
+} from "~/components/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
 
@@ -16,7 +22,7 @@ function getThemeIcon(theme: Theme) {
 }
 
 export const Breadcrumb = () => {
-  const { params } = useGallery();
+  const { params, data } = useGallery();
   const Crumbs = () => {
     const segments = () => params.path.split("/").filter(Boolean) || [];
     const crumbs = () =>
@@ -54,6 +60,12 @@ export const Breadcrumb = () => {
             <span innerHTML={HomeIcon} />
           </A>
           <Crumbs />
+          <Show
+            when={!data.loading}
+            fallback={<span class="spin-icon" innerHTML={SpinnerIcon} />}
+          >
+            <small>{data()?.total_items} items</small>
+          </Show>
         </div>
         <ThemeToggle />
       </div>

@@ -1,26 +1,25 @@
 // src/components/Gallery/ImageGrid.tsx
-import { For, onCleanup, onMount, Show, createEffect } from "solid-js";
+import { For, onCleanup, onMount, Show } from "solid-js";
 import { A } from "@solidjs/router";
 
 import { FolderIcon, UpIcon, captionIconsMap } from "~/components/icons";
-
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
-import type { ImageItem as ImageItemType, AnyItem } from "~/resources/browse";
+import type {
+  ImageItem as ImageItemType,
+  BrowsePagesCached,
+} from "~/resources/browse";
 
-interface ImageGridProps {
-  items: AnyItem[];
+export const ImageGrid = (props: {
+  data: BrowsePagesCached;
   onImageClick: (idx: number) => void;
-  gridRef: (el: HTMLDivElement) => void;
-}
-
-export const ImageGrid = (props: ImageGridProps) => {
+}) => {
   const gallery = useGallery();
   const addObserved = makeIntersectionObserver(gallery.setPage);
 
   return (
-    <div class="responsive-grid" ref={props.gridRef}>
-      <For each={props.items}>
+    <div class="responsive-grid">
+      <For each={props.data.items}>
         {(item, getIdx) => {
           let ref!: HTMLDivElement;
           const next_page = item.next_page;
@@ -30,6 +29,7 @@ export const ImageGrid = (props: ImageGridProps) => {
           return item.type === "image" ? (
             <ImageItem
               item={item}
+              path={props.data.path}
               selected={gallery.selected === getIdx()}
               onClick={() => {
                 props.onImageClick(getIdx());
@@ -40,11 +40,10 @@ export const ImageGrid = (props: ImageGridProps) => {
           ) : (
             <DirectoryItem
               name={item.file_name}
-              path={gallery.params.path}
+              path={props.data.path}
               ref={ref}
             />
           );
-          // console.log('For::item', { ...item, value: item() }, getIdx(), el);
         }}
       </For>
     </div>
@@ -85,12 +84,12 @@ function makeIntersectionObserver<T>(
 
 export const ImageItem = (props: {
   item: ImageItemType;
+  path: string;
   onClick: () => void;
   ref: HTMLDivElement;
   selected: boolean;
 }) => {
-  // createEffect(() => console.log('ImageItem', props.item()))
-  const gallery = useGallery();
+  const { getThumbnailSize } = useGallery();
   return (
     <div
       class="item image"
@@ -103,7 +102,7 @@ export const ImageItem = (props: {
         {(item) => {
           const thumbnailName = item.name.replace(/\.[^/.]+$/, ".webp");
           const aspectRatio = item.width / item.height;
-          const { width, height } = gallery.getThumbnailSize(item);
+          const { width, height } = getThumbnailSize(item);
 
           let imgRef!: HTMLImageElement;
           onMount(() => {
@@ -115,7 +114,7 @@ export const ImageItem = (props: {
           return (
             <img
               ref={imgRef!}
-              src={`/thumbnail/${gallery.params.path}/${thumbnailName}`}
+              src={`/thumbnail/${props.path}/${thumbnailName}`}
               loading="lazy"
               width={width}
               height={height}
