@@ -7,6 +7,9 @@ import {
   Resource,
   createMemo,
   untrack,
+  createSignal,
+  InitializedResource,
+  mergeProps,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import {
@@ -16,6 +19,7 @@ import {
   action,
   Action,
 } from "@solidjs/router";
+import { createStaticStore } from "@solid-primitives/static-store";
 import { createWindowSize, Size } from "@solid-primitives/resize-observer";
 import {
   createGalleryResourceCached,
@@ -26,51 +30,107 @@ import {
 } from "~/resources/browse";
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 
-export type { Size };
-
-interface GalleryState {
+export interface GalleryState {
   viewMode: "grid" | "list";
   sort: "name" | "date" | "size";
   search: string;
   page: number;
-  selected: number | null;
   mode: "view" | "edit";
 }
 
-interface GalleryContextValue {
-  setViewMode: (mode: "grid" | "list") => void;
-  setSort: (sort: "name" | "date" | "size") => void;
-  setSearch: (search: string) => void;
-  setPage: (page: number) => void;
-
-  selectedImage: ImageItem | null;
-  select: (idx: number | null) => void;
-  selectNext: () => void;
-  selectPrev: () => void;
-
-  editedImage: ImageData | null;
-  setMode: (mode: "view" | "edit") => void;
-  toggleEdit: () => void;
-  // Select + switch to edit mode
-  edit: (idx: number) => boolean;
-
-  getPreviewSize: (image: Size) => Size;
-  getThumbnailSize: (image: Size) => Size;
-
-  params: { path: string };
-  windowSize: Readonly<Size>;
-  data: Resource<BrowsePagesCached>;
-  state: GalleryState;
-  saveCaption: Action<[SaveCaption], Error | { success: boolean }>;
-}
+export type GalleryContextValue = ReturnType<typeof makeGalleryState>;
 
 export interface SaveCaption {
   caption: string;
   type: string;
 }
 
+type Mode = "view" | "edit";
+
+type Selection = ReturnType<typeof useSelection>;
+
+function useSelection(backendData: InitializedResource<BrowsePagesCached>) {
+  const [state, setState] = createStaticStore<{
+    selected: number | null;
+    mode: "view" | "edit";
+  }>({
+    selected: null,
+    mode: "view",
+  });
+
+  const selection = {
+    select: (idx: number | null) => {
+      console.log("select", { idx });
+      if (idx === null) {
+        setState("mode", "view");
+        setState("selected", null);
+        return true;
+      } else if (idx >= 0 && idx < backendData().items.length) {
+        setState("selected", idx);
+        const item = backendData().items[idx];
+
+        return true;
+      } else {
+        return false;
+      }
+    },
+    get selectedImage() {
+      if (selection.selected === null) return null;
+      const image = backendData().items[selection.selected];
+      return image && image.type === "image" ? image : null;
+    },
+    selectPrev: () => {
+      const newIndex =
+        selection.selected === null
+          ? backendData().items.length - 1
+          : selection.selected - 1;
+      return selection.select(newIndex);
+    },
+    selectNext: () => {
+      const newIndex = selection.selected === null ? 0 : selection.selected + 1;
+      return selection.select(newIndex);
+    },
+    get editedImage() {
+      if (selection.mode !== "edit") return null;
+      const item = selection.selectedImage;
+      return item ? item() || null : null;
+    },
+    toggleEdit: () => {
+      return selection.setMode(selection.mode === "edit" ? "view" : "edit");
+    },
+    get mode() {
+      return state.mode;
+    },
+    set mode(newMode: Mode) {
+      selection.setMode(newMode);
+    },
+    edit: (idx: number) => {
+      selection.select(idx);
+      return selection.setMode("edit");
+    },
+    setMode: (mode: Mode) => {
+      if (mode === "edit") {
+        if (selection.selectedImage !== null) {
+          setState("mode", "edit");
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        setState("mode", mode);
+        return true;
+      }
+    },
+    get selected() {
+      return state.selected;
+    },
+  };
+
+  return selection;
+}
+
 // call in reactive contexts only
-export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
+export /*FIXME*/ function makeGalleryState() {
   // State part of the url
   // FIXME: most of these are unused, but eventually we want to have some search params in the url
   const [searchParams, setSearchParams] = useSearchParams<{
@@ -78,7 +138,6 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     sort?: "name" | "date" | "size";
     search?: string;
     page?: string;
-    edit?: string;
   }>();
 
   // State that is not part of the url
@@ -88,7 +147,6 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     sort: searchParams.sort || "name",
     search: searchParams.search || "",
     page: Number(searchParams.page) || 1,
-    selected: null,
     mode: "view",
   });
 
@@ -102,10 +160,22 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       (path, prev_path) => {
         if (path !== prev_path) {
           setState("page", 1);
-          setState("selected", null);
+          selection.select(null);
         }
       },
       { defer: true }
+    )
+  );
+
+  // Effect on selected image change: load the next page
+  createEffect(
+    on(
+      () => selection.selectedImage,
+      (image) => {
+        if (image?.next_page !== undefined) {
+          setState("page", image.next_page);
+        }
+      }
     )
   );
 
@@ -119,7 +189,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       page: state.page,
     }));
   const saveCaption = action(async (data: SaveCaption) => {
-    const image = untrack(getEditedImage);
+    const image = untrack(() => selection.editedImage);
     if (!image) return new Error("No image to save caption for");
     try {
       // console.log("saveCaption", { path: params.path, image, ...data });
@@ -154,55 +224,7 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
 
   const windowSize = createWindowSize();
 
-  const select = (idx: number | null) => {
-    if (idx === null) {
-      setState("selected", null);
-      setState("mode", "view");
-      return true;
-    } else if (idx >= 0 && idx < untrack(backendData).items.length) {
-      setState("selected", idx);
-      const item = untrack(backendData).items[idx];
-      if (item.next_page !== undefined) {
-        setState("page", item.next_page);
-      }
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const setMode = (mode: "view" | "edit") => {
-    if (mode === "edit") {
-      if (untrack(getSelectedImage) !== null) {
-        setState("mode", "edit");
-      } else {
-        return false;
-      }
-    } else {
-      setState("mode", mode);
-    }
-
-    return true;
-  };
-
-  const getSelectedImage = createMemo(() => {
-    if (state.selected === null) return null;
-    const image = backendData().items[state.selected];
-    if (image && image.type === "image") {
-      return image;
-    } else {
-      return null;
-    }
-  });
-
-  const getEditedImage = createMemo(() => {
-    if (state.mode != "edit") return null;
-    const item = getSelectedImage();
-    if (item === null) return null;
-    return item() || null;
-  });
-
-  return {
+  const gallery = {
     setViewMode: (mode: "grid" | "list") => {
       setState("viewMode", mode);
       // setSearchParams({ view: mode });
@@ -220,36 +242,10 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
       setState("page", page);
       // setSearchParams({ page: page.toString() });
     },
-    select,
-    selectNext: () => {
-      select(untrack(() => (state.selected === null ? 0 : state.selected + 1)));
-    },
-    selectPrev: () => {
-      select(
-        untrack(() =>
-          state.selected === null
-            ? backendData().items.length - 1
-            : state.selected - 1
-        )
-      );
-    },
-    setMode,
-    toggleEdit: () => {
-      setMode(untrack(() => (state.mode === "edit" ? "view" : "edit")));
-    },
-    edit: (idx: number) => {
-      select(idx);
-      return setMode("edit");
-    },
-    get selectedImage() {
-      return getSelectedImage();
-    },
-    get editedImage() {
-      return getEditedImage();
-    },
-    getPreviewSize: (image) =>
+
+    getPreviewSize: (image: Size) =>
       getThumbnailComputedSize(image, config()?.preview_size || [300, 300]),
-    getThumbnailSize: (image) =>
+    getThumbnailSize: (image: Size) =>
       getThumbnailComputedSize(image, config()?.thumbnail_size || [1024, 1024]),
     windowSize,
     params,
@@ -257,9 +253,18 @@ export /*FIXME*/ function makeGalleryState(): GalleryContextValue {
     state,
     saveCaption,
   };
+
+  const selection = useSelection(backendData);
+
+  createEffect(() => {
+    console.log("selection", { selected: selection.selected });
+  });
+
+  return mergeProps(gallery, selection);
 }
 
-export /*FIXME*/ const GalleryContext = createContext<GalleryContextValue>();
+export /*FIXME*/ const GalleryContext =
+  createContext<ReturnType<typeof makeGalleryState>>();
 
 export const GalleryProvider: ParentComponent = (props) => {
   return (
@@ -269,7 +274,7 @@ export const GalleryProvider: ParentComponent = (props) => {
   );
 };
 
-export function useGallery(): GalleryContextValue {
+export function useGallery() {
   const context = useContext(GalleryContext);
   if (!context)
     throw new Error("useGallery must be used within a GalleryProvider");

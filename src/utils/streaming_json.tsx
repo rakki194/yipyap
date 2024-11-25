@@ -1,5 +1,4 @@
-// streamJsonFetcher.ts
-
+import { batch } from "solid-js";
 export type JsonCallback<T> = (data: T, index: number) => void;
 
 export async function fetchStreamingJson<T>(
@@ -32,10 +31,12 @@ export async function fetchStreamingJson<T>(
 
     // Process all complete lines
     buffer = lines.pop() || "";
-    lines.forEach((line) => {
-      if (line.trim()) {
-        onJson(JSON.parse(line), index++);
-      }
+    batch(() => {
+      lines.forEach((line) => {
+        if (line.trim()) {
+          onJson(JSON.parse(line), index++);
+        }
+      });
     });
   }
 }

@@ -30,7 +30,7 @@ export const ImageGrid = (props: ImageGridProps) => {
           return item.type === "image" ? (
             <ImageItem
               item={item}
-              selected={gallery.state.selected === getIdx()}
+              selected={gallery.selected === getIdx()}
               onClick={() => {
                 props.onImageClick(getIdx());
                 gallery.select(getIdx());
