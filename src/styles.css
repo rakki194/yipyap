@@ -87,6 +87,12 @@ code {
       display: flex;
       align-items: center;
     }
+
+    & > small {
+      padding: var(--spacing);
+      flex-grow: 0.618;
+      font-size: 66.66%;
+    }
   }
 }
 

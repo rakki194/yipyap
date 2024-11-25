@@ -60,13 +60,15 @@ export const Breadcrumb = () => {
             <span innerHTML={HomeIcon} />
           </A>
           <Crumbs />
+        </div>
+        <small>
           <Show
             when={!data.loading}
             fallback={<span class="spin-icon" innerHTML={SpinnerIcon} />}
           >
-            <small>{data()?.total_items} items</small>
+            {data()?.total_items} items
           </Show>
-        </div>
+        </small>
         <ThemeToggle />
       </div>
     </nav>
