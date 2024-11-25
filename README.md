@@ -1,6 +1,10 @@
-# Image Browser
+# nyaa
 
-A Python-based web application for browsing image directories with caption support, built with FastAPI and HTMX.
+---
+
+## Introduction
+
+**N**eural **Y**ield **A**rtwork **A**rchiver is a Python-based web application for uploading, browsing and managing image dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with FastAPI and HTMX.
 
 ## Features
 
