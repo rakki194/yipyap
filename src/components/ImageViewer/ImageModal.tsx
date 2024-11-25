@@ -110,21 +110,23 @@ const ModalHeader = (props: {
     <div class="modal-header">
       <h2>{props.image?.name}</h2>
       <div class="modal-actions">
-        <a
-          href={`/download/${props.path}/${props.image.name}`}
+        <button
           class="download-btn"
-          download
+          onClick={() => {
+            window.location.href = `/download/${props.path}/${props.image.name}`;
+          }}
         >
           <div innerHTML={DownloadIcon} />
-        </a>
+        </button>
         <button
+          class="delete-btn"
           onClick={() =>
             gallery.selected !== null && deleteImageAction(gallery.selected)
           }
         >
           <div innerHTML={DeleteIcon} />
         </button>
-        <button class="close" onClick={props.onClose}>
+        <button class="close-btn" onClick={props.onClose}>
           <div innerHTML={DismissIcon} />
         </button>
       </div>

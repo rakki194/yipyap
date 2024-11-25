@@ -52,24 +52,24 @@
     display: flex;
     gap: 10px;
 
-    & > .download-btn {
+    & > .download-btn,
+    & > .delete-btn,
+    & > .close-btn {
       color: var(--text-primary);
       text-decoration: none;
       padding: 8px;
-      border-radius: 4px;
+      margin: 0;
+      border: none;
+      border-radius: var(--border-radius);
+      background: none;
       transition: background 0.2s;
     }
 
-    & > .download-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    & > .close {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      font-size: 24px;
-      cursor: pointer;
+    & > .download-btn:hover,
+    & > .delete-btn:hover,
+    & > .close-btn:hover {
+      fill: var(--accent);
+      background: var(--secondary-bg);
     }
   }
 }
