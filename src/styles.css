@@ -56,10 +56,12 @@ svg {
   transition: fill var(--transition-duration) var(--transition-timing);
 }
 
-.container {
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  padding: var(--spacing);
+code {
+  background-color: var(--secondary-bg);
+  color: var(--text-primary);
+  padding: 0.2em 0.4em;
+  border-radius: var(--border-radius);
+  font-family: monospace;
 }
 
 /* Header */
@@ -70,13 +72,22 @@ svg {
   background: none;
   border-radius: 0;
   font-size: 1.4rem;
-  margin: 0 10px;
-}
+  & a {
+    color: var(--accent);
+    text-decoration: none;
+    padding: var(--spacing);
+  }
 
-.breadcrumb a {
-  color: var(--accent);
-  text-decoration: none;
-  padding: var(--spacing);
+  & > .breadcrumb-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    & > .breadcrumb-links {
+      display: flex;
+      align-items: center;
+    }
+  }
 }
 
 /* Controls */
@@ -88,7 +99,7 @@ svg {
   display: flex;
   gap: var(--spacing);
   flex-wrap: wrap;
-  padding: var(--spacing) calc(var(--double-spacing));
+  padding: var(--spacing) var(--double-spacing);
 }
 
 input,
@@ -108,24 +119,25 @@ select:focus {
   border-color: var(--border-secondary);
 }
 
-.responsive-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--spacing);
-  width: 100%;
-  padding: var(--spacing);
-  container-type: inline-size;
+#gallery {
+  & > * {
+    padding: var(--spacing);
+  }
+
+  & > .responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--spacing);
+    width: 100%;
+    container-type: inline-size;
+  }
+
+  &.crop > .responsive-grid > .item > img {
+    object-fit: cover;
+  }
 }
 
-.directory-grid {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
-  gap: var(--double-spacing);
-  margin-bottom: var(--double-spacing);
-}
-
-.gallery > .responsive-grid > .item {
+#gallery > .responsive-grid > .item {
   background-color: var(--card-bg);
   position: relative;
   display: flex;
@@ -144,8 +156,12 @@ select:focus {
     transform: var(--hover-transform);
   }
 
-  &.image:hover > .overlay {
-    opacity: 1;
+  &:hover {
+    transform: var(--hover-transform);
+    box-shadow: var(--shadow-hover);
+    &.image > .overlay {
+      opacity: 1;
+    }
   }
 
   &::after {
@@ -266,10 +282,6 @@ select:focus {
   }
 }
 
-.gallery.crop > .responsive-grid > .item > img {
-  object-fit: cover;
-}
-
 :root[data-theme="dark"] {
   --bg-color: hsl(0, 0%, 15%);
   --card-bg: hsl(0, 0%, 20%);
@@ -299,23 +311,6 @@ select:focus {
   --border: hsl(0, 0%, 40%);
   --accent: hsl(280, 40%, 70%);
   --secondary-bg: hsl(0, 0%, 47%);
-}
-
-/* Keep the individual hover effects clean and simple */
-.item:hover {
-  transform: var(--hover-transform);
-  box-shadow: var(--shadow-hover);
-}
-
-.breadcrumb-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.breadcrumb-links {
-  display: flex;
-  align-items: center;
 }
 
 .theme-toggle {
