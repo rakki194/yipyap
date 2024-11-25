@@ -37,15 +37,15 @@ export const Gallery = () => {
     }
 
     if (event.key === "ArrowRight") {
-      gallery.selectNext();
+      if (!gallery.selectNext()) return;
     } else if (event.key === "ArrowLeft") {
-      gallery.selectPrev();
+      if (!gallery.selectPrev()) return;
     } else if (event.key === "Enter") {
-      gallery.toggleEdit();
+      if (!gallery.toggleEdit()) return;
     } else if (event.key === "Escape") {
-      gallery.setMode("view");
-    } else if (event.key === "Delete" && gallery.selectedImage) {
-      gallery.selected !== null && deleteImageAction(gallery.selected);
+      if (!gallery.setMode("view")) return;
+    } else if (event.key === "Delete" && gallery.selectedImage !== null) {
+      deleteImageAction(gallery.selected!);
     } else {
       return;
     }
