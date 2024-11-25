@@ -250,7 +250,6 @@ class CachedFileSystemDataSource(ImageDataSource):
 
         dir_entries.sort(key=natsort_keygen(lambda x: x.name))
         img_entries.sort(key=natsort_keygen(lambda x: x["name"]))
-        print(f"Listing {directory}: {dir_entries} {img_entries}")
         return dir_entries, img_entries
 
     def scan_directory(
