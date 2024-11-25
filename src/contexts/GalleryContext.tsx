@@ -129,36 +129,32 @@ function useSelection(backendData: InitializedResource<BrowsePagesCached>) {
   return selection;
 }
 
-// call in reactive contexts only
-export /*FIXME*/ function makeGalleryState() {
-  // State part of the url
-  // FIXME: most of these are unused, but eventually we want to have some search params in the url
+// Call in reactive contexts only
+export function makeGalleryState() {
+  // State part of the URL
+  // FIXME: Most of these are unused, but eventually we want to have some search params in the URL
   const [searchParams, setSearchParams] = useSearchParams<{
-    view?: "grid" | "list";
-    sort?: "name" | "date" | "size";
-    search?: string;
     page?: string;
   }>();
 
-  // State that is not part of the url
-  // Also some unused stuff: only `page, \selected` and mode` are used, the rest is just here for future use
+  // State that is not part of the URL
+  // Also some unused stuff: only `page`, `selected`, and `mode` are used. The rest is here for future use
   const [state, setState] = createStore<GalleryState>({
-    viewMode: searchParams.view || "grid",
-    sort: searchParams.sort || "name",
-    search: searchParams.search || "",
+    viewMode: "grid",
+    sort: "name",
+    search: "",
     page: Number(searchParams.page) || 1,
     mode: "view",
   });
 
   const params = useParams<{ path: string }>();
-  // const [searchParams, setSearchParams] = useSearchParams<{ path?: string, page?: string }>();
 
-  // Effect on page change: reset page and selected image
+  // Effect: Reset page and selected image when the path changes
   createEffect(
     on(
       () => params.path,
-      (path, prev_path) => {
-        if (path !== prev_path) {
+      (path, prevPath) => {
+        if (path !== prevPath) {
           setState("page", 1);
           selection.select(null);
         }
@@ -167,7 +163,7 @@ export /*FIXME*/ function makeGalleryState() {
     )
   );
 
-  // Effect on selected image change: load the next page
+  // Effect: Load the next page when the selected image changes
   createEffect(
     on(
       () => selection.selectedImage,
@@ -179,18 +175,22 @@ export /*FIXME*/ function makeGalleryState() {
     )
   );
 
-  // Data sources, actions
-
+  // Data sources and actions
   const [config, refetchConfig] = createConfigResource();
-  // Our data source for directory listings. Calls the`/browse` and memoize pages.
+
+  // Our data source for directory listings. Calls the `/browse` and memoizes pages.
   const [backendData, { refetch, mutate: setData }] =
     createGalleryResourceCached(() => ({
       path: params.path || "/",
       page: state.page,
     }));
+
+  const selection = useSelection(backendData);
+
   const saveCaption = action(async (data: SaveCaption) => {
     const image = untrack(() => selection.editedImage);
     if (!image) return new Error("No image to save caption for");
+
     try {
       // console.log("saveCaption", { path: params.path, image, ...data });
       const response = await fetch(`/caption/${params.path}/${image.name}`, {
@@ -218,12 +218,14 @@ export /*FIXME*/ function makeGalleryState() {
 
       return { success: true };
     } catch (error) {
+      console.error("Failed to save caption", error);
       return new Error("Failed to save caption");
     }
   });
 
   const windowSize = createWindowSize();
 
+  // Gallery actions and getters
   const gallery = {
     setViewMode: (mode: "grid" | "list") => {
       setState("viewMode", mode);
@@ -242,7 +244,6 @@ export /*FIXME*/ function makeGalleryState() {
       setState("page", page);
       // setSearchParams({ page: page.toString() });
     },
-
     getPreviewSize: (image: Size) =>
       getThumbnailComputedSize(image, config()?.preview_size || [300, 300]),
     getThumbnailSize: (image: Size) =>
@@ -254,12 +255,7 @@ export /*FIXME*/ function makeGalleryState() {
     saveCaption,
   };
 
-  const selection = useSelection(backendData);
-
-  createEffect(() => {
-    console.log("selection", { selected: selection.selected });
-  });
-
+  // Merge gallery and selection properties
   return mergeProps(gallery, selection);
 }
 
