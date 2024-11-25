@@ -76,12 +76,12 @@ const ModelBody = (props: { image: ImageData; layout: LayoutInfo }) => {
 
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
-      <ImageView image={props.image} />
-
+      <ImageView image={props.image} onClick={() => setFocused((f) => !f)} />
       <div
         class="image-info"
         ref={refImageInfo}
         style={getStyle()}
+        onClick={() => setFocused(true)}
         onFocusIn={() => setFocused(true)}
         onFocusOut={() => setFocused(false)}
       >

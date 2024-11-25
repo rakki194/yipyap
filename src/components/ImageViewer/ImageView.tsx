@@ -1,16 +1,26 @@
 // src/components/ImageViewer/ImageView.tsx
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  on,
+  onMount,
+  splitProps,
+} from "solid-js";
+import type { JSX } from "solid-js";
 import { ImageData } from "~/resources/browse";
-import { createEffect, createMemo, createSignal, on, onMount } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 
-interface ImageViewProps {
+interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
   image: ImageData;
 }
 
 export const ImageView = (props: ImageViewProps) => {
   const gallery = useGallery();
+
+  const [localProps, divProps] = splitProps(props, ["image"]);
   const webpPath = createMemo(() => {
-    let webpName = props.image.name.replace(/\.\w+$/, ".webp");
+    let webpName = localProps.image.name.replace(/\.\w+$/, ".webp");
     return `${gallery.params.path}/${webpName}`;
   });
   const [loaded, setLoaded] = createSignal(false);
@@ -23,7 +33,7 @@ export const ImageView = (props: ImageViewProps) => {
   // The image changed, reset the state
   createEffect(
     on(
-      () => props.image,
+      () => localProps.image,
       () => {
         // console.log('ImageView::name changed', {old, new: new_})
         setLoaded(previewRef!.complete);
@@ -34,7 +44,7 @@ export const ImageView = (props: ImageViewProps) => {
   onMount(() => setLoaded(previewRef!.complete));
 
   return (
-    <div class="image-container" ref={ref!}>
+    <div class="image-container" ref={ref!} {...divProps}>
       <img
         ref={previewRef!}
         class="preview"
