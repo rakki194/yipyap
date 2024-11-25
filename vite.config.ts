@@ -50,6 +50,7 @@ export default defineConfig({
     target: "esnext",
     outDir: "../static/dist",
     emptyOutDir: true,
+    manifest: true,
     rollupOptions: {
       output: {
         manualChunks: undefined,

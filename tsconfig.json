@@ -3,7 +3,7 @@
     "strict": true,
     "target": "ESNext",
     "module": "ESNext",
-    "outDir": "./dist",
+    "outDir": "./static/dist",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -13,11 +13,12 @@
     "paths": {
       "~/*": ["./src/*"]
       //     "@solid-primitives/*": [
-      //         "/home/kade/repos/solid-primitives/packages/*/src"
+      //         "/home//repos/solid-primitives/packages/*/src"
       //     ]
     },
-    "noEmit": true,
+    "noEmit": false,
+    "declaration": true,
     "isolatedModules": true
-  }
-  // "include": ["src", "/home/kade/repos/solid-primitives/packages/*/src"]
+  },
+  "include": ["src"]
 }
