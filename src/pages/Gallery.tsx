@@ -1,19 +1,15 @@
 // import { createEffect } from 'solid-js';
 // import { unwrap } from 'solid-js/store';
 import { Gallery } from "~/components/Gallery/Gallery";
-import { GalleryContext, makeGalleryState } from "~/contexts/GalleryContext";
 import { Breadcrumb } from "~/components/Gallery/Breadcrumb";
-
-
+import { GalleryProvider } from "~/contexts/GalleryContext";
 export default function GalleryPage() {
-  const state = makeGalleryState();
-
   return (
     <>
-      <GalleryContext.Provider value={state}>
-        <Breadcrumb path={state.params.path} />
+      <GalleryProvider>
+        <Breadcrumb />
         <Gallery />
-      </GalleryContext.Provider>
+      </GalleryProvider>
     </>
   );
 }

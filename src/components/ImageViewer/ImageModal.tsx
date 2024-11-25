@@ -9,7 +9,7 @@ import {
 } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
-import { CaptionInput } from "./CaptionEditor";
+import { CaptionInput } from "./CaptionInput";
 import type { ImageData } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -89,7 +89,12 @@ const ModelBody = (props: { image: ImageData; layout: LayoutInfo }) => {
         <ImageInfo image={props.image} />
         <div class="caption-editor">
           <Index each={props.image.captions}>
-            {(caption, idx) => <CaptionInput caption={caption()} />}
+            {(caption, idx) => (
+              <CaptionInput
+                tabindex={idx === 0 ? "1" : undefined}
+                caption={caption()}
+              />
+            )}
           </Index>
         </div>
       </div>
