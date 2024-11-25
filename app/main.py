@@ -92,6 +92,13 @@ async def browse(
     )
 
 
+@app.delete("/api/browse/{path:path}")
+async def delete_image(path: str, confirm: bool = Query(False)):
+    image_path = utils.resolve_path(path, ROOT_DIR)
+    deleted_suffixes = await data_source.delete_image(image_path, confirm)
+    return {"confirm": confirm, "deleted_suffixes": deleted_suffixes}
+
+
 @app.get("/thumbnail/{path:path}")
 async def get_thumbnail(path: str):
     image_path = utils.resolve_path(path, ROOT_DIR)

@@ -262,9 +262,34 @@ export async function saveCaption(
   });
 }
 
+export interface DeleteImageResponse {
+  confirm: boolean;
+  deleted_suffixes: string[];
+}
+
 export async function deleteImage(
   path: string,
-  imageName: string
-): Promise<Response> {
-  return await fetch(`/api/browse/${path}/${imageName}`, { method: "DELETE" });
+  imageName: string,
+  confirm: boolean = false
+): Promise<DeleteImageResponse> {
+  const response = await fetch(
+    `/api/browse/${path}/${imageName}?confirm=${confirm}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Failed to delete image", {
+      path,
+      imageName,
+      confirm,
+      status: response.status,
+      error: errorText,
+    });
+    throw new Error(`Failed to delete image: ${errorText}`);
+  }
+
+  return (await response.json()) as DeleteImageResponse;
 }

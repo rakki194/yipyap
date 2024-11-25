@@ -24,6 +24,7 @@ from .models import ImageModel, DirectoryModel, BrowseHeader
 logger = logging.getLogger("uvicorn.error")
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl"}
+CAPTION_EXTENSIONS = {".caption", ".txt", ".tags"}
 
 
 class ImageDataSource:
@@ -66,6 +67,27 @@ class ImageDataSource:
             "size": stat.st_size,
         }
 
+    async def delete_image(self, path: Path, confirm=False) -> None:
+        """Delete an image and all the files in `path.parent.glob(path.stem + '*')`
+        returns the captions urls and the name of miscellaneous deleted files
+        """
+        captions = []
+        files = []
+        for f in path.parent.glob(path.stem + "*"):
+            suffix = f.suffix
+            if suffix in CAPTION_EXTENSIONS:
+                captions.append(suffix)
+            else:
+                files.append(suffix)
+            if confirm:
+                f.unlink()
+        if confirm and path.exists():
+            logger.warning(
+                f"Deleting {path.name!r} in {path.parent!r}, it was still present among the captions {captions} and the files {files}"
+            )
+            path.unlink()
+        return captions, files
+
 
 class CachedFileSystemDataSource(ImageDataSource):
     def __init__(
@@ -94,6 +116,7 @@ class CachedFileSystemDataSource(ImageDataSource):
                 info JSON NOT NULL,
                 cache_time INTEGER NOT NULL,
                 thumbnail_webp BLOB NOT NULL,
+                deleted INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY (directory, name)
             )
             """
@@ -132,7 +155,10 @@ class CachedFileSystemDataSource(ImageDataSource):
 
         conn = self._get_connection()
         result = conn.execute(
-            "SELECT info, cache_time FROM image_info WHERE directory = ? AND name = ?",
+            r"""
+            SELECT info, cache_time, deleted FROM image_info 
+            WHERE directory = ? AND name = ? AND deleted = 0
+            """,
             (str(directory), item["name"]),
         ).fetchone()
 
@@ -181,8 +207,8 @@ class CachedFileSystemDataSource(ImageDataSource):
         conn.execute(
             """
             INSERT OR REPLACE INTO image_info 
-            (directory, name, info, cache_time, thumbnail_webp) 
-            VALUES (?, ?, ?, ?, ?)
+            (directory, name, info, cache_time, thumbnail_webp, deleted) 
+            VALUES (?, ?, ?, ?, ?, 0)
             """,
             (
                 str(directory),
@@ -412,3 +438,42 @@ class CachedFileSystemDataSource(ImageDataSource):
         except Exception as e:
             logger.exception(f"Error generating preview for {path}: {e}")
             raise
+
+    async def delete_image(
+        self, path: Path, confirm=False
+    ) -> Tuple[List[str], List[str]]:
+        """
+        Soft-delete an image and its associated caption files. Update the cache accordingly.
+
+        Args:
+            path (Path): The path to the image to delete.
+            confirm (bool): Whether to actually perform the soft-delete.
+
+        Returns:
+            Tuple[List[str], List[str]]: A tuple containing lists of deleted caption extensions and other files.
+        """
+        captions, files = await super().delete_image(path, confirm)
+
+        if confirm:
+            # Soft-delete the image entry in the cache
+            conn = self._get_connection()
+            conn.execute(
+                """
+                UPDATE image_info 
+                SET deleted = 1 
+                WHERE directory = ? AND name = ?
+                """,
+                (
+                    str(path.parent),
+                    path.name,
+                ),
+            )
+            conn.commit()
+            logger.info(f"Soft-deleted {path.name} from cache.")
+
+            # Invalidate the directory cache since its contents have changed
+            if path.parent in self.directory_cache:
+                del self.directory_cache[path.parent]
+                logger.debug(f"Invalidated directory cache for {path.parent}")
+
+        return captions, files

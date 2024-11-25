@@ -126,10 +126,14 @@ export function makeGalleryState() {
       return new Error("No image to delete");
 
     try {
-      const response = await deleteImageFromBackend(path, image.file_name);
-      if (!response.ok) {
-        return new Error(`${response.status}: ${response.statusText}`);
-      }
+      const confirm = true; // FIXME: ask the user for confirmation
+      const response = await deleteImageFromBackend(
+        path,
+        image.file_name,
+        confirm
+      );
+      if (import.meta.env.DEV)
+        console.debug("Delete image response", { idx, response });
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to delete image", error);
       return new Error("Failed to delete image");
