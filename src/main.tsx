@@ -15,5 +15,5 @@ render(
       <Router root={Layout}>{routes}</Router>
     </ErrorBoundary>
   ),
-  document.getElementById("app") as HTMLElement
+  document.body as HTMLElement
 );
