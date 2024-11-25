@@ -16,6 +16,7 @@ import TimeIcon from "@fluentui/svg-icons/icons/calendar_24_regular.svg?raw";
 import TypeIcon from "@fluentui/svg-icons/icons/document_24_regular.svg?raw";
 import DimensionsIcon from "@fluentui/svg-icons/icons/image_24_regular.svg?raw";
 import DownloadIcon from "@fluentui/svg-icons/icons/arrow_download_24_regular.svg?raw";
+import DeleteIcon from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
 import DismissIcon from "@fluentui/svg-icons/icons/dismiss_24_regular.svg?raw";
 import SpinnerIcon from "@fluentui/svg-icons/icons/spinner_ios_20_regular.svg?raw";
 // Export all icons
@@ -37,6 +38,7 @@ export {
   TypeIcon,
   DimensionsIcon,
   DownloadIcon,
+  DeleteIcon,
   DismissIcon,
   SpinnerIcon,
 };

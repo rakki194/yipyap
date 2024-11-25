@@ -4,9 +4,11 @@ import { Controls } from "./Controls";
 import { ImageGrid } from "./ImageGrid";
 import { ImageModal } from "../ImageViewer/ImageModal";
 import { useGallery } from "~/contexts/GalleryContext";
+import { useAction } from "@solidjs/router";
 
 export const Gallery = () => {
   const gallery = useGallery();
+  const deleteImageAction = useAction(gallery.deleteImage);
   let gridRef: HTMLDivElement | undefined;
 
   const keyDownHandler = (event: KeyboardEvent) => {
@@ -43,6 +45,8 @@ export const Gallery = () => {
       gallery.toggleEdit();
     } else if (event.key === "Escape") {
       gallery.setMode("view");
+    } else if (event.key === "Delete" && gallery.selectedImage) {
+      gallery.selected !== null && deleteImageAction(gallery.selected);
     } else {
       return;
     }

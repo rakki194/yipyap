@@ -13,7 +13,8 @@ import { CaptionInput } from "./CaptionInput";
 import type { ImageData } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
-import { DownloadIcon, DismissIcon } from "~/components/icons";
+import { DownloadIcon, DismissIcon, DeleteIcon } from "~/components/icons";
+import { useAction } from "@solidjs/router";
 
 interface ImageModalProps {
   image: ImageData;
@@ -103,6 +104,8 @@ const ModalHeader = (props: {
   onClose: () => void;
   path: string;
 }) => {
+  const gallery = useGallery();
+  const deleteImageAction = useAction(gallery.deleteImage);
   return (
     <div class="modal-header">
       <h2>{props.image?.name}</h2>
@@ -114,6 +117,13 @@ const ModalHeader = (props: {
         >
           <div innerHTML={DownloadIcon} />
         </a>
+        <button
+          onClick={() =>
+            gallery.selected !== null && deleteImageAction(gallery.selected)
+          }
+        >
+          <div innerHTML={DeleteIcon} />
+        </button>
         <button class="close" onClick={props.onClose}>
           <div innerHTML={DismissIcon} />
         </button>

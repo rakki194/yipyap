@@ -1,8 +1,18 @@
-import { on, createEffect, untrack, mergeProps, from } from "solid-js";
-import { createStore, unwrap } from "solid-js/store";
+import { on, createEffect, untrack, mergeProps } from "solid-js";
+import { createStore } from "solid-js/store";
 import { useParams, useSearchParams, action } from "@solidjs/router";
 import { createWindowSize, Size } from "@solid-primitives/resize-observer";
-import { createGalleryResourceCached, Captions } from "~/resources/browse";
+import {
+  createGalleryResourceCached,
+  Captions,
+  saveCaption as saveCaptionToBackend,
+  deleteImage as deleteImageFromBackend,
+} from "~/resources/browse";
+import type {
+  ImageData,
+  SaveCaption,
+  BrowsePagesCached,
+} from "~/resources/browse";
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
 
@@ -16,10 +26,7 @@ export interface GalleryState {
 
 export type GalleryContextValue = ReturnType<typeof makeGalleryState>;
 
-export interface SaveCaption {
-  caption: string;
-  type: string;
-}
+export type { SaveCaption };
 
 // Call in reactive contexts only
 export function makeGalleryState() {
@@ -82,39 +89,66 @@ export function makeGalleryState() {
   const selection = useSelection(backendData);
 
   const saveCaption = action(async (data: SaveCaption) => {
-    const image = untrack(() => selection.editedImage);
+    const { image, path, database } = untrack(() => ({
+      image: selection.editedImage,
+      path: params.path,
+      database: backendData(),
+    }));
     if (!image) return new Error("No image to save caption for");
 
     try {
-      // console.log("saveCaption", { path: params.path, image, ...data });
-      const response = await fetch(`/caption/${params.path}/${image.name}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ caption: data.caption, type: data.type }),
-      });
+      // Save caption to the backend
+      const response = await saveCaptionToBackend(path, image.name, data);
 
       if (!response.ok) {
         return new Error(`${response.status}: ${response.statusText}`);
       }
 
       // Update local state after successful save
-      const setter = untrack(() => backendData().setters[image.name]);
-      if (setter) {
-        // Update the captions array with the new caption
-        const newCaptions = image.captions.map(([type, caption]) =>
-          type === data.type ? [type, data.caption] : [type, caption]
-        );
-        setter({
-          ...image,
-          captions: newCaptions as Captions,
-        });
-      }
+      const updatedImage = updateLocalCaptions(image, data, database);
 
-      return { success: true };
+      return { success: true, image: updatedImage };
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to save caption", error);
       return new Error("Failed to save caption");
     }
+  });
+
+  const deleteImage = action(async (idx: number) => {
+    const { path, database } = untrack(() => ({
+      path: params.path,
+      database: backendData(),
+    }));
+
+    const image = database.items[idx];
+    console.log("Deleting image", idx, { ...image }, { ...image() });
+    if (!image || image.type !== "image")
+      return new Error("No image to delete");
+
+    try {
+      const response = await deleteImageFromBackend(path, image.file_name);
+      if (!response.ok) {
+        return new Error(`${response.status}: ${response.statusText}`);
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) console.error("Failed to delete image", error);
+      return new Error("Failed to delete image");
+    }
+
+    // Delete the idx'th image from the database using slice and spread for better readability
+    const items = [
+      ...database.items.slice(0, idx),
+      ...database.items.slice(idx + 1),
+    ];
+
+    const data = {
+      ...database,
+      items,
+      total_items: database.total_items - 1,
+    };
+    setData(data);
+
+    return items;
   });
 
   const windowSize = createWindowSize();
@@ -147,6 +181,7 @@ export function makeGalleryState() {
     data: backendData,
     state,
     saveCaption,
+    deleteImage,
   };
 
   if (import.meta.env.DEV)
@@ -171,6 +206,25 @@ export function makeGalleryState() {
 
   // Merge gallery and selection properties
   return mergeProps(gallery, selection);
+}
+
+// Function to update local captions after a successful save
+function updateLocalCaptions(
+  image: ImageData,
+  data: SaveCaption,
+  backendData: BrowsePagesCached
+) {
+  const setter = backendData.setters[image.name];
+  if (setter) {
+    // Update the captions array with the new caption
+    const newCaptions = image.captions.map(([type, caption]) =>
+      type === data.type ? [type, data.caption] : [type, caption]
+    );
+    return setter({
+      ...image,
+      captions: newCaptions as Captions,
+    });
+  }
 }
 
 function filterFunctions(obj: Record<string, any>) {

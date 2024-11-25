@@ -2,11 +2,6 @@ import { InitializedResource } from "solid-js";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { BrowsePagesCached } from "~/resources/browse";
 
-export interface SaveCaption {
-  caption: string;
-  type: string;
-}
-
 export type Mode = "view" | "edit";
 export type Selection = ReturnType<typeof useSelection>;
 

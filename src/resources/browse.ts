@@ -8,6 +8,7 @@ import {
   Setter,
   untrack,
 } from "solid-js";
+import { createStaticStore } from "@solid-primitives/static-store";
 
 interface FolderHeader {
   file_name: string;
@@ -241,4 +242,29 @@ export function createGalleryResourceCached(
     },
     { initialValue }
   );
+}
+
+export interface SaveCaption {
+  caption: string;
+  type: string;
+}
+
+// Function to save caption to the backend
+export async function saveCaption(
+  path: string,
+  imageName: string,
+  data: SaveCaption
+): Promise<Response> {
+  return await fetch(`/caption/${path}/${imageName}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ caption: data.caption, type: data.type }),
+  });
+}
+
+export async function deleteImage(
+  path: string,
+  imageName: string
+): Promise<Response> {
+  return await fetch(`/api/browse/${path}/${imageName}`, { method: "DELETE" });
 }
