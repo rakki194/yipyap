@@ -96,7 +96,6 @@ export const ImageItem = (props: {
       class="item image"
       classList={{ selected: props.selected }}
       onClick={props.onClick}
-      tabindex="0"
       role="link"
       ref={props.ref}
     >

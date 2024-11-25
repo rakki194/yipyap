@@ -10,7 +10,8 @@ const fetchSizes = async () => {
   if (!response.ok) {
     throw new Error("Failed to fetch sizes");
   }
-  return response.json() as Promise<ConfigResponse>;
+  const config = await response.json();
+  return config as ConfigResponse;
 };
 
 export const createConfigResource = () =>
@@ -41,6 +42,5 @@ export const getThumbnailComputedSize = (
       newSize.width = Math.round(maxHeight * aspectRatio);
     }
   }
-
   return newSize;
 };

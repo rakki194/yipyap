@@ -81,7 +81,6 @@ const ModelBody = (props: { image: ImageData; layout: LayoutInfo }) => {
       <div
         class="image-info"
         ref={refImageInfo}
-        tabIndex="0"
         style={getStyle()}
         onFocusIn={() => setFocused(true)}
         onFocusOut={() => setFocused(false)}
@@ -90,10 +89,7 @@ const ModelBody = (props: { image: ImageData; layout: LayoutInfo }) => {
         <div class="caption-editor">
           <Index each={props.image.captions}>
             {(caption, idx) => (
-              <CaptionInput
-                tabindex={idx === 0 ? "1" : undefined}
-                caption={caption()}
-              />
+              <CaptionInput tabindex={idx + 1} caption={caption()} />
             )}
           </Index>
         </div>

@@ -69,6 +69,8 @@ export function makeGalleryState() {
 
   // Data sources and actions
   const [config, refetchConfig] = createConfigResource();
+  if (import.meta.env.DEV)
+    createEffect(() => config() && console.debug("Config", config()));
 
   // Our data source for directory listings. Calls the `/browse` and memoizes pages.
   const [backendData, { refetch, mutate: setData }] =
@@ -137,9 +139,9 @@ export function makeGalleryState() {
       // setSearchParams({ page: page.toString() });
     },
     getPreviewSize: (image: Size) =>
-      getThumbnailComputedSize(image, config()?.preview_size || [300, 300]),
+      getThumbnailComputedSize(image, config()?.preview_size || [1024, 1024]),
     getThumbnailSize: (image: Size) =>
-      getThumbnailComputedSize(image, config()?.thumbnail_size || [1024, 1024]),
+      getThumbnailComputedSize(image, config()?.thumbnail_size || [300, 300]),
     windowSize,
     params,
     data: backendData,
