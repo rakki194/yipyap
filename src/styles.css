@@ -173,6 +173,7 @@ select:focus {
     transition: transform var(--transition-duration) var(--transition-timing),
       opacity var(--transition-duration) var(--transition-timing);
     opacity: 0;
+    image-rendering: high-quality;
     &.loaded {
       opacity: 1;
     }

@@ -100,6 +100,7 @@
       width: 100%;
       height: 100%;
       transition: aspect-ratio var(--transition-duration);
+      image-rendering: high-quality;
     }
 
     & > img.thumbnail {
