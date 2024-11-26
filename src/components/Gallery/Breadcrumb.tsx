@@ -6,6 +6,8 @@ import {
   MoonIcon,
   CloudIcon,
   SpinnerIcon,
+  FolderIcon,
+  DimensionsIcon,
 } from "~/components/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -78,7 +80,8 @@ export const Breadcrumb = () => {
             when={!data.loading}
             fallback={<span class="spin-icon" innerHTML={SpinnerIcon} />}
           >
-            {`Directories: ${folderCount()} | Images: ${imageCount()}`}
+            <span innerHTML={FolderIcon} /> {folderCount()}{" "}
+            <span innerHTML={DimensionsIcon} /> {imageCount()}
           </Show>
         </small>
         <ThemeToggle />

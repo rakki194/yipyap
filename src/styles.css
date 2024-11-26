@@ -91,9 +91,15 @@ code {
     & > small {
       padding: var(--spacing);
       flex-grow: 0.618;
-      font-size: 66.66%;
+      font-size: 1rem;
     }
   }
+}
+
+.breadcrumb small span svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--text-secondary);
 }
 
 /* Controls */
