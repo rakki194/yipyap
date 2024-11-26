@@ -41,6 +41,7 @@ export const ImageGrid = (props: {
             <DirectoryItem
               name={item.file_name}
               path={props.data.path}
+              selected={gallery.selected === getIdx()}
               ref={ref}
             />
           );
@@ -156,9 +157,14 @@ export const DirectoryItem = (props: {
   path: string;
   name: string;
   ref: HTMLDivElement;
+  selected: boolean;
 }) => {
   return (
-    <div class="item directory" ref={props.ref}>
+    <div
+      class="item directory"
+      classList={{ selected: props.selected }}
+      ref={props.ref}
+    >
       <A href={`/gallery/${props.path}/${props.name}`} class="directory-link">
         <span innerHTML={props.name === ".." ? UpIcon : FolderIcon} />
         <span>{props.name}</span>
