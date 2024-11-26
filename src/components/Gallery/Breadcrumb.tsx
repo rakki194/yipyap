@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Show, createMemo } from "solid-js";
 import { A } from "@solidjs/router";
 import {
   HomeIcon,
@@ -23,6 +23,18 @@ function getThemeIcon(theme: Theme) {
 
 export const Breadcrumb = () => {
   const { params, data } = useGallery();
+
+  // Compute directory and image counts
+  const folderCount = createMemo(() => {
+    return (
+      data()?.items.filter((item) => item.type === "directory").length || 0
+    );
+  });
+
+  const imageCount = createMemo(() => {
+    return data()?.items.filter((item) => item.type === "image").length || 0;
+  });
+
   const Crumbs = () => {
     const segments = () => params.path.split("/").filter(Boolean) || [];
     const crumbs = () =>
@@ -44,7 +56,7 @@ export const Breadcrumb = () => {
           return (
             <>
               {" / "}
-              <A {...crumb} />
+              <A href={crumb.href}>{crumb.children}</A>
             </>
           );
         }}
@@ -66,7 +78,7 @@ export const Breadcrumb = () => {
             when={!data.loading}
             fallback={<span class="spin-icon" innerHTML={SpinnerIcon} />}
           >
-            {data()?.total_items} items
+            {`Directories: ${folderCount()} | Images: ${imageCount()}`}
           </Show>
         </small>
         <ThemeToggle />

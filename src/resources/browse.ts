@@ -18,6 +18,8 @@ interface FolderHeader {
   folders: string[]; // Array of folder names
   images: string[]; // Array of image names
   total_items: number; // Total number of items
+  total_folders?: number;
+  total_images?: number;
 }
 
 interface BaseData {
