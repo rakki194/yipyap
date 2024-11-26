@@ -1,8 +1,13 @@
 // src/components/Gallery/ImageGrid.tsx
-import { For, onCleanup, onMount, Show } from "solid-js";
+import { For, onCleanup, onMount, Show, createSignal } from "solid-js";
 import { A } from "@solidjs/router";
 
-import { FolderIcon, UpIcon, captionIconsMap } from "~/components/icons";
+import {
+  FolderIcon,
+  UpIcon,
+  SpinnerIcon,
+  captionIconsMap,
+} from "~/components/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
 import type {
@@ -62,17 +67,14 @@ function makeIntersectionObserver<T>(
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting && entry.boundingClientRect.top > 0) {
-        // console.log("observed:", entry.boundingClientRect);
         const page = observer_map.get(entry.target);
         if (page) {
-          // console.log(entry, "page", page);
           callback(page);
         }
       }
     });
   }, options);
   const addObserved = (el: Element, assoc_value: T) => {
-    // console.log('addObserved', el, assoc_value);
     observer_map.set(el, assoc_value);
     observer.observe(el);
     onCleanup(() => {
@@ -91,6 +93,8 @@ export const ImageItem = (props: {
   selected: boolean;
 }) => {
   const { getThumbnailSize } = useGallery();
+  const [isLoading, setIsLoading] = createSignal(true);
+
   return (
     <div
       class="item image"
@@ -98,6 +102,7 @@ export const ImageItem = (props: {
       onClick={props.onClick}
       role="link"
       ref={props.ref}
+      style={{ position: "relative" }}
     >
       <Show when={props.item()} keyed>
         {(item) => {
@@ -109,19 +114,33 @@ export const ImageItem = (props: {
           onMount(() => {
             if (imgRef.complete) {
               imgRef.classList.add("loaded");
+              setIsLoading(false);
             }
           });
 
           return (
-            <img
-              ref={imgRef!}
-              src={`/thumbnail/${props.path}/${thumbnailName}`}
-              loading="lazy"
-              width={width}
-              height={height}
-              style={{ "object-position": aspectRatio > 1 ? "center" : "top" }}
-              onLoad={(e) => e.currentTarget.classList.add("loaded")}
-            />
+            <>
+              <img
+                ref={imgRef!}
+                src={`/thumbnail/${props.path}/${thumbnailName}`}
+                loading="lazy"
+                width={width}
+                height={height}
+                style={{
+                  "object-position": aspectRatio > 1 ? "center" : "top",
+                  width: "100%",
+                  height: "100%",
+                }}
+                onLoad={(e) => {
+                  e.currentTarget.classList.add("loaded");
+                  setIsLoading(false);
+                }}
+                class="loaded"
+              />
+              <Show when={isLoading()}>
+                <span class="spin-icon" innerHTML={SpinnerIcon} />
+              </Show>
+            </>
           );
         }}
       </Show>

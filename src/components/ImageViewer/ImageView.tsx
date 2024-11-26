@@ -5,11 +5,13 @@ import {
   createSignal,
   on,
   onMount,
+  Show,
   splitProps,
 } from "solid-js";
 import type { JSX } from "solid-js";
 import { ImageData } from "~/resources/browse";
 import { useGallery } from "~/contexts/GalleryContext";
+import { SpinnerIcon } from "~/components/icons";
 
 interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
   image: ImageData;
@@ -35,7 +37,6 @@ export const ImageView = (props: ImageViewProps) => {
     on(
       () => localProps.image,
       () => {
-        // console.log('ImageView::name changed', {old, new: new_})
         setLoaded(previewRef!.complete);
       }
     )
@@ -45,6 +46,11 @@ export const ImageView = (props: ImageViewProps) => {
 
   return (
     <div class="image-container" ref={ref!} {...divProps}>
+      {/* Spinner Overlay */}
+      <Show when={!loaded()}>
+        <span class="spin-icon" innerHTML={SpinnerIcon} />
+      </Show>
+
       <img
         ref={previewRef!}
         class="preview"

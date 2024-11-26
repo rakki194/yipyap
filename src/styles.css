@@ -5,6 +5,7 @@
   --card-bg: #ccd0da;
   --text-primary: #1a1b24;
   --text-secondary: #5c5f77;
+  --text-tertiary: #eff1f5;
   --border: var(--card-bg);
   --border-secondary: var(--accent);
   --spacing: 0.7rem;
@@ -86,20 +87,26 @@ code {
     & > .breadcrumb-links {
       display: flex;
       align-items: center;
+      font-weight: 600;
     }
 
     & > small {
       padding: var(--spacing);
       flex-grow: 0.618;
       font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--half-spacing);
+
+      & span svg {
+        width: 20px;
+        height: 20px;
+        fill: var(--text-primary);
+      }
     }
   }
-}
-
-.breadcrumb small span svg {
-  width: 16px;
-  height: 16px;
-  fill: var(--text-secondary);
 }
 
 /* Controls */
@@ -263,7 +270,7 @@ select:focus {
       transform: var(--hover-transform);
 
       a {
-        color: white;
+        color: var(--text-tertiary);
       }
 
       svg {
@@ -285,6 +292,7 @@ select:focus {
       align-items: center;
       justify-content: flex-start;
       color: var(--text-primary);
+      font-weight: bold;
       transition: all var(--transition-duration) var(--transition-timing);
 
       i {
@@ -392,10 +400,20 @@ span.status-icon > svg {
 }
 
 span.spin-icon {
-  & > svg,
-  & > img {
-    animation: spin-animation 0.5s infinite;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+span.spin-icon > svg,
+span.spin-icon > img {
+  animation: spin-animation 0.5s infinite;
 }
 
 @keyframes spin-animation {
