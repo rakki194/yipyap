@@ -26,7 +26,7 @@ export const ImageGrid = (props: {
     <div class="responsive-grid">
       <For each={props.data.items}>
         {(item, getIdx) => {
-          let ref!: HTMLDivElement;
+          let ref!: HTMLElement;
           const next_page = item.next_page;
           if (next_page !== undefined) {
             onMount(() => addObserved(ref, next_page));
@@ -40,14 +40,14 @@ export const ImageGrid = (props: {
                 props.onImageClick(getIdx());
                 gallery.select(getIdx());
               }}
-              ref={ref}
+              ref={ref as HTMLDivElement}
             />
           ) : (
             <DirectoryItem
+              ref={ref as HTMLAnchorElement}
               name={item.file_name}
               path={props.data.path}
               selected={gallery.selected === getIdx()}
-              ref={ref}
             />
           );
         }}
@@ -168,24 +168,23 @@ export const ImageItem = (props: {
 };
 
 export const DirectoryItem = (props: {
+  ref: HTMLAnchorElement;
   path: string;
   name: string;
-  ref: HTMLDivElement;
   selected: boolean;
 }) => {
   return (
-    <div
+    <A
+      ref={props.ref}
       class="item directory"
       classList={{ selected: props.selected }}
-      ref={props.ref}
+      href={`/gallery/${props.path}/${props.name}`}
     >
-      <A href={`/gallery/${props.path}/${props.name}`} class="directory-link">
-        <span
-          class="icon"
-          innerHTML={props.name === ".." ? UpIcon : FolderIcon}
-        />
-        <span>{props.name}</span>
-      </A>
-    </div>
+      <span
+        class="icon"
+        innerHTML={props.name === ".." ? UpIcon : FolderIcon}
+      />
+      <span>{props.name}</span>
+    </A>
   );
 };
