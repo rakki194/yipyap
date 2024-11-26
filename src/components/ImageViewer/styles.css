@@ -233,9 +233,9 @@
 
       & > textarea {
         flex: 1;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 4px;
+        background: var(--secondary-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--border-radius);
         color: var(--text-primary);
         font-family: inherit;
         font-size: var(--font-size);
@@ -249,7 +249,7 @@
         &:focus {
           outline: none;
           border-color: var(--accent);
-          background: rgba(255, 255, 255, 0.15);
+          background: var(--bg-color);
         }
       }
 

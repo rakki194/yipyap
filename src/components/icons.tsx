@@ -19,6 +19,8 @@ import DownloadIcon from "@fluentui/svg-icons/icons/arrow_download_24_regular.sv
 import DeleteIcon from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
 import DismissIcon from "@fluentui/svg-icons/icons/dismiss_24_regular.svg?raw";
 import SpinnerIcon from "@fluentui/svg-icons/icons/spinner_ios_20_regular.svg?raw";
+import BowTieIcon from "@fluentui/svg-icons/icons/bow_tie_24_regular.svg?raw";
+
 // Export all icons
 export {
   HomeIcon,
@@ -41,6 +43,7 @@ export {
   DeleteIcon,
   DismissIcon,
   SpinnerIcon,
+  BowTieIcon,
 };
 
 // Export caption icons map
@@ -48,4 +51,5 @@ export const captionIconsMap = {
   txt: NotepadIcon,
   tags: TagIcon,
   caption: SubtitlesIcon,
+  wd: BowTieIcon,
 };

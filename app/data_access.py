@@ -257,7 +257,7 @@ class CachedFileSystemDataSource(ImageDataSource):
                         }
                     )
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
-                elif suffix in {".caption", ".txt", ".tags"}:
+                elif suffix in {".caption", ".txt", ".tags", ".wd"}:
                     stem = entry.stem
                     all_side_car_files[stem][suffix] = name
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
