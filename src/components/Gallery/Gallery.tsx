@@ -4,9 +4,10 @@ import { Controls } from "./Controls";
 import { ImageGrid } from "./ImageGrid";
 import { ImageModal } from "../ImageViewer/ImageModal";
 import { useGallery } from "~/contexts/GalleryContext";
-import { useAction } from "@solidjs/router";
+import { useAction, useNavigate } from "@solidjs/router";
 
 export const Gallery = () => {
+  const navigate = useNavigate();
   const gallery = useGallery();
   const deleteImageAction = useAction(gallery.deleteImage);
 
@@ -40,10 +41,20 @@ export const Gallery = () => {
       if (!gallery.selectNext()) return;
     } else if (event.key === "ArrowLeft") {
       if (!gallery.selectPrev()) return;
-    } else if (event.key === "Enter") {
-      if (!gallery.toggleEdit()) return;
+    } else if (event.key === "Enter" && gallery.selected !== null) {
+      const data = gallery.data();
+      const selected = data.items[gallery.selected];
+      if (selected.type === "directory") {
+        navigate(`/gallery/${data.path}/${selected.file_name}`);
+      } else {
+        if (!gallery.toggleEdit()) return;
+      }
     } else if (event.key === "Escape") {
       if (!gallery.setMode("view")) return;
+    } else if (event.key === "Backspace") {
+      const segments = gallery.data().path.split("/");
+      if (segments.length < 1) return;
+      navigate(`/gallery/${segments.slice(0, -1).join("/")}`);
     } else if (event.key === "Delete" && gallery.selectedImage !== null) {
       deleteImageAction(gallery.selected!);
     } else {
