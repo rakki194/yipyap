@@ -90,16 +90,19 @@ export function makeGalleryState() {
   const selection = useSelection(backendData);
 
   const saveCaption = action(async (data: SaveCaption) => {
-    const { image, path, database } = untrack(() => ({
+    const { image, database } = untrack(() => ({
       image: selection.editedImage,
-      path: params.path,
       database: backendData(),
     }));
     if (!image) return new Error("No image to save caption for");
 
     try {
       // Save caption to the backend
-      const response = await saveCaptionToBackend(path, image.name, data);
+      const response = await saveCaptionToBackend(
+        database.path,
+        image.name,
+        data
+      );
 
       if (!response.ok) {
         return new Error(`${response.status}: ${response.statusText}`);
@@ -116,10 +119,7 @@ export function makeGalleryState() {
   });
 
   const deleteImage = action(async (idx: number) => {
-    const { path, database } = untrack(() => ({
-      path: params.path,
-      database: backendData(),
-    }));
+    const database = untrack(backendData);
 
     const image = database.items[idx];
     console.log("Deleting image", idx, { ...image }, { ...image() });
@@ -129,7 +129,7 @@ export function makeGalleryState() {
     try {
       const confirm = true; // FIXME: ask the user for confirmation
       const response = await deleteImageFromBackend(
-        path,
+        database.path,
         image.file_name,
         confirm
       );

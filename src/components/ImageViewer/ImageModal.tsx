@@ -18,29 +18,32 @@ import { useAction } from "@solidjs/router";
 
 interface ImageModalProps {
   image: ImageData;
+  path: string;
   onClose: () => void;
 }
 
 export const ImageModal = (props: ImageModalProps) => {
-  const gallery = useGallery();
+  const { windowSize } = useGallery();
 
-  const getLayout = createMemo(() =>
-    computeLayout(props.image, gallery.windowSize)
-  );
+  const getLayout = createMemo(() => computeLayout(props.image, windowSize));
 
   return (
     <div class="modal-content">
       <ModalHeader
         image={props.image}
-        path={gallery.params.path}
+        path={props.path}
         onClose={props.onClose}
       />
-      <ModelBody image={props.image} layout={getLayout()} />
+      <ModelBody image={props.image} path={props.path} layout={getLayout()} />
     </div>
   );
 };
 
-const ModelBody = (props: { image: ImageData; layout: LayoutInfo }) => {
+const ModelBody = (props: {
+  image: ImageData;
+  path: string;
+  layout: LayoutInfo;
+}) => {
   let refImageInfo!: HTMLDivElement;
   const [focused, setFocused] = createSignal(false);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
@@ -77,7 +80,11 @@ const ModelBody = (props: { image: ImageData; layout: LayoutInfo }) => {
 
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
-      <ImageView image={props.image} onClick={() => setFocused((f) => !f)} />
+      <ImageView
+        image={props.image}
+        path={props.path}
+        onClick={() => setFocused((f) => !f)}
+      />
       <div
         class="image-info"
         ref={refImageInfo}

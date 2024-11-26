@@ -82,7 +82,11 @@ export const Gallery = () => {
       </div>
       <Show when={gallery.editedImage}>
         {(image) => (
-          <ImageModal image={image()} onClose={() => gallery.setMode("view")} />
+          <ImageModal
+            image={image()}
+            path={gallery.data().path}
+            onClose={() => gallery.setMode("view")}
+          />
         )}
       </Show>
     </>

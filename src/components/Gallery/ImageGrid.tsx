@@ -2,14 +2,15 @@
 import { For, onCleanup, onMount, Show, createSignal } from "solid-js";
 import { A } from "@solidjs/router";
 
+import { useGallery } from "~/contexts/GalleryContext";
+import { formatFileSize } from "~/utils/format";
+import { joinUrlParts } from "~/utils";
 import {
   FolderIcon,
   UpIcon,
   SpinnerIcon,
   captionIconsMap,
 } from "~/components/icons";
-import { useGallery } from "~/contexts/GalleryContext";
-import { formatFileSize } from "~/utils/format";
 import type {
   ImageItem as ImageItemType,
   BrowsePagesCached,
@@ -33,6 +34,7 @@ export const ImageGrid = (props: {
           }
           return item.type === "image" ? (
             <ImageItem
+              ref={ref as HTMLDivElement}
               item={item}
               path={props.data.path}
               selected={gallery.selected === getIdx()}
@@ -40,7 +42,6 @@ export const ImageGrid = (props: {
                 props.onImageClick(getIdx());
                 gallery.select(getIdx());
               }}
-              ref={ref as HTMLDivElement}
             />
           ) : (
             <DirectoryItem
@@ -86,10 +87,10 @@ function makeIntersectionObserver<T>(
 }
 
 export const ImageItem = (props: {
+  ref: HTMLDivElement;
   item: ImageItemType;
   path: string;
   onClick: () => void;
-  ref: HTMLDivElement;
   selected: boolean;
 }) => {
   const { getThumbnailSize } = useGallery();
@@ -97,11 +98,11 @@ export const ImageItem = (props: {
 
   return (
     <div
+      ref={props.ref}
       class="item image"
       classList={{ selected: props.selected }}
       onClick={props.onClick}
       role="link"
-      ref={props.ref}
     >
       <Show when={props.item()} keyed>
         {(item) => {
@@ -120,7 +121,7 @@ export const ImageItem = (props: {
             <>
               <img
                 ref={imgRef!}
-                src={`/thumbnail/${props.path}/${thumbnailName}`}
+                src={joinUrlParts("/thumbnail", props.path, thumbnailName)}
                 width={width}
                 height={height}
                 style={{
@@ -178,7 +179,7 @@ export const DirectoryItem = (props: {
       ref={props.ref}
       class="item directory"
       classList={{ selected: props.selected }}
-      href={`/gallery/${props.path}/${props.name}`}
+      href={joinUrlParts("/gallery", props.path, props.name)}
     >
       <span
         class="icon"

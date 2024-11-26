@@ -10,20 +10,17 @@ import {
 } from "solid-js";
 import type { JSX } from "solid-js";
 import { ImageData } from "~/resources/browse";
-import { useGallery } from "~/contexts/GalleryContext";
+import { joinUrlParts, replaceExtension } from "~/utils";
 import { SpinnerIcon } from "~/components/icons";
-
 interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
   image: ImageData;
+  path: string;
 }
 
 export const ImageView = (props: ImageViewProps) => {
-  const gallery = useGallery();
-
   const [localProps, divProps] = splitProps(props, ["image"]);
-  const webpPath = createMemo(() => {
-    let webpName = localProps.image.name.replace(/\.\w+$/, ".webp");
-    return `${gallery.params.path}/${webpName}`;
+  const webpPathSegments = createMemo(() => {
+    return [props.path, replaceExtension(localProps.image.name, ".webp")];
   });
   const [loaded, setLoaded] = createSignal(false);
 
@@ -60,7 +57,7 @@ export const ImageView = (props: ImageViewProps) => {
         classList={{
           loaded: loaded(),
         }}
-        src={`/preview/${webpPath()}`}
+        src={joinUrlParts("/preview", ...webpPathSegments())}
         alt={props.image.name}
         onLoad={() => setLoaded(true)}
       />
@@ -70,7 +67,7 @@ export const ImageView = (props: ImageViewProps) => {
         style={{
           "aspect-ratio": `${props.image.width} / ${props.image.height}`,
         }}
-        src={`/thumbnail/${webpPath()}`}
+        src={joinUrlParts("/thumbnail", ...webpPathSegments())}
         alt={props.image.name}
       />
     </div>
