@@ -102,7 +102,6 @@ export const ImageItem = (props: {
       onClick={props.onClick}
       role="link"
       ref={props.ref}
-      style={{ position: "relative" }}
     >
       <Show when={props.item()} keyed>
         {(item) => {
@@ -126,11 +125,6 @@ export const ImageItem = (props: {
                 loading="lazy"
                 width={width}
                 height={height}
-                style={{
-                  "object-position": aspectRatio > 1 ? "center" : "top",
-                  width: "100%",
-                  height: "100%",
-                }}
                 onLoad={(e) => {
                   e.currentTarget.classList.add("loaded");
                   setIsLoading(false);
