@@ -17,6 +17,11 @@ interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
   path: string;
 }
 
+/**
+ * An image viewer component that displays a preview and thumbnail image.
+ * @param { image: ImageData, path: string } props - The props for the ImageView component.
+ * @returns A JSX element representing the ImageView component.
+ */
 export const ImageView = (props: ImageViewProps) => {
   const [localProps, divProps] = splitProps(props, ["image"]);
   const webpPathSegments = createMemo(() => {
