@@ -12,9 +12,10 @@ import type { JSX } from "solid-js";
 import { ImageData } from "~/resources/browse";
 import { joinUrlParts, replaceExtension } from "~/utils";
 import { SpinnerIcon } from "~/components/icons";
+import type { ImageInfo } from "./ImageModal";
+
 interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
-  image: ImageData;
-  path: string;
+  imageInfo: ImageInfo;
 }
 
 /**
@@ -23,10 +24,7 @@ interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
  * @returns A JSX element representing the ImageView component.
  */
 export const ImageView = (props: ImageViewProps) => {
-  const [localProps, divProps] = splitProps(props, ["image"]);
-  const webpPathSegments = createMemo(() => {
-    return [props.path, replaceExtension(localProps.image.name, ".webp")];
-  });
+  const [localProps, divProps] = splitProps(props, ["imageInfo"]);
   const [loaded, setLoaded] = createSignal(false);
 
   // The full version img element
@@ -37,7 +35,7 @@ export const ImageView = (props: ImageViewProps) => {
   // The image changed, reset the state
   createEffect(
     on(
-      () => localProps.image,
+      () => localProps.imageInfo,
       () => {
         setLoaded(previewRef!.complete);
       }
@@ -57,23 +55,23 @@ export const ImageView = (props: ImageViewProps) => {
         ref={previewRef!}
         class="preview"
         style={{
-          "aspect-ratio": `${props.image.width} / ${props.image.height}`,
+          "aspect-ratio": `${props.imageInfo.width} / ${props.imageInfo.height}`,
         }}
         classList={{
           loaded: loaded(),
         }}
-        src={joinUrlParts("/preview", ...webpPathSegments())}
-        alt={props.image.name}
+        src={props.imageInfo.preview}
+        alt={props.imageInfo.name}
         onLoad={() => setLoaded(true)}
       />
 
       <img
         class="thumbnail"
         style={{
-          "aspect-ratio": `${props.image.width} / ${props.image.height}`,
+          "aspect-ratio": `${props.imageInfo.width} / ${props.imageInfo.height}`,
         }}
-        src={joinUrlParts("/thumbnail", ...webpPathSegments())}
-        alt={props.image.name}
+        src={props.imageInfo.thumbnail}
+        alt={props.imageInfo.name}
       />
     </div>
   );

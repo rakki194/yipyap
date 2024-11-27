@@ -10,11 +10,12 @@ import {
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
 import { CaptionInput } from "./CaptionInput";
-import type { ImageData } from "~/resources/browse";
+import type { ImageData, Captions } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
 import { DownloadIcon, DismissIcon, DeleteIcon } from "~/components/icons";
 import { useAction } from "@solidjs/router";
+import { joinUrlParts, replaceExtension } from "~/utils";
 
 interface ImageModalProps {
   image: ImageData;
@@ -22,26 +23,59 @@ interface ImageModalProps {
   onClose: () => void;
 }
 
+export type ImageInfo = {
+  name: string;
+  width: number;
+  height: number;
+  size: number;
+  mime: string;
+  mtime: string;
+  preview: string;
+  thumbnail: string;
+  download: string;
+};
+
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
 
   const getLayout = createMemo(() => computeLayout(props.image, windowSize));
+  const imageInfo = createMemo(
+    (): ImageInfo => {
+      const image = props.image;
+      const name = image.name;
+      const path = props.path;
+      const webpName = replaceExtension(name, ".webp");
+      return {
+        name,
+        width: image.width,
+        height: image.height,
+        size: image.size,
+        mime: image.mime,
+        mtime: image.mtime,
+        preview: joinUrlParts("/preview", path, webpName),
+        thumbnail: joinUrlParts("/preview", path, webpName),
+        download: joinUrlParts("/download", path, name),
+      };
+    },
+    undefined,
+    { equals: (a, b) => a.download === b.download }
+  );
 
   return (
     <div class="modal-content">
-      <ModalHeader
-        image={props.image}
-        path={props.path}
-        onClose={props.onClose}
+      <ModalHeader imageInfo={imageInfo()} onClose={props.onClose} />
+      <ModelBody
+        imageInfo={imageInfo()}
+        captions={props.image.captions}
+        layout={getLayout()}
       />
-      <ModelBody image={props.image} path={props.path} layout={getLayout()} />
     </div>
   );
 };
 
 const ModelBody = (props: {
-  image: ImageData;
-  path: string;
+  captions: Captions;
+  imageInfo: ImageInfo;
   layout: LayoutInfo;
 }) => {
   let refImageInfo!: HTMLDivElement;
@@ -50,7 +84,7 @@ const ModelBody = (props: {
 
   // Update the style of the image info based on the layout and focus
   createEffect(
-    on([() => props.image.name, focused], ([name, focused], prev_input) => {
+    on([() => props.imageInfo.name, focused], ([name, focused], prev_input) => {
       if (!focused || name !== prev_input?.[0]) {
         setStyle(undefined);
         return;
@@ -81,8 +115,7 @@ const ModelBody = (props: {
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
       <ImageView
-        image={props.image}
-        path={props.path}
+        imageInfo={props.imageInfo}
         onClick={() => setFocused((f) => !f)}
       />
       <div
@@ -93,16 +126,12 @@ const ModelBody = (props: {
         onFocusIn={() => setFocused(true)}
         onFocusOut={() => setFocused(false)}
       >
-        <ImageInfo image={props.image} />
+        <ImageInfo imageInfo={props.imageInfo} />
         <div class="caption-editor">
-          <Index each={props.image.captions}>
-            {(raw_caption, idx) => {
-              // Only update the caption field on item change
-              const caption = createMemo(
-                on(() => [props.path, props.image.name], raw_caption)
-              );
-              return <CaptionInput tabindex={idx + 1} caption={caption()} />;
-            }}
+          <Index each={props.captions}>
+            {(caption, idx) => (
+              <CaptionInput tabindex={idx + 1} caption={caption()} />
+            )}
           </Index>
         </div>
       </div>
@@ -110,21 +139,17 @@ const ModelBody = (props: {
   );
 };
 
-const ModalHeader = (props: {
-  image: ImageData;
-  onClose: () => void;
-  path: string;
-}) => {
+const ModalHeader = (props: { imageInfo: ImageInfo; onClose: () => void }) => {
   const gallery = useGallery();
   const deleteImageAction = useAction(gallery.deleteImage);
   return (
     <div class="modal-header">
-      <h2>{props.image?.name}</h2>
+      <h2>{props.imageInfo.name}</h2>
       <div class="modal-actions">
         <button
           class="download-btn"
           onClick={() => {
-            window.location.href = `/download/${props.path}/${props.image.name}`;
+            window.location.href = props.imageInfo.download;
           }}
           innerHTML={DownloadIcon}
         />

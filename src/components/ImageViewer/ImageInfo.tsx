@@ -1,6 +1,7 @@
 // src/components/ImageViewer/ImageInfo.tsx
 import { formatFileSize } from "~/utils/format";
-import type { ImageData } from "~/resources/browse";
+import type { ImageInfo as ImageInfoType } from "./ImageModal";
+import type { Component } from "solid-js";
 // Import Fluent icons
 import {
   SizeIcon,
@@ -9,11 +10,9 @@ import {
   DimensionsIcon,
 } from "~/components/icons";
 
-interface ImageInfoProps {
-  image: ImageData;
-}
-
-export const ImageInfo = (props: ImageInfoProps) => {
+export const ImageInfo: Component<{
+  imageInfo: ImageInfoType;
+}> = (props) => {
   return (
     <table class="metadata-table">
       <tbody>
@@ -22,21 +21,21 @@ export const ImageInfo = (props: ImageInfoProps) => {
             <span class="icon" innerHTML={SizeIcon} />
             <span>Size</span>
           </td>
-          <td>{formatFileSize(props.image.size)}</td>
+          <td>{formatFileSize(props.imageInfo.size)}</td>
         </tr>
         <tr>
           <td>
             <span class="icon" innerHTML={TimeIcon} />
             <span>Modified</span>
           </td>
-          <td>{new Date(props.image.mtime).toLocaleString()}</td>
+          <td>{new Date(props.imageInfo.mtime).toLocaleString()}</td>
         </tr>
         <tr>
           <td>
             <span class="icon" innerHTML={TypeIcon} />
             <span>Type</span>
           </td>
-          <td>{props.image.mime}</td>
+          <td>{props.imageInfo.mime}</td>
         </tr>
         <tr>
           <td>
@@ -44,7 +43,7 @@ export const ImageInfo = (props: ImageInfoProps) => {
             <span>Dimensions</span>
           </td>
           <td>
-            {props.image.width}×{props.image.height}
+            {props.imageInfo.width}×{props.imageInfo.height}
           </td>
         </tr>
       </tbody>
