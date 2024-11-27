@@ -156,41 +156,10 @@ Handles directory scanning with pagination, sorting, and filtering.
 - Gallery template: Directory listing with HTMX integration
 - Image view template: Modal view for images and captions
 
-### HTMX Integration
-
-The application uses HTMX for dynamic updates:
-
-1. Search filtering (500ms debounce)
-2. View mode switching
-3. Sorting
-4. Caption auto-save
-
 ### Security Features
 
 1. Path Traversal Protection
 2. Rate Limiting
-
-### Adding New Features
-
-1. **New File Types**
-
-- Add extensions to `ALLOWED_EXTENSIONS` in image_handler.py
-- Create corresponding template partial
-- Update CSS for new type
-
-2. **New Sort Options**
-
-- Add option to SortBy enum in main.py
-- Update sort logic in scan_directory
-- Add UI option in gallery.html
-
-### Performance Considerations
-
-- Thumbnails are generated once and cached
-- Directory scanning is paginated
-- Images use lazy loading
-- Search has debounce delay
-- HTMX requests target specific elements
 
 ### URL Patterns Handled (main.py)
 
