@@ -32,6 +32,7 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
   const caption = () => localProps.caption[1];
 
   const [focusedType, setFocusedType] = createSignal<string | null>(null);
+  const [captionHistory, setCaptionHistory] = createSignal<string[]>([]);
 
   const handleInput = debounce((value: string) => {
     save({
@@ -53,12 +54,39 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
     return { innerHTML: SaveIcon };
   };
 
-  const removeCommas = () => {
-    const newText = caption().replace(/,/g, "");
+  const saveWithHistory = (newText: string) => {
+    setCaptionHistory((prev) => [...prev, caption()]);
     save({
       caption: newText,
       type: type(),
     });
+  };
+
+  const removeCommas = () => {
+    const newText = caption().replace(/,/g, "");
+    saveWithHistory(newText);
+  };
+
+  const replaceNewlines = () => {
+    const newText = caption().replace(/\n/g, ", ");
+    saveWithHistory(newText);
+  };
+
+  const replaceUnderscores = () => {
+    const newText = caption().replace(/_/g, " ");
+    saveWithHistory(newText);
+  };
+
+  const undo = () => {
+    const history = captionHistory();
+    if (history.length > 0) {
+      const previousText = history[history.length - 1];
+      setCaptionHistory((prev) => prev.slice(0, -1));
+      save({
+        caption: previousText,
+        type: type(),
+      });
+    }
   };
 
   return (
@@ -82,21 +110,25 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
           innerHTML={SparkleIcon}
         />
         <button
+          onClick={replaceNewlines}
           class="icon"
           title="Replace newlines with commas"
           innerHTML={TextAlignIcon}
         />
         <button
+          onClick={replaceUnderscores}
           class="icon"
           title="Replace underscores with spaces"
           innerHTML={TextAlignDistributedIcon}
         />
-        <button
-          class="icon"
-          title="Undo last change"
-          innerHTML={ArrowUndoIcon}
-        />
-
+        {captionHistory().length > 0 && (
+          <button
+            onClick={undo}
+            class="icon"
+            title="Undo last change"
+            innerHTML={ArrowUndoIcon}
+          />
+        )}
         <button
           class="icon"
           title={`Delete ${type()} caption`}
