@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Neural Yield Artwork Archiver is a Python-based web application for uploading, browsing and managing image dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with FastAPI and HTMX.
+Neural Yield Artwork Archiver or `nyaa` for short is a Python-based web application for uploading, browsing and managing image dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with FastAPI and HTMX.
 
 ## Features
 
@@ -109,18 +109,35 @@ ENVIRONMENT=production ROOT_DIR=/path/to/images python -m app
 ### Project Structure
 
 ```
-image-browser/
+nyaa/
 ├── app/
-│   ├── __init__.py      # Package initialization
-│   ├── main.py          # FastAPI application and routes
-│   ├── image_handler.py  # Image processing and directory scanning
-│   ├── caption_handler.py # Caption file management
-│   └── utils.py         # Utility functions
+│   ├── __init__.py          # Package initialization
+│   ├── main.py              # FastAPI application and routes
+│   ├── image_handler.py     # Image processing and directory scanning
+│   ├── caption_handler.py   # Caption file management
+│   ├── utils.py             # Utility functions
+├── src/
+│   ├── components/          # SolidJS components
+│   │   ├── Gallery/         # Gallery related components
+│   │   └── ImageViewer/     # Image Viewer components
+│   ├── contexts/            # SolidJS contexts
+│   ├── resources/           # Frontend data resources
+│   ├── utils/               # Utility functions
+│   ├── pages/               # SolidJS pages
+│   ├── styles.css           # Global CSS
+│   ├── types.d.ts           # TypeScript declarations
 ├── static/
 │   ├── css/
-│   │   └── styles.css   # Application styles
-│   └── thumbnails/      # Generated thumbnails
-└── templates/           # Jinja2 templates
+│   │   └── styles.css       # Application styles
+│   └── thumbnails/          # Generated thumbnails
+├── templates/               # Jinja2 templates
+├── package.json             # Frontend dependencies and scripts
+├── tsconfig.json            # TypeScript configuration
+├── vite.config.ts           # Vite configuration
+├── .vscode/
+│   └── settings.json        # VSCode settings
+├── .gitignore               # Git ignore rules
+└── LICENSE.md               # License information
 ```
 
 ### Key Components
@@ -293,4 +310,14 @@ The application implements caching in `data_access.py` to improve performance an
 
 ## License
 
-MIT License
+This project is licensed under the MIT License. See the `LICENSE.md` file for details.
+
+## Acknowledgements
+
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [SolidJS](https://www.solidjs.com/)
+- [Vite](https://vitejs.dev/)
+
+## Getting Help
+
+If you encounter any issues or have questions, feel free to open an issue on the GitHub repository.

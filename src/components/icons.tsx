@@ -20,6 +20,7 @@ import DeleteIcon from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
 import DismissIcon from "@fluentui/svg-icons/icons/dismiss_24_regular.svg?raw";
 import SpinnerIcon from "@fluentui/svg-icons/icons/spinner_ios_20_regular.svg?raw";
 import BowTieIcon from "@fluentui/svg-icons/icons/bow_tie_24_regular.svg?raw";
+import SparkleIcon from "@fluentui/svg-icons/icons/text_effects_sparkle_24_regular.svg?raw";
 
 // Export all icons
 export {
@@ -44,6 +45,7 @@ export {
   DismissIcon,
   SpinnerIcon,
   BowTieIcon,
+  SparkleIcon,
 };
 
 // Export caption icons map

@@ -8,6 +8,7 @@ import {
   ErrorIcon,
   SpinnerIcon,
   captionIconsMap,
+  SparkleIcon,
 } from "~/components/icons";
 import { useAction, useSubmission } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -48,6 +49,14 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
     return { innerHTML: SaveIcon };
   };
 
+  const removeCommas = () => {
+    const newText = caption().replace(/,/g, "");
+    save({
+      caption: newText,
+      type: type(),
+    });
+  };
+
   return (
     <div
       class="caption-input-wrapper"
@@ -62,6 +71,12 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
           innerHTML={captionIconsMap[type() as keyof typeof captionIconsMap]}
         />
         <span {...getStatusIcon()} />
+        <button
+          onClick={removeCommas}
+          class="sparkle-btn"
+          title="Remove commas"
+          innerHTML={SparkleIcon}
+        />
       </div>
       <textarea
         {...rest}
