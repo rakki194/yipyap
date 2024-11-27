@@ -257,12 +257,12 @@ export interface SaveCaption {
 }
 
 // Function to save caption to the backend
-export async function saveCaption(
+export function saveCaption(
   path: string,
   imageName: string,
   data: SaveCaption
 ): Promise<Response> {
-  return await fetch(`/caption/${path}/${imageName}`, {
+  return fetch(`/caption/${path}/${imageName}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ caption: data.caption, type: data.type }),
