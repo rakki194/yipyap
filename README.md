@@ -22,8 +22,8 @@ Neural Yield Artwork Archiver or `nyaa` for short is a Python-based web applicat
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/image-browser.git
-cd image-browser
+git clone https://github.com/elias-gaeros/nyaa
+cd nyaa
 ```
 
 2. Create a virtual environment:
@@ -144,19 +144,9 @@ nyaa/
 
 1. **FastAPI Routes** (main.py)
 
-```python:app/main.py
-startLine: 47
-endLine: 84
-```
-
 Main route handling directory browsing with sorting and filtering.
 
 2. **Directory Scanning** (image_handler.py)
-
-```python:app/image_handler.py
-startLine: 14
-endLine: 58
-```
 
 Handles directory scanning with pagination, sorting, and filtering.
 
@@ -175,28 +165,10 @@ The application uses HTMX for dynamic updates:
 3. Sorting
 4. Caption auto-save
 
-Example HTMX attribute usage:
-
-```html:templates/gallery.html
-startLine: 6
-endLine: 14
-```
-
 ### Security Features
 
-1. Path Traversal Protection:
-
-```python:app/utils.py
-startLine: 18
-endLine: 23
-```
-
-2. Rate Limiting:
-
-```python:app/main.py
-startLine: 100
-endLine: 106
-```
+1. Path Traversal Protection
+2. Rate Limiting
 
 ### Adding New Features
 
