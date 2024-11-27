@@ -96,9 +96,13 @@ const ModelBody = (props: {
         <ImageInfo image={props.image} />
         <div class="caption-editor">
           <Index each={props.image.captions}>
-            {(caption, idx) => (
-              <CaptionInput tabindex={idx + 1} caption={caption()} />
-            )}
+            {(raw_caption, idx) => {
+              // Only update the caption field on item change
+              const caption = createMemo(
+                on(() => [props.path, props.image.name], raw_caption)
+              );
+              return <CaptionInput tabindex={idx + 1} caption={caption()} />;
+            }}
           </Index>
         </div>
       </div>
