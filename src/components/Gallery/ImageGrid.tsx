@@ -112,7 +112,6 @@ export const ImageItem = (props: {
           let imgRef!: HTMLImageElement;
           onMount(() => {
             if (imgRef.complete) {
-              imgRef.classList.add("loaded");
               setIsLoading(false);
             }
           });
@@ -122,17 +121,18 @@ export const ImageItem = (props: {
               <img
                 ref={imgRef!}
                 src={`/thumbnail/${props.path}/${thumbnailName}`}
-                loading="lazy"
                 width={width}
                 height={height}
+                style={{
+                  "object-position": aspectRatio > 1 ? "center" : "top",
+                }}
+                classList={{ loaded: !isLoading() }}
                 onLoad={(e) => {
-                  e.currentTarget.classList.add("loaded");
                   setIsLoading(false);
                 }}
-                class="loaded"
               />
               <Show when={isLoading()}>
-                <span class="spin-icon" innerHTML={SpinnerIcon} />
+                <span class="spin-icon icon" innerHTML={SpinnerIcon} />
               </Show>
             </>
           );
@@ -150,6 +150,7 @@ export const ImageItem = (props: {
                 <For each={item.captions.map((c) => c[0]).toSorted()}>
                   {(c) => (
                     <span
+                      class="icon"
                       title={c}
                       innerHTML={
                         captionIconsMap[c as keyof typeof captionIconsMap]
@@ -179,7 +180,10 @@ export const DirectoryItem = (props: {
       ref={props.ref}
     >
       <A href={`/gallery/${props.path}/${props.name}`} class="directory-link">
-        <span innerHTML={props.name === ".." ? UpIcon : FolderIcon} />
+        <span
+          class="icon"
+          innerHTML={props.name === ".." ? UpIcon : FolderIcon}
+        />
         <span>{props.name}</span>
       </A>
     </div>

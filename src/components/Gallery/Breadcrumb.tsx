@@ -71,17 +71,17 @@ export const Breadcrumb = () => {
       <div class="breadcrumb-content">
         <div class="breadcrumb-links">
           <A href="/gallery">
-            <span innerHTML={HomeIcon} />
+            <span class="icon" innerHTML={HomeIcon} />
           </A>
           <Crumbs />
         </div>
         <small>
           <Show
             when={!data.loading}
-            fallback={<span class="spin-icon" innerHTML={SpinnerIcon} />}
+            fallback={<span class="spin-icon icon" innerHTML={SpinnerIcon} />}
           >
-            <span innerHTML={FolderIcon} /> {folderCount()}{" "}
-            <span innerHTML={DimensionsIcon} /> {imageCount()}
+            <span class="icon" innerHTML={FolderIcon} /> {folderCount()}{" "}
+            <span class="icon" innerHTML={DimensionsIcon} /> {imageCount()}
           </Show>
         </small>
         <ThemeToggle />
@@ -102,6 +102,7 @@ function ThemeToggle() {
       title={`Switch to ${getNextTheme(theme.theme)} mode`}
     >
       <span
+        class="icon"
         innerHTML={getThemeIcon(
           hovered() ? getNextTheme(theme.theme) : theme.theme
         )}

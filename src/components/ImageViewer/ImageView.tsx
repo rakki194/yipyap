@@ -48,7 +48,7 @@ export const ImageView = (props: ImageViewProps) => {
     <div class="image-container" ref={ref!} {...divProps}>
       {/* Spinner Overlay */}
       <Show when={!loaded()}>
-        <span class="spin-icon" innerHTML={SpinnerIcon} />
+        <span class="spin-icon icon" innerHTML={SpinnerIcon} />
       </Show>
 
       <img

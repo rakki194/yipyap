@@ -26,7 +26,7 @@
   --grid-item-min-width: 250px;
   --directory-item-min-width: 125px;
   --directory-aspect-ratio: 4/1;
-  --icon-size: 20px;
+  --icon-size: 1.5em;
   --loader-size: 30px;
   --loader-border-width: 3px;
   --transition-duration: 0.3s;
@@ -42,6 +42,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: var(--transition-timing);
+  transition-property: none;
 }
 
 body {
@@ -53,8 +56,8 @@ body {
 }
 
 svg {
-  fill: inherit;
-  transition: fill var(--transition-duration) var(--transition-timing);
+  fill: currentColor;
+  transition-property: fill;
 }
 
 code {
@@ -96,15 +99,7 @@ code {
       font-size: 1rem;
       font-weight: 500;
       color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: var(--half-spacing);
-
-      & span svg {
-        width: 20px;
-        height: 20px;
-        fill: var(--text-primary);
-      }
+      word-spacing: var(--half-spacing);
     }
   }
 }
@@ -129,7 +124,7 @@ select {
   min-width: var(--min-width);
   background-color: var(--card-bg);
   color: var(--text-primary);
-  transition: all var(--transition-duration) var(--transition-timing);
+  transition: outline;
 }
 
 input:focus,
@@ -166,8 +161,7 @@ select:focus {
   border-radius: var(--border-radius);
   overflow: hidden;
   box-shadow: var(--shadow-default);
-  transition: all var(--transition-duration) var(--transition-timing);
-  will-change: transform, box-shadow, background-color, color;
+  transition-property: transform, box-shadow, background-color, color, border;
 
   &:hover,
   &.selected {
@@ -181,6 +175,9 @@ select:focus {
     &.image > .overlay {
       opacity: 1;
     }
+    & > img {
+      transform: scale(1.1);
+    }
   }
 
   &::after {
@@ -192,7 +189,7 @@ select:focus {
     right: 0;
     bottom: 0;
     box-shadow: inset 0 0 0 0 var(--accent);
-    transition: box-shadow var(--transition-duration) var(--transition-timing);
+    transition-property: box-shadow;
   }
 
   &.selected::after {
@@ -203,19 +200,23 @@ select:focus {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    display: block;
+    display: none;
     transform-origin: center;
-    transition: transform var(--transition-duration) var(--transition-timing),
-      opacity var(--transition-duration) var(--transition-timing);
-    opacity: 0;
     image-rendering: high-quality;
+
+    display: none;
+    opacity: 0;
+    transition-property: transform, opacity, display;
+    transition-behavior: allow-discrete;
     &.loaded {
       opacity: 1;
+      display: block;
     }
-  }
-
-  &:hover > img {
-    transform: scale(1.1);
+    @starting-style {
+      &.loaded {
+        opacity: 0;
+      }
+    }
   }
 
   &.image {
@@ -236,7 +237,7 @@ select:focus {
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      transition: opacity var(--transition-duration) var(--transition-timing);
+      transition-property: opacity;
 
       > p {
         color: white;
@@ -248,10 +249,13 @@ select:focus {
       }
 
       svg {
-        fill: var(--bg-color);
         filter: drop-shadow(1px 1px 0.1px var(--text-primary));
-        transition: all var(--transition-duration) var(--transition-timing);
+        /* transition: all var(--transition-duration) var(--transition-timing); */
       }
+    }
+
+    > .spin-icon {
+      font-size: 2rem;
     }
   }
 
@@ -262,42 +266,33 @@ select:focus {
     background-color: var(--card-bg);
     border: 1px solid var(--border);
     padding: var(--spacing);
-    transition: all var(--transition-duration) var(--transition-timing);
 
     &:hover {
       border-color: var(--border-secondary);
       background-color: var(--accent);
       transform: var(--hover-transform);
 
-      a {
+      > a {
         color: var(--text-tertiary);
       }
 
       svg {
-        fill: var(--bg-color);
+        fill: var(--bg-color); /* FIXME: should not need this */
       }
     }
 
-    svg {
-      margin-right: 10px;
-      transition: all var(--transition-duration) var(--transition-timing);
-    }
-
-    a {
+    > a {
       text-decoration: none;
       width: 100%;
       height: 100%;
       padding: var(--spacing);
       display: flex;
+      gap: var(--spacing);
       align-items: center;
       justify-content: flex-start;
       color: var(--text-primary);
       font-weight: bold;
-      transition: all var(--transition-duration) var(--transition-timing);
-
-      i {
-        font-size: var(--icon-size);
-      }
+      transition-property: color;
     }
   }
 }
@@ -340,87 +335,50 @@ select:focus {
   background: var(--secondary-bg);
   color: var(--text-primary);
   cursor: pointer;
-  transition: all var(--transition-duration) var(--transition-timing);
+  transition-property: background-color, color, border-color;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    background: var(--accent);
-    color: var(--bg-color);
+    background-color: var(--accent);
     border-color: var(--accent);
   }
 
-  & > svg {
-    width: var(--icon-size);
-    height: var(--icon-size);
-    transition: all 0.1s var(--transition-timing);
-  }
-
+  /* FIXME/ this transition doesn't work because we are changing the svg element on hover
+  & svg {
+    transition-property: transform, fill;
+  }*/
   &:hover svg {
     transform: rotate(10deg);
     fill: var(--bg-color);
   }
 }
 
-/* FIXME: UNUSED */
-.status-icon {
-  position: absolute;
-  right: var(--spacing);
-  bottom: var(--spacing);
-  width: var(--icon-size);
-  height: var(--icon-size);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  animation: fadeIn var(--transition-duration) forwards;
-}
+.icon {
+  display: inline-block;
+  line-height: normal;
+  vertical-align: middle;
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+  & > svg {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    fill: var(--text-secondary);
   }
 }
 
-span.status-icon > svg {
-  width: 100%;
-  height: 100%;
-
-  &.saved > svg {
-    fill: #4caf50;
+.spin-icon {
+  & > svg {
+    fill: var(--accent);
+    animation: spin-animation 1s infinite linear;
   }
-
-  &.error > svg {
-    fill: #f44336;
-  }
-}
-
-span.spin-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 10;
-}
-
-span.spin-icon > svg,
-span.spin-icon > img {
-  animation: spin-animation 0.5s infinite;
 }
 
 @keyframes spin-animation {
-  0% {
+  from {
     transform: rotate(0deg);
   }
-  100% {
-    transform: rotate(359deg);
+  to {
+    transform: rotate(360deg);
   }
 }

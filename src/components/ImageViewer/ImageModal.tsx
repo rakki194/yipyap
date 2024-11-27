@@ -115,20 +115,20 @@ const ModalHeader = (props: {
           onClick={() => {
             window.location.href = `/download/${props.path}/${props.image.name}`;
           }}
-        >
-          <div innerHTML={DownloadIcon} />
-        </button>
+          innerHTML={DownloadIcon}
+        />
         <button
-          class="delete-btn"
+          class="delete-btn icon"
           onClick={() =>
             gallery.selected !== null && deleteImageAction(gallery.selected)
           }
-        >
-          <div innerHTML={DeleteIcon} />
-        </button>
-        <button class="close-btn" onClick={props.onClose}>
-          <div innerHTML={DismissIcon} />
-        </button>
+          innerHTML={DeleteIcon}
+        />
+        <button
+          class="close-btn icon"
+          onClick={props.onClose}
+          innerHTML={DismissIcon}
+        />
       </div>
     </div>
   );

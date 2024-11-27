@@ -36,14 +36,15 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
   }, 500);
 
   const getStatusIcon = () => {
-    if (submission.input?.[0].type !== type()) return { innerHTML: EditIcon };
+    if (submission.input?.[0].type !== type())
+      return { innerHTML: EditIcon, class: "icon" };
     if (!submission.result) {
       if (submission.pending)
-        return { innerHTML: SpinnerIcon, class: "spin-icon" };
+        return { innerHTML: SpinnerIcon, class: "spin-icon icon" };
       else return { innerHTML: EditIcon };
     }
     if (submission.result instanceof Error)
-      return { innerHTML: ErrorIcon, class: "error-icon" };
+      return { innerHTML: ErrorIcon, class: "error-icon icon" };
     return { innerHTML: SaveIcon };
   };
 
@@ -57,6 +58,7 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
     >
       <div class="caption-icons">
         <span
+          class="icon"
           innerHTML={captionIconsMap[type() as keyof typeof captionIconsMap]}
         />
         <span {...getStatusIcon()} />
