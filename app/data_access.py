@@ -303,53 +303,52 @@ class CachedFileSystemDataSource(ImageDataSource):
         http_head: bool = False,
         if_modified_since: Optional[datetime] = None,
     ) -> Tuple[BrowseHeader, Optional[List[Dict]], Optional[List[asyncio.Future]]]:
-        # For HEAD requests, we need total items but don't need to process them
+        # Get directory contents
         directory_mtime, dir_items, img_items = self.scan_directory(directory)
         mtime_dt = datetime.fromtimestamp(directory_mtime, tz=timezone.utc)
-        total = len(img_items) + len(dir_items)
 
-        # Apply pagination to items:
+        # Calculate totals
+        total_folders = len(dir_items)
+        total_images = len(img_items)
+
+        # Apply pagination
         start = (page - 1) * page_size
         end = start + page_size
 
-        dir_count = len(dir_items)
-
-        # Calculate how many items to take from each list
-        if start < dir_count:
+        # Determine which items to include based on pagination
+        if start < total_folders:
             # Start is in directory items
             dir_start = start
-            dir_end = min(end, dir_count)
+            dir_end = min(end, total_folders)
             img_start = 0
-            img_end = end - dir_count if end > dir_count else 0
+            img_end = end - total_folders if end > total_folders else 0
         else:
             # Start is in image items
             dir_start = dir_end = 0
-            img_start = start - dir_count
-            img_end = end - dir_count
+            img_start = start - total_folders
+            img_end = end - total_folders
 
-        dir_names = [d.name for d in dir_items]
-        img_names = [i["name"] for i in img_items]
-        assert (dir_names + img_names)[start:end] == dir_names[
-            dir_start:dir_end
-        ] + img_names[img_start:img_end]
-
+        # Slice the items
         dir_items = dir_items[dir_start:dir_end]
         img_items = img_items[img_start:img_end]
 
-        # Gets names and update mtime
+        # Extract names and update mtime
         folder_names = [f.name for f in dir_items]
         image_names = []
         for item in img_items:
             mtime_dt = max(mtime_dt, item["mtime"])
             image_names.append(item["name"])
 
+        total_pages = (total_folders + total_images + page_size - 1) // page_size
+
         browser_header = BrowseHeader(
             mtime=mtime_dt,
             page=page,
-            pages=(total + page_size - 1) // page_size,
+            pages=total_pages,
             folders=folder_names,
             images=image_names,
-            total_items=total,
+            total_folders=total_folders,
+            total_images=total_images,
         )
 
         if http_head or (
@@ -380,7 +379,6 @@ class CachedFileSystemDataSource(ImageDataSource):
             # Update cache
             directory = path.parent
             name = path.name  # Original image name with extension
-
             conn = self._get_connection()
             result = conn.execute(
                 "SELECT info FROM image_info WHERE directory = ? AND name = ?",

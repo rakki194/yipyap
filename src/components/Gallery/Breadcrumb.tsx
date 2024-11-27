@@ -26,17 +26,6 @@ function getThemeIcon(theme: Theme) {
 export const Breadcrumb = () => {
   const { params, data } = useGallery();
 
-  // Compute directory and image counts
-  const folderCount = createMemo(() => {
-    return (
-      data()?.items.filter((item) => item.type === "directory").length || 0
-    );
-  });
-
-  const imageCount = createMemo(() => {
-    return data()?.items.filter((item) => item.type === "image").length || 0;
-  });
-
   const Crumbs = () => {
     const segments = () => params.path.split("/").filter(Boolean) || [];
     const crumbs = () =>
@@ -80,8 +69,9 @@ export const Breadcrumb = () => {
             when={!data.loading}
             fallback={<span class="spin-icon icon" innerHTML={SpinnerIcon} />}
           >
-            <span class="icon" innerHTML={FolderIcon} /> {folderCount()}{" "}
-            <span class="icon" innerHTML={DimensionsIcon} /> {imageCount()}
+            <span class="icon" innerHTML={FolderIcon} /> {data().total_folders}{" "}
+            <span class="icon" innerHTML={DimensionsIcon} />{" "}
+            {data().total_images}
           </Show>
         </small>
         <ThemeToggle />

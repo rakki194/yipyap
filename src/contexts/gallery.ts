@@ -149,7 +149,8 @@ export function makeGalleryState() {
     const data = {
       ...database,
       items,
-      total_items: database.total_items - 1,
+      total_folders: database.total_folders,
+      total_images: database.total_images,
     };
     setData(data);
 

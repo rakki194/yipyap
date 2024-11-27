@@ -17,9 +17,8 @@ interface FolderHeader {
   pages: number;
   folders: string[]; // Array of folder names
   images: string[]; // Array of image names
-  total_items: number; // Total number of items
-  total_folders?: number;
-  total_images?: number;
+  total_folders: number;
+  total_images: number;
 }
 
 interface BaseData {
@@ -96,7 +95,8 @@ export type BrowsePageResult = {
   path: string;
   page: number;
   total_pages: number;
-  total_items: number;
+  total_folders: number;
+  total_images: number;
   mtime: string;
   items: Map<string, AnyItem>;
   setters: Record<string, Setter<AnyData | undefined>>;
@@ -142,7 +142,8 @@ export function fetchPageItemsAsSignals(
           path,
           page,
           total_pages: folderHeader.pages,
-          total_items: folderHeader.total_items,
+          total_folders: folderHeader.total_folders,
+          total_images: folderHeader.total_images,
           mtime: folderHeader.mtime,
           items,
           setters,
@@ -168,7 +169,8 @@ export function createGalleryRessource(
   const initialValue = {
     ...untrack(getNavState),
     total_pages: -1,
-    total_items: -1,
+    total_folders: -1,
+    total_images: -1,
     mtime: "",
     items,
     setters: {},
@@ -185,7 +187,8 @@ export type BrowsePagesCached = {
   path: string;
   mtime: string;
   total_pages: number;
-  total_items: number;
+  total_folders: number;
+  total_images: number;
   pages: PageToItems;
   items: AnyItem[];
   setters: Record<string, Setter<AnyData | undefined>>;
@@ -198,7 +201,8 @@ export function createGalleryResourceCached(
     path: untrack(getNavState).path,
     mtime: "",
     total_pages: -1,
-    total_items: -1,
+    total_folders: -1,
+    total_images: -1,
     pages: {},
     items: [],
     setters: {},
@@ -235,7 +239,8 @@ export function createGalleryResourceCached(
       return {
         path,
         total_pages: result.total_pages,
-        total_items: result.total_items,
+        total_folders: result.total_folders,
+        total_images: result.total_images,
         mtime: result.mtime,
         pages,
         items,
