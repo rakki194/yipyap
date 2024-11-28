@@ -27,6 +27,9 @@
     }
 
     & > small {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       padding: var(--spacing);
       flex-grow: 0.618;
       font-size: 1rem;
