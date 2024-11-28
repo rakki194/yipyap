@@ -91,7 +91,7 @@ async def browse(
         stream_response(), media_type="application/ndjson", headers=headers
     )
 
-
+# Used for deleting everything in a directory.
 @app.delete("/api/browse/{path:path}")
 async def delete_image(path: str, confirm: bool = Query(False)):
     image_path = utils.resolve_path(path, ROOT_DIR)
@@ -161,6 +161,44 @@ async def get_config():
         "thumbnail_size": data_source.thumbnail_size,
         "preview_size": data_source.preview_size,
     }
+
+# Used for deleting a single caption file.
+@app.delete("/api/caption/{path:path}")
+async def delete_caption(path: str, caption_type: str = Query(...)):
+    """Delete a caption file for an image"""
+    try:
+        logger.info(f"Attempting to delete caption: path={path}, type={caption_type}")
+        image_path = utils.resolve_path(path, ROOT_DIR)
+        logger.info(f"Resolved path: {image_path}")
+        
+        # Log the full path and check if file exists before deletion
+        caption_path = image_path.with_suffix(f".{caption_type}")
+        logger.info(f"Caption path to delete: {caption_path}")
+        logger.info(f"File exists before deletion: {caption_path.exists()}")
+        
+        await data_source.delete_caption(image_path, caption_type)
+        
+        # Verify deletion
+        exists_after = caption_path.exists()
+        logger.info(f"File exists after deletion attempt: {exists_after}")
+        
+        if exists_after:
+            raise HTTPException(
+                status_code=500, 
+                detail=f"File still exists after deletion attempt: {caption_path}"
+            )
+            
+        return {
+            "success": True, 
+            "message": f"Caption {caption_type} deleted successfully",
+            "path": str(caption_path)
+        }
+    except FileNotFoundError as e:
+        logger.error(f"File not found: {e}")
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error deleting caption: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"

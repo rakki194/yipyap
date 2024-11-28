@@ -475,3 +475,54 @@ class CachedFileSystemDataSource(ImageDataSource):
                 logger.debug(f"Invalidated directory cache for {path.parent}")
 
         return captions, files
+
+    async def delete_caption(self, path: Path, caption_type: str) -> None:
+        """Delete a specific caption file and update cache"""
+        try:
+            # Ensure path is absolute and resolve any symlinks
+            full_path = (self.root_dir / path).resolve()
+            # Construct caption file path by replacing image extension with caption extension
+            caption_path = full_path.with_suffix(f".{caption_type}")
+            
+            # Delete the file if it exists
+            if caption_path.exists():
+                caption_path.unlink()
+                logger.info(f"Deleted caption file {caption_path}")
+            else:
+                logger.warning(f"Caption file not found: {caption_path}")
+                caption_path.unlink()
+
+            # Update cache
+            directory = full_path.parent
+            name = full_path.name
+            conn = self._get_connection()
+            result = conn.execute(
+                "SELECT info FROM image_info WHERE directory = ? AND name = ?",
+                (str(directory.relative_to(self.root_dir)), name),
+            ).fetchone()
+
+            if result:
+                info = ImageModel.model_validate_json(result[0])
+                # Remove the caption from cached info
+                info.captions = [(t, c) for t, c in info.captions if t != caption_type]
+
+                # Update cache
+                conn.execute(
+                    """
+                    UPDATE image_info 
+                    SET info = ?, cache_time = ?
+                    WHERE directory = ? AND name = ?
+                    """,
+                    (
+                        info.model_dump_json(),
+                        int(datetime.now(timezone.utc).timestamp()),
+                        str(directory.relative_to(self.root_dir)),
+                        name,
+                    ),
+                )
+                conn.commit()
+                logger.info(f"Updated cache for {name} after caption deletion")
+
+        except Exception as e:
+            logger.error(f"Error deleting caption for {path}: {e}")
+            raise

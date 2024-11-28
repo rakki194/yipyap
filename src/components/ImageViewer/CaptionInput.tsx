@@ -131,6 +131,26 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
         )}
         <button
           class="icon"
+          onClick={async (e) => {
+            e.stopPropagation();
+            if (confirm(`Delete ${type()} caption?`)) {
+              try {
+                const response = await fetch(
+                  `/api/caption/${props.caption[0]}?caption_type=${type()}`,
+                  { method: "DELETE" }
+                );
+                if (!response.ok) {
+                  throw new Error(
+                    `Failed to delete caption: ${response.statusText}`
+                  );
+                }
+                // Handle successful deletion, e.g., update UI or state
+              } catch (error) {
+                console.error(error);
+                // Optionally, handle the error in the UI
+              }
+            }
+          }}
           title={`Delete ${type()} caption`}
           innerHTML={DeleteIcon}
         />
