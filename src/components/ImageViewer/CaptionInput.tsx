@@ -9,6 +9,10 @@ import {
   SpinnerIcon,
   captionIconsMap,
   SparkleIcon,
+  DeleteIcon,
+  TextAlignIcon,
+  TextAlignDistributedIcon,
+  ArrowUndoIcon,
 } from "~/components/icons";
 import { useAction, useSubmission } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -73,9 +77,30 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
         <span {...getStatusIcon()} />
         <button
           onClick={removeCommas}
-          class="sparkle-btn"
+          class="remove-commas-btn"
           title="Remove commas"
           innerHTML={SparkleIcon}
+        />
+        <button
+          class="replace-newlines-btn"
+          title="Replace newlines with commas"
+          innerHTML={TextAlignIcon}
+        />
+        <button
+          class="replace-underscores-btn"
+          title="Replace underscores with spaces"
+          innerHTML={TextAlignDistributedIcon}
+        />
+        <button
+          class="undo-btn"
+          title="Undo last change"
+          innerHTML={ArrowUndoIcon}
+        />
+
+        <button
+          class="delete-caption-btn"
+          title={`Delete ${type()} caption`}
+          innerHTML={DeleteIcon}
         />
       </div>
       <textarea
