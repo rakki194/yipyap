@@ -1,0 +1,10 @@
+.controls {
+  margin-bottom: var(--spacing);
+}
+
+.filters {
+  display: flex;
+  gap: var(--spacing);
+  flex-wrap: wrap;
+  padding: var(--spacing) var(--double-spacing);
+}

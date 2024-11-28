@@ -1,0 +1,119 @@
+.breadcrumb {
+  padding: var(--spacing);
+  margin-bottom: var(--spacing);
+  border-bottom: 1px solid var(--border);
+  background: none;
+  border-radius: 0;
+  font-size: 1.4rem;
+  & a {
+    color: var(--accent);
+    text-decoration: none;
+    padding: var(--spacing);
+  }
+
+  & > .breadcrumb-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    & > .breadcrumb-links {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    & > small {
+      padding: var(--spacing);
+      flex-grow: 0.618;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      word-spacing: var(--half-spacing);
+    }
+  }
+}
+
+.breadcrumb-actions {
+  display: flex;
+  gap: var(--spacing);
+  align-items: center;
+}
+
+.breadcrumb-container {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-color);
+  transition: all 0.3s ease;
+  padding: var(--double-spacing) var(--double-spacing) var(--spacing);
+}
+
+.breadcrumb-container.is-sticky {
+  padding: var(--spacing);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-color-translucent);
+  backdrop-filter: blur(10px);
+}
+
+.breadcrumb-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.breadcrumb-left {
+  display: flex;
+  align-items: center;
+  gap: var(--double-spacing);
+  flex: 1;
+}
+
+.path-segments {
+  display: flex;
+  align-items: center;
+  gap: var(--half-spacing);
+  min-width: 0;
+  flex-shrink: 1;
+
+  & .is-sticky {
+    font-size: 0.9rem;
+  }
+}
+
+/* Add transition to the settings button */
+.settings-btn {
+  transition: all 0.2s ease;
+}
+
+.is-sticky .settings-btn {
+  transform: scale(0.9);
+}
+
+.breadcrumb .theme-toggle {
+  padding: var(--half-spacing);
+  border-style: solid;
+  /* border-radius: var(--border-radius); */
+
+  cursor: pointer;
+  transition-property: background-color, color, border-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* FIXME/ this transition doesn't work because we are changing the svg element on hover
+    & svg {
+      transition-property: transform, fill;
+    }*/
+  &:hover svg {
+    transform: rotate(10deg);
+    fill: var(--bg-color);
+  }
+}

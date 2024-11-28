@@ -2,6 +2,7 @@
 import { createSignal, createEffect } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { useGallery } from "~/contexts/GalleryContext";
+import "./Controls.css";
 
 // FIXME: this is outdated
 export const Controls = () => {

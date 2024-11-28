@@ -11,6 +11,7 @@ import {
 } from "~/components/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
+import "./Breadcrumb.css";
 
 function getThemeIcon(theme: Theme) {
   switch (theme) {

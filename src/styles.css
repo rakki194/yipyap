@@ -21,7 +21,7 @@
   --shadow-hover: 0 4px 6px var(--shadow-accent);
   --hover-transform: translateY(-4px);
   --overlay-bg: rgba(0, 0, 0, 0.2);
-  --overlay-backdrop: blur(1px) brightness(0.5) saturate(0.5);
+  --overlay-backdrop: brightness(0.5) saturate(0.5);
   --text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   --grid-item-min-width: 250px;
   --directory-item-min-width: 125px;
@@ -38,13 +38,47 @@
   --min-width: 100px;
 }
 
+:root[data-theme="dark"] {
+  --bg-color: hsl(0, 0%, 15%);
+  --card-bg: hsl(0, 0%, 20%);
+  --text-primary: hsl(0, 0%, 80%);
+  --text-secondary: hsl(0, 0%, 60%);
+  --border: #333;
+  --accent: #bf97d6;
+  --secondary-bg: hsl(0, 0%, 18%);
+}
+
+:root[data-theme="light"] {
+  --accent: #8839ef;
+  --bg-color: #eff1f5;
+  --secondary-bg: #e0e3e7;
+  --card-bg: #ccd0da;
+  --text-primary: #4c4f69;
+  --text-secondary: #5c5f77;
+  --border: var(--card-bg);
+  --border-secondary: var(--accent);
+}
+
+:root[data-theme="gray"] {
+  --bg-color: hsl(0, 0%, 50%);
+  --card-bg: hsl(0, 0%, 45%);
+  --text-primary: hsl(0, 0%, 95%);
+  --text-secondary: hsl(0, 0%, 85%);
+  --border: hsl(0, 0%, 40%);
+  --accent: hsl(280, 40%, 70%);
+  --secondary-bg: hsl(0, 0%, 47%);
+}
+
+/* Resets and apply theme colors on base styles */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition-duration: var(--transition-duration);
-  transition-timing-function: var(--transition-timing);
-  transition-property: none;
+  transition: none var(--transition-duration) var(--transition-timing);
+  border-width: 1px;
+  border-color: var(--border);
+  border-radius: var(--border-radius);
 }
 
 body {
@@ -55,239 +89,68 @@ body {
   line-height: var(--line-height);
 }
 
-svg {
-  fill: currentColor;
-  transition-property: fill;
-}
-
 code {
   background-color: var(--secondary-bg);
   color: var(--text-primary);
   padding: 0.2em 0.4em;
-  border-radius: var(--border-radius);
+
   font-family: monospace;
 }
 
-/* Header */
-.breadcrumb {
+input,
+button,
+select {
+  margin: 0;
   padding: var(--spacing);
-  margin-bottom: var(--spacing);
-  border-bottom: 1px solid var(--border);
-  background: none;
-  border-radius: 0;
-  font-size: 1.4rem;
-  & a {
-    color: var(--accent);
-    text-decoration: none;
-    padding: var(--spacing);
-  }
-
-  & > .breadcrumb-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    & > .breadcrumb-links {
-      display: flex;
-      align-items: center;
-      font-weight: 600;
-    }
-
-    & > small {
-      padding: var(--spacing);
-      flex-grow: 0.618;
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--text-primary);
-      word-spacing: var(--half-spacing);
-    }
-  }
+  border-style: solid;
+  background-color: transparent;
 }
 
-/* Controls */
-.controls {
-  margin-bottom: var(--spacing);
-}
+/* Header */
 
-.filters {
-  display: flex;
-  gap: var(--spacing);
-  flex-wrap: wrap;
-  padding: var(--spacing) var(--double-spacing);
+button {
+  margin: 0;
+  text-decoration: none;
+  border-style: solid;
+  transition-property: background, fill;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+    fill: var(--accent);
+    background: var(--secondary-bg);
+  }
+
+  &.icon {
+    padding: var(--half-spacing);
+  }
+
+  .card & {
+    border-color: var(--border-secondary);
+  }
+
+  &.accent-hover {
+    &:hover,
+    &:focus {
+      background: var(--accent);
+    }
+  }
 }
 
 input,
 select {
-  padding: var(--spacing);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
   min-width: var(--min-width);
   background-color: var(--card-bg);
   color: var(--text-primary);
   transition: outline;
-}
 
-input:focus,
-select:focus {
-  outline: none;
-  border-color: var(--border-secondary);
-}
-
-#gallery {
-  & > * {
-    padding: var(--spacing);
+  &:focus {
+    outline: none;
   }
 
-  & > .responsive-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: var(--spacing);
-    width: 100%;
-    container-type: inline-size;
-  }
-
-  &.crop > .responsive-grid > .item > img {
-    object-fit: cover;
-  }
-}
-
-#gallery > .responsive-grid > .item {
-  background-color: var(--card-bg);
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  aspect-ratio: 1;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: var(--shadow-default);
-  transition-property: transform, box-shadow, background-color, color, border;
-
-  &:hover,
-  &.selected {
-    box-shadow: var(--shadow-hover);
-    transform: var(--hover-transform);
-  }
-
+  &:focus,
   &:hover {
-    transform: var(--hover-transform);
-    box-shadow: var(--shadow-hover);
-    &.image > .overlay {
-      opacity: 1;
-    }
-    & > img {
-      transform: scale(1.1);
-    }
-  }
-
-  &::after {
-    content: "";
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    box-shadow: inset 0 0 0 0 var(--accent);
-    transition-property: box-shadow;
-  }
-
-  &.selected::after {
-    box-shadow: inset 0 0 0 2px var(--accent);
-  }
-
-  & > img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: none;
-    transform-origin: center;
-    image-rendering: high-quality;
-
-    display: none;
-    opacity: 0;
-    transition-property: transform, opacity, display;
-    transition-behavior: allow-discrete;
-
-    &.loaded {
-      opacity: 1;
-      display: block;
-    }
-
-    @starting-style {
-      &.loaded {
-        opacity: 0;
-      }
-    }
-  }
-
-  &.image {
-    > .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding: var(--spacing);
-      background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        var(--overlay-bg) 100%
-      );
-      opacity: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      transition-property: opacity;
-
-      > p {
-        color: white;
-        text-shadow: var(--text-shadow);
-        font-size: var(--font-size);
-        max-width: 90%;
-        text-align: center;
-        margin-bottom: var(--spacing);
-      }
-
-      svg {
-        filter: drop-shadow(1px 1px 0.1px var(--text-primary));
-        /* transition: all var(--transition-duration) var(--transition-timing); */
-      }
-    }
-
-    > .spin-icon {
-      font-size: 2rem;
-    }
-  }
-
-  &.directory {
-    aspect-ratio: var(--directory-aspect-ratio);
-    width: 100%;
-    margin: 0;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border);
-    padding: var(--spacing);
-
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: var(--spacing);
-    color: var(--text-primary);
-    font-weight: bold;
-    transition-property: color;
-
-    &:hover {
-      border-color: var(--border-secondary);
-      background-color: var(--accent);
-      transform: var(--hover-transform);
-      color: var(--text-tertiary);
-
-      svg {
-        fill: var(--bg-color); /* FIXME: should not need this */
-      }
-    }
+    border-color: var(--border-secondary);
   }
 }
 
@@ -322,31 +185,24 @@ select:focus {
   --secondary-bg: hsl(0, 0%, 47%);
 }
 
-.theme-toggle {
-  padding: var(--half-spacing);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  background: var(--secondary-bg);
+/* Generic UI Elements */
+
+.card {
+  padding: var(--spacing);
   color: var(--text-primary);
-  cursor: pointer;
-  transition-property: background-color, color, border-color;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid var(--text-secondary);
+  background: var(--card-bg);
+  border-style: solid;
 
-  &:hover {
-    background-color: var(--accent);
-    border-color: var(--accent);
+  & button {
+    color: var(--text-primary);
+    padding: var(--half-spacing);
   }
+}
 
-  /* FIXME/ this transition doesn't work because we are changing the svg element on hover
-  & svg {
-    transition-property: transform, fill;
-  }*/
-  &:hover svg {
-    transform: rotate(10deg);
-    fill: var(--bg-color);
-  }
+svg {
+  fill: currentColor;
+  transition-property: fill;
 }
 
 .icon {
@@ -359,12 +215,27 @@ select:focus {
     height: var(--icon-size);
     fill: var(--text-secondary);
   }
-}
 
-.spin-icon {
-  & > svg {
-    fill: var(--accent);
-    animation: spin-animation 1s infinite linear;
+  /* <button class="icon><svg>... */
+  button& {
+    /* color: var(--text-primary);
+    text-decoration: none;
+    padding: var(--half-spacing);
+
+    border-radius: var(--border-radius);
+    transition-property: background;
+    border: 1px solid; */
+
+    .card & {
+      /* border-color: var(--text-secondary); */
+      /* background: var(--card-bg); */
+      /* color: var(--text-primary); */
+    }
+
+    &:hover {
+      /* fill: var(--accent); */
+      /* background: var(--secondary-bg); */
+    }
   }
 }
 
@@ -374,177 +245,5 @@ select:focus {
   }
   to {
     transform: rotate(360deg);
-  }
-}
-
-.settings-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--overlay-bg);
-  backdrop-filter: var(--overlay-backdrop);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--double-spacing);
-}
-
-.breadcrumb-actions {
-  display: flex;
-  gap: var(--spacing);
-  align-items: center;
-}
-
-.settings-btn {
-  padding: var(--half-spacing);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  background: var(--secondary-bg);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition-property: background-color, color, border-color;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.settings-btn:hover {
-  background-color: var(--accent);
-  border-color: var(--accent);
-}
-
-.settings-btn:hover svg {
-  transform: rotate(45deg);
-  fill: var(--bg-color);
-}
-
-.breadcrumb-container {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--bg-color);
-  transition: all 0.3s ease;
-  padding: var(--double-spacing) var(--double-spacing) var(--spacing);
-}
-
-.breadcrumb-container.is-sticky {
-  padding: var(--spacing);
-  box-shadow: var(--shadow-sm);
-  background: var(--bg-color-translucent);
-  backdrop-filter: blur(10px);
-}
-
-.breadcrumb-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  width: 100%;
-}
-
-.breadcrumb-left {
-  display: flex;
-  align-items: center;
-  gap: var(--double-spacing);
-  flex: 1;
-}
-
-.path-segments {
-  display: flex;
-  align-items: center;
-  gap: var(--half-spacing);
-  min-width: 0;
-  flex-shrink: 1;
-}
-
-.search-container {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
-  transition: all 0.3s ease;
-}
-
-.is-sticky .search-container {
-  max-width: 300px;
-}
-
-.search-input {
-  width: 100%;
-  padding: var(--spacing) var(--spacing) var(--spacing) var(--double-spacing);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  background: var(--secondary-bg);
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  background: var(--bg-color);
-}
-
-.search-icon {
-  position: absolute;
-  left: var(--half-spacing);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-secondary);
-  width: 16px;
-  height: 16px;
-  pointer-events: none;
-}
-
-.is-sticky .path-segments {
-  font-size: 0.9rem;
-}
-
-/* Adjust the existing breadcrumb actions */
-.breadcrumb-actions {
-  display: flex;
-  gap: var(--spacing);
-  align-items: center;
-}
-
-/* Add transition to the settings button */
-.settings-btn {
-  transition: all 0.2s ease;
-}
-
-.is-sticky .settings-btn {
-  transform: scale(0.9);
-}
-
-.settings-panel {
-  background: var(--bg-color);
-  padding: 100px 100px;
-  line-height: 2.2;
-
-  select {
-    margin: var(--double-spacing);
-  }
-}
-
-/* Add some responsive adjustments */
-@media (max-width: 768px) {
-  .search-container {
-    max-width: 200px;
-  }
-
-  .is-sticky .search-container {
-    max-width: 160px;
-  }
-
-  .breadcrumb-container {
-    padding: var(--spacing);
-  }
-
-  .is-sticky .breadcrumb-container {
-    padding: var(--half-spacing);
   }
 }

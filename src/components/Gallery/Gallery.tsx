@@ -5,6 +5,7 @@ import { ImageGrid } from "./ImageGrid";
 import { ImageModal } from "../ImageViewer/ImageModal";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAction, useNavigate } from "@solidjs/router";
+import "./Gallery.css";
 
 export const Gallery = () => {
   const navigate = useNavigate();
