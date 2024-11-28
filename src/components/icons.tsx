@@ -21,6 +21,11 @@ import DismissIcon from "@fluentui/svg-icons/icons/dismiss_24_regular.svg?raw";
 import SpinnerIcon from "@fluentui/svg-icons/icons/spinner_ios_20_regular.svg?raw";
 import BowTieIcon from "@fluentui/svg-icons/icons/bow_tie_24_regular.svg?raw";
 import SparkleIcon from "@fluentui/svg-icons/icons/text_effects_sparkle_24_regular.svg?raw";
+import TextAlignIcon from "@fluentui/svg-icons/icons/text_align_distributed_vertical_24_regular.svg?raw";
+import TextAlignDistributedIcon from "@fluentui/svg-icons/icons/text_align_distributed_evenly_24_regular.svg?raw";
+import ArrowUndoIcon from "@fluentui/svg-icons/icons/arrow_undo_24_regular.svg?raw";
+import SettingsIcon from "@fluentui/svg-icons/icons/settings_24_regular.svg?raw";
+import SearchIcon from "@fluentui/svg-icons/icons/search_24_regular.svg?raw";
 
 // Export all icons
 export {
@@ -46,6 +51,11 @@ export {
   SpinnerIcon,
   BowTieIcon,
   SparkleIcon,
+  TextAlignIcon,
+  TextAlignDistributedIcon,
+  ArrowUndoIcon,
+  SettingsIcon,
+  SearchIcon,
 };
 
 // Export caption icons map
