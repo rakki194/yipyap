@@ -1,6 +1,6 @@
 // src/components/ImageViewer/CaptionEditor.tsx
-import { createSignal, splitProps } from "solid-js";
-import { Component, JSX } from "solid-js";
+import { createSignal, splitProps, Component, JSX } from "solid-js";
+import { Submission, useAction, useSubmission } from "@solidjs/router";
 import { debounce } from "@solid-primitives/scheduled";
 import {
   EditIcon,
@@ -14,7 +14,6 @@ import {
   TextAlignDistributedIcon,
   ArrowUndoIcon,
 } from "~/components/icons";
-import { useAction, useSubmission } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
 
 export interface CaptionInputProps
@@ -40,19 +39,6 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
       type: type(),
     });
   }, 500);
-
-  const getStatusIcon = () => {
-    if (submission.input?.[0].type !== type())
-      return { innerHTML: EditIcon, class: "icon" };
-    if (!submission.result) {
-      if (submission.pending)
-        return { innerHTML: SpinnerIcon, class: "spin-icon icon" };
-      else return { innerHTML: EditIcon };
-    }
-    if (submission.result instanceof Error)
-      return { innerHTML: ErrorIcon, class: "error-icon icon" };
-    return { innerHTML: SaveIcon };
-  };
 
   const saveWithHistory = (newText: string) => {
     setCaptionHistory((prev) => [...prev, caption()]);
@@ -102,7 +88,7 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
           class="icon"
           innerHTML={captionIconsMap[type() as keyof typeof captionIconsMap]}
         />
-        <span {...getStatusIcon()} />
+        <StatusIcon status={submission} type={type()} />
         <button
           onClick={removeCommas}
           class="icon"
@@ -165,4 +151,30 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
       />
     </div>
   );
+};
+
+// Start of Selection
+const StatusIcon = <T extends [{ type: string }], U>(props: {
+  status: Partial<Submission<T, U>>;
+  type: string;
+}) => {
+  const getStatusIcon = () => {
+    if (props.status.input?.[0].type !== props.type)
+      return { innerHTML: EditIcon };
+    if (!props.status.result) {
+      if (props.status.pending)
+        return { innerHTML: SpinnerIcon, class: "spin-icon icon" };
+      else return { innerHTML: EditIcon };
+    }
+    if (props.status.result instanceof Error)
+      return {
+        innerHTML: ErrorIcon,
+        class: "error-icon icon",
+        title: props.status.result.message,
+      };
+    return {
+      innerHTML: SaveIcon,
+    };
+  };
+  return <span class="icon" {...getStatusIcon()} />;
 };
