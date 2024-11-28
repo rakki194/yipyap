@@ -9,6 +9,7 @@ import {
   untrack,
 } from "solid-js";
 import { createStaticStore } from "@solid-primitives/static-store";
+import { joinUrlParts } from "~/utils";
 
 interface FolderHeader {
   file_name: string;
@@ -299,4 +300,22 @@ export async function deleteImage(
   }
 
   return (await response.json()) as DeleteImageResponse;
+}
+
+export async function deleteCaption(path: string, name: string, type: string) {
+  try {
+    const response = await fetch(
+      `${joinUrlParts("/api/caption", path, name)}?caption_type=${type}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`Failed to delete caption: ${response.statusText}`);
+    }
+    // Handle successful deletion, e.g., update UI or state
+  } catch (error) {
+    console.error(error);
+    // Optionally, handle the error in the UI
+  }
 }

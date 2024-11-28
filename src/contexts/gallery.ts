@@ -7,6 +7,7 @@ import {
   Captions,
   saveCaption as saveCaptionToBackend,
   deleteImage as deleteImageFromBackend,
+  deleteCaption as deleteCaptionFromBackend,
 } from "~/resources/browse";
 import type {
   ImageData,
@@ -157,6 +158,18 @@ export function makeGalleryState() {
     return items;
   });
 
+  const deleteCaption = action(async (type: string) => {
+    const { image, database } = untrack(() => ({
+      image: selection.editedImage,
+      database: backendData(),
+    }));
+    if (!image) return new Error("No image to delete");
+
+    await deleteCaptionFromBackend(database.path, image.name, type);
+
+    refetch();
+  });
+
   const windowSize = createWindowSize();
 
   // Gallery actions and getters
@@ -188,6 +201,7 @@ export function makeGalleryState() {
     state,
     saveCaption,
     deleteImage,
+    deleteCaption,
   };
 
   if (import.meta.env.DEV) {

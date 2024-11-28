@@ -6,6 +6,7 @@ import {
   untrack,
   Component,
   JSX,
+  For,
 } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import { debounce } from "@solid-primitives/scheduled";
@@ -22,83 +23,75 @@ import {
   ArrowUndoIcon,
 } from "~/components/icons";
 import { useGallery } from "~/contexts/GalleryContext";
+import { preserveState } from "~/components/TextArea";
+import { deleteCaption } from "~/resources/browse";
+import { Gallery } from "../Gallery/Gallery";
 
 export interface CaptionInputProps
   extends JSX.HTMLAttributes<HTMLTextAreaElement> {
   caption: [string, string];
 }
 
-export const CaptionInput: Component<CaptionInputProps> = (props) => {
+const TOOLS = [
+  {
+    icon: SparkleIcon,
+    title: "Remove commas",
+    action: (caption: string) => caption.replace(/,/g, ""),
+  },
+  {
+    icon: TextAlignIcon,
+    title: "Replace newlines with commas",
+    action: (caption: string) => caption.replace(/\n/g, ", "),
+  },
+  {
+    icon: TextAlignDistributedIcon,
+    title: "Replace underscores with spaces",
+    action: (caption: string) => caption.replace(/_/g, " "),
+  },
+];
+
+const Tools: Component<{
+  onInput: (value: string) => void;
+  caption: string;
+}> = (props) => {
+  return (
+    <For each={TOOLS}>
+      {(tool) => (
+        <button
+          class="icon"
+          onClick={() => props.onInput(tool.action(props.caption))}
+          title={tool.title}
+          innerHTML={tool.icon}
+        />
+      )}
+    </For>
+  );
+};
+
+export const CaptionInput: Component<
+  {
+    caption: [string, string];
+    state: "expanded" | "collapsed" | null;
+  } & JSX.HTMLAttributes<HTMLTextAreaElement>
+> = (props) => {
   let inputRef!: HTMLTextAreaElement;
   const [localProps, rest] = splitProps(props, ["caption"]);
   const type = () => localProps.caption[0];
   const caption = () => localProps.caption[1];
   const initialCaption = caption();
-
-  const [focusedType, setFocusedType] = createSignal<string | null>(null);
   const [captionHistory, setCaptionHistory] = createSignal<string[]>([]);
-  // We only update the value from the database when the field is not in focus.
-  const updateValue = () => {
-    console.log(
-      "updating value",
-      document.activeElement !== inputRef,
-      untrack(caption) !== inputRef.value,
-      rest
-    );
-    if (document.activeElement !== inputRef) {
-      const value = untrack(caption);
-      if (value !== inputRef.value) {
-        console.log("updating value", value);
-        inputRef.value = value;
-      }
-    }
-  };
 
-  const { saveCaption } = useGallery();
+  const { saveCaption, deleteCaption: deleteCaptionAction } = useGallery();
   const save = useAction(saveCaption);
   const submission = useSubmission(saveCaption);
-
-  // There are three conditions where we manually update the field value
-  // 1. On save without focus (eg remove commas)
-  const saveUpdate = (value: string) => {
-    save({
-      caption: value,
-      type: type(),
-    });
-    updateValue();
-  };
-  // 2. On caption change
-  createEffect(() => {
-    caption();
-    updateValue();
-  });
-  createEffect(() => console.log("caption xx", caption()));
-  // 3. On blur
-  const onBlur = () => {
-    setFocusedType(null);
-    inputRef.value = caption();
-  };
-
-  const handleInput = debounce((value: string) => {
-    saveUpdate(value);
-  }, 500);
+  const deleteCaption = useAction(deleteCaptionAction);
 
   const saveWithHistory = (newText: string) => {
     setCaptionHistory((prev) => [...prev, caption()]);
-    saveUpdate(newText);
-  };
-
-  const removeCommas = () =>
-    saveWithHistory(untrack(caption).replace(/,/g, ""));
-
-  const replaceNewlines = () => {
-    const newText = caption().replace(/\n/g, ", ");
-    saveWithHistory(newText);
-  };
-
-  const replaceUnderscores = () => {
-    const newText = caption().replace(/_/g, " ");
-    saveWithHistory(newText);
+    save({
+      caption: newText,
+      type: type(),
+    });
   };
 
   const undo = () => {
@@ -116,10 +109,7 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
   return (
     <div
       class="caption-input-wrapper card"
-      classList={{
-        focused: focusedType() === type(),
-        collapsed: focusedType() !== null && focusedType() !== type(),
-      }}
+      classList={props.state === null ? {} : { [props.state]: true }}
     >
       <div class="caption-icons">
         <span
@@ -127,24 +117,7 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
           innerHTML={captionIconsMap[type() as keyof typeof captionIconsMap]}
         />
         <StatusIcon status={submission} type={type()} />
-        <button
-          onClick={removeCommas}
-          class="icon"
-          title="Remove commas"
-          innerHTML={SparkleIcon}
-        />
-        <button
-          onClick={replaceNewlines}
-          class="icon"
-          title="Replace newlines with commas"
-          innerHTML={TextAlignIcon}
-        />
-        <button
-          onClick={replaceUnderscores}
-          class="icon"
-          title="Replace underscores with spaces"
-          innerHTML={TextAlignDistributedIcon}
-        />
+        <Tools onInput={saveWithHistory} caption={caption()} />
         {captionHistory().length > 0 && (
           <button
             onClick={undo}
@@ -156,23 +129,8 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
         <button
           class="icon"
           onClick={async (e) => {
-            e.stopPropagation();
             if (confirm(`Delete ${type()} caption?`)) {
-              try {
-                const response = await fetch(
-                  `/api/caption/${props.caption[0]}?caption_type=${type()}`,
-                  { method: "DELETE" }
-                );
-                if (!response.ok) {
-                  throw new Error(
-                    `Failed to delete caption: ${response.statusText}`
-                  );
-                }
-                // Handle successful deletion, e.g., update UI or state
-              } catch (error) {
-                console.error(error);
-                // Optionally, handle the error in the UI
-              }
+              deleteCaption(type());
             }
           }}
           title={`Delete ${type()} caption`}
@@ -181,12 +139,8 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
       </div>
       <textarea
         {...rest}
-        ref={inputRef}
-        value={initialCaption}
-        onInput={(e) => handleInput(e.currentTarget.value)}
+        use:preserveState={[caption, saveWithHistory]}
         placeholder="Add a caption..."
-        onFocus={() => setFocusedType(type())}
-        onBlur={onBlur}
       />
     </div>
   );

@@ -86,6 +86,7 @@ const ModelBody = (props: {
 }) => {
   let refImageInfo!: HTMLDivElement;
   const [focused, setFocused] = createSignal(false);
+  const [focusedType, setFocusedType] = createSignal<string | null>(null);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
 
   // Update the style of the image info based on the layout and focus
@@ -136,7 +137,19 @@ const ModelBody = (props: {
         <div class="caption-editor">
           <Index each={props.captions}>
             {(caption, idx) => (
-              <CaptionInput tabindex={idx + 1} caption={caption()} />
+              <CaptionInput
+                tabindex={idx + 1}
+                caption={caption()}
+                onFocus={() => setFocusedType(caption()[0])}
+                onBlur={() => setFocusedType(null)}
+                state={
+                  focusedType() === null
+                    ? null
+                    : focusedType() === caption()[0]
+                    ? "expanded"
+                    : "collapsed"
+                }
+              />
             )}
           </Index>
         </div>
@@ -166,11 +179,7 @@ const ModalHeader = (props: { imageInfo: ImageInfo; onClose: () => void }) => {
           }
           innerHTML={DeleteIcon}
         />
-        <button
-          class="icon"
-          onClick={props.onClose}
-          innerHTML={DismissIcon}
-        />
+        <button class="icon" onClick={props.onClose} innerHTML={DismissIcon} />
       </div>
     </div>
   );
