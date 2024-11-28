@@ -5,6 +5,7 @@
   background: none;
   border-radius: 0;
   font-size: 1.4rem;
+
   & a {
     color: var(--accent);
     text-decoration: none;
@@ -15,6 +16,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    width: 100%;
 
     & > .breadcrumb-links {
       display: flex;
@@ -30,105 +34,11 @@
       color: var(--text-primary);
       word-spacing: var(--half-spacing);
     }
+
+    & > .breadcrumb-actions {
+      display: flex;
+      gap: var(--spacing);
+      align-items: center;
+    }
   }
-}
-
-.breadcrumb-actions {
-  display: flex;
-  gap: var(--spacing);
-  align-items: center;
-}
-
-.breadcrumb-container {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--bg-color);
-  transition: all 0.3s ease;
-  padding: var(--double-spacing) var(--double-spacing) var(--spacing);
-}
-
-.breadcrumb-container.is-sticky {
-  padding: var(--spacing);
-  box-shadow: var(--shadow-sm);
-  background: var(--bg-color-translucent);
-  backdrop-filter: blur(10px);
-}
-
-.breadcrumb-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  width: 100%;
-}
-
-.breadcrumb-left {
-  display: flex;
-  align-items: center;
-  gap: var(--double-spacing);
-  flex: 1;
-}
-
-.path-segments {
-  display: flex;
-  align-items: center;
-  gap: var(--half-spacing);
-  min-width: 0;
-  flex-shrink: 1;
-
-  & .is-sticky {
-    font-size: 0.9rem;
-  }
-}
-
-.search-container {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
-  transition: all 0.3s ease;
-}
-
-.is-sticky .search-container {
-  max-width: 300px;
-}
-
-.search-input {
-  width: 100%;
-  padding: var(--spacing) var(--spacing) var(--spacing) var(--double-spacing);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  background: var(--secondary-bg);
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  background: var(--bg-color);
-}
-
-.search-icon {
-  position: absolute;
-  left: var(--half-spacing);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-secondary);
-  width: 16px;
-  height: 16px;
-  pointer-events: none;
-}
-
-.is-sticky .path-segments {
-  font-size: 0.9rem;
-}
-
-/* Adjust the existing breadcrumb actions */
-.breadcrumb-actions {
-  display: flex;
-  gap: var(--spacing);
-  align-items: center;
 }

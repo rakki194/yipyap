@@ -61,6 +61,12 @@ export const ImageModal = (props: ImageModalProps) => {
     { equals: (a, b) => a.download === b.download }
   );
 
+  createEffect((prev) => {
+    const ii = imageInfo();
+    console.log("imageInfo", prev !== ii, ii);
+    return ii;
+  });
+
   return (
     <div class="modal-content">
       <ModalHeader imageInfo={imageInfo()} onClose={props.onClose} />

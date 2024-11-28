@@ -85,9 +85,8 @@ export const Breadcrumb = () => {
             class="icon"
             onClick={() => setShowSettings(!showSettings())}
             title="Settings"
-          >
-            <span class="icon" innerHTML={SettingsIcon} />
-          </button>
+            innerHTML={SettingsIcon}
+          />
         </div>
       </div>
       <Show when={showSettings()}>

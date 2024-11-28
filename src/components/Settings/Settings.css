@@ -1,1 +1,27 @@
 /* src/components/Settings/styles.css */
+
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: var(--overlay-backdrop);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--double-spacing);
+}
+
+.settings-panel {
+  padding: 2.5em 5em;
+  line-height: 2.2;
+
+  select,
+  input,
+  textarea {
+    margin: var(--double-spacing);
+  }
+}

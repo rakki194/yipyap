@@ -11,13 +11,14 @@ import {
   SizeIcon,
   TimeIcon,
 } from "~/components/icons";
+import "./Settings.css";
 
 export const Settings: Component = () => {
   const gallery = useGallery();
   const theme = useTheme();
 
   return (
-    <div class="settings-panel">
+    <div class="settings-panel card">
       <h2>Settings</h2>
 
       <section>
@@ -26,21 +27,21 @@ export const Settings: Component = () => {
           <label>Theme</label>
           <div class="theme-buttons">
             <button
-              class="theme-button"
+              class="icon"
               classList={{ active: theme.theme === "light" }}
               onClick={() => theme.setTheme("light")}
               title="Light theme"
               innerHTML={SunIcon}
             />
             <button
-              class="theme-button"
+              class="icon"
               classList={{ active: theme.theme === "gray" }}
               onClick={() => theme.setTheme("gray")}
               title="Gray theme"
               innerHTML={CloudIcon}
             />
             <button
-              class="theme-button"
+              class="icon"
               classList={{ active: theme.theme === "dark" }}
               onClick={() => theme.setTheme("dark")}
               title="Dark theme"
