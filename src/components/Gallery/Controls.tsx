@@ -1,10 +1,11 @@
 // src/components/Gallery/Controls.tsx
+
 import { createSignal, createEffect } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { useGallery } from "~/contexts/GalleryContext";
+import { SearchIcon } from "~/components/icons";
 import "./Controls.css";
 
-// FIXME: this is outdated
 export const Controls = () => {
   const gallery = useGallery();
   const [searchValue, setSearchValue] = createSignal(gallery.state.search);
@@ -22,13 +23,16 @@ export const Controls = () => {
   return (
     <div class="controls">
       <div class="filters">
-        <input
-          type="text"
-          name="search"
-          placeholder="Search..."
-          value={searchValue()}
-          onInput={(e) => setSearchValue(e.currentTarget.value)}
-        />
+        <div class="search-wrapper">
+          <span class="icon" innerHTML={SearchIcon} />
+          <input
+            type="text"
+            name="search"
+            placeholder="Search..."
+            value={searchValue()}
+            onInput={(e) => setSearchValue(e.currentTarget.value)}
+          />
+        </div>
         <select
           name="view-mode"
           value={gallery.state.viewMode}
