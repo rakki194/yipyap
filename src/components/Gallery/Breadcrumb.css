@@ -83,11 +83,52 @@
   }
 }
 
-/* Add transition to the settings button */
-.settings-btn {
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+  transition: all 0.3s ease;
+}
+
+.is-sticky .search-container {
+  max-width: 300px;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--spacing) var(--spacing) var(--spacing) var(--double-spacing);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+  font-size: 0.9rem;
   transition: all 0.2s ease;
 }
 
-.is-sticky .settings-btn {
-  transform: scale(0.9);
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg-color);
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--half-spacing);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.is-sticky .path-segments {
+  font-size: 0.9rem;
+}
+
+/* Adjust the existing breadcrumb actions */
+.breadcrumb-actions {
+  display: flex;
+  gap: var(--spacing);
+  align-items: center;
 }

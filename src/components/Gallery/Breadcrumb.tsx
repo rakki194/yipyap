@@ -8,9 +8,11 @@ import {
   SpinnerIcon,
   FolderIcon,
   DimensionsIcon,
+  SettingsIcon,
 } from "~/components/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
+import { Settings } from "~/components/Settings/Settings";
 import "./Breadcrumb.css";
 
 function getThemeIcon(theme: Theme) {
@@ -56,6 +58,8 @@ export const Breadcrumb = () => {
     );
   };
 
+  const [showSettings, setShowSettings] = createSignal(false);
+
   return (
     <nav class="breadcrumb">
       <div class="breadcrumb-content">
@@ -75,8 +79,24 @@ export const Breadcrumb = () => {
             {data().total_images}
           </Show>
         </small>
-        <ThemeToggle />
+        <div class="breadcrumb-actions">
+          <ThemeToggle />
+          <button
+            class="icon"
+            onClick={() => setShowSettings(!showSettings())}
+            title="Settings"
+          >
+            <span class="icon" innerHTML={SettingsIcon} />
+          </button>
+        </div>
       </div>
+      <Show when={showSettings()}>
+        <div class="settings-overlay" onClick={() => setShowSettings(false)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <Settings />
+          </div>
+        </div>
+      </Show>
     </nav>
   );
 };

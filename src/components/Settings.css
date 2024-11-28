@@ -13,27 +13,50 @@
   padding: var(--double-spacing);
 }
 
-.settings-btn {
-  padding: var(--half-spacing);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  background: var(--secondary-bg);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition-property: background-color, color, border-color;
+.breadcrumb-actions {
+  display: flex;
+  gap: var(--spacing);
+  align-items: center;
+}
+
+.breadcrumb-container {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-color);
+  transition: all 0.3s ease;
+  padding: var(--double-spacing) var(--double-spacing) var(--spacing);
+}
+
+.breadcrumb-container.is-sticky {
+  padding: var(--spacing);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-color-translucent);
+  backdrop-filter: blur(10px);
+}
+
+.breadcrumb-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.breadcrumb-left {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--double-spacing);
+  flex: 1;
 }
 
-.settings-btn:hover {
-  background-color: var(--accent);
-  border-color: var(--accent);
-}
-
-.settings-btn:hover svg {
-  transform: rotate(45deg);
-  fill: var(--bg-color);
+.path-segments {
+  display: flex;
+  align-items: center;
+  gap: var(--half-spacing);
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .search-container {
@@ -73,6 +96,17 @@
   width: 16px;
   height: 16px;
   pointer-events: none;
+}
+
+.is-sticky .path-segments {
+  font-size: 0.9rem;
+}
+
+/* Adjust the existing breadcrumb actions */
+.breadcrumb-actions {
+  display: flex;
+  gap: var(--spacing);
+  align-items: center;
 }
 
 .settings-panel {
