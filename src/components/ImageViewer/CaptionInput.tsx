@@ -1,5 +1,12 @@
 // src/components/ImageViewer/CaptionEditor.tsx
-import { createSignal, splitProps, Component, JSX } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  splitProps,
+  untrack,
+  Component,
+  JSX,
+} from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import { debounce } from "@solid-primitives/scheduled";
 import {
@@ -22,36 +29,67 @@ export interface CaptionInputProps
 }
 
 export const CaptionInput: Component<CaptionInputProps> = (props) => {
-  const { saveCaption } = useGallery();
-  const submission = useSubmission(saveCaption);
-  const save = useAction(saveCaption);
-
+  let inputRef!: HTMLTextAreaElement;
   const [localProps, rest] = splitProps(props, ["caption"]);
   const type = () => localProps.caption[0];
   const caption = () => localProps.caption[1];
+  const initialCaption = caption();
 
   const [focusedType, setFocusedType] = createSignal<string | null>(null);
   const [captionHistory, setCaptionHistory] = createSignal<string[]>([]);
+  // We only update the value from the database when the field is not in focus.
+  const updateValue = () => {
+    console.log(
+      "updating value",
+      document.activeElement !== inputRef,
+      untrack(caption) !== inputRef.value,
+      rest
+    );
+    if (document.activeElement !== inputRef) {
+      const value = untrack(caption);
+      if (value !== inputRef.value) {
+        console.log("updating value", value);
+        inputRef.value = value;
+      }
+    }
+  };
 
-  const handleInput = debounce((value: string) => {
+  const { saveCaption } = useGallery();
+  const save = useAction(saveCaption);
+  const submission = useSubmission(saveCaption);
+
+  // There are three conditions where we manually update the field value
+  // 1. On save without focus (eg remove commas)
+  const saveUpdate = (value: string) => {
     save({
       caption: value,
       type: type(),
     });
+    updateValue();
+  };
+  // 2. On caption change
+  createEffect(() => {
+    caption();
+    updateValue();
+  });
+  createEffect(() => console.log("caption xx", caption()));
+  // 3. On blur
+  const onBlur = () => {
+    setFocusedType(null);
+    inputRef.value = caption();
+  };
+
+  const handleInput = debounce((value: string) => {
+    saveUpdate(value);
   }, 500);
 
   const saveWithHistory = (newText: string) => {
     setCaptionHistory((prev) => [...prev, caption()]);
-    save({
-      caption: newText,
-      type: type(),
-    });
+    saveUpdate(newText);
   };
 
-  const removeCommas = () => {
-    const newText = caption().replace(/,/g, "");
-    saveWithHistory(newText);
-  };
+  const removeCommas = () =>
+    saveWithHistory(untrack(caption).replace(/,/g, ""));
 
   const replaceNewlines = () => {
     const newText = caption().replace(/\n/g, ", ");
@@ -143,11 +181,12 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
       </div>
       <textarea
         {...rest}
-        value={caption()}
+        ref={inputRef}
+        value={initialCaption}
         onInput={(e) => handleInput(e.currentTarget.value)}
         placeholder="Add a caption..."
         onFocus={() => setFocusedType(type())}
-        onBlur={() => setFocusedType(null)}
+        onBlur={onBlur}
       />
     </div>
   );
