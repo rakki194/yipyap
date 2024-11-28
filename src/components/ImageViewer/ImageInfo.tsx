@@ -14,7 +14,7 @@ export const ImageInfo: Component<{
   imageInfo: ImageInfoType;
 }> = (props) => {
   return (
-    <table class="metadata-table">
+    <table class="metadata-table card">
       <tbody>
         <tr>
           <td>

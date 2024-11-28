@@ -91,29 +91,3 @@
 .is-sticky .settings-btn {
   transform: scale(0.9);
 }
-
-.breadcrumb .theme-toggle {
-  padding: var(--half-spacing);
-  border-style: solid;
-  /* border-radius: var(--border-radius); */
-
-  cursor: pointer;
-  transition-property: background-color, color, border-color;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: var(--accent);
-    border-color: var(--accent);
-  }
-
-  /* FIXME/ this transition doesn't work because we are changing the svg element on hover
-    & svg {
-      transition-property: transform, fill;
-    }*/
-  &:hover svg {
-    transform: rotate(10deg);
-    fill: var(--bg-color);
-  }
-}

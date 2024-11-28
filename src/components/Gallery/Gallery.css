@@ -103,7 +103,6 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      transition-property: opacity;
 
       > p {
         color: white;
@@ -116,7 +115,6 @@
 
       svg {
         filter: drop-shadow(1px 1px 0.1px var(--text-primary));
-        /* transition: all var(--transition-duration) var(--transition-timing); */
       }
     }
 
@@ -129,7 +127,6 @@
     aspect-ratio: var(--directory-aspect-ratio);
     width: 100%;
     margin: 0;
-    background-color: var(--card-bg);
     border: 1px solid var(--border);
     padding: var(--spacing);
 
@@ -140,7 +137,6 @@
     gap: var(--spacing);
     color: var(--text-primary);
     font-weight: bold;
-    transition-property: color;
 
     &:hover {
       border-color: var(--border-secondary);

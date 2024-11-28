@@ -63,7 +63,7 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
 
   return (
     <div
-      class="caption-input-wrapper"
+      class="caption-input-wrapper card"
       classList={{
         focused: focusedType() === type(),
         collapsed: focusedType() !== null && focusedType() !== type(),
@@ -77,28 +77,28 @@ export const CaptionInput: Component<CaptionInputProps> = (props) => {
         <span {...getStatusIcon()} />
         <button
           onClick={removeCommas}
-          class="remove-commas-btn"
+          class="icon"
           title="Remove commas"
           innerHTML={SparkleIcon}
         />
         <button
-          class="replace-newlines-btn"
+          class="icon"
           title="Replace newlines with commas"
           innerHTML={TextAlignIcon}
         />
         <button
-          class="replace-underscores-btn"
+          class="icon"
           title="Replace underscores with spaces"
           innerHTML={TextAlignDistributedIcon}
         />
         <button
-          class="undo-btn"
+          class="icon"
           title="Undo last change"
           innerHTML={ArrowUndoIcon}
         />
 
         <button
-          class="delete-caption-btn"
+          class="icon"
           title={`Delete ${type()} caption`}
           innerHTML={DeleteIcon}
         />

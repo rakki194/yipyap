@@ -1,3 +1,6 @@
+/* ========================================================
+     Base styles
+   ======================================================== */
 :root {
   --accent: #8839ef;
   --bg-color: #eff1f5;
@@ -60,12 +63,12 @@
 }
 
 :root[data-theme="gray"] {
+  --accent: hsl(162, 33%, 40%);
   --bg-color: hsl(0, 0%, 50%);
   --card-bg: hsl(0, 0%, 45%);
   --text-primary: hsl(0, 0%, 95%);
   --text-secondary: hsl(0, 0%, 85%);
   --border: hsl(0, 0%, 40%);
-  --accent: hsl(280, 40%, 70%);
   --secondary-bg: hsl(0, 0%, 47%);
 }
 
@@ -89,6 +92,15 @@ body {
   line-height: var(--line-height);
 }
 
+svg {
+  fill: currentColor;
+}
+
+img,
+svg {
+  display: block;
+}
+
 code {
   background-color: var(--secondary-bg);
   color: var(--text-primary);
@@ -96,6 +108,8 @@ code {
 
   font-family: monospace;
 }
+
+/* Inputs */
 
 input,
 button,
@@ -105,8 +119,6 @@ select {
   border-style: solid;
   background-color: transparent;
 }
-
-/* Header */
 
 button {
   margin: 0;
@@ -128,21 +140,18 @@ button {
   .card & {
     border-color: var(--border-secondary);
   }
-
-  &.accent-hover {
-    &:hover,
-    &:focus {
-      background: var(--accent);
-    }
-  }
 }
 
+textarea,
 input,
 select {
   min-width: var(--min-width);
   background-color: var(--card-bg);
   color: var(--text-primary);
   transition: outline;
+  font-family: inherit;
+  font-size: var(--font-size);
+  line-height: var(--line-height);
 
   &:focus {
     outline: none;
@@ -154,88 +163,86 @@ select {
   }
 }
 
-:root[data-theme="dark"] {
-  --bg-color: hsl(0, 0%, 15%);
-  --card-bg: hsl(0, 0%, 20%);
-  --text-primary: hsl(0, 0%, 80%);
-  --text-secondary: hsl(0, 0%, 60%);
-  --border: #333;
-  --accent: #bf97d6;
-  --secondary-bg: hsl(0, 0%, 18%);
-}
-
-:root[data-theme="light"] {
-  --accent: #8839ef;
-  --bg-color: #eff1f5;
-  --secondary-bg: #e0e3e7;
-  --card-bg: #ccd0da;
-  --text-primary: #4c4f69;
-  --text-secondary: #5c5f77;
-  --border: var(--card-bg);
-  --border-secondary: var(--accent);
-}
-
-:root[data-theme="gray"] {
-  --bg-color: hsl(0, 0%, 50%);
-  --card-bg: hsl(0, 0%, 45%);
-  --text-primary: hsl(0, 0%, 95%);
-  --text-secondary: hsl(0, 0%, 85%);
-  --border: hsl(0, 0%, 40%);
-  --accent: hsl(280, 40%, 70%);
-  --secondary-bg: hsl(0, 0%, 47%);
-}
-
 /* Generic UI Elements */
 
 .card {
   padding: var(--spacing);
   color: var(--text-primary);
-  border: 1px solid var(--text-secondary);
+  --border-color: var(--text-secondary);
+  border-color: var(--border-color);
   background: var(--card-bg);
   border-style: solid;
+  overflow: hidden;
+
+  &:focus-within {
+    border-color: var(--border-secondary);
+    box-shadow: var(--shadow-default);
+  }
+
+  & input,
+  select,
+  textarea {
+    background: var(--secondary-bg);
+    border-style: solid;
+    color: var(--text-primary);
+
+    padding: var(--spacing);
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--bg-color);
+    }
+  }
 
   & button {
-    color: var(--text-primary);
-    padding: var(--half-spacing);
+    border-color: var(--border-color);
   }
 }
 
-svg {
-  fill: currentColor;
-  transition-property: fill;
+/* Tables */
+
+table {
+  border-collapse: collapse;
+  overflow: hidden;
 }
+
+tr {
+  border-bottom: 1px solid;
+  transition-property: background;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--secondary-bg);
+  }
+}
+
+td {
+  padding: var(--spacing);
+  color: var(--text-primary);
+}
+
+/* Icons */
 
 .icon {
   display: inline-block;
-  line-height: normal;
   vertical-align: middle;
 
   & > svg {
     width: var(--icon-size);
     height: var(--icon-size);
     fill: var(--text-secondary);
+    transition-property: fill;
   }
+}
 
-  /* <button class="icon><svg>... */
-  button& {
-    /* color: var(--text-primary);
-    text-decoration: none;
-    padding: var(--half-spacing);
-
-    border-radius: var(--border-radius);
-    transition-property: background;
-    border: 1px solid; */
-
-    .card & {
-      /* border-color: var(--text-secondary); */
-      /* background: var(--card-bg); */
-      /* color: var(--text-primary); */
-    }
-
-    &:hover {
-      /* fill: var(--accent); */
-      /* background: var(--secondary-bg); */
-    }
+.spin-icon {
+  & > svg {
+    fill: var(--accent);
+    animation: spin-animation 1s infinite linear;
   }
 }
 
@@ -245,5 +252,24 @@ svg {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.accent-hover {
+  transition-property: background-color, border-color, color;
+  background-color: var(--secondary-bg);
+  & > svg {
+    transition-property: fill;
+  }
+
+  &:hover,
+  &.focus {
+    color: var(--text-tertiary);
+    background-color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  &:hover > svg {
+    fill: var(--text-tertiary);
   }
 }

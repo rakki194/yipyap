@@ -4,20 +4,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-
-  @media (prefers-color-scheme: dark) {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .dark-mode & {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
 }
 
 .modal-header {
@@ -50,7 +41,7 @@
 
   & > .modal-actions {
     display: flex;
-    gap: 10px;
+    gap: var(--spacing);
   }
 }
 
@@ -105,10 +96,8 @@
   flex-grow: 1;
   z-index: 2;
   transition-property: transform;
-  color: var(--text-primary);
   background: rgba(0, 0, 0, 0.7);
   padding: var(--spacing);
-  border-radius: 5px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -123,8 +112,6 @@
   & > .metadata-table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
     overflow: hidden;
 
     .horizontal & {
@@ -132,27 +119,11 @@
     }
 
     & > tbody > tr {
-      border-bottom: 1px solid var(--border);
-      transition-property: background;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      &:hover {
-        background: var(--secondary-bg);
-      }
-
-      & > td {
-        padding: var(--spacing);
-        color: var(--text-primary);
-
-        &:first-child {
-          display: flex;
-          align-items: center;
-          gap: var(--spacing);
-          color: var(--text-secondary);
-        }
+      & > td:first-child {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing);
+        color: var(--text-secondary);
       }
     }
   }
@@ -168,20 +139,12 @@
       margin-top: var(--spacing);
     }
 
-    &:focus-within {
-      border-color: var(--border-secondary);
-      box-shadow: var(--shadow-default);
-    }
-
     & > .caption-input-wrapper {
       position: relative;
       display: flex;
       align-items: flex-start;
       gap: var(--spacing);
-      background: var(--card-bg);
-      padding: var(--spacing);
-      border-radius: var(--border-radius);
-      border: 1px solid var(--border);
+
       transition-property: flex;
       flex: 1;
       min-height: 150px;
@@ -197,24 +160,10 @@
 
       & > textarea {
         flex: 1;
-        background: var(--secondary-bg);
-        border: 1px solid var(--border);
-        border-radius: var(--border-radius);
-        color: var(--text-primary);
-        font-family: inherit;
-        font-size: var(--font-size);
-        line-height: var(--line-height);
-        padding: var(--spacing);
         resize: none;
         height: 100%;
         min-height: 100%;
         max-height: unset;
-
-        &:focus {
-          outline: none;
-          border-color: var(--accent);
-          background: var(--bg-color);
-        }
       }
 
       & > .caption-icons {

@@ -86,18 +86,14 @@ function ThemeToggle() {
   const [hovered, setHovered] = createSignal(false);
   return (
     <button
-      class="theme-toggle"
+      class="icon accent-hover"
       onClick={theme.toggleTheme}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       title={`Switch to ${getNextTheme(theme.theme)} mode`}
-    >
-      <span
-        class="icon"
-        innerHTML={getThemeIcon(
-          hovered() ? getNextTheme(theme.theme) : theme.theme
-        )}
-      />
-    </button>
+      innerHTML={getThemeIcon(
+        hovered() ? getNextTheme(theme.theme) : theme.theme
+      )}
+    />
   );
 }

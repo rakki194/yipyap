@@ -147,21 +147,21 @@ const ModalHeader = (props: { imageInfo: ImageInfo; onClose: () => void }) => {
       <h2>{props.imageInfo.name}</h2>
       <div class="modal-actions">
         <button
-          class="download-btn"
+          class="icon"
           onClick={() => {
             window.location.href = props.imageInfo.download;
           }}
           innerHTML={DownloadIcon}
         />
         <button
-          class="delete-btn icon"
+          class="icon"
           onClick={() =>
             gallery.selected !== null && deleteImageAction(gallery.selected)
           }
           innerHTML={DeleteIcon}
         />
         <button
-          class="close-btn icon"
+          class="icon"
           onClick={props.onClose}
           innerHTML={DismissIcon}
         />
