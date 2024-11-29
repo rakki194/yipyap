@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  /* Initial state for transition */
   opacity: 1;
   transition: opacity 0.3s ease;
 }
@@ -44,6 +45,25 @@
   transform: translateY(2px);
 }
 
+.title {
+  position: relative;
+  font-family: monospace;
+  font-size: 3em;
+  text-shadow: 2px 2px 4px var(--shadow-color), 4px 4px 6px var(--accent),
+    6px 6px 8px var(--card-bg);
+
+  animation: color-transition 60s infinite alternate;
+}
+
+@keyframes color-transition {
+  from {
+    color: var(--text-primary);
+  }
+  to {
+    color: var(--accent);
+  }
+}
+
 /* Transition Classes */
 .fade-enter-active,
 .fade-leave-active {
@@ -58,4 +78,7 @@
 .fade-enter-to,
 .fade-leave-from {
   opacity: 1;
+}
+
+@media (max-width: 600px) {
 }

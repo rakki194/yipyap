@@ -22,7 +22,7 @@ const FrontPage: Component = () => {
 
   return (
     <div class={`front-page ${isVisible() ? "visible" : "hidden"}`}>
-      <h1 style={{ "font-family": "monospace" }}>~nyaa</h1>
+      <h1 class="title">~nyaa</h1>
       <div class="selection-buttons">
         <button
           onClick={() => handleSelection("image")}
