@@ -4,21 +4,25 @@
     "target": "ESNext",
     "module": "ESNext",
     "outDir": "./static/dist",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": ["vite/client"],
+    "types": [
+      "vite/client",
+      "solid-js"
+    ],
     "paths": {
-      "~/*": ["./src/*"]
-      //     "@solid-primitives/*": [
-      //         "/home//repos/solid-primitives/packages/*/src"
-      //     ]
+      "~/*": [
+        "./src/*"
+      ]
     },
     "noEmit": false,
     "declaration": true,
     "isolatedModules": true
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

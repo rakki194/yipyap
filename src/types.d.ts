@@ -1,3 +1,5 @@
+// src/types.d.ts
+//
 // Core type definitions re-exported from various modules
 // Provides a central location for commonly used types
 

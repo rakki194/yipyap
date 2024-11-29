@@ -1,24 +1,28 @@
 // src/pages/FrontPage.tsx
 
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import "./FrontPage.css";
 import { DimensionsIcon, SpeakerIcon } from "../components/icons";
 
 const FrontPage: Component = () => {
   const navigate = useNavigate();
+  const [isVisible, setIsVisible] = createSignal(true);
 
   const handleSelection = (type: "image" | "audio") => {
-    if (type === "image") {
-      navigate("/gallery");
-    } else {
-      navigate("/audio");
-    }
+    setIsVisible(false); // Trigger the fade-out transition
+    setTimeout(() => {
+      if (type === "image") {
+        navigate("/gallery");
+      } else {
+        navigate("/audio");
+      }
+    }, 300); // Duration should match the CSS transition duration
   };
 
   return (
-    <div class="front-page">
-      <h1 style={{ "font-family": "monospace" }}>~/nyaa</h1>
+    <div class={`front-page ${isVisible() ? "visible" : "hidden"}`}>
+      <h1 style={{ "font-family": "monospace" }}>~nyaa</h1>
       <div class="selection-buttons">
         <button
           onClick={() => handleSelection("image")}
@@ -26,12 +30,12 @@ const FrontPage: Component = () => {
         >
           <div innerHTML={DimensionsIcon} />
         </button>
-        {/* <button
+        <button
           onClick={() => handleSelection("audio")}
           aria-label="Work with Audio"
         >
           <div innerHTML={SpeakerIcon} />
-        </button> */}
+        </button>
       </div>
     </div>
   );

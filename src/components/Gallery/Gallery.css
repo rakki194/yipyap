@@ -150,3 +150,12 @@
     }
   }
 }
+
+.gallery-container {
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+.gallery-container.hidden {
+  opacity: 0;
+}

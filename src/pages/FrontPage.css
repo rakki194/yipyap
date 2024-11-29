@@ -6,6 +6,16 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.front-page.hidden {
+  opacity: 0;
+}
+
+.front-page.visible {
+  opacity: 1;
 }
 
 .selection-buttons {
@@ -18,4 +28,34 @@
   padding: 10px 20px;
   font-size: 1.2em;
   cursor: pointer;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.selection-buttons button:hover,
+.selection-buttons button:focus {
+  background-color: var(--secondary-bg);
+  color: var(--accent);
+}
+
+.selection-buttons button:active {
+  transform: translateY(2px);
+}
+
+/* Transition Classes */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
 }

@@ -1,4 +1,6 @@
 // src/components/Audio/AudioGallery.tsx
+//
+// Audio Gallery component
 
 import { Component, For } from "solid-js";
 import { useNavigate } from "@solidjs/router";
