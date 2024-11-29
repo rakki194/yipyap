@@ -1,5 +1,5 @@
 // src/main.tsx
-
+//
 // This is the entry point for the application.
 
 import { render } from "solid-js/web";

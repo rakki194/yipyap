@@ -1,3 +1,7 @@
+// src/utils/sizes.ts
+//
+// This file contains utility functions for handling image sizes.
+
 import { createResource } from "solid-js";
 
 /**
