@@ -17,6 +17,7 @@ import ErrorIcon from "@fluentui/svg-icons/icons/error_circle_24_regular.svg?raw
 import SizeIcon from "@fluentui/svg-icons/icons/data_usage_24_regular.svg?raw";
 import TimeIcon from "@fluentui/svg-icons/icons/calendar_24_regular.svg?raw";
 import TypeIcon from "@fluentui/svg-icons/icons/document_24_regular.svg?raw";
+// This is the image icon, super unintuitive name >:3
 import DimensionsIcon from "@fluentui/svg-icons/icons/image_24_regular.svg?raw";
 import DownloadIcon from "@fluentui/svg-icons/icons/arrow_download_24_regular.svg?raw";
 import DeleteIcon from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
@@ -29,6 +30,7 @@ import TextAlignDistributedIcon from "@fluentui/svg-icons/icons/text_align_distr
 import ArrowUndoIcon from "@fluentui/svg-icons/icons/arrow_undo_24_regular.svg?raw";
 import SettingsIcon from "@fluentui/svg-icons/icons/settings_24_regular.svg?raw";
 import SearchIcon from "@fluentui/svg-icons/icons/search_24_regular.svg?raw";
+import SpeakerIcon from "@fluentui/svg-icons/icons/speaker_2_24_regular.svg?raw";
 
 // Export all icons
 export {
@@ -62,6 +64,7 @@ export {
   ArrowUndoIcon,
   SettingsIcon,
   SearchIcon,
+  SpeakerIcon,
 };
 
 // Export caption icons map
