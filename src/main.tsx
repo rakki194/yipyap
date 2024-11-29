@@ -1,3 +1,5 @@
+// src/main.tsx
+
 import { render } from "solid-js/web";
 import type { ParentComponent } from "solid-js";
 import { Router } from "@solidjs/router";

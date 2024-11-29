@@ -1,0 +1,2 @@
+The frontend is a solidjs application, not a react one! Use solidjs syntax and features.
+The backend is FastAPI with HTMX.
