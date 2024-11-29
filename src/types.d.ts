@@ -1,7 +1,7 @@
 export type {
   GalleryState,
   SaveCaption,
-  GalleryContextValue,
+  GalleryContextType,
 } from "./contexts/gallery.ts";
 
 export type { Size } from "@solid-primitives/resize-observer";

@@ -9,7 +9,10 @@ import TagIcon from "@fluentui/svg-icons/icons/tag_24_regular.svg?raw";
 import NotepadIcon from "@fluentui/svg-icons/icons/notepad_24_regular.svg?raw";
 import SubtitlesIcon from "@fluentui/svg-icons/icons/subtitles_24_regular.svg?raw";
 import EditIcon from "@fluentui/svg-icons/icons/edit_24_regular.svg?raw";
-import SaveIcon from "@fluentui/svg-icons/icons/checkmark_24_regular.svg?raw";
+import SuccessIcon from "@fluentui/svg-icons/icons/checkmark_24_regular.svg?raw";
+import QuestionIcon from "@fluentui/svg-icons/icons/question_circle_24_regular.svg?raw";
+import InfoIcon from "@fluentui/svg-icons/icons/info_24_regular.svg?raw";
+import WarningIcon from "@fluentui/svg-icons/icons/warning_24_regular.svg?raw";
 import ErrorIcon from "@fluentui/svg-icons/icons/error_circle_24_regular.svg?raw";
 import SizeIcon from "@fluentui/svg-icons/icons/data_usage_24_regular.svg?raw";
 import TimeIcon from "@fluentui/svg-icons/icons/calendar_24_regular.svg?raw";
@@ -39,7 +42,10 @@ export {
   NotepadIcon,
   SubtitlesIcon,
   EditIcon,
-  SaveIcon,
+  SuccessIcon,
+  QuestionIcon,
+  InfoIcon,
+  WarningIcon,
   ErrorIcon,
   SizeIcon,
   TimeIcon,
@@ -64,4 +70,12 @@ export const captionIconsMap = {
   tags: TagIcon,
   caption: SubtitlesIcon,
   wd: BowTieIcon,
+};
+
+export const statusIconsMap = {
+  success: SuccessIcon,
+  question: QuestionIcon,
+  info: InfoIcon,
+  warning: WarningIcon,
+  error: ErrorIcon,
 };

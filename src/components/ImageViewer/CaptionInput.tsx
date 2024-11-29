@@ -1,18 +1,9 @@
 // src/components/ImageViewer/CaptionEditor.tsx
-import {
-  createEffect,
-  createSignal,
-  splitProps,
-  untrack,
-  Component,
-  JSX,
-  For,
-} from "solid-js";
+import { createSignal, splitProps, Component, JSX, For } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
-import { debounce } from "@solid-primitives/scheduled";
 import {
   EditIcon,
-  SaveIcon,
+  SuccessIcon,
   ErrorIcon,
   SpinnerIcon,
   captionIconsMap,
@@ -24,8 +15,6 @@ import {
 } from "~/components/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { preserveState } from "~/components/TextArea";
-import { deleteCaption } from "~/resources/browse";
-import { Gallery } from "../Gallery/Gallery";
 
 export interface CaptionInputProps
   extends JSX.HTMLAttributes<HTMLTextAreaElement> {
@@ -166,7 +155,7 @@ const StatusIcon = <T extends [{ type: string }], U>(props: {
         title: props.status.result.message,
       };
     return {
-      innerHTML: SaveIcon,
+      innerHTML: SuccessIcon,
     };
   };
   return <span class="icon" {...getStatusIcon()} />;

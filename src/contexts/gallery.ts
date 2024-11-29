@@ -25,7 +25,7 @@ export interface GalleryState {
   mode: "view" | "edit";
 }
 
-export type GalleryContextValue = ReturnType<typeof makeGalleryState>;
+export type GalleryContextType = ReturnType<typeof makeGalleryState>;
 
 export type { SaveCaption };
 
