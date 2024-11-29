@@ -64,8 +64,11 @@ export const Breadcrumb = () => {
     <nav class="breadcrumb">
       <div class="breadcrumb-content">
         <div class="breadcrumb-links">
+          <A href="/">
+            <span class="home-icon icon" innerHTML={HomeIcon} />
+          </A>
           <A href="/gallery">
-            <span class="icon" innerHTML={HomeIcon} />
+            <span class="gallery-icon icon" innerHTML={DimensionsIcon} />
           </A>
           <Crumbs />
         </div>

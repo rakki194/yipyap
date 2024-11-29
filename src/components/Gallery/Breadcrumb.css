@@ -45,3 +45,11 @@
     }
   }
 }
+
+.gallery-icon {
+  color: var(--accent);
+}
+
+.home-icon {
+  color: var(--text-primary);
+}

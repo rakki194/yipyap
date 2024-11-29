@@ -63,7 +63,7 @@
 }
 
 :root[data-theme="gray"] {
-  --accent: hsl(162, 33%, 40%);
+  --accent: hsl(266, 50%, 77%);
   --bg-color: hsl(0, 0%, 50%);
   --card-bg: hsl(0, 0%, 45%);
   --text-primary: hsl(0, 0%, 95%);
