@@ -1,0 +1,21 @@
+/* src/pages/FrontPage.css */
+
+.front-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.selection-buttons {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.selection-buttons button {
+  padding: 10px 20px;
+  font-size: 1.2em;
+  cursor: pointer;
+}

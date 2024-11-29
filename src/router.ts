@@ -1,15 +1,37 @@
+// src/router.ts
+//
+// This file defines the application's routing configuration.
+
 import { lazy } from "solid-js";
 import { Navigate, RouteDefinition } from "@solidjs/router";
 import { NotFound } from "./pages/not_found";
 
+// Lazy load components for code splitting
+const FrontPage = lazy(() => import("./pages/FrontPage"));
+const GalleryPage = lazy(() => import("./pages/Gallery"));
+const AudioPage = lazy(() => import("./pages/Audio"));
+
+/**
+ * Application route definitions using SolidJS Router
+ *
+ * Defines the following routes:
+ * - / - Front page with selection options
+ * - /gallery/* - Main gallery view with nested paths
+ * - /audio/* - Main audio view with nested paths
+ * - *404 - Catch-all route for 404 errors
+ */
 export const routes: RouteDefinition[] = [
   {
-    path: "/gallery/*path",
-    component: lazy(() => import("./pages/Gallery")),
+    path: "/",
+    component: FrontPage,
   },
   {
-    path: "/",
-    component: () => Navigate({ href: "/gallery" }),
+    path: "/gallery/*path",
+    component: GalleryPage,
+  },
+  {
+    path: "/audio/*path",
+    component: AudioPage,
   },
   {
     path: "*404",

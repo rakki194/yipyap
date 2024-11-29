@@ -1,0 +1,22 @@
+/* src/components/Audio/AudioGallery.css */
+
+.audio-gallery {
+  padding: 20px;
+}
+
+.audio-gallery ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.audio-gallery li {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.audio-gallery li:hover {
+  background-color: #dcdcdc;
+}
