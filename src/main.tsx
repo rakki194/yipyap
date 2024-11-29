@@ -1,5 +1,7 @@
 // src/main.tsx
 
+// This is the entry point for the application.
+
 import { render } from "solid-js/web";
 import type { ParentComponent } from "solid-js";
 import { Router } from "@solidjs/router";
