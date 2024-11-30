@@ -4,10 +4,12 @@ use actix_web::{middleware::Logger, web, App, HttpServer};
 use env_logger::Env;
 use std::env;
 use std::fs;
+use std::path::PathBuf;
 
 mod handlers;
 mod models;
 mod utils;
+mod data_access;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -15,7 +17,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     // Load environment variables
-    let root_dir = env::var("ROOT_DIR").unwrap_or_else(|_| "./datasets".to_string());
+    let root_dir = PathBuf::from(env::var("ROOT_DIR").unwrap_or_else(|_| "./datasets".to_string()));
     let is_dev = env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()) == "development";
     let frontend_port: u16 = env::var("FRONTEND_PORT")
         .unwrap_or_else(|_| "3000".to_string())
@@ -29,32 +31,8 @@ async fn main() -> std::io::Result<()> {
     // Ensure root_dir exists
     fs::create_dir_all(&root_dir).expect("Failed to create root directory");
 
-    // Initialize database (using SQLx)
-    let db_pool = match sqlx::SqlitePool::connect(&format!("sqlite://{}/cache.db", root_dir)).await {
-        Ok(pool) => pool,
-        Err(e) => {
-            log::error!("Failed to connect to the database: {e}");
-            std::process::exit(1);
-        }
-    };
-
-    // Initialize image_info table
-    sqlx::query(
-        r#"
-        CREATE TABLE IF NOT EXISTS image_info (
-            directory TEXT NOT NULL,
-            name TEXT NOT NULL,
-            info TEXT NOT NULL,
-            cache_time INTEGER NOT NULL,
-            thumbnail_webp BLOB NOT NULL,
-            deleted INTEGER NOT NULL DEFAULT 0,
-            PRIMARY KEY (directory, name)
-        )
-        "#,
-    )
-    .execute(&db_pool)
-        .await
-        .expect("Failed to create image_info table");
+    // Initialize data source
+    let data_source = data_access::CachedFileSystemDataSource::new(root_dir, (300, 300), (1024, 1024));
 
     HttpServer::new(move || {
         // Configure CORS
@@ -74,7 +52,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(Logger::default())
             .wrap(cors)
-            .app_data(web::Data::new(db_pool.clone()))
+            .app_data(web::Data::new(data_source.clone()))
             .configure(handlers::init_routes)
             // ⚠️ NOTE: This is not really needed for the backend, we think. :3
             //.service(Files::new("/static", "./static").show_files_listing())

@@ -3,117 +3,26 @@ use actix_web::{delete, get, put, web, HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use std::path::PathBuf;
-use std::path::Path;
-use sqlx::Row;
 
-use crate::models::{BrowseHeader, DeleteCaptionResponse, DirectoryModel, ImageModel};
-use crate::utils::{get_human_readable_size, resolve_path};
-
-pub struct CachedFileSystemDataSource {
-    root_dir: PathBuf,
-    thumbnail_size: (u32, u32),
-    preview_size: (u32, u32),
-    db_pool: SqlitePool,
-}
-
-impl CachedFileSystemDataSource {
-    pub fn new(root_dir: PathBuf, thumbnail_size: (u32, u32), preview_size: (u32, u32)) -> Self {
-        // Initialize SQLx pool and other necessary setups
-        let db_path = root_dir.join("cache.db");
-        let db_pool = sqlx::SqlitePool::connect_lazy(&format!("sqlite://{}", db_path.to_string_lossy()))
-            .expect("Failed to create SQLite pool");
-        
-        Self {
-            root_dir,
-            thumbnail_size,
-            preview_size,
-            db_pool,
-        }
-    }
-
-    /// Save a caption to a file and update the cache
-    pub async fn save_caption(&self, path: &Path, caption: &str, caption_type: &str) -> Result<(), anyhow::Error> {
-        sqlx::query(
-            "INSERT INTO captions (path, caption, caption_type) VALUES (?1, ?2, ?3)",
-        )
-        .bind(path.to_string_lossy())
-        .bind(caption)
-        .bind(caption_type)
-        .execute(&self.db_pool)
-        .await?;
-        Ok(())
-    }
-
-    /// Delete a specific caption and update the cache
-    pub async fn delete_caption(&self, path: &Path, caption_type: &str) -> Result<(), anyhow::Error> {
-        sqlx::query(
-            "DELETE FROM captions WHERE path = ?1 AND caption_type = ?2",
-        )
-        .bind(path.to_string_lossy())
-        .bind(caption_type)
-        .execute(&self.db_pool)
-        .await?;
-        Ok(())
-    }
-
-    /// Delete an image and its associated caption files
-    pub async fn delete_image(&self, path: &Path, confirm: bool) -> Result<(Vec<String>, Vec<String>), anyhow::Error> {
-        if confirm {
-            sqlx::query(
-                "DELETE FROM images WHERE path = ?1",
-            )
-            .bind(path.to_string_lossy())
-            .execute(&self.db_pool)
-            .await?;
-
-            let captions = sqlx::query(
-                "SELECT caption_type FROM captions WHERE path = ?1",
-            )
-            .bind(path.to_string_lossy())
-            .fetch_all(&self.db_pool)
-            .await?
-            .into_iter()
-            .map(|record| record.get::<String, _>("caption_type"))
-            .collect();
-
-            sqlx::query(
-                "DELETE FROM captions WHERE path = ?1",
-            )
-            .bind(path.to_string_lossy())
-            .execute(&self.db_pool)
-            .await?;
-
-            let deleted_files = vec![path.to_string_lossy().to_string()];
-            return Ok((captions, deleted_files));
-        }
-        Err(anyhow::anyhow!("Deletion not confirmed"))
-    }
-
-    pub async fn get_preview(&self, path: &Path) -> Result<Option<Vec<u8>>, anyhow::Error> {
-        let record = sqlx::query(
-            "SELECT preview_data FROM previews WHERE path = ?1",
-        )
-        .bind(path.to_string_lossy())
-        .fetch_optional(&self.db_pool)
-        .await?;
-
-        if let Some(r) = record {
-            Ok(Some(r.get::<Vec<u8>, _>("preview_data")))
-        } else {
-            Ok(None)
-        }
-    }
-}
+use crate::models::{BrowseHeader, DeleteCaptionResponse};
+use crate::utils::resolve_path;
+use crate::data_access::CachedFileSystemDataSource;
 
 // Initialize all routes
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(browse);
-    // Add other services like delete_image, get_thumbnail, etc.
+    cfg.service(delete_image);
+    cfg.service(get_preview);
+    cfg.service(download_image);
+    cfg.service(get_config);
+    cfg.service(update_caption);
+    cfg.service(delete_caption);
+    cfg.service(get_thumbnail);
 }
 
 #[put("/caption/{path:.*}")]
 async fn update_caption(
-    _pool: web::Data<SqlitePool>,
+    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
     caption_data: web::Json<CaptionData>,
 ) -> impl Responder {
@@ -168,7 +77,7 @@ struct ConfigResponse {
 
 #[get("/download/{path:.*}")]
 async fn download_image(
-    pool: web::Data<SqlitePool>,
+    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
     req: HttpRequest,
 ) -> impl Responder {
@@ -197,7 +106,7 @@ async fn download_image(
 
 #[get("/preview/{path:.*}")]
 async fn get_preview(
-    pool: web::Data<SqlitePool>,
+    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
 ) -> impl Responder {
     let root_dir = PathBuf::from("./datasets");
@@ -221,7 +130,7 @@ async fn get_preview(
 
 #[delete("/api/caption/{path:.*}")]
 async fn delete_caption(
-    pool: web::Data<SqlitePool>,
+    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
     caption_type: web::Query<CaptionType>,
 ) -> impl Responder {
@@ -258,7 +167,7 @@ struct Confirm {
 
 #[delete("/api/browse/{path:.*}")]
 async fn delete_image(
-    pool: web::Data<SqlitePool>,
+    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
     confirm: web::Query<Confirm>,
 ) -> impl Responder {
@@ -290,16 +199,16 @@ struct DeleteImageResponse {
 
 #[get("/api/browse")]
 async fn browse(
-    pool: web::Data<SqlitePool>,
-    req: HttpRequest,
+    //pool: web::Data<SqlitePool>,
+    //req: HttpRequest,
     query: web::Query<BrowseQuery>,
 ) -> impl Responder {
     let path = &query.path;
     let page = query.page;
-    let page_size = query.page_size;
+    //let page_size = query.page_size;
 
     let root_dir = PathBuf::from("./datasets"); // You might want to pass this as a config
-    let target_path = resolve_path(path, &root_dir);
+    //let target_path = resolve_path(path, &root_dir);
 
     // TODO: Implement If-Modified-Since handling
 
@@ -332,4 +241,25 @@ fn default_page() -> u32 {
 
 fn default_page_size() -> u32 {
     50
+}
+
+#[get("/thumbnail/{path:.*}")]
+async fn get_thumbnail(
+    data_source: web::Data<CachedFileSystemDataSource>,
+    path: web::Path<String>,
+) -> impl Responder {
+    let root_dir = &data_source.root_dir;
+    let image_path = match resolve_path(&path, root_dir) {
+        Ok(p) => p,
+        Err(e) => return HttpResponse::BadRequest().body(e.to_string()),
+    };
+
+    match data_source.get_thumbnail(&image_path).await {
+        Ok(Some(thumbnail_data)) => HttpResponse::Ok()
+            .content_type("image/webp")
+            .insert_header(("Cache-Control", "public, max-age=31536000"))
+            .body(thumbnail_data),
+        Ok(None) => HttpResponse::NotFound().body("Thumbnail not found"),
+        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+    }
 }
