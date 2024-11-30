@@ -1,5 +1,5 @@
 use actix_cors::Cors;
-use actix_files::Files;
+//use actix_files::Files;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use env_logger::Env;
 use std::env;
@@ -17,6 +17,10 @@ async fn main() -> std::io::Result<()> {
     // Load environment variables
     let root_dir = env::var("ROOT_DIR").unwrap_or_else(|_| "./datasets".to_string());
     let is_dev = env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()) == "development";
+    let frontend_port: u16 = env::var("FRONTEND_PORT")
+        .unwrap_or_else(|_| "3000".to_string())
+        .parse()
+        .expect("FRONTEND_PORT must be a number");
     let backend_port: u16 = env::var("BACKEND_PORT")
         .unwrap_or_else(|_| "8080".to_string())
         .parse()
@@ -29,7 +33,7 @@ async fn main() -> std::io::Result<()> {
     let db_pool = match sqlx::SqlitePool::connect(&format!("sqlite://{}/cache.db", root_dir)).await {
         Ok(pool) => pool,
         Err(e) => {
-            log::error!("Failed to connect to the database: {}", e);
+            log::error!("Failed to connect to the database: {e}");
             std::process::exit(1);
         }
     };
@@ -56,7 +60,7 @@ async fn main() -> std::io::Result<()> {
         // Configure CORS
         let cors = if is_dev {
             Cors::default()
-                .allowed_origin("http://localhost:3000")
+                .allowed_origin(format!("http://localhost:{frontend_port}").as_str())
                 .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
                 .allowed_headers(vec![actix_web::http::header::CONTENT_TYPE])
                 .supports_credentials()
@@ -72,7 +76,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(db_pool.clone()))
             .configure(handlers::init_routes)
-            .service(Files::new("/static", "./static").show_files_listing())
+            // ⚠️ NOTE: This is not really needed for the backend, we think. :3
+            //.service(Files::new("/static", "./static").show_files_listing())
     })
     .bind(("0.0.0.0", backend_port))?
     .run()

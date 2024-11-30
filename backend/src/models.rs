@@ -33,7 +33,7 @@ pub struct DirectoryModel {
 
 #[derive(Serialize, Deserialize)]
 pub struct BrowseResponse {
-    pub items: Vec<serde_json::Value>, // Adjust based on actual data structure
+    pub items: Vec<serde_json::Value>,
     pub total_pages: u32,
 }
 
