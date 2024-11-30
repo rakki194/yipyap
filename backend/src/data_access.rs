@@ -132,7 +132,7 @@ impl CachedFileSystemDataSource {
     pub async fn delete_image(&self, path: &Path, confirm: bool) -> Result<(Vec<String>, Vec<String>)> {
         if confirm {
             sqlx::query(
-                "DELETE FROM images WHERE path = ?1"
+                "DELETE FROM image_info WHERE path = ?1"
             )
             .bind(path.to_string_lossy())
             .execute(&self.db_pool)
@@ -334,5 +334,213 @@ impl CachedFileSystemDataSource {
 
         let caption: String = record.get("caption");
         Ok(caption)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::tempdir;
+    use tokio::test;
+
+    async fn setup_test_db() -> Result<CachedFileSystemDataSource> {
+        let temp_dir = tempdir().unwrap();
+        let db_path = temp_dir.path().join("cache.db");
+        
+        // Create SQLite connection pool with proper SQLite URL format and write permissions
+        let db_pool = sqlx::SqlitePool::connect_with(
+            sqlx::sqlite::SqliteConnectOptions::new()
+                .filename(&db_path)
+                .create_if_missing(true)
+                .read_only(false)
+                .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal),
+        )
+        .await?;
+
+        // Initialize database tables
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS image_info (
+                path TEXT PRIMARY KEY,
+                info TEXT NOT NULL,
+                cache_time INTEGER NOT NULL,
+                thumbnail_webp BLOB NOT NULL,
+                deleted INTEGER NOT NULL DEFAULT 0
+            )
+            "#
+        )
+        .execute(&db_pool)
+        .await?;
+
+        // Create captions table
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS captions (
+                path TEXT NOT NULL,
+                caption TEXT NOT NULL,
+                caption_type TEXT NOT NULL,
+                PRIMARY KEY (path, caption_type)
+            )
+            "#
+        )
+        .execute(&db_pool)
+        .await?;
+
+        // Create previews table
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS previews (
+                path TEXT PRIMARY KEY,
+                preview_data BLOB NOT NULL
+            )
+            "#
+        )
+        .execute(&db_pool)
+        .await?;
+
+        // Ensure we can write to the database
+        sqlx::query("PRAGMA journal_mode=WAL;")
+            .execute(&db_pool)
+            .await?;
+
+        sqlx::query("PRAGMA synchronous=NORMAL;")
+            .execute(&db_pool)
+            .await?;
+
+        Ok(CachedFileSystemDataSource {
+            root_dir: temp_dir.path().to_path_buf(),
+            thumbnail_size: (100, 100),
+            preview_size: (800, 600),
+            db_pool,
+        })
+    }
+
+    #[test]
+    async fn test_new() {
+        let data_source = setup_test_db().await.unwrap();
+        assert_eq!(data_source.thumbnail_size, (100, 100));
+        assert_eq!(data_source.preview_size, (800, 600));
+    }
+
+    #[test]
+    async fn test_save_and_get_caption() {
+        let data_source = setup_test_db().await.unwrap();
+        let test_path = Path::new("test_image.jpg");
+        let test_caption = "Test caption";
+        let test_type = "description";
+
+        // Test saving caption
+        let save_result = data_source.save_caption(test_path, test_caption, test_type).await;
+        assert!(save_result.is_ok());
+
+        // Test getting caption
+        let caption = data_source.get_caption(test_path).await;
+        assert!(caption.is_ok());
+        assert_eq!(caption.unwrap(), test_caption);
+    }
+
+    #[test]
+    async fn test_delete_caption() {
+        let data_source = setup_test_db().await.unwrap();
+        let test_path = Path::new("test_image.jpg");
+        let test_caption = "Test caption";
+        let test_type = "description";
+
+        // First save a caption
+        data_source.save_caption(test_path, test_caption, test_type).await.unwrap();
+
+        // Test deleting caption
+        let delete_result = data_source.delete_caption(test_path, test_type).await;
+        assert!(delete_result.is_ok());
+
+        // Verify caption is deleted by trying to get it - should return None or error
+        let caption_result = data_source.get_caption(test_path).await;
+        assert!(caption_result.is_err());
+    }
+
+    #[test]
+    async fn test_delete_image() {
+        let data_source = setup_test_db().await.unwrap();
+        let test_path = Path::new("test_image.jpg");
+
+        // First insert a test image
+        sqlx::query(
+            "INSERT INTO image_info (path, info, cache_time, thumbnail_webp, deleted) VALUES (?1, ?2, ?3, ?4, 0)"
+        )
+        .bind(test_path.to_string_lossy().to_string())
+        .bind("{}")  // Empty JSON object as info
+        .bind(chrono::Utc::now().timestamp())
+        .bind(vec![0u8; 10])  // Dummy thumbnail data
+        .execute(&data_source.db_pool)
+        .await
+        .unwrap();
+
+        // Test without confirmation
+        let result = data_source.delete_image(test_path, false).await;
+        assert!(result.is_err());
+
+        // Test with confirmation
+        let result = data_source.delete_image(test_path, true).await;
+        assert!(result.is_ok());
+        let (deleted_captions, deleted_files) = result.unwrap();
+        assert!(deleted_files.contains(&test_path.to_string_lossy().to_string()));
+    }
+
+    #[test]
+    async fn test_get_preview() {
+        let data_source = setup_test_db().await.unwrap();
+        let test_path = Path::new("test_image.jpg");
+
+        // Test getting non-existent preview
+        let result = data_source.get_preview(test_path).await;
+        assert!(result.is_ok());
+        assert!(result.unwrap().is_none());
+    }
+
+    #[test]
+    async fn test_get_thumbnail() {
+        let data_source = setup_test_db().await.unwrap();
+        let test_path = Path::new("test_image.jpg");
+
+        // Test getting non-existent thumbnail
+        let result = data_source.get_thumbnail(test_path).await;
+        assert!(result.is_ok());
+        assert!(result.unwrap().is_none());
+    }
+
+    #[test]
+    async fn test_scan_directory() {
+        let data_source = setup_test_db().await.unwrap();
+        let test_dir = Path::new("test_dir");
+
+        let result = data_source.scan_directory(test_dir, 1, 10).await;
+        assert!(result.is_ok());
+        
+        let browse_header = result.unwrap();
+        assert_eq!(browse_header.page, 1);
+        assert_eq!(browse_header.total_folders, 2);
+        assert_eq!(browse_header.total_images, 2);
+    }
+
+    #[test]
+    async fn test_get_image_info() {
+        let data_source = setup_test_db().await.unwrap();
+        let test_path = Path::new("test_image.jpg");
+
+        // Test getting non-existent image info
+        let result = data_source.get_image_info(test_path).await;
+        assert!(result.is_err());
+    }
+
+    #[test]
+    async fn test_ensure_thumbnail() {
+        let data_source = setup_test_db().await.unwrap();
+        let test_path = Path::new("test_image.jpg");
+
+        let result = data_source.ensure_thumbnail(test_path).await;
+        assert!(result.is_ok());
+        
+        let thumbnail_path = result.unwrap();
+        assert_eq!(thumbnail_path.extension().unwrap(), "webp");
     }
 } 

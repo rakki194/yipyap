@@ -25,5 +25,4 @@ actix-files = "0.6.6"
 fern = "0.7.0"
 
 [dev-dependencies]
-criterion = "0.5.1"
 tempfile = "3.5.0"
