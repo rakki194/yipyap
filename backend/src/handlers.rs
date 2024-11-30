@@ -47,20 +47,30 @@ async fn update_caption(
     path: web::Path<String>,
     caption_data: web::Json<CaptionData>,
 ) -> impl Responder {
+    log::debug!("Entering `update_caption` with path: {:?}", path);
     let root_dir = PathBuf::from("./datasets");
     let image_path = match resolve_path(&path, &root_dir) {
         Ok(p) => p,
-        Err(e) => return HttpResponse::BadRequest().body(e.to_string()),
+        Err(e) => {
+            log::error!("Path resolution failed: {:?}", e);
+            return HttpResponse::BadRequest().body(e.to_string());
+        },
     };
 
     let data_source = CachedFileSystemDataSource::new(root_dir, (300, 300), (1024, 1024));
     match data_source.delete_caption(&image_path, caption_data.caption_type.as_str()).await {
-        Ok(_) => HttpResponse::Ok().json(DeleteCaptionResponse {
-            success: true,
-            message: format!("Caption {} deleted successfully", caption_data.caption_type),
-            path: image_path.with_extension(caption_data.caption_type.clone().as_str()).to_string_lossy().to_string(),
-        }),
-        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+        Ok(_) => {
+            log::info!("Successfully deleted caption of type '{}' for image: {:?}", caption_data.caption_type, image_path);
+            HttpResponse::Ok().json(DeleteCaptionResponse {
+                success: true,
+                message: format!("Caption {} deleted successfully", caption_data.caption_type),
+                path: image_path.with_extension(caption_data.caption_type.clone().as_str()).to_string_lossy().to_string(),
+            })
+        },
+        Err(e) => {
+            log::error!("Failed to delete caption: {:?}", e);
+            HttpResponse::InternalServerError().body(e.to_string())
+        },
     }
 }
 
@@ -171,22 +181,33 @@ async fn download_image(
 async fn get_preview(
     path: web::Path<String>,
 ) -> impl Responder {
+    log::debug!("Entering `get_preview` with path: {:?}", path);
     let root_dir = PathBuf::from("./datasets");
     let image_path = match resolve_path(&path, &root_dir) {
         Ok(p) => p,
-        Err(e) => return HttpResponse::BadRequest().body(e.to_string()),
+        Err(e) => {
+            log::error!("Path resolution failed: {:?}", e);
+            return HttpResponse::BadRequest().body(e.to_string());
+        },
     };
 
     let data_source = CachedFileSystemDataSource::new(root_dir, (300, 300), (1024, 1024));
     match data_source.get_preview(image_path.as_path()).await {
         Ok(Some(preview_data)) => {
+            log::info!("Preview found for image: {:?}", image_path);
             HttpResponse::Ok()
                 .content_type("image/webp")
                 .insert_header(("Cache-Control", "public, max-age=31536000"))
                 .body(preview_data)
         }
-        Ok(None) => HttpResponse::NotFound().body("Preview not found"),
-        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+        Ok(None) => {
+            log::warn!("No preview found for image: {:?}", image_path);
+            HttpResponse::NotFound().body("Preview not found")
+        },
+        Err(e) => {
+            log::error!("Error retrieving preview: {:?}", e);
+            HttpResponse::InternalServerError().body(e.to_string())
+        },
     }
 }
 
