@@ -123,7 +123,6 @@
         display: flex;
         align-items: center;
         gap: var(--spacing);
-        color: var(--text-secondary);
       }
     }
   }
@@ -174,8 +173,4 @@
       }
     }
   }
-}
-
-.image-container {
-  position: relative;
 }
