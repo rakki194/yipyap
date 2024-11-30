@@ -1,7 +1,7 @@
 use actix_cors::Cors;
-//use actix_files::Files;
 use actix_web::{middleware::Logger, web, App, HttpServer};
-use env_logger::Env;
+use chrono::Local;
+use fern::Dispatch;
 use std::env;
 use std::fs;
 use std::path::PathBuf;
@@ -14,7 +14,7 @@ mod data_access;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Initialize logger
-    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+    initialize_logger().expect("Failed to initialize logger");
 
     // Load environment variables
     let root_dir = PathBuf::from(env::var("ROOT_DIR").unwrap_or_else(|_| "./datasets".to_string()));
@@ -54,10 +54,54 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(data_source.clone()))
             .configure(handlers::init_routes)
-            // ⚠️ NOTE: This is not really needed for the backend, we think. :3
-            //.service(Files::new("/static", "./static").show_files_listing())
     })
     .bind(("0.0.0.0", backend_port))?
     .run()
     .await
+}
+
+/// Initializes the logging system with both console and file outputs.
+/// 
+/// # Errors
+/// 
+/// Returns an error if the logger fails to initialize.
+fn initialize_logger() -> Result<(), Box<dyn std::error::Error>> {
+    let log_file = "backend.log";
+
+    Dispatch::new()
+        // Set the default log level based on the environment
+        .level(if env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()) == "development" {
+            log::LevelFilter::Debug
+        } else {
+            log::LevelFilter::Info
+        })
+        // Format for the console output
+        .chain(
+            Dispatch::new()
+                .format(|out, message, record| {
+                    out.finish(format_args!(
+                        "{} [{}] {}",
+                        Local::now().format("%Y-%m-%dT%H:%M:%S"),
+                        record.level(),
+                        message
+                    ))
+                })
+                .chain(std::io::stdout()),
+        )
+        // Format for the file output
+        .chain(
+            Dispatch::new()
+                .format(|out, message, record| {
+                    out.finish(format_args!(
+                        "{} [{}] {}",
+                        Local::now().format("%Y-%m-%dT%H:%M:%S"),
+                        record.level(),
+                        message
+                    ))
+                })
+                .chain(fern::log_file(log_file)?),
+        )
+        .apply()?;
+    
+    Ok(())
 }

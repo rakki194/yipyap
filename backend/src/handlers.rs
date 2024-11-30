@@ -8,7 +8,17 @@ use crate::models::{BrowseHeader, DeleteCaptionResponse};
 use crate::utils::resolve_path;
 use crate::data_access::CachedFileSystemDataSource;
 
-// Initialize all routes
+/// Initializes all HTTP routes for the backend application.
+///
+/// # Arguments
+///
+/// * `cfg` - The Actix web service configuration.
+///
+/// # Example
+///
+/// ```rust
+/// init_routes(&mut web::ServiceConfig::default());
+/// ```
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(browse);
     cfg.service(delete_image);
@@ -20,9 +30,18 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_thumbnail);
 }
 
+/// Handles the `PUT /caption/{path}` endpoint to update a caption.
+///
+/// # Arguments
+///
+/// * `path` - The image path extracted from the URL.
+/// * `caption_data` - The JSON payload containing caption information.
+///
+/// # Returns
+///
+/// An `HttpResponse` indicating the result of the operation.
 #[put("/caption/{path:.*}")]
 async fn update_caption(
-    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
     caption_data: web::Json<CaptionData>,
 ) -> impl Responder {
@@ -43,19 +62,38 @@ async fn update_caption(
     }
 }
 
+/// Represents the data structure for caption-related requests.
+///
+/// This struct is used to deserialize JSON payloads for caption operations.
 #[derive(Deserialize)]
 struct CaptionData {
+    /// The type or category of the caption.
     #[serde(rename = "type")]
     caption_type: String,
 }
 
+/// Represents the response after updating a caption.
+///
+/// This struct is serialized to JSON and sent as an HTTP response.
 #[derive(Serialize)]
 struct UpdateCaptionResponse {
+    /// Indicates whether the operation was successful.
     success: bool,
+    /// A message describing the result.
     message: String,
+    /// The path to the affected file.
     path: String,
 }
 
+/// Handles the `GET /config` endpoint to retrieve configuration settings.
+///
+/// # Arguments
+///
+/// * `_pool` - The SQLite connection pool (unused).
+///
+/// # Returns
+///
+/// An `HttpResponse` containing configuration details in JSON format.
 #[get("/config")]
 async fn get_config(
     _pool: web::Data<SqlitePool>,
@@ -69,15 +107,29 @@ async fn get_config(
     HttpResponse::Ok().json(config)
 }
 
+/// Represents the configuration settings sent in responses.
+///
+/// Includes sizes for thumbnails and preview images.
 #[derive(Serialize)]
 struct ConfigResponse {
+    /// The dimensions for thumbnails.
     thumbnail_size: (u32, u32),
+    /// The dimensions for preview images.
     preview_size: (u32, u32),
 }
 
+/// Handles the `GET /download/{path}` endpoint to download an image.
+///
+/// # Arguments
+///
+/// * `path` - The image path extracted from the URL.
+/// * `req` - The HTTP request.
+///
+/// # Returns
+///
+/// An `HttpResponse` that serves the requested file or an error message.
 #[get("/download/{path:.*}")]
 async fn download_image(
-    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
     req: HttpRequest,
 ) -> impl Responder {
@@ -104,9 +156,17 @@ async fn download_image(
     }
 }
 
+/// Handles the `GET /preview/{path}` endpoint to retrieve a preview image.
+///
+/// # Arguments
+///
+/// * `path` - The image path extracted from the URL.
+///
+/// # Returns
+///
+/// An `HttpResponse` containing the preview image or an error message.
 #[get("/preview/{path:.*}")]
 async fn get_preview(
-    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
 ) -> impl Responder {
     let root_dir = PathBuf::from("./datasets");
@@ -128,9 +188,18 @@ async fn get_preview(
     }
 }
 
+/// Handles the `DELETE /api/caption/{path}` endpoint to delete a specific caption.
+///
+/// # Arguments
+///
+/// * `path` - The image path extracted from the URL.
+/// * `caption_type` - The type/category of the caption to delete.
+///
+/// # Returns
+///
+/// An `HttpResponse` indicating the result of the deletion.
 #[delete("/api/caption/{path:.*}")]
 async fn delete_caption(
-    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
     caption_type: web::Query<CaptionType>,
 ) -> impl Responder {
@@ -151,6 +220,9 @@ async fn delete_caption(
     }
 }
 
+/// Represents the type/category of a caption.
+///
+/// This struct is used to deserialize query parameters for caption operations.
 #[derive(Deserialize, Clone, Debug)]
 struct CaptionType(String);
 
@@ -160,14 +232,18 @@ impl AsRef<str> for CaptionType {
     }
 }
 
-#[derive(Deserialize)]
-struct Confirm {
-    confirm: bool,
-}
-
+/// Handles the `DELETE /api/browse/{path}` endpoint to delete an image.
+///
+/// # Arguments
+///
+/// * `path` - The image path extracted from the URL.
+/// * `confirm` - Query parameter to confirm deletion.
+///
+/// # Returns
+///
+/// An `HttpResponse` indicating the result of the deletion.
 #[delete("/api/browse/{path:.*}")]
 async fn delete_image(
-    //pool: web::Data<SqlitePool>,
     path: web::Path<String>,
     confirm: web::Query<Confirm>,
 ) -> impl Responder {
@@ -190,27 +266,45 @@ async fn delete_image(
     }
 }
 
+/// Represents the confirmation status for deletion operations.
+///
+/// This struct is used to deserialize query parameters for image deletion.
+#[derive(Deserialize)]
+struct Confirm {
+    /// Indicates whether the deletion is confirmed.
+    confirm: bool,
+}
+
+/// Represents the response after deleting an image.
+///
+/// Includes details about the deletion confirmation, removed captions, and deleted files.
 #[derive(Serialize)]
 struct DeleteImageResponse {
+    /// Whether the deletion was confirmed.
     confirm: bool,
+    /// A list of deleted caption types.
     deleted_suffixes: Vec<String>,
+    /// A list of deleted file paths.
     deleted_files: Vec<String>,
 }
 
+/// Handles the `GET /api/browse` endpoint to browse directory contents.
+///
+/// # Arguments
+///
+/// * `query` - The query parameters containing path and pagination info.
+///
+/// # Returns
+///
+/// An `HttpResponse` containing directory and image information in JSON format.
 #[get("/api/browse")]
 async fn browse(
-    //pool: web::Data<SqlitePool>,
-    //req: HttpRequest,
     query: web::Query<BrowseQuery>,
 ) -> impl Responder {
     let path = &query.path;
     let page = query.page;
-    //let page_size = query.page_size;
 
     let root_dir = PathBuf::from("./datasets"); // You might want to pass this as a config
-    //let target_path = resolve_path(path, &root_dir);
-
-    // TODO: Implement If-Modified-Since handling
 
     // Fetch directory contents
     let browse_header = BrowseHeader {
@@ -226,11 +320,17 @@ async fn browse(
     HttpResponse::Ok().json(browse_header)
 }
 
+/// Represents the query parameters for browsing directories.
+///
+/// Includes the target path and pagination details.
 #[derive(Deserialize)]
 pub struct BrowseQuery {
+    /// The directory path to browse.
     pub path: String,
+    /// The current page number.
     #[serde(default = "default_page")]
     pub page: u32,
+    /// The number of items per page.
     #[serde(default = "default_page_size")]
     pub page_size: u32,
 }
@@ -243,6 +343,16 @@ fn default_page_size() -> u32 {
     50
 }
 
+/// Handles the `GET /thumbnail/{path}` endpoint to retrieve a thumbnail image.
+///
+/// # Arguments
+///
+/// * `data_source` - Shared data source with caching capabilities.
+/// * `path` - The image path extracted from the URL.
+///
+/// # Returns
+///
+/// An `HttpResponse` containing the thumbnail image or an error message.
 #[get("/thumbnail/{path:.*}")]
 async fn get_thumbnail(
     data_source: web::Data<CachedFileSystemDataSource>,
