@@ -1,2 +1,2 @@
 The frontend is a solidjs application, not a react one! Use solidjs syntax and features.
-The backend is FastAPI with HTMX.
+The backend is Rust but originally it was in Python using FastAPI.
