@@ -1,3 +1,5 @@
+// backend/src/data_access.rs
+
 use crate::models::{ImageModel, BrowseHeader, DirectoryModel};
 use anyhow::Result;
 use sqlx::{SqlitePool, Row};
