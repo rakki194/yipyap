@@ -1,10 +1,11 @@
 // backend/src/handlers.rs
 
 use actix_files::NamedFile;
-use actix_web::{delete, get, put, web, HttpRequest, HttpResponse, Responder};
+use actix_web::{delete, get, put, web, App, HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use crate::models::{BrowseHeader, DeleteCaptionResponse};
 use crate::utils::resolve_path;
@@ -12,14 +13,12 @@ use crate::data_access::CachedFileSystemDataSource;
 
 /// Initializes all HTTP routes for the backend application.
 ///
-/// # Arguments
-///
-/// * `cfg` - The Actix web service configuration.
-///
-/// # Example
+/// # Examples
 ///
 /// ```rust
-/// init_routes(&mut web::ServiceConfig::default());
+/// # use actix_web::App;
+/// # use backend::handlers::init_routes;
+/// let app = App::new().configure(init_routes);
 /// ```
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(browse);
@@ -32,69 +31,25 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(get_thumbnail);
 }
 
-/// Handles the `PUT /caption/{path}` endpoint to update a caption.
-///
-/// # Arguments
-///
-/// * `path` - The image path extracted from the URL.
-/// * `caption_data` - The JSON payload containing caption information.
-///
-/// # Returns
-///
-/// An `HttpResponse` indicating the result of the operation.
-#[put("/caption/{path:.*}")]
-async fn update_caption(
-    path: web::Path<String>,
-    caption_data: web::Json<CaptionData>,
-) -> impl Responder {
-    log::debug!("Entering `update_caption` with path: {:?}", path);
-    let root_dir = PathBuf::from("./datasets");
-    let image_path = match resolve_path(&path, &root_dir) {
-        Ok(p) => p,
-        Err(e) => {
-            log::error!("Path resolution failed: {:?}", e);
-            return HttpResponse::BadRequest().body(e.to_string());
-        },
-    };
-
-    let data_source = CachedFileSystemDataSource::new(root_dir, (300, 300), (1024, 1024));
-    match data_source.delete_caption(&image_path, caption_data.caption_type.as_str()).await {
-        Ok(_) => {
-            log::info!("Successfully deleted caption of type '{}' for image: {:?}", caption_data.caption_type, image_path);
-            HttpResponse::Ok().json(DeleteCaptionResponse {
-                success: true,
-                message: format!("Caption {} deleted successfully", caption_data.caption_type),
-                path: image_path.with_extension(caption_data.caption_type.clone().as_str()).to_string_lossy().to_string(),
-            })
-        },
-        Err(e) => {
-            log::error!("Failed to delete caption: {:?}", e);
-            HttpResponse::InternalServerError().body(e.to_string())
-        },
-    }
-}
-
 /// Represents the data structure for caption-related requests.
 ///
 /// This struct is used to deserialize JSON payloads for caption operations.
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 struct CaptionData {
     /// The type or category of the caption.
     #[serde(rename = "type")]
     caption_type: String,
 }
 
-/// Represents the response after updating a caption.
+/// Represents the configuration settings sent in responses.
 ///
-/// This struct is serialized to JSON and sent as an HTTP response.
+/// Includes sizes for thumbnails and preview images.
 #[derive(Serialize)]
-struct UpdateCaptionResponse {
-    /// Indicates whether the operation was successful.
-    success: bool,
-    /// A message describing the result.
-    message: String,
-    /// The path to the affected file.
-    path: String,
+pub struct ConfigResponse {
+    /// The dimensions for thumbnails.
+    pub thumbnail_size: (u32, u32),
+    /// The dimensions for preview images.
+    pub preview_size: (u32, u32),
 }
 
 /// Handles the `GET /config` endpoint to retrieve configuration settings.
@@ -117,17 +72,6 @@ async fn get_config(
         preview_size: data_source.preview_size,
     };
     HttpResponse::Ok().json(config)
-}
-
-/// Represents the configuration settings sent in responses.
-///
-/// Includes sizes for thumbnails and preview images.
-#[derive(Serialize)]
-struct ConfigResponse {
-    /// The dimensions for thumbnails.
-    thumbnail_size: (u32, u32),
-    /// The dimensions for preview images.
-    preview_size: (u32, u32),
 }
 
 /// Handles the `GET /download/{path}` endpoint to download an image.
@@ -394,5 +338,48 @@ async fn get_thumbnail(
             .body(thumbnail_data),
         Ok(None) => HttpResponse::NotFound().body("Thumbnail not found"),
         Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+    }
+}
+
+/// Handles the `PUT /caption/{path}` endpoint to update a caption.
+///
+/// # Arguments
+///
+/// * `data` - Shared data source with caching capabilities.
+/// * `path` - The image path extracted from the URL.
+/// * `caption_data` - The JSON payload containing caption information.
+///
+/// # Returns
+///
+/// An `HttpResponse` indicating the result of the operation.
+#[put("/caption/{path:.*}")]
+pub async fn update_caption(
+    data: web::Data<CachedFileSystemDataSource>,
+    path: web::Path<String>,
+    caption_data: web::Json<CaptionData>,
+) -> impl Responder {
+    log::debug!("Entering `update_caption` with path: {:?}", path);
+    let root_dir = &data.root_dir;
+    let image_path = match resolve_path(&path, root_dir) {
+        Ok(p) => p,
+        Err(e) => {
+            log::error!("Path resolution failed: {:?}", e);
+            return HttpResponse::BadRequest().body(e.to_string());
+        },
+    };
+
+    match data.delete_caption(&image_path, caption_data.caption_type.as_str()).await {
+        Ok(_) => {
+            log::info!("Successfully deleted caption of type '{}' for image: {:?}", caption_data.caption_type, image_path);
+            HttpResponse::Ok().json(DeleteCaptionResponse {
+                success: true,
+                message: format!("Caption {} deleted successfully", caption_data.caption_type),
+                path: image_path.with_extension(caption_data.caption_type.clone().as_str()).to_string_lossy().to_string(),
+            })
+        },
+        Err(e) => {
+            log::error!("Failed to delete caption: {:?}", e);
+            HttpResponse::InternalServerError().body(e.to_string())
+        },
     }
 }
