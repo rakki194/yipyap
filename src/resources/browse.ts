@@ -110,6 +110,19 @@ export function fetchPageItemsAsSignals(
   return new Promise<BrowsePageResult>((resolve, reject) => {
     const items = new Map<string, AnyItem>();
     const setters = {} as Record<string, Setter<AnyData | undefined>>;
+
+    // Add parent directory if not at root AND on first page (page 1)
+    if (path !== "/" && path !== "" && page === 1) {
+      const [item, setItem] = createSignal<DirectoryData>();
+      const parentItem = Object.assign(item, {
+        file_name: "..",
+        loaded: false,
+        type: "directory" as const,
+      });
+      items.set("..", parentItem);
+      setters[".."] = setItem as Setter<AnyData | undefined>;
+    }
+
     fetchPage(
       path,
       page,
@@ -138,12 +151,12 @@ export function fetchPageItemsAsSignals(
         last_item &&
           page + 1 <= folderHeader.pages &&
           (last_item.next_page = page + 1);
-        // console.log("fetched page", { path, page, folderHeader });
+
         resolve({
           path,
           page,
           total_pages: folderHeader.pages,
-          total_folders: folderHeader.total_folders,
+          total_folders: folderHeader.total_folders, // Keep original count
           total_images: folderHeader.total_images,
           mtime: folderHeader.mtime,
           items,

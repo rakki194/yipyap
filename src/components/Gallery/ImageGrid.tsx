@@ -5,7 +5,13 @@ import { A } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
 import { joinUrlParts } from "~/utils";
-import { FolderIcon, UpIcon, SpinnerIcon, captionIconsMap } from "~/icons";
+import {
+  FolderIcon,
+  //  UpIcon,
+  SpinnerIcon,
+  captionIconsMap,
+  FolderArrowUpRegular,
+} from "~/icons";
 import type {
   ImageItem as ImageItemType,
   BrowsePagesCached,
@@ -178,7 +184,7 @@ export const DirectoryItem = (props: {
     >
       <span
         class="icon"
-        innerHTML={props.name === ".." ? UpIcon : FolderIcon}
+        innerHTML={props.name === ".." ? FolderArrowUpRegular : FolderIcon}
       />
       <span>{props.name}</span>
     </A>
