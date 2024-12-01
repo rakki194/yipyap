@@ -52,4 +52,8 @@
 
 .home-icon {
   color: var(--text-primary);
+
+  &:hover svg {
+    fill: var(--accent);
+  }
 }

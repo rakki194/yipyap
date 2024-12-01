@@ -9,6 +9,7 @@ import {
   FolderIcon,
   DimensionsIcon,
   SettingsIcon,
+  YipYap,
 } from "~/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -65,7 +66,7 @@ export const Breadcrumb = () => {
       <div class="breadcrumb-content">
         <div class="breadcrumb-links">
           <A href="/">
-            <span class="home-icon icon" innerHTML={HomeIcon} />
+            <span class="home-icon icon" innerHTML={YipYap} title="home" />
           </A>
           <A href="/gallery">
             <span class="gallery-icon icon" innerHTML={DimensionsIcon} />
