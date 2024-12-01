@@ -1,10 +1,10 @@
-# nyaa
+# yipyap
 
 ---
 
 ## Introduction
 
-Neural Yield Artwork Archiver or `nyaa` for short is a Python-based web application for uploading, browsing and managing image dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with FastAPI and HTMX.
+**Y**our **I**ntuitive **P**latform for **Y**ielding, **A**nnotating, and **P**rocessing or `yipyap` for short is a web application for uploading, browsing and managing image, audio and video dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with Rust and SolidJS.
 
 ## Features
 
