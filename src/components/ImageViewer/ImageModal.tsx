@@ -13,7 +13,7 @@ import { CaptionInput } from "./CaptionInput";
 import type { ImageData, Captions } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
-import { DownloadIcon, DismissIcon, DeleteIcon } from "~/components/icons";
+import { DownloadIcon, DismissIcon, DeleteIcon } from "~/icons";
 import { useAction } from "@solidjs/router";
 import { joinUrlParts, replaceExtension } from "~/utils";
 

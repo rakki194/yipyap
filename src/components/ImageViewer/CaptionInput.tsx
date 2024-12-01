@@ -12,7 +12,7 @@ import {
   TextAlignIcon,
   TextAlignDistributedIcon,
   ArrowUndoIcon,
-} from "~/components/icons";
+} from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { preserveState } from "~/components/TextArea";
 

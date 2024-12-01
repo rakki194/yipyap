@@ -5,12 +5,7 @@ import { A } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
 import { joinUrlParts } from "~/utils";
-import {
-  FolderIcon,
-  UpIcon,
-  SpinnerIcon,
-  captionIconsMap,
-} from "~/components/icons";
+import { FolderIcon, UpIcon, SpinnerIcon, captionIconsMap } from "~/icons";
 import type {
   ImageItem as ImageItemType,
   BrowsePagesCached,

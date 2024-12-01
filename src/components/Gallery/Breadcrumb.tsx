@@ -9,7 +9,7 @@ import {
   FolderIcon,
   DimensionsIcon,
   SettingsIcon,
-} from "~/components/icons";
+} from "~/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
 import { Settings } from "~/components/Settings/Settings";

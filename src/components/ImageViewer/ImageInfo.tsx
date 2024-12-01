@@ -3,12 +3,7 @@ import { formatFileSize } from "~/utils/format";
 import type { ImageInfo as ImageInfoType } from "./ImageModal";
 import type { Component } from "solid-js";
 // Import Fluent icons
-import {
-  SizeIcon,
-  TimeIcon,
-  TypeIcon,
-  DimensionsIcon,
-} from "~/components/icons";
+import { SizeIcon, TimeIcon, TypeIcon, DimensionsIcon } from "~/icons";
 
 export const ImageInfo: Component<{
   imageInfo: ImageInfoType;

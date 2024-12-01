@@ -3,7 +3,7 @@
 import { Component, createSignal } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import "./FrontPage.css";
-import { DimensionsIcon, SpeakerIcon } from "../components/icons";
+import { DimensionsIcon, SpeakerIcon, YipYap } from "~/icons";
 
 const FrontPage: Component = () => {
   const navigate = useNavigate();
@@ -22,15 +22,20 @@ const FrontPage: Component = () => {
 
   return (
     <div class={`front-page ${isVisible() ? "visible" : "hidden"}`}>
-      <h1 class="title">~yipyap</h1>
+      <h1 class="title">
+        <span class="icon" innerHTML={YipYap} title="app logo" />
+        <br /> ~yipyap
+      </h1>
       <div class="selection-buttons">
         <button
+          class="icon"
           onClick={() => handleSelection("image")}
           aria-label="Work with Images"
         >
           <div innerHTML={DimensionsIcon} />
         </button>
         <button
+          class="icon"
           onClick={() => handleSelection("audio")}
           aria-label="Work with Audio"
         >

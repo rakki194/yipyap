@@ -11,7 +11,7 @@ import {
 import type { JSX } from "solid-js";
 import { ImageData } from "~/resources/browse";
 import { joinUrlParts, replaceExtension } from "~/utils";
-import { SpinnerIcon } from "~/components/icons";
+import { SpinnerIcon } from "~/icons";
 import type { ImageInfo } from "./ImageModal";
 
 interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {

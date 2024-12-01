@@ -3,7 +3,7 @@
 import { createSignal, createEffect } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { useGallery } from "~/contexts/GalleryContext";
-import { SearchIcon } from "~/components/icons";
+import { SearchIcon } from "~/icons";
 import "./Controls.css";
 
 export const Controls = () => {

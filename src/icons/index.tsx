@@ -1,4 +1,5 @@
 // Import all icons
+import YipYap from "./yipyap.svg?raw";
 import HomeIcon from "@fluentui/svg-icons/icons/home_24_regular.svg?raw";
 import SunIcon from "@fluentui/svg-icons/icons/weather_sunny_24_regular.svg?raw";
 import CloudIcon from "@fluentui/svg-icons/icons/weather_cloudy_24_regular.svg?raw";
@@ -34,6 +35,7 @@ import SpeakerIcon from "@fluentui/svg-icons/icons/speaker_2_24_regular.svg?raw"
 
 // Export all icons
 export {
+  YipYap,
   HomeIcon,
   SunIcon,
   CloudIcon,

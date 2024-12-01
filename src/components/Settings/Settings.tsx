@@ -10,7 +10,7 @@ import {
   DimensionsIcon,
   SizeIcon,
   TimeIcon,
-} from "~/components/icons";
+} from "~/icons";
 import "./Settings.css";
 
 export const Settings: Component = () => {
