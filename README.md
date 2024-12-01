@@ -109,7 +109,7 @@ ENVIRONMENT=production ROOT_DIR=/path/to/images python -m app
 ### Project Structure
 
 ```
-nyaa/
+yipyap/
 ├── app/
 │   ├── __init__.py          # Package initialization
 │   ├── main.py              # FastAPI application and routes
