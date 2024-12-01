@@ -22,8 +22,8 @@
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/elias-gaeros/nyaa
-cd nyaa
+git clone https://github.com/elias-gaeros/yipyap
+cd yipyap
 ```
 
 2. Create a virtual environment:
