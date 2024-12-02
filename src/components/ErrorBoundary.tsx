@@ -3,15 +3,10 @@
 // Error boundary component that catches errors in child components
 // and displays a fallback UI when errors occur.
 
-import {
-  createSignal,
-  JSX,
-  ErrorBoundary as SolidErrorBoundary,
-} from "solid-js";
-import "./ErrorBoundary.css";
+import { createSignal, JSX } from "solid-js";
 
 /**
- * Props for the custom ErrorBoundary component.
+ * Props for the ErrorBoundary component
  */
 interface ErrorBoundaryProps {
   /** UI to display when an error occurs */
@@ -21,25 +16,19 @@ interface ErrorBoundaryProps {
 }
 
 /**
- * Custom ErrorBoundary component that utilizes SolidJS's ErrorBoundary.
- * It captures errors in child components and displays a fallback UI.
+ * Error boundary component that catches errors in child components
+ * and displays a fallback UI when errors occur.
  *
  * @param props ErrorBoundaryProps containing fallback UI and children
  * @returns The children normally, or fallback UI when an error occurs
+ *
+ * @example
+ * <ErrorBoundary fallback={<div>Something went wrong</div>}>
+ *   <MyComponent />
+ * </ErrorBoundary>
  */
-export const ErrorBoundary = (props: ErrorBoundaryProps) => {
-  const [hasError, setHasError] = createSignal(false);
-  const [error, setError] = createSignal<Error | null>(null);
+export function ErrorBoundary(props: ErrorBoundaryProps) {
+  const [hasError] = createSignal(false);
 
-  const handleError = (err: Error) => {
-    console.error("ErrorBoundary caught an error:", err);
-    setError(err);
-    setHasError(true);
-  };
-
-  return (
-    <SolidErrorBoundary fallback={<>{props.fallback}</>}>
-      {props.children}
-    </SolidErrorBoundary>
-  );
-};
+  return hasError() ? props.fallback : props.children;
+}

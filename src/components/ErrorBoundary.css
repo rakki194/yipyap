@@ -1,9 +1,0 @@
-/* src/components/ErrorBoundary.css */
-
-.error-fallback {
-  padding: var(--spacing);
-  background-color: var(--error-bg);
-  color: var(--error-text);
-  border-radius: 8px;
-  text-align: center;
-}

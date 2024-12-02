@@ -1,10 +1,16 @@
 // src/components/Settings/Settings.tsx
 
-import { Component } from "solid-js";
+import { Component, Show } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useTheme, Theme } from "~/contexts/theme";
-import IconButton from "../Common/IconButton";
-import { SunIcon, MoonIcon, CloudIcon } from "~/icons";
+import {
+  SunIcon,
+  MoonIcon,
+  CloudIcon,
+  DimensionsIcon,
+  SizeIcon,
+  TimeIcon,
+} from "~/icons";
 import "./Settings.css";
 
 export const Settings: Component = () => {
@@ -20,23 +26,26 @@ export const Settings: Component = () => {
         <div class="setting-group">
           <label>Theme</label>
           <div class="theme-buttons">
-            <IconButton
-              icon={SunIcon}
-              title="Light theme"
+            <button
+              class="icon"
               classList={{ active: theme.theme === "light" }}
               onClick={() => theme.setTheme("light")}
+              title="Light theme"
+              innerHTML={SunIcon}
             />
-            <IconButton
-              icon={CloudIcon}
-              title="Gray theme"
+            <button
+              class="icon"
               classList={{ active: theme.theme === "gray" }}
               onClick={() => theme.setTheme("gray")}
+              title="Gray theme"
+              innerHTML={CloudIcon}
             />
-            <IconButton
-              icon={MoonIcon}
-              title="Dark theme"
+            <button
+              class="icon"
               classList={{ active: theme.theme === "dark" }}
               onClick={() => theme.setTheme("dark")}
+              title="Dark theme"
+              innerHTML={MoonIcon}
             />
           </div>
         </div>
