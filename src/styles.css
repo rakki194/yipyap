@@ -9,6 +9,7 @@
   --text-primary: #1a1b24;
   --text-secondary: #5c5f77;
   --text-tertiary: #eff1f5;
+  --placeholder-color: var(--text-secondary);
   --border: var(--card-bg);
   --border-secondary: var(--accent);
   --spacing: 0.7rem;
@@ -60,6 +61,13 @@
   --text-secondary: #5c5f77;
   --border: var(--card-bg);
   --border-secondary: var(--accent);
+  --placeholder-color: var(--text-secondary);
+
+  input::placeholder,
+  select::placeholder,
+  textarea::placeholder {
+    color: var(--placeholder-color);
+  }
 }
 
 :root[data-theme="gray"] {
@@ -70,6 +78,13 @@
   --text-secondary: hsl(0, 0%, 85%);
   --border: hsl(0, 0%, 40%);
   --secondary-bg: hsl(0, 0%, 47%);
+  --placeholder-color: var(--text-secondary);
+
+  input::placeholder,
+  select::placeholder,
+  textarea::placeholder {
+    color: var(--placeholder-color);
+  }
 }
 
 :root[data-theme="banana"] {
@@ -81,6 +96,13 @@
   --text-secondary: #996600;
   --border: #ffcc00;
   --border-secondary: #cc9900;
+  --placeholder-color: var(--border-secondary);
+
+  input::placeholder,
+  select::placeholder,
+  textarea::placeholder {
+    color: var(--placeholder-color);
+  }
 }
 
 :root[data-theme="strawberry"] {
@@ -92,6 +114,13 @@
   --text-secondary: #cc0033;
   --border: #ff8099;
   --border-secondary: #ff1a4d;
+  --placeholder-color: #effdf3;
+
+  input::placeholder,
+  select::placeholder,
+  textarea::placeholder {
+    color: var(--placeholder-color);
+  }
 }
 
 :root[data-theme="peanut"] {
@@ -103,6 +132,13 @@
   --text-secondary: #d4a056;
   --border: #8b4513;
   --border-secondary: #d4a056;
+  --placeholder-color: var(--text-secondary);
+
+  input::placeholder,
+  select::placeholder,
+  textarea::placeholder {
+    color: var(--placeholder-color);
+  }
 }
 
 /* Resets and apply theme colors on base styles */
