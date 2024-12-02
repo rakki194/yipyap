@@ -21,4 +21,15 @@
   );
   padding: var(--spacing);
   border-radius: var(--border-radius);
+  animation: slide-stripes 300s linear infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes slide-stripes {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
 }
