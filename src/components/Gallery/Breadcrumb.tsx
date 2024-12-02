@@ -1,4 +1,4 @@
-import { createSignal, For, Show, createMemo } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { A } from "@solidjs/router";
 import {
   HomeIcon,
@@ -14,6 +14,9 @@ import {
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
 import { Settings } from "~/components/Settings/Settings";
+import IconButton from "../Common/IconButton";
+import Tooltip from "../Common/Tooltip";
+import Modal from "../Common/Modal";
 import "./Breadcrumb.css";
 
 function getThemeIcon(theme: Theme) {
@@ -65,12 +68,16 @@ export const Breadcrumb = () => {
     <nav class="breadcrumb">
       <div class="breadcrumb-content">
         <div class="breadcrumb-links">
-          <A href="/">
-            <span class="home-icon icon" innerHTML={YipYap} title="home" />
-          </A>
-          <A href="/gallery">
-            <span class="gallery-icon icon" innerHTML={DimensionsIcon} />
-          </A>
+          <Tooltip text="Home">
+            <A href="/">
+              <span class="home-icon icon" innerHTML={YipYap} />
+            </A>
+          </Tooltip>
+          <Tooltip text="Gallery">
+            <A href="/gallery">
+              <span class="gallery-icon icon" innerHTML={DimensionsIcon} />
+            </A>
+          </Tooltip>
           <Crumbs />
         </div>
         <small>
@@ -85,20 +92,17 @@ export const Breadcrumb = () => {
         </small>
         <div class="breadcrumb-actions">
           <ThemeToggle />
-          <button
-            class="icon"
-            onClick={() => setShowSettings(!showSettings())}
+          <IconButton
+            icon={SettingsIcon}
             title="Settings"
-            innerHTML={SettingsIcon}
+            onClick={() => setShowSettings(!showSettings())}
           />
         </div>
       </div>
       <Show when={showSettings()}>
-        <div class="settings-overlay" onClick={() => setShowSettings(false)}>
-          <div onClick={(e) => e.stopPropagation()}>
-            <Settings />
-          </div>
-        </div>
+        <Modal isOpen={showSettings()} onClose={() => setShowSettings(false)}>
+          <Settings />
+        </Modal>
       </Show>
     </nav>
   );
@@ -108,15 +112,14 @@ function ThemeToggle() {
   const theme = useTheme();
   const [hovered, setHovered] = createSignal(false);
   return (
-    <button
-      class="icon accent-hover"
-      onClick={theme.toggleTheme}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      title={`Switch to ${getNextTheme(theme.theme)} mode`}
-      innerHTML={getThemeIcon(
-        hovered() ? getNextTheme(theme.theme) : theme.theme
-      )}
-    />
+    <Tooltip text={`Switch to ${getNextTheme(theme.theme)} mode`}>
+      <IconButton
+        icon={getThemeIcon(hovered() ? getNextTheme(theme.theme) : theme.theme)}
+        title={`Switch to ${getNextTheme(theme.theme)} mode`}
+        onClick={theme.toggleTheme}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      />
+    </Tooltip>
   );
 }

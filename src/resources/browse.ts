@@ -34,12 +34,15 @@ export interface DirectoryData extends BaseData {
 
 export interface ImageData extends BaseData {
   type: "image";
-  size: number; // Size of the image
-  mime: string; // MIME type of the image
-  md5sum: string; // MD5 checksum of the image
-  width: number; // Width of the image
-  height: number; // Height of the image
-  captions: Captions; // Array of tuples for captions
+  id: number;
+  file_name: string;
+  name: string;
+  size: number;
+  mime: string;
+  mtime: string;
+  captions: Captions;
+  colorSpace?: string;
+  data?: any;
 }
 
 // Captions is an array of tuples of strings

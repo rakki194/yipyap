@@ -71,3 +71,22 @@ export const getThumbnailComputedSize = (
   }
   return newSize;
 };
+
+export type Size = { width: number; height: number };
+
+export function getThumbnailSize(image: ImageData): Size {
+  // Example logic to determine thumbnail size based on image dimensions
+  const maxDimension = 250;
+  let scale = 1;
+
+  if (image.width > image.height && image.width > maxDimension) {
+    scale = maxDimension / image.width;
+  } else if (image.height > image.width && image.height > maxDimension) {
+    scale = maxDimension / image.height;
+  }
+
+  return {
+    width: Math.round(image.width * scale),
+    height: Math.round(image.height * scale),
+  };
+}

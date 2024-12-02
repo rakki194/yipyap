@@ -1,4 +1,4 @@
-// src/components/ImageViewer/CaptionEditor.tsx
+// src/components/ImageViewer/CaptionInput.tsx
 import { createSignal, splitProps, Component, JSX, For } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import {
@@ -6,7 +6,6 @@ import {
   SuccessIcon,
   ErrorIcon,
   SpinnerIcon,
-  captionIconsMap,
   SparkleIcon,
   DeleteIcon,
   TextAlignIcon,
@@ -15,6 +14,10 @@ import {
 } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { preserveState } from "~/components/TextArea";
+import IconButton from "../Common/IconButton";
+import Tooltip from "../Common/Tooltip";
+import "./CaptionInput.css";
+import { captionIconsMap } from "~/utils/iconsMap";
 
 export interface CaptionInputProps
   extends JSX.HTMLAttributes<HTMLTextAreaElement> {
@@ -46,12 +49,13 @@ const Tools: Component<{
   return (
     <For each={TOOLS}>
       {(tool) => (
-        <button
-          class="icon"
-          onClick={() => props.onInput(tool.action(props.caption))}
-          title={tool.title}
-          innerHTML={tool.icon}
-        />
+        <Tooltip text={tool.title}>
+          <IconButton
+            icon={tool.icon}
+            title={tool.title}
+            onClick={() => props.onInput(tool.action(props.caption))}
+          />
+        </Tooltip>
       )}
     </For>
   );
@@ -101,30 +105,30 @@ export const CaptionInput: Component<
       classList={props.state === null ? {} : { [props.state]: true }}
     >
       <div class="caption-icons">
-        <span
-          class="icon"
-          innerHTML={captionIconsMap[type() as keyof typeof captionIconsMap]}
-        />
+        <Tooltip text={type()}>
+          <span
+            class="icon"
+            innerHTML={captionIconsMap[type() as keyof typeof captionIconsMap]}
+          />
+        </Tooltip>
         <StatusIcon status={submission} type={type()} />
         <Tools onInput={saveWithHistory} caption={caption()} />
         {captionHistory().length > 0 && (
-          <button
-            onClick={undo}
-            class="icon"
-            title="Undo last change"
-            innerHTML={ArrowUndoIcon}
-          />
+          <Tooltip text="Undo last change">
+            <IconButton icon={ArrowUndoIcon} title="Undo" onClick={undo} />
+          </Tooltip>
         )}
-        <button
-          class="icon"
-          onClick={async (e) => {
-            if (confirm(`Delete ${type()} caption?`)) {
-              deleteCaption(type());
-            }
-          }}
-          title={`Delete ${type()} caption`}
-          innerHTML={DeleteIcon}
-        />
+        <Tooltip text={`Delete ${type()} caption`}>
+          <IconButton
+            icon={DeleteIcon}
+            title="Delete"
+            onClick={async () => {
+              if (confirm(`Delete ${type()} caption?`)) {
+                deleteCaption(type());
+              }
+            }}
+          />
+        </Tooltip>
       </div>
       <textarea
         {...rest}
