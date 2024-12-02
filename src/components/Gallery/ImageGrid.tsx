@@ -44,12 +44,19 @@ export const ImageGrid = (props: {
           if (next_page !== undefined) {
             onMount(() => addObserved(ref, next_page));
           }
+          const isActive = () => {
+            if (gallery.mode === "view" && gallery.selected === getIdx()) {
+              ref.scrollIntoView({ behavior: "instant", block: "nearest" });
+              return true;
+            }
+            return false;
+          };
           return item.type === "image" ? (
             <ImageItem
               ref={ref as HTMLDivElement}
               item={item}
               path={props.data.path}
-              selected={gallery.selected === getIdx()}
+              selected={isActive()}
               onClick={() => {
                 props.onImageClick(getIdx());
                 gallery.select(getIdx());
@@ -60,7 +67,7 @@ export const ImageGrid = (props: {
               ref={ref as HTMLAnchorElement}
               name={item.file_name}
               path={props.data.path}
-              selected={gallery.selected === getIdx()}
+              selected={isActive()}
             />
           );
         }}
