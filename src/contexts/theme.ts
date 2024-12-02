@@ -1,8 +1,21 @@
 import { createSignal, createRenderEffect } from "solid-js";
 import { createSingletonRoot } from "@solid-primitives/rootless";
 
-export type Theme = "light" | "gray" | "dark" | "banana" | "strawberry";
-const themes: Theme[] = ["light", "gray", "dark", "banana", "strawberry"];
+export type Theme =
+  | "light"
+  | "gray"
+  | "dark"
+  | "banana"
+  | "strawberry"
+  | "peanut";
+const themes: Theme[] = [
+  "light",
+  "gray",
+  "dark",
+  "banana",
+  "strawberry",
+  "peanut",
+];
 
 export function getNextTheme(theme: Theme): Theme {
   switch (theme) {
@@ -15,6 +28,8 @@ export function getNextTheme(theme: Theme): Theme {
     case "banana":
       return "strawberry";
     case "strawberry":
+      return "peanut";
+    case "peanut":
       return "light";
   }
 }

@@ -1,4 +1,5 @@
 // Import all icons
+import PeanutIcon from "./peanut.svg?raw";
 import BananaIcon from "./banana.svg?raw";
 import YipYap from "./yipyap.svg?raw";
 import HomeIcon from "@fluentui/svg-icons/icons/home_24_regular.svg?raw";
@@ -38,6 +39,7 @@ import StrawberryIcon from "./strawberry.svg?raw";
 
 // Export all icons
 export {
+  PeanutIcon,
   BananaIcon,
   YipYap,
   HomeIcon,

@@ -20,13 +20,13 @@
   position: absolute;
   top: 0;
   left: 0;
-  color: var(--text-primary);
+  color: var(--accent);
   z-index: 10;
   height: 3rem;
   font-family: monospace;
   font-size: 0.6rem;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 2px var(--accent);
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
 
   :root[data-theme="light"] & {
@@ -42,6 +42,18 @@
   & > .modal-actions {
     display: flex;
     gap: var(--spacing);
+
+    .icon {
+      background: var(--bg-color);
+
+      :root[data-theme="banana"] & {
+        background: var(--text-primary);
+      }
+    }
+
+    svg {
+      fill: var(--accent);
+    }
   }
 }
 

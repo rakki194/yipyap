@@ -49,3 +49,19 @@
   animation: slide-stripes 300s linear infinite;
   background-size: 200% 100%;
 }
+
+/* Peanut theme striped background for controls */
+[data-theme="peanut"] .controls .filters {
+  border: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--bg-color),
+    var(--bg-color) 10px,
+    var(--card-bg) 10px,
+    var(--card-bg) 20px
+  );
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  animation: slide-stripes 300s linear infinite;
+  background-size: 200% 100%;
+}

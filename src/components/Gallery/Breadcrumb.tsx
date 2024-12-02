@@ -12,6 +12,7 @@ import {
   YipYap,
   BananaIcon,
   StrawberryIcon,
+  PeanutIcon,
 } from "~/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -30,6 +31,8 @@ function getThemeIcon(theme: Theme) {
       return BananaIcon;
     case "strawberry":
       return StrawberryIcon;
+    case "peanut":
+      return PeanutIcon;
   }
 }
 

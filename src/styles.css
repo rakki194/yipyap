@@ -94,6 +94,17 @@
   --border-secondary: #ff1a4d;
 }
 
+:root[data-theme="peanut"] {
+  --accent: #d4a056;
+  --bg-color: #2c1810;
+  --secondary-bg: #402418;
+  --card-bg: #573019;
+  --text-primary: #ffd7aa;
+  --text-secondary: #d4a056;
+  --border: #8b4513;
+  --border-secondary: #d4a056;
+}
+
 /* Resets and apply theme colors on base styles */
 
 * {
