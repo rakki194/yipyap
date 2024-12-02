@@ -62,12 +62,6 @@
   --border: var(--card-bg);
   --border-secondary: var(--accent);
   --placeholder-color: var(--text-secondary);
-
-  input::placeholder,
-  select::placeholder,
-  textarea::placeholder {
-    color: var(--placeholder-color);
-  }
 }
 
 :root[data-theme="gray"] {
@@ -79,12 +73,6 @@
   --border: hsl(0, 0%, 40%);
   --secondary-bg: hsl(0, 0%, 47%);
   --placeholder-color: var(--text-secondary);
-
-  input::placeholder,
-  select::placeholder,
-  textarea::placeholder {
-    color: var(--placeholder-color);
-  }
 }
 
 :root[data-theme="banana"] {
@@ -97,12 +85,6 @@
   --border: #ffcc00;
   --border-secondary: #cc9900;
   --placeholder-color: var(--border-secondary);
-
-  input::placeholder,
-  select::placeholder,
-  textarea::placeholder {
-    color: var(--placeholder-color);
-  }
 }
 
 :root[data-theme="strawberry"] {
@@ -115,12 +97,6 @@
   --border: #ff8099;
   --border-secondary: #ff1a4d;
   --placeholder-color: #effdf3;
-
-  input::placeholder,
-  select::placeholder,
-  textarea::placeholder {
-    color: var(--placeholder-color);
-  }
 }
 
 :root[data-theme="peanut"] {
@@ -133,12 +109,6 @@
   --border: #8b4513;
   --border-secondary: #d4a056;
   --placeholder-color: var(--text-secondary);
-
-  input::placeholder,
-  select::placeholder,
-  textarea::placeholder {
-    color: var(--placeholder-color);
-  }
 }
 
 /* Resets and apply theme colors on base styles */
@@ -343,4 +313,11 @@ td {
   &:hover > svg {
     fill: var(--text-tertiary);
   }
+}
+
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+  color: var(--placeholder-color);
+  opacity: 1;
 }

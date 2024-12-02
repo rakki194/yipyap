@@ -39,8 +39,8 @@
   border: none;
   background: repeating-linear-gradient(
     -45deg,
-    rgb(239, 253, 243),
-    rgb(239, 253, 243) 10px,
+    #effdf3,
+    #effdf3 10px,
     var(--card-bg) 10px,
     var(--card-bg) 20px
   );
