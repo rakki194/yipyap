@@ -1,10 +1,20 @@
 // src/components/Gallery/ImageGrid.tsx
-import { For, onCleanup, onMount, Show, createSignal } from "solid-js";
+import {
+  For,
+  onCleanup,
+  onMount,
+  Show,
+  createSignal,
+  Accessor,
+  Setter,
+  createEffect,
+} from "solid-js";
 import { A } from "@solidjs/router";
 
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
 import { joinUrlParts } from "~/utils";
+import { measure_columns } from "~/directives";
 import {
   FolderIcon,
   //  UpIcon,
@@ -22,10 +32,11 @@ export const ImageGrid = (props: {
   onImageClick: (idx: number) => void;
 }) => {
   const gallery = useGallery();
+  const setColumns = gallery.selection.setColumns;
   const addObserved = makeIntersectionObserver(gallery.setPage);
 
   return (
-    <div class="responsive-grid">
+    <div class="responsive-grid" use:measure_columns={setColumns}>
       <For each={props.data.items}>
         {(item, getIdx) => {
           let ref!: HTMLElement;

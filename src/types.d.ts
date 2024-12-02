@@ -21,7 +21,10 @@ export type {
  * Size type from solid-primitives resize observer
  * Used for tracking element dimensions
  */
-export type { Size } from "@solid-primitives/resize-observer";
+export type Size = {
+  width: number;
+  height: number;
+};
 
 /**
  * Core data types for gallery items and navigation:

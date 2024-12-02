@@ -42,6 +42,10 @@ export const Gallery = () => {
       if (!gallery.selectNext()) return;
     } else if (event.key === "ArrowLeft") {
       if (!gallery.selectPrev()) return;
+    } else if (event.key === "ArrowDown") {
+      if (!gallery.selectDown()) return;
+    } else if (event.key === "ArrowUp") {
+      if (!gallery.selectUp()) return;
     } else if (event.key === "Enter" && gallery.selected !== null) {
       const data = gallery.data();
       const selected = data.items[gallery.selected];

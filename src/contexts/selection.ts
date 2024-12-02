@@ -11,9 +11,11 @@ export function useSelection(
   const [state, setState] = createStaticStore<{
     selected: number | null;
     mode: "view" | "edit";
+    columns: number | null;
   }>({
     selected: null,
     mode: "view",
+    columns: null,
   });
 
   const selection = {
@@ -46,6 +48,20 @@ export function useSelection(
     selectNext: () => {
       const newIndex = selection.selected === null ? 0 : selection.selected + 1;
       return selection.select(newIndex);
+    },
+    selectDown: () => {
+      const columns = state.columns;
+      const index = selection.selected;
+      if (index === null) return selection.selectNext();
+      if (columns === null) return false;
+      return selection.select(index + columns);
+    },
+    selectUp: () => {
+      const columns = state.columns;
+      const index = selection.selected;
+      if (index === null) return selection.selectPrev();
+      if (columns === null) return false;
+      return selection.select(index - columns);
     },
     get editedImage() {
       if (selection.mode !== "edit") return null;
@@ -80,6 +96,9 @@ export function useSelection(
     },
     get selected() {
       return state.selected;
+    },
+    setColumns: (columns: number | null) => {
+      setState("columns", columns);
     },
   };
 

@@ -202,6 +202,7 @@ export function makeGalleryState() {
     saveCaption,
     deleteImage,
     deleteCaption,
+    selection,
   };
 
   if (import.meta.env.DEV) {
