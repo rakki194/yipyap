@@ -75,7 +75,7 @@ export const Breadcrumb = () => {
         </div>
         <small>
           <Show
-            when={!data.loading}
+            when={data()?.total_folders > 0}
             fallback={<span class="spin-icon icon" innerHTML={SpinnerIcon} />}
           >
             <span class="icon" innerHTML={FolderIcon} /> {data().total_folders}{" "}
