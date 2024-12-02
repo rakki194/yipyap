@@ -8,3 +8,17 @@
   flex-wrap: wrap;
   padding: var(--spacing) var(--double-spacing);
 }
+
+/* Banana theme striped background for controls */
+[data-theme="banana"] .controls .filters {
+  border: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--bg-color),
+    var(--bg-color) 10px,
+    var(--card-bg) 10px,
+    var(--card-bg) 20px
+  );
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+}

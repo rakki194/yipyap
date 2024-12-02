@@ -72,6 +72,17 @@
   --secondary-bg: hsl(0, 0%, 47%);
 }
 
+:root[data-theme="banana"] {
+  --accent: #ffd700;
+  --bg-color: #fff7e6;
+  --secondary-bg: #ffe4b3;
+  --card-bg: #ffdb4d;
+  --text-primary: #664400;
+  --text-secondary: #996600;
+  --border: #ffcc00;
+  --border-secondary: #cc9900;
+}
+
 /* Resets and apply theme colors on base styles */
 
 * {

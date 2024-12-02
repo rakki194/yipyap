@@ -10,6 +10,7 @@ import {
   DimensionsIcon,
   SizeIcon,
   TimeIcon,
+  BananaIcon,
 } from "~/icons";
 import "./Settings.css";
 
@@ -46,6 +47,13 @@ export const Settings: Component = () => {
               onClick={() => theme.setTheme("dark")}
               title="Dark theme"
               innerHTML={MoonIcon}
+            />
+            <button
+              class="icon"
+              classList={{ active: theme.theme === "banana" }}
+              onClick={() => theme.setTheme("banana")}
+              title="Banana theme"
+              innerHTML={BananaIcon}
             />
           </div>
         </div>

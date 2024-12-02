@@ -46,6 +46,11 @@
   }
 }
 
+/* Banana theme white background for breadcrumb */
+[data-theme="banana"] .breadcrumb {
+  background: rgb(254, 255, 236);
+}
+
 .gallery-icon {
   color: var(--accent);
 }

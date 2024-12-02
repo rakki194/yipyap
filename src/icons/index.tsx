@@ -1,4 +1,5 @@
 // Import all icons
+import BananaIcon from "./banana.svg?raw";
 import YipYap from "./yipyap.svg?raw";
 import HomeIcon from "@fluentui/svg-icons/icons/home_24_regular.svg?raw";
 import SunIcon from "@fluentui/svg-icons/icons/weather_sunny_24_regular.svg?raw";
@@ -36,6 +37,7 @@ import FolderArrowUpRegular from "@fluentui/svg-icons/icons/folder_arrow_up_24_r
 
 // Export all icons
 export {
+  BananaIcon,
   YipYap,
   HomeIcon,
   SunIcon,

@@ -10,6 +10,7 @@ import {
   DimensionsIcon,
   SettingsIcon,
   YipYap,
+  BananaIcon,
 } from "~/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -24,6 +25,8 @@ function getThemeIcon(theme: Theme) {
       return CloudIcon;
     case "dark":
       return MoonIcon;
+    case "banana":
+      return BananaIcon;
   }
 }
 
