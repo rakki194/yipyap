@@ -128,15 +128,31 @@
     width: 100%;
     margin: 0;
     border: 1px solid var(--border);
-    padding: var(--spacing);
-
+    padding: calc(var(--spacing) * 0.5);
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: var(--spacing);
+    gap: calc(var(--spacing) * 0.5);
     color: var(--text-primary);
     font-weight: bold;
+
+    .icon {
+      flex: 0 0 auto;
+      margin: 0 var(--spacing);
+    }
+
+    & > span {
+      flex: 1;
+      min-width: 0;
+      padding: 0;
+      margin: 0;
+      overflow-wrap: break-word;
+    }
+
+    & > svg {
+      flex-shrink: 0;
+    }
 
     &:hover {
       border-color: var(--border-secondary);
