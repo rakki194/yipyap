@@ -11,6 +11,7 @@ import {
   SettingsIcon,
   YipYap,
   BananaIcon,
+  StrawberryIcon,
 } from "~/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -27,6 +28,8 @@ function getThemeIcon(theme: Theme) {
       return MoonIcon;
     case "banana":
       return BananaIcon;
+    case "strawberry":
+      return StrawberryIcon;
   }
 }
 

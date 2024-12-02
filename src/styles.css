@@ -83,6 +83,17 @@
   --border-secondary: #cc9900;
 }
 
+:root[data-theme="strawberry"] {
+  --accent: #ff3366;
+  --bg-color: #fff0f3;
+  --secondary-bg: #ffd6e0;
+  --card-bg: #ffb3c0;
+  --text-primary: #800020;
+  --text-secondary: #cc0033;
+  --border: #ff8099;
+  --border-secondary: #ff1a4d;
+}
+
 /* Resets and apply theme colors on base styles */
 
 * {

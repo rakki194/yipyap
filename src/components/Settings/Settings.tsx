@@ -11,6 +11,7 @@ import {
   SizeIcon,
   TimeIcon,
   BananaIcon,
+  StrawberryIcon,
 } from "~/icons";
 import "./Settings.css";
 
@@ -54,6 +55,13 @@ export const Settings: Component = () => {
               onClick={() => theme.setTheme("banana")}
               title="Banana theme"
               innerHTML={BananaIcon}
+            />
+            <button
+              class="icon"
+              classList={{ active: theme.theme === "strawberry" }}
+              onClick={() => theme.setTheme("strawberry")}
+              title="Strawberry theme"
+              innerHTML={StrawberryIcon}
             />
           </div>
         </div>

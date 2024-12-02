@@ -34,6 +34,7 @@ import SettingsIcon from "@fluentui/svg-icons/icons/settings_24_regular.svg?raw"
 import SearchIcon from "@fluentui/svg-icons/icons/search_24_regular.svg?raw";
 import SpeakerIcon from "@fluentui/svg-icons/icons/speaker_2_24_regular.svg?raw";
 import FolderArrowUpRegular from "@fluentui/svg-icons/icons/folder_arrow_up_24_regular.svg?raw";
+import StrawberryIcon from "./strawberry.svg?raw";
 
 // Export all icons
 export {
@@ -71,6 +72,7 @@ export {
   SearchIcon,
   SpeakerIcon,
   FolderArrowUpRegular,
+  StrawberryIcon,
 };
 
 // Export caption icons map
