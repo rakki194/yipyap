@@ -1,16 +1,18 @@
 // src/components/Gallery/Gallery.tsx
-import { Show, onMount, onCleanup } from "solid-js";
+import { Show, onMount, onCleanup, createSignal } from "solid-js";
 import { Controls } from "./Controls";
 import { ImageGrid } from "./ImageGrid";
 import { ImageModal } from "../ImageViewer/ImageModal";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAction, useNavigate } from "@solidjs/router";
 import "./Gallery.css";
+import { QuickJump } from "./QuickJump";
 
 export const Gallery = () => {
   const navigate = useNavigate();
   const gallery = useGallery();
   const deleteImageAction = useAction(gallery.deleteImage);
+  const [showQuickJump, setShowQuickJump] = createSignal(false);
 
   const keyDownHandler = (event: KeyboardEvent) => {
     if (!event) return;
@@ -64,6 +66,10 @@ export const Gallery = () => {
       navigate(`/gallery/${segments.slice(0, -1).join("/")}`);
     } else if (event.key === "Delete" && gallery.selectedImage !== null) {
       deleteImageAction(gallery.selected!);
+    } else if (event.key === "q") {
+      setShowQuickJump(true);
+      event.preventDefault();
+      return;
     } else {
       return;
     }
@@ -99,6 +105,9 @@ export const Gallery = () => {
             onClose={() => gallery.setMode("view")}
           />
         )}
+      </Show>
+      <Show when={showQuickJump()}>
+        <QuickJump onClose={() => setShowQuickJump(false)} />
       </Show>
     </>
   );

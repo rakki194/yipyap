@@ -61,6 +61,12 @@ export type ImageInfo = {
   isThumbnailLoaded: () => boolean;
 };
 
+interface FolderInfo {
+  name: string;
+  path: string;
+  fullPath: string;
+}
+
 // Call in reactive contexts only
 export function makeGalleryState() {
   // State part of the URL
@@ -306,6 +312,19 @@ export function makeGalleryState() {
     deleteCaption,
     selection,
     getEditedImage,
+    getAllKnownFolders: async () => {
+      try {
+        const response = await fetch("/api/folders");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch folders: ${response.statusText}`);
+        }
+        const data = await response.json();
+        return data.folders as FolderInfo[];
+      } catch (error) {
+        console.error("Error fetching folders:", error);
+        return [];
+      }
+    },
   };
 
   if (import.meta.env.DEV) {

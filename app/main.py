@@ -201,6 +201,50 @@ async def delete_caption(path: str, caption_type: str = Query(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/folders")
+async def get_all_folders():
+    """Get all folders recursively from ROOT_DIR"""
+    try:
+        folders = []
+        
+        def scan_directory(current_path: Path, relative_to: Path):
+            try:
+                # Skip hidden directories
+                if current_path.name.startswith('.'):
+                    return
+                
+                # Get relative path for the response
+                rel_path = str(current_path.relative_to(relative_to))
+                if rel_path != '.':  # Don't include the root itself
+                    folders.append({
+                        "name": current_path.name,
+                        "path": str(current_path.parent.relative_to(ROOT_DIR)),
+                        "fullPath": rel_path
+                    })
+                
+                # Recursively scan subdirectories
+                for item in current_path.iterdir():
+                    if item.is_dir() and not item.name.startswith('.'):
+                        scan_directory(item, relative_to)
+            except (PermissionError, OSError) as e:
+                logger.warning(f"Could not scan directory {current_path}: {e}")
+        
+        # Start recursive scan from ROOT_DIR
+        scan_directory(ROOT_DIR, ROOT_DIR)
+        
+        # Sort folders by path for consistent results
+        folders.sort(key=lambda x: x["fullPath"])
+        
+        return {
+            "folders": folders,
+            "root": str(ROOT_DIR)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error scanning folders: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
 if not is_dev:
     app.mount("/", StaticFiles(directory="static/dist", html=True), name="static")
