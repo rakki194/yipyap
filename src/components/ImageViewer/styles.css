@@ -199,30 +199,38 @@
   left: 0;
   width: var(--progress, 0%);
   height: 100%;
-  background: rgb(220, 53, 69);
+  background: rgb(220, 38, 38);
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: -1;
 }
 
 .delete-button.holding::before {
-  opacity: 0.2;
+  opacity: 1;
 }
 
-/* For dark theme */
-[data-theme="dark"] .delete-button.holding::before {
-  opacity: 0.3;
+.delete-button svg {
+  transition: fill 0.2s ease;
+}
+
+.delete-button.holding svg {
+  fill: white !important;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
 }
 
 .delete-button:hover {
-  color: rgb(220, 53, 69);
+  color: inherit;
 }
 
 .delete-button.holding {
-  color: rgb(220, 53, 69);
+  color: white;
+  background: transparent;
 }
 
-/* Optional: Add pulsing animation when holding */
+[data-theme="dark"] .delete-button.holding::before {
+  opacity: 1;
+}
+
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -237,4 +245,8 @@
 
 .delete-button.holding {
   animation: pulse 0.75s ease-in-out infinite;
+}
+
+.delete-button.holding {
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
 }
