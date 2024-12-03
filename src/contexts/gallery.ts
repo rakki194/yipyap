@@ -27,6 +27,7 @@ import type {
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
 import { joinUrlParts, replaceExtension, cacheNavigation } from "~/utils";
+import { joinUrlParts } from "~/utils";
 
 export interface GalleryState {
   viewMode: "grid" | "list";
