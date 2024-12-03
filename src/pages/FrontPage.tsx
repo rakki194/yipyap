@@ -27,6 +27,10 @@ const FrontPage: Component = () => {
       <h1 class="title">
         <span class="icon" innerHTML={YipYap} title="app logo" />
         <br /> ~yipyap
+        <br />{" "}
+        <span class="subtitle">
+          大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！
+        </span>
       </h1>
       <div class="selection-buttons">
         <button

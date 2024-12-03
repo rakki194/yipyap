@@ -186,3 +186,55 @@
     }
   }
 }
+
+.delete-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.delete-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--progress, 0%);
+  height: 100%;
+  background: rgb(220, 53, 69);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+}
+
+.delete-button.holding::before {
+  opacity: 0.2;
+}
+
+/* For dark theme */
+[data-theme="dark"] .delete-button.holding::before {
+  opacity: 0.3;
+}
+
+.delete-button:hover {
+  color: rgb(220, 53, 69);
+}
+
+.delete-button.holding {
+  color: rgb(220, 53, 69);
+}
+
+/* Optional: Add pulsing animation when holding */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.delete-button.holding {
+  animation: pulse 0.75s ease-in-out infinite;
+}

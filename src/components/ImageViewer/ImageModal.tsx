@@ -125,20 +125,42 @@ const ModalHeader = (props: {
 }) => {
   const gallery = useGallery();
   const deleteImageAction = useAction(gallery.deleteImage);
+  const [isHolding, setIsHolding] = createSignal(false);
+  const [progress, setProgress] = createSignal(0);
+  let deleteTimeout: number;
+  let progressInterval: number;
 
-  const handleDelete = async () => {
-    // Find the index of the current image
-    const data = gallery.data();
-    if (!data) return;
+  const startDelete = () => {
+    setIsHolding(true);
+    setProgress(0);
 
-    const currentIndex = data.items.findIndex(
-      (item) => item.type === "image" && item.file_name === props.imageInfo.name
-    );
+    // Set up progress animation
+    progressInterval = setInterval(() => {
+      setProgress((p) => Math.min(p + (100 / 1500) * 16, 100)); // Update every 16ms (60fps)
+    }, 16);
 
-    if (currentIndex !== -1) {
-      await deleteImageAction(currentIndex);
-      props.onClose(); // Close the modal after deletion
-    }
+    // Set up delete timeout
+    deleteTimeout = setTimeout(async () => {
+      const data = gallery.data();
+      if (!data) return;
+
+      const currentIndex = data.items.findIndex(
+        (item) =>
+          item.type === "image" && item.file_name === props.imageInfo.name
+      );
+
+      if (currentIndex !== -1) {
+        await deleteImageAction(currentIndex);
+        props.onClose();
+      }
+    }, 1500);
+  };
+
+  const cancelDelete = () => {
+    setIsHolding(false);
+    setProgress(0);
+    clearTimeout(deleteTimeout);
+    clearInterval(progressInterval);
   };
 
   return (
@@ -155,10 +177,17 @@ const ModalHeader = (props: {
           innerHTML={DownloadIcon}
         />
         <button
-          class="icon"
-          onClick={handleDelete}
-          aria-label="Delete image"
-          title="Delete image"
+          class="icon delete-button"
+          classList={{ holding: isHolding() }}
+          style={{ "--progress": `${progress()}%` }}
+          onMouseDown={startDelete}
+          onMouseUp={cancelDelete}
+          onMouseLeave={cancelDelete}
+          onTouchStart={startDelete}
+          onTouchEnd={cancelDelete}
+          onTouchCancel={cancelDelete}
+          aria-label="Hold to delete image"
+          title="Hold to delete image"
           innerHTML={DeleteIcon}
         />
         <button

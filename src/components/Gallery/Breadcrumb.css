@@ -1,7 +1,7 @@
 .breadcrumb {
   padding: var(--spacing);
   margin-bottom: var(--spacing);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-color);
   background: none;
   border-radius: 0;
   font-size: 1.4rem;

@@ -127,7 +127,7 @@
     aspect-ratio: var(--directory-aspect-ratio);
     width: 100%;
     margin: 0;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
     padding: calc(var(--spacing) * 0.5);
     text-decoration: none;
     display: flex;

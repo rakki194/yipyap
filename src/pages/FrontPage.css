@@ -19,7 +19,7 @@
   font-size: 1.2em;
   cursor: pointer;
   background: var(--card-bg);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   transition: background-color var(--transition-duration) ease,
     color var(--transition-duration) ease;

@@ -10,8 +10,8 @@
   --text-secondary: #5c5f77;
   --text-tertiary: #eff1f5;
   --placeholder-color: var(--text-secondary);
-  --preview-bg: #5c5f77;
-  --border: var(--card-bg);
+  --preview-bg: #68686885;
+  --border-color: var(--card-bg);
   --border-secondary: var(--accent);
   --spacing: 0.7rem;
   --half-spacing: calc(var(--spacing) / 2);
@@ -120,7 +120,7 @@
   box-sizing: border-box;
   transition: none var(--transition-duration) var(--transition-timing);
   border-width: 1px;
-  border-color: var(--border);
+  border-color: var(--border-color);
   border-radius: var(--border-radius);
 }
 
