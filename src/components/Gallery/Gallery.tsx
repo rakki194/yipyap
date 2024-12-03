@@ -92,9 +92,10 @@ export const Gallery = () => {
 
       <Show when={gallery.editedImage}>
         {(image) => (
-          <ImageModal
-            image={image()}
-            path={gallery.data()?.path || "/"}
+          /* FIXME: this is messy, we should just pass the imageInfo,
+        but the captions might change more often */ <ImageModal
+            imageInfo={gallery.getEditedImage()!}
+            captions={image().captions}
             onClose={() => gallery.setMode("view")}
           />
         )}

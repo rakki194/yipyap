@@ -1,10 +1,13 @@
 import {
+  JSX,
   on,
   createEffect,
   untrack,
   mergeProps,
   batch,
   startTransition,
+  createSignal,
+  Accessor,
 } from "solid-js";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { useParams, useSearchParams, action } from "@solidjs/router";
@@ -23,6 +26,7 @@ import type {
 } from "~/resources/browse";
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
+import { joinUrlParts, replaceExtension, cacheNavigation } from "~/utils";
 
 export interface GalleryState {
   viewMode: "grid" | "list";
@@ -36,6 +40,26 @@ export interface GalleryState {
 export type GalleryContextType = ReturnType<typeof makeGalleryState>;
 
 export type { SaveCaption };
+
+/* The static part of the image information that is fed to the ImageViewer
+Contains metadata, path for various sized of the image and the image elements themselves */
+export type ImageInfo = {
+  idx: number;
+  name: string;
+  width: number;
+  height: number;
+  size: number;
+  mime: string;
+  mtime: string;
+  preview_path: string;
+  thumbnail_path: string;
+  download_path: string;
+  aspect_ratio: string;
+  preview_img: HTMLImageElement;
+  thumbnail_img: HTMLImageElement;
+  isPreviewLoaded: () => boolean;
+  isThumbnailLoaded: () => boolean;
+};
 
 // Call in reactive contexts only
 export function makeGalleryState() {
@@ -55,35 +79,10 @@ export function makeGalleryState() {
     page: Number(searchParams.page) || 1,
     mode: "view",
   });
+  const setPage = (page: number) =>
+    startTransition(() => setState("page", page));
 
   const params = useParams<{ path: string }>();
-
-  // Effect: Reset page and selected image when the path changes
-  createEffect(
-    on(
-      () => params.path,
-      (path, prevPath) => {
-        if (path !== prevPath) {
-          batch(() => {
-            setState({ page: 1, path: path });
-            selection.select(null);
-          });
-        }
-      }
-    )
-  );
-
-  // Effect: Load the next page when the selected image changes
-  createEffect(
-    on(
-      () => selection.selectedImage,
-      (image) => {
-        if (image?.next_page !== undefined) {
-          startTransition(() => setState("page", image.next_page!));
-        }
-      }
-    )
-  );
 
   // Data sources and actions
   const [config, refetchConfig] = createConfigResource();
@@ -98,6 +97,101 @@ export function makeGalleryState() {
     }));
 
   const selection = useSelection(backendData);
+
+  const [getEditedImage, clearImageCache] = cacheNavigation(
+    () => backendData()?.items || [],
+    () => selection.selected,
+    (item, idx) => {
+      if (item.type !== "image") return undefined;
+      const image = item();
+      if (image == undefined) return undefined;
+      const name = image.name;
+      const path = backendData()?.path || "/";
+      const webpName = replaceExtension(name, ".webp");
+
+      const thumbnail_path = joinUrlParts("/thumbnail", path, webpName);
+      const preview_path = joinUrlParts("/preview", path, webpName);
+      const download_path = joinUrlParts("/download", path, name);
+      const aspect_ratio = `${image.width}/${image.height}`;
+      const style = { "aspect-ratio": aspect_ratio };
+      const [preview_img, isPreviewLoaded] = makeImage(
+        preview_path,
+        name,
+        ["preview"],
+        style
+      );
+      const [thumbnail_img, isThumbnailLoaded] = makeImage(
+        thumbnail_path,
+        name,
+        ["thumbnail"],
+        style
+      );
+
+      if (item.next_page != undefined) {
+        setPage(item.next_page);
+      }
+
+      const res: ImageInfo = {
+        idx,
+        name,
+        width: image.width,
+        height: image.height,
+        size: image.size,
+        mime: image.mime,
+        mtime: image.mtime,
+        aspect_ratio,
+        preview_path,
+        thumbnail_path,
+        download_path,
+        preview_img,
+        thumbnail_img,
+        isPreviewLoaded,
+        isThumbnailLoaded,
+      };
+
+      // console.log("rendering to cache", { idx, name });
+      return res;
+    },
+    {
+      preload_fwd: 2,
+      preload_rev: 1,
+      keep_fwd: 6,
+      keep_rev: 6,
+      unload: (img, idx) => {
+        // console.log("unloading from cache", { idx, name: img?.name });
+        img.preview_img.src = "";
+        img.thumbnail_img.src = "";
+      },
+    }
+  );
+
+  // Effect: Reset page and selected image when the path changes
+  createEffect(
+    on(
+      () => params.path,
+      (path, prevPath) => {
+        if (path !== prevPath) {
+          batch(() => {
+            setState({ page: 1, path: path });
+            selection.select(null);
+            clearImageCache();
+          });
+        }
+      }
+    )
+  );
+
+  // Effect: Load the next page when the selected image changes
+  createEffect(
+    on(
+      () => selection.selectedImage,
+      (image) => {
+        if (image?.next_page !== undefined) {
+          setPage(image.next_page);
+        }
+      }
+    )
+  );
 
   const saveCaption = action(async (data: SaveCaption) => {
     const { image, database } = untrack(() => ({
@@ -198,12 +292,7 @@ export function makeGalleryState() {
       setState("page", 1);
       // setSearchParams({ search, page: '1' });
     },
-    setPage: (page: number) => {
-      startTransition(() => {
-        setState("page", page);
-      });
-      // setSearchParams({ page: page.toString() });
-    },
+    setPage,
     getPreviewSize: (image: Size) =>
       getThumbnailComputedSize(image, config()?.preview_size || [1024, 1024]),
     getThumbnailSize: (image: Size) =>
@@ -216,6 +305,7 @@ export function makeGalleryState() {
     deleteImage,
     deleteCaption,
     selection,
+    getEditedImage,
   };
 
   if (import.meta.env.DEV) {
@@ -236,9 +326,6 @@ export function makeGalleryState() {
         error: backendData.error,
       })
     );
-  }
-
-  if (import.meta.env.DEV)
     console.debug(
       "Initialized GalleryState context",
       filterFunctions({
@@ -246,6 +333,7 @@ export function makeGalleryState() {
         ...selection,
       })
     );
+  }
 
   // Merge gallery and selection properties
   return mergeProps(gallery, selection);
@@ -275,3 +363,40 @@ function filterFunctions(obj: Record<string, any>) {
     Object.entries(obj).filter(([_, v]) => typeof v !== "function")
   );
 }
+
+const makeImage = (
+  src: string,
+  alt?: string,
+  classes?: string[],
+  style?: JSX.CSSProperties
+): [HTMLImageElement, Accessor<boolean>] => {
+  const img = new Image();
+  img.src = src;
+  img.alt = alt || "";
+  if (style) {
+    Object.entries(style).forEach(([key, value]) => {
+      img.style.setProperty(key, value);
+    });
+  }
+  if (classes) {
+    img.classList.add(...classes);
+  }
+  const [isLoaded, setIsLoaded] = createSignal(false);
+  if (img.complete) {
+    setIsLoaded(true);
+    img.classList.add("loaded");
+  } else {
+    img.onload = () => {
+      setIsLoaded(true);
+      img.classList.add("loaded");
+      img.onload = null;
+      img.onerror = null;
+    };
+    img.onerror = () => {
+      console.error("error loading", img.src);
+      img.onload = null;
+      img.onerror = null;
+    };
+  }
+  return [img, isLoaded];
+};

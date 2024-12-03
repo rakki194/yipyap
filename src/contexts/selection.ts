@@ -21,15 +21,14 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
       const data = backendData();
       if (!data) return false;
       if (idx === null) {
-        setState("mode", "view");
-        setState("selected", null);
+        setState({ mode: "view", selected: null });
         return true;
       }
       const l = data.items.length;
       if (l === 0) {
         return false;
       }
-      if (idx === "last" || idx >= l) {
+      if (idx === "last") {
         idx = l - 1;
       } else if (idx < 0) {
         idx = 0;
@@ -46,11 +45,13 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
     },
     selectPrev: () => {
       return selection.select(
-        selection.selected ? selection.selected - 1 : "last"
+        selection.selected !== null ? selection.selected - 1 : "last"
       );
     },
     selectNext: () => {
-      return selection.select(selection.selected ? selection.selected + 1 : 0);
+      return selection.select(
+        selection.selected !== null ? selection.selected + 1 : 0
+      );
     },
     selectDown: () => {
       const columns = state.columns;

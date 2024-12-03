@@ -15,6 +15,7 @@ export type {
   GalleryState,
   SaveCaption,
   GalleryContextType,
+  ImageInfo,
 } from "./contexts/gallery.ts";
 
 /**

@@ -79,7 +79,7 @@ function fetchPage(
   onError: (error: Error) => void
 ): Promise<void> {
   return fetchStreamingJson(
-    `/api/browse?path=${path}&page=${page}&page_size=4`,
+    `/api/browse?path=${path}&page=${page}&page_size=32`,
     (item, idx) => {
       if (idx === 0) {
         onHeader(item as FolderHeader);
