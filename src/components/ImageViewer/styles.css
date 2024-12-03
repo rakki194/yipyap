@@ -205,17 +205,30 @@
   z-index: -1;
 }
 
-.delete-button.holding::before {
-  opacity: 1;
-}
-
 .delete-button svg {
-  transition: fill 0.2s ease;
+  transition: fill 0.7s ease;
+  will-change: fill;
 }
 
 .delete-button.holding svg {
-  fill: white !important;
+  fill: var(--accent);
+  animation: turnWhite 1.3s forwards;
   filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes turnWhite {
+  0%,
+  46% {
+    fill: var(--accent);
+  }
+  54%,
+  100% {
+    fill: white;
+  }
+}
+
+.delete-button.holding::before {
+  opacity: 1;
 }
 
 .delete-button:hover {
@@ -245,8 +258,5 @@
 
 .delete-button.holding {
   animation: pulse 0.75s ease-in-out infinite;
-}
-
-.delete-button.holding {
   box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
 }

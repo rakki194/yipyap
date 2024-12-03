@@ -1,8 +1,9 @@
 // src/components/Settings/Settings.tsx
 
-import { Component, Show } from "solid-js";
+import { Component, Show, createSignal } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useTheme, Theme } from "~/contexts/theme";
+import { useSettings } from "~/contexts/settings";
 import {
   SunIcon,
   MoonIcon,
@@ -19,6 +20,7 @@ import "./Settings.css";
 export const Settings: Component = () => {
   const gallery = useGallery();
   const theme = useTheme();
+  const settings = useSettings();
 
   return (
     <div class="settings-panel card">
@@ -105,6 +107,20 @@ export const Settings: Component = () => {
             <option value="size">File Size</option>
           </select>
         </div>
+      </section>
+
+      <section class="warning-section">
+        <p class="warning-text">
+          ⚠️ WARNING <span class="warning-kanji">警告 狼化注意</span>
+        </p>
+        <label>
+          <input
+            type="checkbox"
+            checked={settings.instantDelete()}
+            onChange={(e) => settings.setInstantDelete(e.currentTarget.checked)}
+          />
+          Enable instant delete (skips confirmation)
+        </label>
       </section>
     </div>
   );

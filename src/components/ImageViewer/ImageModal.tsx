@@ -15,6 +15,7 @@ import { useGallery } from "~/contexts/GalleryContext";
 import { DownloadIcon, DismissIcon, DeleteIcon } from "~/icons";
 import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions } from "~/types";
+import { useSettings } from "~/contexts/settings";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -124,36 +125,41 @@ const ModalHeader = (props: {
   onClose: () => void;
 }) => {
   const gallery = useGallery();
+  const settings = useSettings();
   const deleteImageAction = useAction(gallery.deleteImage);
   const [isHolding, setIsHolding] = createSignal(false);
   const [progress, setProgress] = createSignal(0);
   let deleteTimeout: number;
   let progressInterval: number;
 
+  const deleteImage = async () => {
+    const data = gallery.data();
+    if (!data) return;
+
+    const currentIndex = data.items.findIndex(
+      (item) => item.type === "image" && item.file_name === props.imageInfo.name
+    );
+
+    if (currentIndex !== -1) {
+      await deleteImageAction(currentIndex);
+      props.onClose();
+    }
+  };
+
   const startDelete = () => {
+    if (settings.instantDelete()) {
+      deleteImage();
+      return;
+    }
+
     setIsHolding(true);
     setProgress(0);
 
-    // Set up progress animation
     progressInterval = setInterval(() => {
-      setProgress((p) => Math.min(p + (100 / 1500) * 16, 100)); // Update every 16ms (60fps)
+      setProgress((p) => Math.min(p + (100 / 1300) * 16, 100));
     }, 16);
 
-    // Set up delete timeout
-    deleteTimeout = setTimeout(async () => {
-      const data = gallery.data();
-      if (!data) return;
-
-      const currentIndex = data.items.findIndex(
-        (item) =>
-          item.type === "image" && item.file_name === props.imageInfo.name
-      );
-
-      if (currentIndex !== -1) {
-        await deleteImageAction(currentIndex);
-        props.onClose();
-      }
-    }, 1500);
+    deleteTimeout = setTimeout(deleteImage, 1300);
   };
 
   const cancelDelete = () => {
