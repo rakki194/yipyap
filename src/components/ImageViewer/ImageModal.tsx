@@ -125,6 +125,22 @@ const ModalHeader = (props: {
 }) => {
   const gallery = useGallery();
   const deleteImageAction = useAction(gallery.deleteImage);
+
+  const handleDelete = async () => {
+    // Find the index of the current image
+    const data = gallery.data();
+    if (!data) return;
+
+    const currentIndex = data.items.findIndex(
+      (item) => item.type === "image" && item.file_name === props.imageInfo.name
+    );
+
+    if (currentIndex !== -1) {
+      await deleteImageAction(currentIndex);
+      props.onClose(); // Close the modal after deletion
+    }
+  };
+
   return (
     <div class="modal-header">
       <h2>{props.imageInfo.name}</h2>
@@ -134,16 +150,24 @@ const ModalHeader = (props: {
           onClick={() => {
             window.location.href = props.imageInfo.download_path;
           }}
+          aria-label="Download image"
+          title="Download image"
           innerHTML={DownloadIcon}
         />
         <button
           class="icon"
-          onClick={() =>
-            gallery.selected !== null && deleteImageAction(gallery.selected)
-          }
+          onClick={handleDelete}
+          aria-label="Delete image"
+          title="Delete image"
           innerHTML={DeleteIcon}
         />
-        <button class="icon" onClick={props.onClose} innerHTML={DismissIcon} />
+        <button
+          class="icon"
+          onClick={props.onClose}
+          aria-label="Close image viewer"
+          title="Close image viewer"
+          innerHTML={DismissIcon}
+        />
       </div>
     </div>
   );

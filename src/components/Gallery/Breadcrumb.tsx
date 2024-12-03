@@ -104,6 +104,7 @@ export const Breadcrumb = () => {
             class="icon"
             onClick={() => setShowSettings(!showSettings())}
             title="Settings"
+            aria-label="Open settings"
             innerHTML={SettingsIcon}
           />
         </div>
@@ -129,6 +130,7 @@ function ThemeToggle() {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       title={`Switch to ${getNextTheme(theme.theme)} mode`}
+      aria-label={`Switch to ${getNextTheme(theme.theme)} mode`}
       innerHTML={getThemeIcon(
         hovered() ? getNextTheme(theme.theme) : theme.theme
       )}

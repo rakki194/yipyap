@@ -54,3 +54,8 @@
     color: var(--accent);
   }
 }
+
+.subtitle {
+  font-size: 1rem;
+  text-shadow: none;
+}

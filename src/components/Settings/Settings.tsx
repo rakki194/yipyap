@@ -34,6 +34,7 @@ export const Settings: Component = () => {
               classList={{ active: theme.theme === "light" }}
               onClick={() => theme.setTheme("light")}
               title="Light theme"
+              aria-label="Switch to light theme"
               innerHTML={SunIcon}
             />
             <button
@@ -41,6 +42,7 @@ export const Settings: Component = () => {
               classList={{ active: theme.theme === "gray" }}
               onClick={() => theme.setTheme("gray")}
               title="Gray theme"
+              aria-label="Switch to gray theme"
               innerHTML={CloudIcon}
             />
             <button

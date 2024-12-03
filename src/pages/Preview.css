@@ -8,8 +8,8 @@
 body {
   padding: 32px;
   height: 100vh;
-  overflow: hidden; /* Hide overflow instead of scrolling */
-  background: #333; /* Dark background to see boundaries */
+  overflow: hidden;
+  background: var(--preview-bg);
 }
 
 .image-container {

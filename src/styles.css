@@ -10,6 +10,7 @@
   --text-secondary: #5c5f77;
   --text-tertiary: #eff1f5;
   --placeholder-color: var(--text-secondary);
+  --preview-bg: #5c5f77;
   --border: var(--card-bg);
   --border-secondary: var(--accent);
   --spacing: 0.7rem;
