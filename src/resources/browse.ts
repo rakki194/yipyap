@@ -4,11 +4,9 @@ import {
   Accessor,
   createResource,
   createSignal,
-  InitializedResourceReturn,
+  ResourceReturn,
   Setter,
-  untrack,
 } from "solid-js";
-import { createStaticStore } from "@solid-primitives/static-store";
 import { joinUrlParts } from "~/utils";
 
 interface FolderHeader {
@@ -103,6 +101,12 @@ export type BrowsePageResult = {
   setters: Record<string, Setter<AnyData | undefined>>;
 };
 
+/**
+ * Fetches a single page of gallery items from the server using streaming JSON.
+ * @param path - The directory path to browse
+ * @param page - The page number to fetch (1-based)
+ * @returns A Promise containing the page results with signals for each item
+ */
 export function fetchPageItemsAsSignals(
   path: string,
   page: number
@@ -176,27 +180,6 @@ type NavState = { path: string; page: number };
 type NameToItem = Map<string, AnyItem>;
 type PageToItems = Record<number, NameToItem>;
 
-export function createGalleryRessource(
-  getNavState: Accessor<NavState>
-): InitializedResourceReturn<BrowsePageResult> {
-  const items = new Map<string, AnyItem>();
-  const initialValue = {
-    ...untrack(getNavState),
-    total_pages: -1,
-    total_folders: -1,
-    total_images: -1,
-    mtime: "",
-    items,
-    setters: {},
-  };
-  return createResource<BrowsePageResult, NavState>(
-    getNavState,
-    ({ path, page }, { value, refetching }) =>
-      fetchPageItemsAsSignals(path, page),
-    { initialValue }
-  );
-}
-
 export type BrowsePagesCached = {
   path: string;
   mtime: string;
@@ -208,42 +191,50 @@ export type BrowsePagesCached = {
   setters: Record<string, Setter<AnyData | undefined>>;
 };
 
+/**
+ * Creates a SolidJS resource that manages browsing a gallery directory with caching.
+ * This resource maintains a cache of all fetched pages for the current path and
+ * aggregates items across pages into a single list.
+ *
+ * @param getNavState - Accessor function returning the current navigation state (path and page)
+ * @returns A SolidJS resource that manages:
+ *   - Cached pages for the current path
+ *   - Aggregated list of all items across fetched pages
+ *   - Loading states and error handling
+ *
+ * The resource will:
+ *   - Keep cached pages when navigating within the same path
+ *   - Clear the cache when switching to a different path
+ *   - Automatically fetch new pages when they become visible
+ *   - Skip fetching already cached pages unless forced by refetching
+ */
 export function createGalleryResourceCached(
   getNavState: Accessor<NavState>
-): InitializedResourceReturn<BrowsePagesCached> {
-  const initialValue = {
-    path: untrack(getNavState).path,
-    mtime: "",
-    total_pages: -1,
-    total_folders: -1,
-    total_images: -1,
-    pages: {},
-    items: [],
-    setters: {},
-  };
+): ResourceReturn<BrowsePagesCached> {
   return createResource<BrowsePagesCached, NavState>(
     getNavState,
     async (
       { path, page },
       { value: prev_value, refetching }
     ): Promise<BrowsePagesCached> => {
-      if (prev_value === undefined) {
-        throw new Error("value is undefined");
-      }
-      const samePath = path === prev_value.path;
-      if (
-        // (prev_value.total_pages >= 0 && page > prev_value.total_pages) ||
-        samePath &&
-        prev_value.pages[page] !== undefined &&
-        !refetching
-      ) {
-        // console.log("skipping fetch", { path, page });
-        return prev_value as BrowsePagesCached;
+      let pages = {} as PageToItems;
+      if (prev_value !== undefined && path === prev_value?.path) {
+        if (prev_value.pages[page] !== undefined && !refetching) {
+          // console.log("skipping fetch", { path, page });
+          return prev_value;
+        } else {
+          pages = { ...prev_value.pages };
+        }
       }
 
+      if (import.meta.env.DEV) {
+        console.debug("fetching page", { path, page });
+      }
       const result = await fetchPageItemsAsSignals(path, page);
+      if (import.meta.env.DEV) {
+        console.debug("fetched page", { path, page, result });
+      }
 
-      const pages = samePath ? { ...prev_value.pages } : {};
       pages[page] = result.items;
       const items = Object.values(pages).reduce((acc, pageItems) => {
         acc.push(...pageItems.values());
@@ -260,8 +251,7 @@ export function createGalleryResourceCached(
         items,
         setters: result.setters,
       };
-    },
-    { initialValue }
+    }
   );
 }
 

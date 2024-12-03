@@ -2,8 +2,10 @@
 
 import { Component, createSignal } from "solid-js";
 import { useNavigate } from "@solidjs/router";
-import "./FrontPage.css";
 import { DimensionsIcon, SpeakerIcon, YipYap } from "~/icons";
+import "~/styles.css";
+import "~/components/FadeIn.css";
+import "./FrontPage.css";
 
 const FrontPage: Component = () => {
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ const FrontPage: Component = () => {
   };
 
   return (
-    <div class={`front-page ${isVisible() ? "visible" : "hidden"}`}>
+    <div class={`front-page fade-in ${isVisible() ? "visible" : "hidden"}`}>
       <h1 class="title">
         <span class="icon" innerHTML={YipYap} title="app logo" />
         <br /> ~yipyap

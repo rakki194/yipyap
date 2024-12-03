@@ -10,69 +10,30 @@ import {
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
 import { CaptionInput } from "./CaptionInput";
-import type { ImageData, Captions } from "~/resources/browse";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
 import { DownloadIcon, DismissIcon, DeleteIcon } from "~/icons";
 import { useAction } from "@solidjs/router";
-import { joinUrlParts, replaceExtension } from "~/utils";
+import type { ImageInfo as ImageInfoType, Captions } from "~/types";
 
 interface ImageModalProps {
-  image: ImageData;
-  path: string;
+  imageInfo: ImageInfoType;
+  captions: Captions;
   onClose: () => void;
 }
-
-export type ImageInfo = {
-  name: string;
-  width: number;
-  height: number;
-  size: number;
-  mime: string;
-  mtime: string;
-  preview: string;
-  thumbnail: string;
-  download: string;
-};
 
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
 
-  const getLayout = createMemo(() => computeLayout(props.image, windowSize));
-  const imageInfo = createMemo(
-    (): ImageInfo => {
-      const image = props.image;
-      const name = image.name;
-      const path = props.path;
-      const webpName = replaceExtension(name, ".webp");
-      return {
-        name,
-        width: image.width,
-        height: image.height,
-        size: image.size,
-        mime: image.mime,
-        mtime: image.mtime,
-        preview: joinUrlParts("/preview", path, webpName),
-        thumbnail: joinUrlParts("/preview", path, webpName),
-        download: joinUrlParts("/download", path, name),
-      };
-    },
-    undefined,
-    { equals: (a, b) => a.download === b.download }
+  const getLayout = createMemo(() =>
+    computeLayout(props.imageInfo, windowSize)
   );
-
-  createEffect((prev) => {
-    const ii = imageInfo();
-    console.log("imageInfo", prev !== ii, ii);
-    return ii;
-  });
-
   return (
     <div class="modal-content">
-      <ModalHeader imageInfo={imageInfo()} onClose={props.onClose} />
+      <ModalHeader imageInfo={props.imageInfo} onClose={props.onClose} />
       <ModelBody
-        imageInfo={imageInfo()}
-        captions={props.image.captions}
+        imageInfo={props.imageInfo}
+        captions={props.captions}
         layout={getLayout()}
       />
     </div>
@@ -81,7 +42,7 @@ export const ImageModal = (props: ImageModalProps) => {
 
 const ModelBody = (props: {
   captions: Captions;
-  imageInfo: ImageInfo;
+  imageInfo: ImageInfoType;
   layout: LayoutInfo;
 }) => {
   let refImageInfo!: HTMLDivElement;
@@ -158,7 +119,10 @@ const ModelBody = (props: {
   );
 };
 
-const ModalHeader = (props: { imageInfo: ImageInfo; onClose: () => void }) => {
+const ModalHeader = (props: {
+  imageInfo: ImageInfoType;
+  onClose: () => void;
+}) => {
   const gallery = useGallery();
   const deleteImageAction = useAction(gallery.deleteImage);
   return (
@@ -168,7 +132,7 @@ const ModalHeader = (props: { imageInfo: ImageInfo; onClose: () => void }) => {
         <button
           class="icon"
           onClick={() => {
-            window.location.href = props.imageInfo.download;
+            window.location.href = props.imageInfo.download_path;
           }}
           innerHTML={DownloadIcon}
         />
@@ -194,10 +158,7 @@ type LayoutInfo = Size & {
   free_height: number;
 };
 
-function computeLayout(
-  image: ImageData,
-  windowSize: Readonly<Size>
-): LayoutInfo {
+function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
   const { width: viewWidth, height: viewHeight } = windowSize;
   if (image === null) {
     //FIXME: we don't need this

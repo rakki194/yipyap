@@ -6,17 +6,6 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  /* Initial state for transition */
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-.front-page.hidden {
-  opacity: 0;
-}
-
-.front-page.visible {
-  opacity: 1;
 }
 
 .selection-buttons {
@@ -32,7 +21,8 @@
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--border-radius);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color var(--transition-duration) ease,
+    color var(--transition-duration) ease;
 }
 
 .selection-buttons button:hover,
@@ -63,23 +53,4 @@
   to {
     color: var(--accent);
   }
-}
-
-/* Transition Classes */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-}
-
-@media (max-width: 600px) {
 }

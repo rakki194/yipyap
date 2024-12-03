@@ -14,7 +14,7 @@ import {
   ArrowUndoIcon,
 } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
-import { preserveState } from "~/components/TextArea";
+import { preserveState } from "~/directives";
 
 export interface CaptionInputProps
   extends JSX.HTMLAttributes<HTMLTextAreaElement> {

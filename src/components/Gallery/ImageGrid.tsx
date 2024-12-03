@@ -5,9 +5,9 @@ import { A } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
 import { joinUrlParts } from "~/utils";
+import { measure_columns } from "~/directives";
 import {
   FolderIcon,
-  //  UpIcon,
   SpinnerIcon,
   captionIconsMap,
   FolderArrowUpRegular,
@@ -22,10 +22,11 @@ export const ImageGrid = (props: {
   onImageClick: (idx: number) => void;
 }) => {
   const gallery = useGallery();
+  const setColumns = gallery.selection.setColumns;
   const addObserved = makeIntersectionObserver(gallery.setPage);
 
   return (
-    <div class="responsive-grid">
+    <div class="responsive-grid" use:measure_columns={setColumns}>
       <For each={props.data.items}>
         {(item, getIdx) => {
           let ref!: HTMLElement;
@@ -33,12 +34,19 @@ export const ImageGrid = (props: {
           if (next_page !== undefined) {
             onMount(() => addObserved(ref, next_page));
           }
+          const isActive = () => {
+            if (gallery.mode === "view" && gallery.selected === getIdx()) {
+              ref.scrollIntoView({ behavior: "instant", block: "nearest" });
+              return true;
+            }
+            return false;
+          };
           return item.type === "image" ? (
             <ImageItem
               ref={ref as HTMLDivElement}
               item={item}
               path={props.data.path}
-              selected={gallery.selected === getIdx()}
+              selected={isActive()}
               onClick={() => {
                 props.onImageClick(getIdx());
                 gallery.select(getIdx());
@@ -49,7 +57,7 @@ export const ImageGrid = (props: {
               ref={ref as HTMLAnchorElement}
               name={item.file_name}
               path={props.data.path}
-              selected={gallery.selected === getIdx()}
+              selected={isActive()}
             />
           );
         }}

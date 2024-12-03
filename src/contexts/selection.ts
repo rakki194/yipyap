@@ -1,51 +1,71 @@
-import { InitializedResource } from "solid-js";
+import { Resource } from "solid-js";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { BrowsePagesCached } from "~/resources/browse";
 
 export type Mode = "view" | "edit";
 export type Selection = ReturnType<typeof useSelection>;
 
-export function useSelection(
-  backendData: InitializedResource<BrowsePagesCached>
-) {
+export function useSelection(backendData: Resource<BrowsePagesCached>) {
   const [state, setState] = createStaticStore<{
     selected: number | null;
     mode: "view" | "edit";
+    columns: number | null;
   }>({
     selected: null,
     mode: "view",
+    columns: null,
   });
 
   const selection = {
-    select: (idx: number | null) => {
+    select: (idx: number | "last" | null) => {
+      const data = backendData();
+      if (!data) return false;
       if (idx === null) {
-        setState("mode", "view");
-        setState("selected", null);
+        setState({ mode: "view", selected: null });
         return true;
-      } else if (idx >= 0 && idx < backendData().items.length) {
-        setState("selected", idx);
-        const item = backendData().items[idx];
-
-        return true;
-      } else {
+      }
+      const l = data.items.length;
+      if (l === 0) {
         return false;
       }
+      if (idx === "last") {
+        idx = l - 1;
+      } else if (idx < 0) {
+        idx = 0;
+      }
+
+      setState("selected", idx);
+      return true;
     },
     get selectedImage() {
-      if (selection.selected === null) return null;
-      const image = backendData().items[selection.selected];
+      const data = backendData();
+      if (!data || selection.selected === null) return null;
+      const image = data.items[selection.selected];
       return image && image.type === "image" ? image : null;
     },
     selectPrev: () => {
-      const newIndex =
-        selection.selected === null
-          ? backendData().items.length - 1
-          : selection.selected - 1;
-      return selection.select(newIndex);
+      return selection.select(
+        selection.selected !== null ? selection.selected - 1 : "last"
+      );
     },
     selectNext: () => {
-      const newIndex = selection.selected === null ? 0 : selection.selected + 1;
-      return selection.select(newIndex);
+      return selection.select(
+        selection.selected !== null ? selection.selected + 1 : 0
+      );
+    },
+    selectDown: () => {
+      const columns = state.columns;
+      const index = selection.selected;
+      if (index === null) return selection.select(0);
+      if (columns === null) return false;
+      return selection.select(index + columns);
+    },
+    selectUp: () => {
+      const columns = state.columns;
+      const index = selection.selected;
+      if (index === null) return selection.select("last");
+      if (columns === null) return false;
+      return selection.select(index - columns);
     },
     get editedImage() {
       if (selection.mode !== "edit") return null;
@@ -80,6 +100,9 @@ export function useSelection(
     },
     get selected() {
       return state.selected;
+    },
+    setColumns: (columns: number | null) => {
+      setState("columns", columns);
     },
   };
 

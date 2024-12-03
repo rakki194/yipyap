@@ -1,7 +1,7 @@
 // src/components/ImageViewer/ImageInfo.tsx
 import { formatFileSize } from "~/utils/format";
-import type { ImageInfo as ImageInfoType } from "./ImageModal";
 import type { Component } from "solid-js";
+import type { ImageInfo as ImageInfoType } from "~/types";
 // Import Fluent icons
 import { SizeIcon, TimeIcon, TypeIcon, DimensionsIcon } from "~/icons";
 
