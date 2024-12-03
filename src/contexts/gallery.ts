@@ -1,5 +1,12 @@
-import { on, createEffect, untrack, mergeProps, batch } from "solid-js";
-import { createStore } from "solid-js/store";
+import {
+  on,
+  createEffect,
+  untrack,
+  mergeProps,
+  batch,
+  startTransition,
+} from "solid-js";
+import { createStaticStore } from "@solid-primitives/static-store";
 import { useParams, useSearchParams, action } from "@solidjs/router";
 import { createWindowSize, Size } from "@solid-primitives/resize-observer";
 import {
@@ -23,6 +30,7 @@ export interface GalleryState {
   search: string;
   page: number;
   mode: "view" | "edit";
+  path: string;
 }
 
 export type GalleryContextType = ReturnType<typeof makeGalleryState>;
@@ -39,7 +47,8 @@ export function makeGalleryState() {
 
   // State that is not part of the URL
   // Also some unused stuff: only `page`, `selected`, and `mode` are used. The rest is here for future use
-  const [state, setState] = createStore<GalleryState>({
+  const [state, setState] = createStaticStore<GalleryState>({
+    path: "",
     viewMode: "grid",
     sort: "name",
     search: "",
@@ -56,7 +65,7 @@ export function makeGalleryState() {
       (path, prevPath) => {
         if (path !== prevPath) {
           batch(() => {
-            setState("page", 1);
+            setState({ page: 1, path: path });
             selection.select(null);
           });
         }
@@ -70,7 +79,7 @@ export function makeGalleryState() {
       () => selection.selectedImage,
       (image) => {
         if (image?.next_page !== undefined) {
-          setState("page", image.next_page);
+          startTransition(() => setState("page", image.next_page!));
         }
       }
     )
@@ -84,7 +93,7 @@ export function makeGalleryState() {
   // Our data source for directory listings. Calls the `/browse` and memoizes pages.
   const [backendData, { refetch, mutate: setData }] =
     createGalleryResourceCached(() => ({
-      path: params.path || "/",
+      path: state.path,
       page: state.page,
     }));
 
@@ -96,6 +105,7 @@ export function makeGalleryState() {
       database: backendData(),
     }));
     if (!image) return new Error("No image to save caption for");
+    if (!database) return new Error("No page fetched yet!");
 
     try {
       // Save caption to the backend
@@ -121,7 +131,7 @@ export function makeGalleryState() {
 
   const deleteImage = action(async (idx: number) => {
     const database = untrack(backendData);
-
+    if (!database) return new Error("No page fetched yet!");
     const image = database.items[idx];
     console.log("Deleting image", idx, { ...image }, { ...image() });
     if (!image || image.type !== "image")
@@ -164,6 +174,7 @@ export function makeGalleryState() {
       database: backendData(),
     }));
     if (!image) return new Error("No image to delete");
+    if (!database) return new Error("No page fetched yet!");
 
     await deleteCaptionFromBackend(database.path, image.name, type);
 
@@ -188,7 +199,9 @@ export function makeGalleryState() {
       // setSearchParams({ search, page: '1' });
     },
     setPage: (page: number) => {
-      setState("page", page);
+      startTransition(() => {
+        setState("page", page);
+      });
       // setSearchParams({ page: page.toString() });
     },
     getPreviewSize: (image: Size) =>

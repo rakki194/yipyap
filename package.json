@@ -12,10 +12,8 @@
   },
   "dependencies": {
     "@fluentui/svg-icons": "^1.1.265",
-    "@solid-primitives/event-listener": "^2.3.3",
     "@solid-primitives/intersection-observer": "^2.1.6",
     "@solid-primitives/keyboard": "^1.2.8",
-    "@solid-primitives/resize-observer": "^2.0.26",
     "@solid-primitives/scheduled": "^1.4.4",
     "@solidjs/router": "^0.15.1",
     "@types/node": "^22.9.0",

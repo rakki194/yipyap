@@ -1,14 +1,5 @@
 // src/components/Gallery/ImageGrid.tsx
-import {
-  For,
-  onCleanup,
-  onMount,
-  Show,
-  createSignal,
-  Accessor,
-  Setter,
-  createEffect,
-} from "solid-js";
+import { For, onCleanup, onMount, Show, createSignal } from "solid-js";
 import { A } from "@solidjs/router";
 
 import { useGallery } from "~/contexts/GalleryContext";
@@ -17,7 +8,6 @@ import { joinUrlParts } from "~/utils";
 import { measure_columns } from "~/directives";
 import {
   FolderIcon,
-  //  UpIcon,
   SpinnerIcon,
   captionIconsMap,
   FolderArrowUpRegular,

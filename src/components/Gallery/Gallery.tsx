@@ -38,6 +38,9 @@ export const Gallery = () => {
       return;
     }
 
+    const data = gallery.data();
+    if (!data) return;
+
     if (event.key === "ArrowRight") {
       if (!gallery.selectNext()) return;
     } else if (event.key === "ArrowLeft") {
@@ -47,7 +50,6 @@ export const Gallery = () => {
     } else if (event.key === "ArrowUp") {
       if (!gallery.selectUp()) return;
     } else if (event.key === "Enter" && gallery.selected !== null) {
-      const data = gallery.data();
       const selected = data.items[gallery.selected];
       if (selected.type === "directory") {
         navigate(`/gallery/${data.path}/${selected.file_name}`);
@@ -57,7 +59,7 @@ export const Gallery = () => {
     } else if (event.key === "Escape") {
       if (!gallery.setMode("view")) return;
     } else if (event.key === "Backspace") {
-      const segments = gallery.data().path.split("/");
+      const segments = data.path.split("/");
       if (segments.length < 1) return;
       navigate(`/gallery/${segments.slice(0, -1).join("/")}`);
     } else if (event.key === "Delete" && gallery.selectedImage !== null) {
@@ -83,13 +85,16 @@ export const Gallery = () => {
           gallery.state.viewMode === "list" ? "list-view" : ""
         }`}
       >
-        <ImageGrid data={gallery.data()} onImageClick={gallery.edit} />
+        <Show when={gallery.data()}>
+          {(data) => <ImageGrid data={data()} onImageClick={gallery.edit} />}
+        </Show>
       </div>
+
       <Show when={gallery.editedImage}>
         {(image) => (
           <ImageModal
             image={image()}
-            path={gallery.data().path}
+            path={gallery.data()?.path || "/"}
             onClose={() => gallery.setMode("view")}
           />
         )}

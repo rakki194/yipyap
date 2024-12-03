@@ -1,4 +1,4 @@
-import { createSignal, For, Show, createMemo } from "solid-js";
+import { createSignal, For, Show, createMemo, Suspense } from "solid-js";
 import { A } from "@solidjs/router";
 import {
   HomeIcon,
@@ -74,14 +74,20 @@ export const Breadcrumb = () => {
           <Crumbs />
         </div>
         <small>
-          <Show
-            when={data()?.total_folders > 0}
+          <Suspense
             fallback={<span class="spin-icon icon" innerHTML={SpinnerIcon} />}
           >
-            <span class="icon" innerHTML={FolderIcon} /> {data().total_folders}{" "}
-            <span class="icon" innerHTML={DimensionsIcon} />{" "}
-            {data().total_images}
-          </Show>
+            <Show when={data()} keyed>
+              {(data) => (
+                <>
+                  <span class="icon" innerHTML={FolderIcon} />{" "}
+                  {data.total_folders}{" "}
+                  <span class="icon" innerHTML={DimensionsIcon} />{" "}
+                  {data.total_images}
+                </>
+              )}
+            </Show>
+          </Suspense>
         </small>
         <div class="breadcrumb-actions">
           <ThemeToggle />
