@@ -2,8 +2,15 @@
 //
 // FadeIn component for SolidJS
 
-import { Component, createEffect, createSignal } from "solid-js";
+import {
+  Component,
+  createSignal,
+  onMount,
+  untrack,
+  useTransition,
+} from "solid-js";
 import "./FadeIn.css"; // We'll define the necessary CSS here
+import { SpinnerIcon } from "~/icons";
 
 interface FadeInProps {
   children: any;
@@ -13,11 +20,12 @@ interface FadeInProps {
 const FadeIn: Component<FadeInProps> = (props) => {
   const [isVisible, setIsVisible] = createSignal(false);
 
-  createEffect(() => {
-    // Trigger fade-in after component mounts
-    setTimeout(() => {
-      setIsVisible(true);
-    }, 50); // Slight delay to ensure CSS transition
+  onMount(() => {
+    if (!untrack(isVisible)) {
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 0);
+    }
   });
 
   return (
