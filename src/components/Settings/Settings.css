@@ -74,8 +74,17 @@
 .keyboard-shortcuts {
   background: var(--card-bg);
   border-radius: 0.5rem;
+  overflow: hidden;
+  transition: height 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.keyboard-shortcuts.closing {
+  opacity: 0;
+}
+
+.keyboard-shortcuts > div {
   padding: 1rem;
-  margin-bottom: 1rem;
 }
 
 .shortcuts-grid {
@@ -101,9 +110,82 @@ kbd {
   min-width: 1.5rem;
   text-align: center;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  color: var(--kbd-text, #333);
 }
 
 [data-theme="dark"] kbd {
   --kbd-bg: #333;
   --kbd-border: #444;
+  --kbd-text: #fff;
+}
+
+[data-theme="peanut"] kbd {
+  --kbd-bg: #d4b483;
+  --kbd-border: #b58d3d;
+  --kbd-text: #4a3810;
+}
+
+[data-theme="gray"] kbd {
+  --kbd-bg: #e0e0e0;
+  --kbd-border: #bdbdbd;
+  --kbd-text: #333;
+}
+
+.settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--double-spacing);
+  margin-bottom: var(--double-spacing);
+}
+
+.settings-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+.setting-group {
+  margin-bottom: var(--spacing);
+}
+
+.icon-buttons {
+  display: flex;
+  gap: var(--spacing);
+  flex-wrap: wrap;
+  margin-top: var(--half-spacing);
+}
+
+.icon-buttons button {
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s;
+}
+
+.icon-buttons button:hover {
+  background-color: var(--hover-color);
+}
+
+.icon-buttons button.active {
+  background-color: var(--accent);
+  color: var(--bg-color);
+}
+
+.icon-buttons button.active svg {
+  fill: var(--bg-color);
+}
+
+.theme-buttons {
+  display: flex;
+  gap: var(--spacing);
+  flex-wrap: wrap;
+  margin-top: var(--half-spacing);
+}
+
+/* Hide warning section styling on mobile */
+@media (max-width: 640px) {
+  .warning-section {
+    border: none;
+    background: none;
+    padding: var(--half-spacing);
+    margin-top: var(--spacing);
+  }
 }

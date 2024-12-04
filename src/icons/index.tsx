@@ -37,6 +37,11 @@ import SpeakerIcon from "@fluentui/svg-icons/icons/speaker_2_24_regular.svg?raw"
 import FolderArrowUpRegular from "@fluentui/svg-icons/icons/folder_arrow_up_24_regular.svg?raw";
 import StrawberryIcon from "./strawberry.svg?raw";
 import BookQuestionMarkRegular from "@fluentui/svg-icons/icons/book_question_mark_24_regular.svg?raw";
+import GridRegular from "@fluentui/svg-icons/icons/grid_24_regular.svg?raw";
+import ListRegular from "@fluentui/svg-icons/icons/list_24_regular.svg?raw";
+import TextSortAscendingRegular from "@fluentui/svg-icons/icons/text_sort_ascending_24_regular.svg?raw";
+import CalendarDateRegular from "@fluentui/svg-icons/icons/calendar_date_24_regular.svg?raw";
+import DocumentArrowDownRegular from "@fluentui/svg-icons/icons/document_arrow_down_24_regular.svg?raw";
 
 // Export all icons
 export {
@@ -77,6 +82,11 @@ export {
   FolderArrowUpRegular,
   StrawberryIcon,
   BookQuestionMarkRegular,
+  GridRegular,
+  ListRegular,
+  TextSortAscendingRegular,
+  CalendarDateRegular,
+  DocumentArrowDownRegular,
 };
 
 // Export caption icons map
