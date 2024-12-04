@@ -35,7 +35,12 @@ export const ImageView = (props: ImageViewProps) => {
           } else {
             console.log("fallback: spin");
             img.thumbnail_img.setPriority("high");
-            return <span class="icon spin-icon" />;
+            return (
+              <span
+                class="icon spin-icon"
+                style={{ width: "100%", height: "100%", position: "absolute" }}
+              />
+            );
           }
         }
       }
