@@ -41,7 +41,7 @@ export function replaceExtension(name: string, newExtension: string) {
  * of navigation given by `getIdx()`,
  * Also `options.backward` items are retained for quick access.
  *
- * Cache busting is manual, the mapping `idx => items[idx]` is not expected to change.
+ * Cache busting is manual, the mapping `idx => items[idx]` is not expected to change, appending is ok.
  * */
 export function cacheNavigation<T, U>(
   items: () => T[],
@@ -67,6 +67,7 @@ export function cacheNavigation<T, U>(
 
   const getCached = () => {
     const idx = getIdx();
+    if (idx === prev_idx) return cache.get(idx);
     if (idx == null) return undefined;
     return untrack(() => {
       const xs = items();

@@ -23,10 +23,12 @@ import type {
   ImageData,
   SaveCaption,
   BrowsePagesCached,
+  AnyItem,
 } from "~/resources/browse";
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
 import { joinUrlParts, replaceExtension, cacheNavigation } from "~/utils";
+import { makeImage, ReactiveImage } from "~/components/reactive-utils";
 
 export interface GalleryState {
   viewMode: "grid" | "list";
@@ -55,13 +57,50 @@ export type ImageInfo = {
   thumbnail_path: string;
   download_path: string;
   aspect_ratio: string;
-  preview_img: HTMLImageElement;
-  thumbnail_img: HTMLImageElement;
-  isPreviewLoaded: () => boolean;
-  isThumbnailLoaded: () => boolean;
+  preview_img: ReactiveImage;
+  thumbnail_img: ReactiveImage;
 };
 
-interface FolderInfo {
+const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
+  if (item.type !== "image") return undefined;
+
+  const image = item();
+  if (!image) return undefined;
+
+  const { name, width, height, size, mime, mtime } = image;
+  const resolvedPath = pathParam || "/";
+  const webpName = replaceExtension(name, ".webp");
+
+  const thumbnail_path = joinUrlParts("/thumbnail", resolvedPath, webpName);
+  const preview_path = joinUrlParts("/preview", resolvedPath, webpName);
+  const download_path = joinUrlParts("/download", resolvedPath, name);
+  const aspect_ratio = `${width}/${height}`;
+
+  const imageInfo = {
+    idx,
+    name,
+    width,
+    height,
+    size,
+    mime,
+    mtime,
+    aspect_ratio,
+    preview_path,
+    thumbnail_path,
+    download_path,
+    get captions() {
+      return item()!.captions;
+    },
+  };
+
+  if (import.meta.env.DEV) {
+    console.log("ImageInfo", idx, imageInfo);
+  }
+
+  return imageInfo;
+};
+
+export interface FolderInfo {
   name: string;
   path: string;
   fullPath: string;
@@ -108,27 +147,20 @@ export function makeGalleryState() {
     () => backendData()?.items || [],
     () => selection.selected,
     (item, idx) => {
-      if (item.type !== "image") return undefined;
-      const image = item();
-      if (image == undefined) return undefined;
-      const name = image.name;
-      const path = backendData()?.path || "/";
-      const webpName = replaceExtension(name, ".webp");
+      const image_info = getImageInfo(item, idx, backendData()?.path);
+      if (image_info == undefined) return undefined;
+      const { preview_path, thumbnail_path, aspect_ratio } = image_info;
 
-      const thumbnail_path = joinUrlParts("/thumbnail", path, webpName);
-      const preview_path = joinUrlParts("/preview", path, webpName);
-      const download_path = joinUrlParts("/download", path, name);
-      const aspect_ratio = `${image.width}/${image.height}`;
       const style = { "aspect-ratio": aspect_ratio };
-      const [preview_img, isPreviewLoaded] = makeImage(
+      const preview_img = makeImage(
         preview_path,
-        name,
+        image_info.name,
         ["preview"],
         style
       );
-      const [thumbnail_img, isThumbnailLoaded] = makeImage(
+      const thumbnail_img = makeImage(
         thumbnail_path,
-        name,
+        image_info.name,
         ["thumbnail"],
         style
       );
@@ -137,26 +169,12 @@ export function makeGalleryState() {
         setPage(item.next_page);
       }
 
-      const res: ImageInfo = {
+      return {
+        ...image_info,
         idx,
-        name,
-        width: image.width,
-        height: image.height,
-        size: image.size,
-        mime: image.mime,
-        mtime: image.mtime,
-        aspect_ratio,
-        preview_path,
-        thumbnail_path,
-        download_path,
         preview_img,
         thumbnail_img,
-        isPreviewLoaded,
-        isThumbnailLoaded,
-      };
-
-      // console.log("rendering to cache", { idx, name });
-      return res;
+      } as ImageInfo;
     },
     {
       preload_fwd: 2,
@@ -165,8 +183,8 @@ export function makeGalleryState() {
       keep_rev: 6,
       unload: (img, idx) => {
         // console.log("unloading from cache", { idx, name: img?.name });
-        img.preview_img.src = "";
-        img.thumbnail_img.src = "";
+        img.preview_img.unload();
+        img.thumbnail_img.unload();
       },
     }
   );
@@ -382,40 +400,3 @@ function filterFunctions(obj: Record<string, any>) {
     Object.entries(obj).filter(([_, v]) => typeof v !== "function")
   );
 }
-
-const makeImage = (
-  src: string,
-  alt?: string,
-  classes?: string[],
-  style?: JSX.CSSProperties
-): [HTMLImageElement, Accessor<boolean>] => {
-  const img = new Image();
-  img.src = src;
-  img.alt = alt || "";
-  if (style) {
-    Object.entries(style).forEach(([key, value]) => {
-      img.style.setProperty(key, value);
-    });
-  }
-  if (classes) {
-    img.classList.add(...classes);
-  }
-  const [isLoaded, setIsLoaded] = createSignal(false);
-  if (img.complete) {
-    setIsLoaded(true);
-    img.classList.add("loaded");
-  } else {
-    img.onload = () => {
-      setIsLoaded(true);
-      img.classList.add("loaded");
-      img.onload = null;
-      img.onerror = null;
-    };
-    img.onerror = () => {
-      console.error("error loading", img.src);
-      img.onload = null;
-      img.onerror = null;
-    };
-  }
-  return [img, isLoaded];
-};
