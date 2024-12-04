@@ -174,7 +174,7 @@ export const Settings: Component = () => {
               />
               <button
                 type="button"
-                class="icon"
+                class="icon strawberry-icon"
                 classList={{ active: theme.theme === "strawberry" }}
                 onClick={() => theme.setTheme("strawberry")}
                 title="Strawberry theme"
@@ -182,7 +182,7 @@ export const Settings: Component = () => {
               />
               <button
                 type="button"
-                class="icon strawberry-icon"
+                class="icon peanut-icon"
                 classList={{ active: theme.theme === "peanut" }}
                 onClick={() => theme.setTheme("peanut")}
                 title="Peanut theme"

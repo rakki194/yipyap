@@ -155,9 +155,36 @@ kbd {
 }
 
 .icon-buttons button {
-  padding: var(--spacing);
+  padding: var(--half-spacing);
   border-radius: var(--border-radius);
   transition: background-color 0.2s;
+}
+
+.strawberry-icon {
+  svg {
+    fill: #ff3366;
+  }
+}
+
+.peanut-icon {
+  svg {
+    fill: #996600;
+  }
+}
+
+.banana-icon {
+  svg {
+    fill: #ffdb4d;
+  }
+}
+
+[data-theme="light"] .banana-icon svg,
+[data-theme="dark"] .banana-icon svg {
+  fill: #ecc62f;
+}
+
+[data-theme="strawberry"] .banana-icon svg {
+  fill: #ebff3c;
 }
 
 .icon-buttons button:hover {
