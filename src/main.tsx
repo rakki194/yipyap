@@ -1,11 +1,23 @@
 import { render, ErrorBoundary } from "solid-js/web";
-import type { ParentComponent } from "solid-js";
-import { Router } from "@solidjs/router";
+import { createSignal, type ParentComponent } from "solid-js";
+import {
+  Location,
+  Router,
+  useResolvedPath,
+  useNavigate,
+  useBeforeLeave,
+  BeforeLeaveEventArgs,
+} from "@solidjs/router";
 import { routes } from "./router";
+import { AppProvider } from "./contexts/app";
 import "./styles.css";
 
 const Layout: ParentComponent = (props) => {
-  return <>{props.children}</>;
+  return (
+    <>
+      <AppProvider>{props.children}</AppProvider>
+    </>
+  );
 };
 
 render(

@@ -1,20 +1,16 @@
 import {
-  JSX,
   on,
   createEffect,
   untrack,
   mergeProps,
   batch,
   startTransition,
-  createSignal,
-  Accessor,
 } from "solid-js";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { useParams, useSearchParams, action } from "@solidjs/router";
 import { createWindowSize, Size } from "@solid-primitives/resize-observer";
 import {
   createGalleryResourceCached,
-  Captions,
   saveCaption as saveCaptionToBackend,
   deleteImage as deleteImageFromBackend,
   deleteCaption as deleteCaptionFromBackend,
@@ -24,6 +20,7 @@ import type {
   SaveCaption,
   BrowsePagesCached,
   AnyItem,
+  Captions,
 } from "~/resources/browse";
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
@@ -35,7 +32,6 @@ export interface GalleryState {
   sort: "name" | "date" | "size";
   search: string;
   page: number;
-  mode: "view" | "edit";
   path: string;
 }
 
@@ -122,7 +118,6 @@ export function makeGalleryState() {
     sort: "name",
     search: "",
     page: Number(searchParams.page) || 1,
-    mode: "view",
   });
   const setPage = (page: number) =>
     startTransition(() => setState("page", page));

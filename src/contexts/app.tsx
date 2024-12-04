@@ -1,35 +1,41 @@
 import { createSignal, useContext, type ParentComponent } from "solid-js";
-import { Location, useBeforeLeave } from "@solidjs/router";
+import { Location, useBeforeLeave, useLocation } from "@solidjs/router";
 import { AppContext } from "~/contexts/contexts";
 import { unwrap } from "solid-js/store";
 
 export interface AppContext {
   readonly prevRoute: Location | undefined;
+  readonly location: Location;
 }
 
 const createAppContext = (): AppContext => {
-  // FIXME: theme should be here
-  const [prevRoute, setPrevRoute] = createSignal<Location>();
-
+  const location = useLocation();
   if (import.meta.env.DEV) {
-    console.log("createAppContext", prevRoute());
+    console.log("createAppContext");
   }
 
+  let prevRoute: Location | undefined;
   useBeforeLeave((e) => {
     if (import.meta.env.DEV) {
-      console.debug("AppContext before-leave", e);
+      console.debug("AppContext before-leave", {
+        from: { ...e.from },
+        to: e.to,
+        defaultPrevented: e.defaultPrevented,
+      });
     }
     if (e.defaultPrevented) {
       return;
     }
     // Navigation warnings should plug here (we have e.preventDefault)
-    setPrevRoute({ ...e.from });
+    prevRoute = { ...e.from };
   });
 
   return {
     get prevRoute() {
-      return prevRoute();
+      location.pathname; // Signal triggered by location change
+      return prevRoute;
     },
+    location,
   };
 };
 

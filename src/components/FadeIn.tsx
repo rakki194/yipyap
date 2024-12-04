@@ -3,16 +3,15 @@
 // FadeIn component for SolidJS
 
 import {
+  JSX,
+  children,
   Component,
   createEffect,
-  createMemo,
   createSignal,
   onMount,
-  untrack,
-  createRoot,
+  Show,
 } from "solid-js";
 import "./FadeIn.css"; // We'll define the necessary CSS here
-import { SpinnerIcon } from "~/icons";
 import { useLocation } from "@solidjs/router";
 import { useAppContext } from "~/contexts/app"; // For prev-navigation
 
@@ -21,56 +20,53 @@ interface FadeInProps {
   duration?: number; // Transition duration in milliseconds
 }
 
-// Create a store outside the component to persist across remounts
-const createRouteTracker = createRoot(() => {
-  const [prevPath, setPrevPath] = createSignal<string>();
-  return { prevPath, setPrevPath };
-});
-
 const FadeIn: Component<FadeInProps> = (props) => {
-  const [isVisible, setIsVisible] = createSignal(false);
-  const routeLocation = useLocation();
-  const { prevPath, setPrevPath } = createRouteTracker;
-
   const appContext = useAppContext();
   const location = useLocation();
+  // Disabled if there is no prevRoute or pathname change
   const fadeIn = () => {
-    console.log("fade-in", appContext?.prevRoute, location.pathname);
-    return appContext?.prevRoute?.pathname !== location.pathname;
+    const prevRoute = appContext?.prevRoute;
+    return prevRoute && prevRoute.pathname === "/";
   };
-
+  const [getOpacity, setOpacity] = createSignal(fadeIn() ? 0 : 1);
   if (import.meta.env.DEV) {
     createEffect(() => {
-      console.debug("fade-in visible", {
-        isVisible: isVisible(),
-        fadeIn: untrack(fadeIn),
+      console.debug("fade-in", {
+        isVisible: getOpacity(),
+        fadeIn: fadeIn(),
+        prev: appContext?.prevRoute?.pathname,
+        route: location.pathname,
       });
-    });
-
-    createEffect(() => {
-      console.debug("fade-in", fadeIn());
     });
   }
 
+  const getStyle = () => {
+    const style = {
+      opacity: getOpacity(),
+    } as JSX.CSSProperties;
+    if (props.duration) {
+      style["transition-duration"] = `${props.duration}ms`;
+    }
+    return style;
+  };
+
   onMount(() => {
-    if (!untrack(isVisible)) {
+    if (fadeIn()) {
+      setOpacity(0);
       setTimeout(() => {
-        setIsVisible(true);
+        setOpacity(1);
       }, 0);
     }
   });
 
+  const child = children(() => props.children);
+
   return (
-    <div
-      classList={{
-        fadeIn: fadeIn(),
-        visible: isVisible(),
-        hidden: !isVisible(),
-      }}
-      style={{ "transition-duration": `${props.duration || 300}ms` }}
-    >
-      {props.children}
-    </div>
+    <Show when={fadeIn()} fallback={child()}>
+      <div class="fade-in" style={getStyle()}>
+        {child()}
+      </div>
+    </Show>
   );
 };
 
