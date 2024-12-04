@@ -63,7 +63,7 @@ async def browse(
     last_modified = format_datetime(browser_header.mtime, usegmt=True)
     headers = {
         "Last-Modified": last_modified,
-        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Cache-Control": "public, max-age=0",
     }
 
     # If items is None, it means we should return 304 Not Modified

@@ -74,7 +74,7 @@ export const Breadcrumb = () => {
     <nav class="breadcrumb">
       <div class="breadcrumb-content">
         <div class="breadcrumb-links">
-          <A href="/">
+          <A href="/" aria-label="Return to the front page">
             <span class="home-icon icon" innerHTML={YipYap} title="home" />
           </A>
           <A href="/gallery">
