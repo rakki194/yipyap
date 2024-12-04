@@ -110,6 +110,14 @@ export const Settings: Component = () => {
             <span>Quick folder switch</span>
           </div>
           <div class="shortcut">
+            <kbd>↑</kbd>
+            <span>Above image</span>
+          </div>
+          <div class="shortcut">
+            <kbd>↓</kbd>
+            <span>Below image</span>
+          </div>
+          <div class="shortcut">
             <kbd>←</kbd>
             <span>Previous image</span>
           </div>
