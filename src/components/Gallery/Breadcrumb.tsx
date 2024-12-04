@@ -113,7 +113,7 @@ export const Breadcrumb = () => {
       <Show when={showSettings()}>
         <div class="settings-overlay" onClick={() => setShowSettings(false)}>
           <div onClick={(e) => e.stopPropagation()}>
-            <Settings />
+            <Settings onClose={() => setShowSettings(false)} />
           </div>
         </div>
       </Show>

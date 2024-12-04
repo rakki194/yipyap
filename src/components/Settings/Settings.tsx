@@ -6,6 +6,7 @@ import {
   createSignal,
   createEffect,
   onCleanup,
+  onMount,
 } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useTheme, Theme } from "~/contexts/theme";
@@ -66,7 +67,7 @@ const SlideTransition = (props: { show: boolean; children: any }) => {
   );
 };
 
-export const Settings: Component = () => {
+export const Settings: Component<{ onClose: () => void }> = (props) => {
   const gallery = useGallery();
   const theme = useTheme();
   const settings = useSettings();
@@ -87,6 +88,19 @@ export const Settings: Component = () => {
       setShowShortcuts(true);
     }
   };
+
+  // Add keyboard event handler
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      props.onClose();
+    }
+  };
+
+  // Add and remove event listener
+  onMount(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
+  });
 
   return (
     <div class="settings-panel card">
