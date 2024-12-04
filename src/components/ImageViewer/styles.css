@@ -54,6 +54,12 @@
     svg {
       fill: var(--accent);
     }
+
+    :root[data-theme="gray"] & {
+      svg {
+        fill: var(--text-primary);
+      }
+    }
   }
 }
 

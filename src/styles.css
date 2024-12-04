@@ -74,6 +74,11 @@
   --border: hsl(0, 0%, 40%);
   --secondary-bg: hsl(0, 0%, 47%);
   --placeholder-color: var(--text-secondary);
+  --icon-button-active-color: hsl(0, 0%, 0%);
+
+  .icon-buttons button.active svg {
+    fill: var(--icon-button-active-color);
+  }
 }
 
 :root[data-theme="banana"] {
