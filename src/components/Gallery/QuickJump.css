@@ -10,6 +10,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.quick-jump-overlay[data-theme="light"] {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .quick-jump-modal {
@@ -19,12 +24,22 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing);
+  background: var(--bg-color);
+  color: var(--text-color);
 }
 
 .quick-jump-modal input {
   width: 100%;
   font-size: 1.2rem;
   padding: var(--spacing);
+  background: var(--input-background-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.quick-jump-modal input:focus {
+  outline: none;
+  border-color: var(--accent-color);
 }
 
 .quick-jump-results {
@@ -36,26 +51,29 @@
 }
 
 .quick-jump-results li {
-  padding: var(--spacing);
+  padding: 8px 16px;
   cursor: pointer;
   border-radius: var(--border-radius);
   display: flex;
   flex-direction: column;
   gap: calc(var(--spacing) * 0.5);
+  transition: background-color 0.2s;
 }
 
-.quick-jump-results li:hover {
-  background: var(--accent);
-  color: var(--bg-color);
+.quick-jump-results li:hover,
+.quick-jump-results li.selected {
+  background-color: var(--hover-color, rgba(125, 125, 125, 0.2));
 }
 
 .quick-jump-results .folder-name {
   font-weight: bold;
+  color: var(--text-color);
 }
 
 .quick-jump-results .folder-path {
   font-size: 0.9em;
   opacity: 0.8;
+  color: var(--text-secondary-color);
 }
 
 .quick-jump-modal .loading {

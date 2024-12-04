@@ -14,6 +14,7 @@ import {
   BananaIcon,
   StrawberryIcon,
   PeanutIcon,
+  BookQuestionMarkRegular,
 } from "~/icons";
 import "./Settings.css";
 
@@ -21,10 +22,52 @@ export const Settings: Component = () => {
   const gallery = useGallery();
   const theme = useTheme();
   const settings = useSettings();
+  const [showHelp, setShowHelp] = createSignal(false);
 
   return (
     <div class="settings-panel card">
-      <h2>Settings</h2>
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button
+          class="icon help-button"
+          onClick={() => setShowHelp(!showHelp())}
+          title="Keyboard Shortcuts"
+          aria-label="Show keyboard shortcuts"
+          innerHTML={BookQuestionMarkRegular}
+        />
+      </div>
+
+      <Show when={showHelp()}>
+        <section class="keyboard-shortcuts">
+          <h3>Keyboard Shortcuts</h3>
+          <div class="shortcuts-grid">
+            <div class="shortcut">
+              <kbd>q</kbd>
+              <span>Quick folder switch</span>
+            </div>
+            <div class="shortcut">
+              <kbd>←</kbd>
+              <span>Previous image</span>
+            </div>
+            <div class="shortcut">
+              <kbd>→</kbd>
+              <span>Next image</span>
+            </div>
+            <div class="shortcut">
+              <kbd>Esc</kbd>
+              <span>Close preview/modal</span>
+            </div>
+            <div class="shortcut">
+              <kbd>Del</kbd>
+              <span>Delete image</span>
+            </div>
+            <div class="shortcut">
+              <kbd>Space</kbd>
+              <span>Toggle image fit</span>
+            </div>
+          </div>
+        </section>
+      </Show>
 
       <section>
         <h3>Appearance</h3>
@@ -111,7 +154,7 @@ export const Settings: Component = () => {
 
       <section class="warning-section">
         <p class="warning-text">
-          ⚠️ WARNING <span class="warning-kanji">警告 狼化注意</span>
+          <span>⚠️警告！これを使うと狼になります！</span>
         </p>
         <label>
           <input

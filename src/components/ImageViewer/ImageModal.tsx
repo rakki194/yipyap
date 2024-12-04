@@ -142,6 +142,7 @@ const ModalHeader = (props: {
 
     if (currentIndex !== -1) {
       await deleteImageAction(currentIndex);
+      gallery.clearImageCache();
       props.onClose();
     }
   };
