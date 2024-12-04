@@ -47,6 +47,7 @@ const Tools: Component<{
     <For each={TOOLS}>
       {(tool) => (
         <button
+          type="button"
           class="icon"
           onClick={() => props.onInput(tool.action(props.caption))}
           title={tool.title}
@@ -109,13 +110,15 @@ export const CaptionInput: Component<
         <Tools onInput={saveWithHistory} caption={caption()} />
         {captionHistory().length > 0 && (
           <button
-            onClick={undo}
+            type="button"
             class="icon"
+            onClick={undo}
             title="Undo last change"
             innerHTML={ArrowUndoIcon}
           />
         )}
         <button
+          type="button"
           class="icon"
           onClick={async (e) => {
             if (confirm(`Delete ${type()} caption?`)) {

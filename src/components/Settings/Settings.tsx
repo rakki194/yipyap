@@ -93,6 +93,7 @@ export const Settings: Component = () => {
       <div class="settings-header">
         <h2>Settings</h2>
         <button
+          type="button"
           class="icon help-button"
           onClick={() => setShowHelp(!showHelp())}
           title="Keyboard Shortcuts"
@@ -138,6 +139,7 @@ export const Settings: Component = () => {
             <label>Theme</label>
             <div class="theme-buttons">
               <button
+                type="button"
                 class="icon"
                 classList={{ active: theme.theme === "light" }}
                 onClick={() => theme.setTheme("light")}
@@ -146,6 +148,7 @@ export const Settings: Component = () => {
                 innerHTML={SunIcon}
               />
               <button
+                type="button"
                 class="icon"
                 classList={{ active: theme.theme === "gray" }}
                 onClick={() => theme.setTheme("gray")}
@@ -154,6 +157,7 @@ export const Settings: Component = () => {
                 innerHTML={CloudIcon}
               />
               <button
+                type="button"
                 class="icon"
                 classList={{ active: theme.theme === "dark" }}
                 onClick={() => theme.setTheme("dark")}
@@ -161,13 +165,15 @@ export const Settings: Component = () => {
                 innerHTML={MoonIcon}
               />
               <button
-                class="icon"
+                type="button"
+                class="icon banana-icon"
                 classList={{ active: theme.theme === "banana" }}
                 onClick={() => theme.setTheme("banana")}
                 title="Banana theme"
                 innerHTML={BananaIcon}
               />
               <button
+                type="button"
                 class="icon"
                 classList={{ active: theme.theme === "strawberry" }}
                 onClick={() => theme.setTheme("strawberry")}
@@ -175,7 +181,8 @@ export const Settings: Component = () => {
                 innerHTML={StrawberryIcon}
               />
               <button
-                class="icon"
+                type="button"
+                class="icon strawberry-icon"
                 classList={{ active: theme.theme === "peanut" }}
                 onClick={() => theme.setTheme("peanut")}
                 title="Peanut theme"
@@ -191,6 +198,7 @@ export const Settings: Component = () => {
             <label>View Mode</label>
             <div class="icon-buttons">
               <button
+                type="button"
                 class="icon"
                 classList={{ active: gallery.state.viewMode === "grid" }}
                 onClick={() => gallery.setViewMode("grid")}
@@ -199,6 +207,7 @@ export const Settings: Component = () => {
                 innerHTML={GridRegular}
               />
               <button
+                type="button"
                 class="icon"
                 classList={{ active: gallery.state.viewMode === "list" }}
                 onClick={() => gallery.setViewMode("list")}
@@ -213,6 +222,7 @@ export const Settings: Component = () => {
             <label>Sort By</label>
             <div class="icon-buttons">
               <button
+                type="button"
                 class="icon"
                 classList={{ active: gallery.state.sort === "name" }}
                 onClick={() => gallery.setSort("name")}
@@ -221,6 +231,7 @@ export const Settings: Component = () => {
                 innerHTML={TextSortAscendingRegular}
               />
               <button
+                type="button"
                 class="icon"
                 classList={{ active: gallery.state.sort === "date" }}
                 onClick={() => gallery.setSort("date")}
@@ -229,6 +240,7 @@ export const Settings: Component = () => {
                 innerHTML={CalendarDateRegular}
               />
               <button
+                type="button"
                 class="icon"
                 classList={{ active: gallery.state.sort === "size" }}
                 onClick={() => gallery.setSort("size")}

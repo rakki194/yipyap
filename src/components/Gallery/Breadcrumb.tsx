@@ -101,6 +101,7 @@ export const Breadcrumb = () => {
         <div class="breadcrumb-actions">
           <ThemeToggle />
           <button
+            type="button"
             class="icon"
             onClick={() => setShowSettings(!showSettings())}
             title="Settings"
@@ -125,6 +126,7 @@ function ThemeToggle() {
   const [hovered, setHovered] = createSignal(false);
   return (
     <button
+      type="button"
       class="icon accent-hover"
       onClick={theme.toggleTheme}
       onMouseEnter={() => setHovered(true)}

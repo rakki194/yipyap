@@ -39,6 +39,7 @@ const FrontPage: Component = () => {
       </h1>
       <div class="selection-buttons">
         <button
+          type="button"
           class="icon"
           onClick={() => handleSelection("image")}
           aria-label="Work with Images"
@@ -46,6 +47,7 @@ const FrontPage: Component = () => {
           <div innerHTML={DimensionsIcon} />
         </button>
         <button
+          type="button"
           class="icon"
           onClick={() => handleSelection("audio")}
           aria-label="Work with Audio"

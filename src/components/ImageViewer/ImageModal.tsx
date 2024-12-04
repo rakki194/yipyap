@@ -175,6 +175,7 @@ const ModalHeader = (props: {
       <h2>{props.imageInfo.name}</h2>
       <div class="modal-actions">
         <button
+          type="button"
           class="icon"
           onClick={() => {
             window.location.href = props.imageInfo.download_path;
@@ -184,6 +185,7 @@ const ModalHeader = (props: {
           innerHTML={DownloadIcon}
         />
         <button
+          type="button"
           class="icon delete-button"
           classList={{ holding: isHolding() }}
           style={{ "--progress": `${progress()}%` }}
@@ -198,6 +200,7 @@ const ModalHeader = (props: {
           innerHTML={DeleteIcon}
         />
         <button
+          type="button"
           class="icon"
           onClick={props.onClose}
           aria-label="Close image viewer"
