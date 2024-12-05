@@ -48,7 +48,7 @@ export const ImageView = (props: ImageViewProps) => {
   );
 
   onMount(() => {
-    console.warn("image viewer mounted");
+    console.log("image viewer mounted");
   });
 
   return (

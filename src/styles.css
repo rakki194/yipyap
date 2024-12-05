@@ -126,7 +126,6 @@
   transition: none var(--transition-duration) var(--transition-timing);
   border-width: 1px;
   border-color: var(--border-color);
-  border-radius: var(--border-radius);
 }
 
 body {
@@ -144,6 +143,7 @@ svg {
 img,
 svg {
   display: block;
+  border-radius: 0;
 }
 
 code {
@@ -194,6 +194,8 @@ select {
   font-family: inherit;
   font-size: var(--font-size);
   line-height: var(--line-height);
+  padding: var(--half-spacing) var(--spacing);
+  background: var(--bg-color);
 
   &:focus {
     outline: none;
@@ -224,7 +226,6 @@ select {
   & input,
   select,
   textarea {
-    padding: var(--spacing);
     background: var(--secondary-bg);
     border-style: solid;
     color: var(--text-primary);
@@ -262,7 +263,6 @@ tr {
 }
 
 td {
-  padding: var(--spacing);
   color: var(--text-primary);
 }
 

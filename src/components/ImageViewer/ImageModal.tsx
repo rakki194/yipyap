@@ -52,43 +52,36 @@ const ModelBody = (props: {
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
 
   // Update the style of the image info based on the layout and focus
-  createEffect(
-    on([() => props.imageInfo.name, focused], ([name, focused], prev_input) => {
-      if (!focused || name !== prev_input?.[0]) {
+  createEffect((prev_path) => {
+    const path = props.imageInfo.download_path;
+    const layout = props.layout;
+    if (!focused() || path !== prev_path) {
+      setStyle(undefined);
+      return path;
+    }
+
+    if (layout.layout === "horizontal") {
+      const offset = layout.free_width - refImageInfo.offsetWidth;
+      if (offset >= 0) {
         setStyle(undefined);
-        return;
-      }
-
-      if (props.layout.layout === "horizontal") {
-        const maxWidth = Math.min(400, props.layout.free_width); // Limit max width
-        const maxOffset = 400; // Maximum pixels the panel can float
-        const rawOffset = props.layout.free_width - refImageInfo.offsetWidth;
-        const offset = Math.max(-maxOffset, rawOffset); // Limit the negative offset
-
-        if (offset >= 0) {
-          setStyle({
-            width: `${maxWidth}px`,
-            marginLeft: "auto",
-          });
-        } else {
-          setStyle({
-            width: `${maxWidth}px`,
-            marginLeft: "auto",
-            transform: `translateX(${offset}px)`,
-          });
-        }
       } else {
-        const offset = props.layout.free_height - refImageInfo.offsetHeight;
-        if (offset >= 0) {
-          setStyle(undefined);
-        } else {
-          setStyle({
-            transform: `translateY(${offset}px)`,
-          });
-        }
+        setStyle({
+          transform: `translateX(${offset}px)`,
+        });
       }
-    })
-  );
+    } else {
+      const offset = layout.free_height - refImageInfo.offsetHeight;
+      if (offset >= 0) {
+        setStyle(undefined);
+      } else {
+        setStyle({
+          transform: `translateY(${offset}px)`,
+        });
+      }
+    }
+
+    return path;
+  });
 
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
@@ -100,21 +93,24 @@ const ModelBody = (props: {
         class="image-info"
         ref={refImageInfo}
         style={getStyle()}
-        onClick={() => setFocused(true)}
-        onFocusIn={() => setFocused(true)}
-        onFocusOut={() => setFocused(false)}
+        onClick={(e) => {
+          setFocused(true);
+        }}
       >
         <ImageInfo imageInfo={props.imageInfo} />
-        <div class="caption-editor">
+        <div
+          class="caption-editor"
+          onClick={(e) => {
+            if (e.currentTarget === e.target) setFocusedType(null);
+          }}
+        >
           <Index each={props.captions}>
             {(caption, idx) => (
               <CaptionInput
-                tabindex={idx + 1}
                 caption={caption()}
-                onFocus={() => setFocusedType(caption()[0])}
-                onBlur={() => setFocusedType(null)}
+                onClick={() => setFocusedType(caption()[0])}
                 state={
-                  focusedType() === null
+                  focusedType() === null || !focused()
                     ? null
                     : focusedType() === caption()[0]
                     ? "expanded"
@@ -248,19 +244,25 @@ function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
 
   const width_scale = viewWidth / imageWidth;
   const height_scale = viewHeight / imageHeight;
-  let scale: number;
-  let layout: LayoutStr;
-  if (settings.disableVerticalLayout()) {
-    layout = "horizontal";
-    scale = width_scale;
-  } else {
-    layout = width_scale < height_scale ? "vertical" : "horizontal";
-    scale = layout === "vertical" ? height_scale : width_scale;
-  }
+  const layout =
+    settings.disableVerticalLayout() || width_scale > height_scale
+      ? "horizontal"
+      : "vertical";
+  const scale = layout === "vertical" ? width_scale : height_scale;
   const width = imageWidth * scale;
   const height = imageHeight * scale;
   const free_width = viewWidth - width;
   const free_height = viewHeight - height;
 
-  return { width, height, scale, layout, free_width, free_height };
+  const res = {
+    width,
+    viewWidth,
+    height,
+    viewHeight,
+    scale,
+    layout: layout as LayoutStr,
+    free_width,
+    free_height,
+  };
+  return res;
 }

@@ -28,7 +28,6 @@ export const TagBubble: Component<{
       class="tag-bubble"
       style={{
         "background-color": getTagColor(props.tag),
-        color: "var(--text-secondary)",
       }}
     >
       <span class="tag-text">{props.tag}</span>

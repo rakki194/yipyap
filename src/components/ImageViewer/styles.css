@@ -130,16 +130,15 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  overflow-y: scroll;
+  overflow-x: hidden;
 
-  & > * {
-    max-width: 60rem;
-    min-width: 40rem;
-    width: 100%;
-  }
+  max-width: 80rem;
+  min-width: 40rem;
+  max-height: 100vh;
 
   & > .metadata-table {
-    width: 100%;
+    border-radius: 1px;
     border-collapse: collapse;
     overflow: hidden;
 
@@ -151,7 +150,7 @@
       & > td:first-child {
         display: flex;
         align-items: center;
-        gap: var(--spacing);
+        gap: var(--half-spacing);
       }
     }
   }
@@ -160,8 +159,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing);
-    width: 100%;
-    flex-grow: 1;
+    flex: 1;
+    overflow: hidden;
 
     .horizontal & {
       margin-top: var(--spacing);
@@ -174,16 +173,20 @@
       align-items: flex-start;
       gap: var(--spacing);
       transition-property: flex;
-      flex: 1;
-      min-height: 150px;
+      flex: 1 1 min-content;
+      max-height: min-content;
+      min-height: 2rem;
 
       &.collapsed {
-        flex: 0.2;
-        min-height: 50px;
+        flex-grow: 0;
       }
 
-      &.focused {
-        flex: 2;
+      &.expanded {
+        flex-shrink: 0;
+      }
+
+      & > * {
+        max-height: 100%;
       }
 
       & > textarea {
@@ -199,6 +202,9 @@
         align-items: center;
         flex-direction: column;
         gap: var(--spacing);
+        flex: 0 0 auto;
+        overflow-y: scroll;
+        scrollbar-width: none;
       }
     }
   }
@@ -224,7 +230,6 @@
 
 .delete-button svg {
   transition: fill 0.7s ease;
-  will-change: fill;
 }
 
 .delete-button.holding svg {

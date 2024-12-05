@@ -1,12 +1,5 @@
 // src/components/ImageViewer/CaptionInput.tsx
-import {
-  createSignal,
-  splitProps,
-  Component,
-  JSX,
-  For,
-  createEffect,
-} from "solid-js";
+import { createSignal, splitProps, Component, JSX, For } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import {
   EditIcon,
@@ -14,10 +7,7 @@ import {
   ErrorIcon,
   SpinnerIcon,
   captionIconsMap,
-  SparkleIcon,
   DeleteIcon,
-  TextAlignIcon,
-  TextAlignDistributedIcon,
   ArrowUndoIcon,
   PlusIcon,
 } from "~/icons";
@@ -33,7 +23,7 @@ export const CaptionInput: Component<
   {
     caption: [CaptionType, string];
     state: "expanded" | "collapsed" | null;
-  } & JSX.HTMLAttributes<HTMLTextAreaElement>
+  } & JSX.HTMLAttributes<HTMLDivElement>
 > = (props) => {
   const [localProps, rest] = splitProps(props, ["caption"]);
   const type = () => localProps.caption[0];
@@ -95,10 +85,10 @@ export const CaptionInput: Component<
 
   return (
     <div
+      {...rest}
       class="caption-input-wrapper card"
       classList={{
         [props.state || ""]: props.state !== null,
-        "tag-input": isTagInput(),
       }}
     >
       <div class="caption-icons">
@@ -141,9 +131,6 @@ export const CaptionInput: Component<
             <input
               type="text"
               value={newTag()}
-              style={{
-                border: "none",
-              }}
               onInput={(e) => setNewTag(e.currentTarget.value)}
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
@@ -156,9 +143,6 @@ export const CaptionInput: Component<
             <button
               type="button"
               class="icon add-tag"
-              style={{
-                border: "none",
-              }}
               onClick={() => addTag(newTag())}
               title="Add tag"
               innerHTML={PlusIcon}
@@ -167,7 +151,6 @@ export const CaptionInput: Component<
         </div>
       ) : (
         <textarea
-          {...rest}
           use:preserveState={[caption, saveWithHistory]}
           placeholder="Add a caption..."
         />
