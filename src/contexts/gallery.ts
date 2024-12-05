@@ -61,7 +61,7 @@ export type ImageInfo = {
   isThumbnailLoaded: () => boolean;
 };
 
-interface FolderInfo {
+export interface FolderInfo {
   name: string;
   path: string;
   fullPath: string;
