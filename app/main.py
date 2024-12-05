@@ -261,15 +261,22 @@ async def get_all_folders():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.middleware("http")
-async def serve_spa(request: Request, call_next):
-    response = await call_next(request)
+if not is_dev:
 
-    print("serve_spa", request.url.path)
-    if (
-        not is_dev
-        and response.status_code == 404
-        and not request.url.path.startswith(
+    @app.middleware("http")
+    async def serve_spa(request: Request, call_next):
+        response = await call_next(request)
+        if response.status_code != 404:
+            print("Not 404")
+            return response
+
+        # Check if the request is for HTML content
+        accept_header = request.headers.get("accept", "")
+        if "text/html" not in accept_header:
+            print("Not HTML")
+            return response
+
+        if request.url.path.startswith(
             (
                 "/api/",
                 "/assets/",
@@ -280,9 +287,9 @@ async def serve_spa(request: Request, call_next):
                 "/download/",
                 "/caption/",
             )
-        )
-    ):
+        ):
+            print("API or static", request.url.path)
+            return response
+
         logger.debug(f"Serving SPA for path: {request.url.path}")
         return FileResponse("dist/index.html")
-
-    return response
