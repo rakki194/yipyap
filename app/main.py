@@ -14,24 +14,39 @@ from . import utils
 
 logger = logging.getLogger("uvicorn.error")
 
+# Move environment detection to top, before app creation
+is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
+logger.info(f"Starting server in {'development' if is_dev else 'production'} mode")
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+if is_dev:
+    dev_port = int(os.getenv("DEV_PORT", "1984"))
+    logger.info(f"Allowing CORS requests from http://localhost:{dev_port}")
+
+    # Development-only middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[f"http://localhost:{dev_port}"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    # Vite should handle the static files
+else:
+    # Production-only: serve the built frontend assets
+    logger.info("Mounting production static files from /dist/")
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    # mount /assets for Vite's bundled files
+    app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
+
 
 # Initialize data source
 ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd())).resolve()
 THUMBNAIL_SIZE = (300, 300)
 PREVIEW_SIZE = (1024, 1024)
 data_source = CachedFileSystemDataSource(ROOT_DIR, THUMBNAIL_SIZE, PREVIEW_SIZE)
-
-if True or os.getenv("DEVELOPMENT"):  # FIXME: remove True
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["http://localhost:3000"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
 
 
 @app.get("/api/browse")
@@ -90,6 +105,7 @@ async def browse(
     return StreamingResponse(
         stream_response(), media_type="application/ndjson", headers=headers
     )
+
 
 # Used for deleting everything in a directory.
 @app.delete("/api/browse/{path:path}")
@@ -162,6 +178,7 @@ async def get_config():
         "preview_size": data_source.preview_size,
     }
 
+
 # Used for deleting a single caption file.
 @app.delete("/api/caption/{path:path}")
 async def delete_caption(path: str, caption_type: str = Query(...)):
@@ -170,28 +187,28 @@ async def delete_caption(path: str, caption_type: str = Query(...)):
         logger.info(f"Attempting to delete caption: path={path}, type={caption_type}")
         image_path = utils.resolve_path(path, ROOT_DIR)
         logger.info(f"Resolved path: {image_path}")
-        
+
         # Log the full path and check if file exists before deletion
         caption_path = image_path.with_suffix(f".{caption_type}")
         logger.info(f"Caption path to delete: {caption_path}")
         logger.info(f"File exists before deletion: {caption_path.exists()}")
-        
+
         await data_source.delete_caption(image_path, caption_type)
-        
+
         # Verify deletion
         exists_after = caption_path.exists()
         logger.info(f"File exists after deletion attempt: {exists_after}")
-        
+
         if exists_after:
             raise HTTPException(
-                status_code=500, 
-                detail=f"File still exists after deletion attempt: {caption_path}"
+                status_code=500,
+                detail=f"File still exists after deletion attempt: {caption_path}",
             )
-            
+
         return {
-            "success": True, 
+            "success": True,
             "message": f"Caption {caption_type} deleted successfully",
-            "path": str(caption_path)
+            "path": str(caption_path),
         }
     except FileNotFoundError as e:
         logger.error(f"File not found: {e}")
@@ -206,45 +223,66 @@ async def get_all_folders():
     """Get all folders recursively from ROOT_DIR"""
     try:
         folders = []
-        
+
         def scan_directory(current_path: Path, relative_to: Path):
             try:
                 # Skip hidden directories
-                if current_path.name.startswith('.'):
+                if current_path.name.startswith("."):
                     return
-                
+
                 # Get relative path for the response
                 rel_path = str(current_path.relative_to(relative_to))
-                if rel_path != '.':  # Don't include the root itself
-                    folders.append({
-                        "name": current_path.name,
-                        "path": str(current_path.parent.relative_to(ROOT_DIR)),
-                        "fullPath": rel_path
-                    })
-                
+                if rel_path != ".":  # Don't include the root itself
+                    folders.append(
+                        {
+                            "name": current_path.name,
+                            "path": str(current_path.parent.relative_to(ROOT_DIR)),
+                            "fullPath": rel_path,
+                        }
+                    )
+
                 # Recursively scan subdirectories
                 for item in current_path.iterdir():
-                    if item.is_dir() and not item.name.startswith('.'):
+                    if item.is_dir() and not item.name.startswith("."):
                         scan_directory(item, relative_to)
             except (PermissionError, OSError) as e:
                 logger.warning(f"Could not scan directory {current_path}: {e}")
-        
+
         # Start recursive scan from ROOT_DIR
         scan_directory(ROOT_DIR, ROOT_DIR)
-        
+
         # Sort folders by path for consistent results
         folders.sort(key=lambda x: x["fullPath"])
-        
-        return {
-            "folders": folders,
-            "root": str(ROOT_DIR)
-        }
-        
+
+        return {"folders": folders, "root": str(ROOT_DIR)}
+
     except Exception as e:
         logger.error(f"Error scanning folders: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
-is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
-if not is_dev:
-    app.mount("/", StaticFiles(directory="static/dist", html=True), name="static")
+@app.middleware("http")
+async def serve_spa(request: Request, call_next):
+    response = await call_next(request)
+
+    print("serve_spa", request.url.path)
+    if (
+        not is_dev
+        and response.status_code == 404
+        and not request.url.path.startswith(
+            (
+                "/api/",
+                "/assets/",
+                "/static/",
+                "/config",
+                "/preview/",
+                "/thumbnail/",
+                "/download/",
+                "/caption/",
+            )
+        )
+    ):
+        logger.debug(f"Serving SPA for path: {request.url.path}")
+        return FileResponse("dist/index.html")
+
+    return response

@@ -4,10 +4,12 @@ import solidPlugin from "vite-plugin-solid";
 import { resolve } from "path";
 
 const DEV_PORT = process.env.DEV_PORT ? Number(process.env.DEV_PORT) : 5173;
-const BACKED_PORT = process.env.BACKED_PORT
-  ? Number(process.env.BACKED_PORT)
+const BACKEND_PORT = process.env.BACKEND_PORT
+  ? Number(process.env.BACKEND_PORT)
   : 8000;
-const BACKED_HOST = `http://localhost:${BACKED_PORT}`;
+const BACKEND_HOST = `http://localhost:${BACKEND_PORT}`;
+
+console.log("vite config", { DEV_PORT, BACKEND_PORT, BACKEND_HOST });
 
 export default defineConfig({
   root: "src",
@@ -15,27 +17,27 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: BACKED_HOST,
+        target: BACKEND_HOST,
         changeOrigin: true,
       },
       "/config": {
-        target: BACKED_HOST,
+        target: BACKEND_HOST,
         changeOrigin: true,
       },
       "/preview": {
-        target: BACKED_HOST,
+        target: BACKEND_HOST,
         changeOrigin: true,
       },
       "/thumbnail": {
-        target: BACKED_HOST,
+        target: BACKEND_HOST,
         changeOrigin: true,
       },
       "/download": {
-        target: BACKED_HOST,
+        target: BACKEND_HOST,
         changeOrigin: true,
       },
       "/caption": {
-        target: BACKED_HOST,
+        target: BACKEND_HOST,
         changeOrigin: true,
       },
     },
@@ -48,7 +50,7 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
-    outDir: "../static/dist",
+    outDir: "../dist",
     emptyOutDir: true,
     manifest: true,
     rollupOptions: {
