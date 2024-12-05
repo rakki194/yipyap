@@ -1,5 +1,12 @@
 // src/components/ImageViewer/CaptionEditor.tsx
-import { createSignal, splitProps, Component, JSX, For } from "solid-js";
+import {
+  createSignal,
+  splitProps,
+  Component,
+  JSX,
+  For,
+  createEffect,
+} from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import {
   EditIcon,
@@ -96,19 +103,27 @@ export const CaptionInput: Component<
   const submission = useSubmission(saveCaption);
   const deleteCaption = useAction(deleteCaptionAction);
 
-  const isTagInput = () => ["wd", "e621"].includes(type());
+  const isTagInput = () => ["wd", "e621", "tags"].includes(type());
   const tags = () =>
     isTagInput()
       ? caption()
-          .split(",")
+          .split(/,\s*/)
           .map((t) => t.trim())
           .filter((t) => t)
       : [];
 
   const saveWithHistory = (newText: string) => {
     setCaptionHistory((prev) => [...prev, caption()]);
+    const textToSave = isTagInput()
+      ? newText
+          .split(/,\s*/)
+          .map((t) => t.trim())
+          .filter((t) => t)
+          .join(", ")
+      : newText;
+
     save({
-      caption: newText,
+      caption: textToSave,
       type: type(),
     });
   };
@@ -118,8 +133,18 @@ export const CaptionInput: Component<
     if (history.length > 0) {
       const previousText = history[history.length - 1];
       setCaptionHistory((prev) => prev.slice(0, -1));
+
+      // Normalize the previous text if it's a tag input
+      const textToSave = isTagInput()
+        ? previousText
+            .split(/,\s*/)
+            .map((t) => t.trim())
+            .filter((t) => t)
+            .join(", ")
+        : previousText;
+
       save({
-        caption: previousText,
+        caption: textToSave,
         type: type(),
       });
     }
@@ -139,6 +164,24 @@ export const CaptionInput: Component<
     const newTags = tags().filter((tag) => tag !== tagToRemove);
     saveWithHistory(newTags.join(", "));
   };
+
+  createEffect(() => {
+    if (isTagInput() && caption()) {
+      // Normalize the initial tags format
+      const normalizedTags = caption()
+        .split(/,\s*/)
+        .map((t) => t.trim())
+        .filter((t) => t)
+        .join(", ");
+
+      if (normalizedTags !== caption()) {
+        save({
+          caption: normalizedTags,
+          type: type(),
+        });
+      }
+    }
+  });
 
   return (
     <div
