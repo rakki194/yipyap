@@ -60,11 +60,20 @@ const ModelBody = (props: {
       }
 
       if (props.layout.layout === "horizontal") {
-        const offset = props.layout.free_width - refImageInfo.offsetWidth;
+        const maxWidth = Math.min(400, props.layout.free_width); // Limit max width
+        const maxOffset = 400; // Maximum pixels the panel can float
+        const rawOffset = props.layout.free_width - refImageInfo.offsetWidth;
+        const offset = Math.max(-maxOffset, rawOffset); // Limit the negative offset
+
         if (offset >= 0) {
-          setStyle(undefined);
+          setStyle({
+            width: `${maxWidth}px`,
+            marginLeft: "auto",
+          });
         } else {
           setStyle({
+            width: `${maxWidth}px`,
+            marginLeft: "auto",
             transform: `translateX(${offset}px)`,
           });
         }
