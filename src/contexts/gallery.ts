@@ -325,6 +325,7 @@ export function makeGalleryState() {
     deleteCaption,
     selection,
     getEditedImage,
+    clearImageCache,
     getAllKnownFolders: async () => {
       try {
         const response = await fetch("/api/folders");

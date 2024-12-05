@@ -37,11 +37,10 @@ export function getNextTheme(theme: Theme): Theme {
 export const useTheme = createSingletonRoot(() => {
   const [theme, setTheme] = createSignal<Theme>(getInitialTheme());
 
+  // Update theme in localStorage and HTML dataset
   createRenderEffect(() => {
     const currentTheme = theme();
-    // Update localStorage
     localStorage.setItem("theme", currentTheme);
-    // Update HTML dataset
     document.documentElement.dataset.theme = currentTheme;
   });
 
@@ -78,5 +77,6 @@ function getInitialTheme(): Theme {
     return "light";
   }
 
+  // Default to gray
   return "gray";
 }

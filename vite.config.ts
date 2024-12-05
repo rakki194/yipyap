@@ -25,6 +25,33 @@ export default defineConfig({
       customCompression: (content) => brotliPromise(Buffer.from(content)),
       fileName: ".br",
     }),
+    {
+      name: "configure-server",
+      configureServer(server) {
+        if (process.env.NODE_ENV === "development") {
+          server.middlewares.use((req, res, next) => {
+            if (req.url?.endsWith(".css")) {
+              res.setHeader("Content-Type", "text/css; charset=utf-8");
+            } else if (req.url?.endsWith(".svg")) {
+              res.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
+            } else if (req.url?.endsWith(".jsx")) {
+              res.setHeader("Content-Type", "text/jsx; charset=utf-8");
+            } else if (req.url?.endsWith(".tsx") || req.url?.endsWith(".ts")) {
+              res.setHeader(
+                "Content-Type",
+                "application/x-typescript; charset=utf-8"
+              );
+            } else if (req.url?.endsWith(".mjs")) {
+              res.setHeader(
+                "Content-Type",
+                "application/javascript; charset=utf-8"
+              );
+            }
+            next();
+          });
+        }
+      },
+    },
   ],
   server: {
     proxy: {

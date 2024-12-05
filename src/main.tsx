@@ -22,7 +22,15 @@ const Layout: ParentComponent = (props) => {
 
 render(
   () => (
-    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+    <ErrorBoundary
+      fallback={
+        <div class="error-message">
+          Something went wrong.
+          <br />
+          <a href="/">Return to front page</a>
+        </div>
+      }
+    >
       <Router root={Layout}>{routes}</Router>
     </ErrorBoundary>
   ),

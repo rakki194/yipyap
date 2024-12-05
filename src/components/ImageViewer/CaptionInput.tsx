@@ -1,5 +1,12 @@
-// src/components/ImageViewer/CaptionEditor.tsx
-import { createSignal, splitProps, Component, JSX, For } from "solid-js";
+// src/components/ImageViewer/CaptionInput.tsx
+import {
+  createSignal,
+  splitProps,
+  Component,
+  JSX,
+  For,
+  createEffect,
+} from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import {
   EditIcon,
@@ -12,73 +19,47 @@ import {
   TextAlignIcon,
   TextAlignDistributedIcon,
   ArrowUndoIcon,
+  PlusIcon,
 } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { preserveState } from "~/directives";
+import { Tools } from "./Tools";
+import { TagBubble } from "./TagBubble";
 
-export interface CaptionInputProps
-  extends JSX.HTMLAttributes<HTMLTextAreaElement> {
-  caption: [string, string];
-}
-
-const TOOLS = [
-  {
-    icon: SparkleIcon,
-    title: "Remove commas",
-    action: (caption: string) => caption.replace(/,/g, ""),
-  },
-  {
-    icon: TextAlignIcon,
-    title: "Replace newlines with commas",
-    action: (caption: string) => caption.replace(/\n/g, ", "),
-  },
-  {
-    icon: TextAlignDistributedIcon,
-    title: "Replace underscores with spaces",
-    action: (caption: string) => caption.replace(/_/g, " "),
-  },
-];
-
-const Tools: Component<{
-  onInput: (value: string) => void;
-  caption: string;
-}> = (props) => {
-  return (
-    <For each={TOOLS}>
-      {(tool) => (
-        <button
-          class="icon"
-          onClick={() => props.onInput(tool.action(props.caption))}
-          title={tool.title}
-          innerHTML={tool.icon}
-        />
-      )}
-    </For>
-  );
-};
+type CaptionType = "wd" | "e621" | "tags" | string;
 
 export const CaptionInput: Component<
   {
-    caption: [string, string];
+    caption: [CaptionType, string];
     state: "expanded" | "collapsed" | null;
   } & JSX.HTMLAttributes<HTMLTextAreaElement>
 > = (props) => {
-  let inputRef!: HTMLTextAreaElement;
   const [localProps, rest] = splitProps(props, ["caption"]);
   const type = () => localProps.caption[0];
   const caption = () => localProps.caption[1];
-  const initialCaption = caption();
   const [captionHistory, setCaptionHistory] = createSignal<string[]>([]);
+  const [newTag, setNewTag] = createSignal("");
 
   const { saveCaption, deleteCaption: deleteCaptionAction } = useGallery();
   const save = useAction(saveCaption);
   const submission = useSubmission(saveCaption);
   const deleteCaption = useAction(deleteCaptionAction);
 
+  const isTagInput = () => ["wd", "e621", "tags"].includes(type());
+  const splitAndCleanTags = (text: string) =>
+    text
+      .split(/,\s*/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+  const tags = () => (isTagInput() ? splitAndCleanTags(caption()) : []);
+
+  const normalizeTagText = (text: string) => splitAndCleanTags(text).join(", ");
+
   const saveWithHistory = (newText: string) => {
     setCaptionHistory((prev) => [...prev, caption()]);
     save({
-      caption: newText,
+      caption: isTagInput() ? normalizeTagText(newText) : newText,
       type: type(),
     });
   };
@@ -89,16 +70,35 @@ export const CaptionInput: Component<
       const previousText = history[history.length - 1];
       setCaptionHistory((prev) => prev.slice(0, -1));
       save({
-        caption: previousText,
+        caption: isTagInput() ? normalizeTagText(previousText) : previousText,
         type: type(),
       });
     }
   };
 
+  const addTag = (tag: string) => {
+    const trimmedTag = tag.trim();
+    if (!trimmedTag) return;
+
+    const currentTags = tags();
+    if (!currentTags.includes(trimmedTag)) {
+      saveWithHistory([...currentTags, trimmedTag].join(", "));
+    }
+    setNewTag("");
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    const newTags = tags().filter((tag) => tag !== tagToRemove);
+    saveWithHistory(newTags.join(", "));
+  };
+
   return (
     <div
       class="caption-input-wrapper card"
-      classList={props.state === null ? {} : { [props.state]: true }}
+      classList={{
+        [props.state || ""]: props.state !== null,
+        "tag-input": isTagInput(),
+      }}
     >
       <div class="caption-icons">
         <span
@@ -109,13 +109,15 @@ export const CaptionInput: Component<
         <Tools onInput={saveWithHistory} caption={caption()} />
         {captionHistory().length > 0 && (
           <button
-            onClick={undo}
+            type="button"
             class="icon"
+            onClick={undo}
             title="Undo last change"
             innerHTML={ArrowUndoIcon}
           />
         )}
         <button
+          type="button"
           class="icon"
           onClick={async (e) => {
             if (confirm(`Delete ${type()} caption?`)) {
@@ -126,11 +128,49 @@ export const CaptionInput: Component<
           innerHTML={DeleteIcon}
         />
       </div>
-      <textarea
-        {...rest}
-        use:preserveState={[caption, saveWithHistory]}
-        placeholder="Add a caption..."
-      />
+
+      {isTagInput() ? (
+        <div class="tags-container">
+          <div class="tags-list">
+            <For each={tags()}>
+              {(tag) => <TagBubble tag={tag} onRemove={() => removeTag(tag)} />}
+            </For>
+          </div>
+          <div class="new-tag-input">
+            <input
+              type="text"
+              value={newTag()}
+              style={{
+                border: "none",
+              }}
+              onInput={(e) => setNewTag(e.currentTarget.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addTag(newTag());
+                }
+              }}
+              placeholder="Add a tag..."
+            />
+            <button
+              type="button"
+              class="icon add-tag"
+              style={{
+                border: "none",
+              }}
+              onClick={() => addTag(newTag())}
+              title="Add tag"
+              innerHTML={PlusIcon}
+            />
+          </div>
+        </div>
+      ) : (
+        <textarea
+          {...rest}
+          use:preserveState={[caption, saveWithHistory]}
+          placeholder="Add a caption..."
+        />
+      )}
     </div>
   );
 };

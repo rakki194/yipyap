@@ -13,6 +13,7 @@ export const QuickJump: Component<{
   onClose: () => void;
 }> = (props) => {
   const [search, setSearch] = createSignal("");
+  const [selectedIndex, setSelectedIndex] = createSignal(0);
   const navigate = useNavigate();
   const gallery = useGallery();
 
@@ -50,11 +51,30 @@ export const QuickJump: Component<{
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    const currentMatches = matches();
+
     if (e.key === "Escape") {
       props.onClose();
-    } else if (e.key === "Enter" && matches().length === 1) {
-      handleSelect(matches()[0]);
+    } else if (e.key === "Enter" && currentMatches.length > 0) {
+      // Select the highlighted item instead of always the first one
+      handleSelect(currentMatches[selectedIndex()]);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) =>
+        prev < currentMatches.length - 1 ? prev + 1 : prev
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
     }
+  };
+
+  // Reset selected index when search changes
+  const handleSearchInput = (
+    e: InputEvent & { currentTarget: HTMLInputElement }
+  ) => {
+    setSearch(e.currentTarget.value);
+    setSelectedIndex(0);
   };
 
   return (
@@ -63,7 +83,7 @@ export const QuickJump: Component<{
         <input
           type="text"
           value={search()}
-          onInput={(e) => setSearch(e.currentTarget.value)}
+          onInput={handleSearchInput}
           onKeyDown={handleKeyDown}
           placeholder="Jump to folder..."
           autofocus
@@ -75,8 +95,13 @@ export const QuickJump: Component<{
           <Show when={matches().length > 0}>
             <ul class="quick-jump-results">
               <For each={matches()}>
-                {(folder) => (
-                  <li onClick={() => handleSelect(folder)}>
+                {(folder, index) => (
+                  <li
+                    onClick={() => handleSelect(folder)}
+                    classList={{
+                      selected: index() === selectedIndex(),
+                    }}
+                  >
                     <span class="folder-name">{folder.name}</span>
                     <span class="folder-path">{folder.path || "/"}</span>
                   </li>

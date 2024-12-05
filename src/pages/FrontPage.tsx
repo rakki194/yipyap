@@ -29,11 +29,17 @@ const FrontPage: Component = () => {
         <br /> ~yipyap
         <br />{" "}
         <span class="subtitle">
-          大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！
+          {
+            [
+              "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+              "私たちは別の祈り方を見つけました",
+            ][Math.floor(Math.random() * 2)]
+          }
         </span>
       </h1>
       <div class="selection-buttons">
         <button
+          type="button"
           class="icon"
           onClick={() => handleSelection("image")}
           aria-label="Work with Images"
@@ -41,6 +47,7 @@ const FrontPage: Component = () => {
           <div innerHTML={DimensionsIcon} />
         </button>
         <button
+          type="button"
           class="icon"
           onClick={() => handleSelection("audio")}
           aria-label="Work with Audio"

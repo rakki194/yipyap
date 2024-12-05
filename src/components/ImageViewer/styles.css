@@ -54,6 +54,12 @@
     svg {
       fill: var(--accent);
     }
+
+    :root[data-theme="gray"] & {
+      svg {
+        fill: var(--text-primary);
+      }
+    }
   }
 }
 
@@ -72,6 +78,17 @@
 
   &.horizontal {
     flex-direction: row;
+    max-height: 100vh;
+    overflow-y: auto;
+
+    & > .image-container {
+      max-height: 100vh;
+
+      & > img {
+        max-height: 100vh;
+        width: auto;
+      }
+    }
   }
 
   & > .image-container {

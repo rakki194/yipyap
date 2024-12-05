@@ -60,11 +60,20 @@ const ModelBody = (props: {
       }
 
       if (props.layout.layout === "horizontal") {
-        const offset = props.layout.free_width - refImageInfo.offsetWidth;
+        const maxWidth = Math.min(400, props.layout.free_width); // Limit max width
+        const maxOffset = 400; // Maximum pixels the panel can float
+        const rawOffset = props.layout.free_width - refImageInfo.offsetWidth;
+        const offset = Math.max(-maxOffset, rawOffset); // Limit the negative offset
+
         if (offset >= 0) {
-          setStyle(undefined);
+          setStyle({
+            width: `${maxWidth}px`,
+            marginLeft: "auto",
+          });
         } else {
           setStyle({
+            width: `${maxWidth}px`,
+            marginLeft: "auto",
             transform: `translateX(${offset}px)`,
           });
         }
@@ -142,6 +151,7 @@ const ModalHeader = (props: {
 
     if (currentIndex !== -1) {
       await deleteImageAction(currentIndex);
+      gallery.clearImageCache();
       props.onClose();
     }
   };
@@ -174,6 +184,7 @@ const ModalHeader = (props: {
       <h2>{props.imageInfo.name}</h2>
       <div class="modal-actions">
         <button
+          type="button"
           class="icon"
           onClick={() => {
             window.location.href = props.imageInfo.download_path;
@@ -183,6 +194,7 @@ const ModalHeader = (props: {
           innerHTML={DownloadIcon}
         />
         <button
+          type="button"
           class="icon delete-button"
           classList={{ holding: isHolding() }}
           style={{ "--progress": `${progress()}%` }}
@@ -197,6 +209,7 @@ const ModalHeader = (props: {
           innerHTML={DeleteIcon}
         />
         <button
+          type="button"
           class="icon"
           onClick={props.onClose}
           aria-label="Close image viewer"
@@ -218,6 +231,7 @@ type LayoutInfo = Size & {
 };
 
 function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
+  const settings = useSettings();
   const { width: viewWidth, height: viewHeight } = windowSize;
   if (image === null) {
     //FIXME: we don't need this
@@ -236,12 +250,12 @@ function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
   const height_scale = viewHeight / imageHeight;
   let scale: number;
   let layout: LayoutStr;
-  if (width_scale < height_scale) {
-    scale = width_scale;
-    layout = "vertical";
-  } else {
-    scale = height_scale;
+  if (settings.disableVerticalLayout()) {
     layout = "horizontal";
+    scale = width_scale;
+  } else {
+    layout = width_scale < height_scale ? "vertical" : "horizontal";
+    scale = layout === "vertical" ? height_scale : width_scale;
   }
   const width = imageWidth * scale;
   const height = imageHeight * scale;

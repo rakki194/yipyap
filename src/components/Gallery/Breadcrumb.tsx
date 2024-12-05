@@ -74,7 +74,7 @@ export const Breadcrumb = () => {
     <nav class="breadcrumb">
       <div class="breadcrumb-content">
         <div class="breadcrumb-links">
-          <A href="/">
+          <A href="/" aria-label="Return to the front page">
             <span class="home-icon icon" innerHTML={YipYap} title="home" />
           </A>
           <A href="/gallery">
@@ -101,6 +101,7 @@ export const Breadcrumb = () => {
         <div class="breadcrumb-actions">
           <ThemeToggle />
           <button
+            type="button"
             class="icon"
             onClick={() => setShowSettings(!showSettings())}
             title="Settings"
@@ -112,7 +113,7 @@ export const Breadcrumb = () => {
       <Show when={showSettings()}>
         <div class="settings-overlay" onClick={() => setShowSettings(false)}>
           <div onClick={(e) => e.stopPropagation()}>
-            <Settings />
+            <Settings onClose={() => setShowSettings(false)} />
           </div>
         </div>
       </Show>
@@ -125,6 +126,7 @@ function ThemeToggle() {
   const [hovered, setHovered] = createSignal(false);
   return (
     <button
+      type="button"
       class="icon accent-hover"
       onClick={theme.toggleTheme}
       onMouseEnter={() => setHovered(true)}

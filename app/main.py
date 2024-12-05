@@ -48,6 +48,9 @@ THUMBNAIL_SIZE = (300, 300)
 PREVIEW_SIZE = (1024, 1024)
 data_source = CachedFileSystemDataSource(ROOT_DIR, THUMBNAIL_SIZE, PREVIEW_SIZE)
 
+# Add this constant near the top of the file with other constants
+CAPTION_TYPE_ORDER = {".e621": 0, ".tags": 1, ".wd": 2, ".caption": 3}
+
 
 @app.get("/api/browse")
 async def browse(
@@ -78,7 +81,7 @@ async def browse(
     last_modified = format_datetime(browser_header.mtime, usegmt=True)
     headers = {
         "Last-Modified": last_modified,
-        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Cache-Control": "public, max-age=0",
     }
 
     # If items is None, it means we should return 304 Not Modified
@@ -89,17 +92,27 @@ async def browse(
     # For HEAD requests, return just the header
     if is_head:
         return Response(
-            content=browser_header.model_dump_json(),  # Use Pydantic's json method for serialization
+            content=browser_header.model_dump_json(),
             media_type="application/json",
             headers=headers,
         )
 
     async def stream_response():
-        yield f"{browser_header.model_dump_json()}\n"  # Use Pydantic's json method for serialization
+        yield f"{browser_header.model_dump_json()}\n"
+
+        # Sort items that have captions
         for item in items:
+            if hasattr(item, "captions"):
+                item.captions.sort(
+                    key=lambda x: CAPTION_TYPE_ORDER.get(f".{x[0]}", 999)
+                )
             yield f"{item.model_dump_json()}\n"
+
+        # Process futures
         for future in asyncio.as_completed(futures):
             res = await future
+            if hasattr(res, "captions"):
+                res.captions.sort(key=lambda x: CAPTION_TYPE_ORDER.get(f".{x[0]}", 999))
             yield f"{res.model_dump_json()}\n"
 
     return StreamingResponse(
