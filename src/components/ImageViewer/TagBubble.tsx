@@ -6,14 +6,21 @@ export const TagBubble: Component<{
   onRemove: () => void;
 }> = (props) => {
   const getTagColor = (tag: string) => {
-    // Generate a consistent hue based on the tag string
     let hash = 0;
     for (let i = 0; i < tag.length; i++) {
       hash = tag.charCodeAt(i) + ((hash << 5) - hash);
     }
     const hue = hash % 360;
-    // Use a muted saturation and higher lightness for a lighter look
-    return `hsl(${hue}, 40%, 85%)`;
+
+    // Get the current theme from document.documentElement
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+
+    // Adjust saturation and lightness based on theme
+    const isDarkTheme = ["peanut", "gray", "dark"].includes(currentTheme || "");
+    const saturation = isDarkTheme ? "30%" : "40%";
+    const lightness = isDarkTheme ? "25%" : "85%";
+
+    return `hsl(${hue}, ${saturation}, ${lightness})`;
   };
 
   return (
@@ -21,7 +28,7 @@ export const TagBubble: Component<{
       class="tag-bubble"
       style={{
         "background-color": getTagColor(props.tag),
-        color: "var(--text-secondary)", // Darker text for better contrast on light backgrounds
+        color: "var(--text-secondary)",
       }}
     >
       <span class="tag-text">{props.tag}</span>
