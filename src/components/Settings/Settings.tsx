@@ -272,6 +272,22 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               />
             </div>
           </div>
+
+          <div class="setting-group">
+            <label>Layout Options</label>
+            <div class="icon-buttons">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={settings.disableVerticalLayout()}
+                  onChange={(e) =>
+                    settings.setDisableVerticalLayout(e.currentTarget.checked)
+                  }
+                />
+                Disable Vertical Layout
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 

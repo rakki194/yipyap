@@ -222,6 +222,7 @@ type LayoutInfo = Size & {
 };
 
 function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
+  const settings = useSettings();
   const { width: viewWidth, height: viewHeight } = windowSize;
   if (image === null) {
     //FIXME: we don't need this
@@ -240,12 +241,12 @@ function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
   const height_scale = viewHeight / imageHeight;
   let scale: number;
   let layout: LayoutStr;
-  if (width_scale < height_scale) {
-    scale = width_scale;
-    layout = "vertical";
-  } else {
-    scale = height_scale;
+  if (settings.disableVerticalLayout()) {
     layout = "horizontal";
+    scale = width_scale;
+  } else {
+    layout = width_scale < height_scale ? "vertical" : "horizontal";
+    scale = layout === "vertical" ? height_scale : width_scale;
   }
   const width = imageWidth * scale;
   const height = imageHeight * scale;
