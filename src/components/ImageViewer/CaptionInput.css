@@ -1,0 +1,66 @@
+.caption-input-wrapper.tag-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tags-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-bubble {
+  display: flex;
+  align-items: center;
+  background: var(--background-secondary);
+  border-radius: 1rem;
+  padding: 0.25rem 0.5rem;
+  gap: 0.25rem;
+}
+
+.tag-bubble .tag-text {
+  font-size: 0.9rem;
+}
+
+.tag-bubble .remove-tag {
+  padding: 0.25rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.tag-bubble .remove-tag:hover {
+  opacity: 1;
+}
+
+.new-tag-input {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.new-tag-input input {
+  flex: 1;
+  background: var(--background-secondary);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  color: var(--text-primary);
+}
+
+.new-tag-input .add-tag {
+  padding: 0.5rem;
+  background: var(--background-secondary);
+  border-radius: 0.25rem;
+}
+
+.new-tag-input .add-tag:hover {
+  background: var(--background-tertiary);
+}

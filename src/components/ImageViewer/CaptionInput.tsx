@@ -12,6 +12,7 @@ import {
   TextAlignIcon,
   TextAlignDistributedIcon,
   ArrowUndoIcon,
+  PlusIcon,
 } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { preserveState } from "~/directives";
@@ -58,6 +59,24 @@ const Tools: Component<{
   );
 };
 
+const TagBubble: Component<{
+  tag: string;
+  onRemove: () => void;
+}> = (props) => {
+  return (
+    <div class="tag-bubble">
+      <span class="tag-text">{props.tag}</span>
+      <button
+        type="button"
+        class="icon remove-tag"
+        onClick={props.onRemove}
+        title="Remove tag"
+        innerHTML={DeleteIcon}
+      />
+    </div>
+  );
+};
+
 export const CaptionInput: Component<
   {
     caption: [string, string];
@@ -70,11 +89,21 @@ export const CaptionInput: Component<
   const caption = () => localProps.caption[1];
   const initialCaption = caption();
   const [captionHistory, setCaptionHistory] = createSignal<string[]>([]);
+  const [newTag, setNewTag] = createSignal("");
 
   const { saveCaption, deleteCaption: deleteCaptionAction } = useGallery();
   const save = useAction(saveCaption);
   const submission = useSubmission(saveCaption);
   const deleteCaption = useAction(deleteCaptionAction);
+
+  const isTagInput = () => ["wd", "e621"].includes(type());
+  const tags = () =>
+    isTagInput()
+      ? caption()
+          .split(",")
+          .map((t) => t.trim())
+          .filter((t) => t)
+      : [];
 
   const saveWithHistory = (newText: string) => {
     setCaptionHistory((prev) => [...prev, caption()]);
@@ -96,10 +125,28 @@ export const CaptionInput: Component<
     }
   };
 
+  const addTag = (tag: string) => {
+    if (!tag.trim()) return;
+    const currentTags = tags();
+    if (!currentTags.includes(tag.trim())) {
+      const newTags = [...currentTags, tag.trim()];
+      saveWithHistory(newTags.join(", "));
+    }
+    setNewTag("");
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    const newTags = tags().filter((tag) => tag !== tagToRemove);
+    saveWithHistory(newTags.join(", "));
+  };
+
   return (
     <div
       class="caption-input-wrapper card"
-      classList={props.state === null ? {} : { [props.state]: true }}
+      classList={{
+        [props.state || ""]: props.state !== null,
+        "tag-input": isTagInput(),
+      }}
     >
       <div class="caption-icons">
         <span
@@ -129,11 +176,43 @@ export const CaptionInput: Component<
           innerHTML={DeleteIcon}
         />
       </div>
-      <textarea
-        {...rest}
-        use:preserveState={[caption, saveWithHistory]}
-        placeholder="Add a caption..."
-      />
+
+      {isTagInput() ? (
+        <div class="tags-container">
+          <div class="tags-list">
+            <For each={tags()}>
+              {(tag) => <TagBubble tag={tag} onRemove={() => removeTag(tag)} />}
+            </For>
+          </div>
+          <div class="new-tag-input">
+            <input
+              type="text"
+              value={newTag()}
+              onInput={(e) => setNewTag(e.currentTarget.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addTag(newTag());
+                }
+              }}
+              placeholder="Add a tag..."
+            />
+            <button
+              type="button"
+              class="icon add-tag"
+              onClick={() => addTag(newTag())}
+              title="Add tag"
+              innerHTML={SparkleIcon}
+            />
+          </div>
+        </div>
+      ) : (
+        <textarea
+          {...rest}
+          use:preserveState={[caption, saveWithHistory]}
+          placeholder="Add a caption..."
+        />
+      )}
     </div>
   );
 };

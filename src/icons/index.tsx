@@ -42,6 +42,7 @@ import ListRegular from "@fluentui/svg-icons/icons/list_24_regular.svg?raw";
 import TextSortAscendingRegular from "@fluentui/svg-icons/icons/text_sort_ascending_24_regular.svg?raw";
 import CalendarDateRegular from "@fluentui/svg-icons/icons/calendar_date_24_regular.svg?raw";
 import DocumentArrowDownRegular from "@fluentui/svg-icons/icons/document_arrow_down_24_regular.svg?raw";
+import PlusIcon from "@fluentui/svg-icons/icons/add_24_regular.svg?raw";
 
 // Export all icons
 export {
@@ -87,6 +88,7 @@ export {
   TextSortAscendingRegular,
   CalendarDateRegular,
   DocumentArrowDownRegular,
+  PlusIcon,
 };
 
 // Export caption icons map
