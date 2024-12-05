@@ -1,4 +1,4 @@
-// src/components/ImageViewer/CaptionEditor.tsx
+// src/components/ImageViewer/CaptionInput.tsx
 import {
   createSignal,
   splitProps,
@@ -23,78 +23,20 @@ import {
 } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { preserveState } from "~/directives";
+import { Tools } from "./Tools";
+import { TagBubble } from "./TagBubble";
 
-export interface CaptionInputProps
-  extends JSX.HTMLAttributes<HTMLTextAreaElement> {
-  caption: [string, string];
-}
-
-const TOOLS = [
-  {
-    icon: SparkleIcon,
-    title: "Remove commas",
-    action: (caption: string) => caption.replace(/,/g, ""),
-  },
-  {
-    icon: TextAlignIcon,
-    title: "Replace newlines with commas",
-    action: (caption: string) => caption.replace(/\n/g, ", "),
-  },
-  {
-    icon: TextAlignDistributedIcon,
-    title: "Replace underscores with spaces",
-    action: (caption: string) => caption.replace(/_/g, " "),
-  },
-];
-
-const Tools: Component<{
-  onInput: (value: string) => void;
-  caption: string;
-}> = (props) => {
-  return (
-    <For each={TOOLS}>
-      {(tool) => (
-        <button
-          type="button"
-          class="icon"
-          onClick={() => props.onInput(tool.action(props.caption))}
-          title={tool.title}
-          innerHTML={tool.icon}
-        />
-      )}
-    </For>
-  );
-};
-
-const TagBubble: Component<{
-  tag: string;
-  onRemove: () => void;
-}> = (props) => {
-  return (
-    <div class="tag-bubble">
-      <span class="tag-text">{props.tag}</span>
-      <button
-        type="button"
-        class="icon remove-tag"
-        onClick={props.onRemove}
-        title="Remove tag"
-        innerHTML={DeleteIcon}
-      />
-    </div>
-  );
-};
+type CaptionType = "wd" | "e621" | "tags" | string;
 
 export const CaptionInput: Component<
   {
-    caption: [string, string];
+    caption: [CaptionType, string];
     state: "expanded" | "collapsed" | null;
   } & JSX.HTMLAttributes<HTMLTextAreaElement>
 > = (props) => {
-  let inputRef!: HTMLTextAreaElement;
   const [localProps, rest] = splitProps(props, ["caption"]);
   const type = () => localProps.caption[0];
   const caption = () => localProps.caption[1];
-  const initialCaption = caption();
   const [captionHistory, setCaptionHistory] = createSignal<string[]>([]);
   const [newTag, setNewTag] = createSignal("");
 
@@ -104,26 +46,20 @@ export const CaptionInput: Component<
   const deleteCaption = useAction(deleteCaptionAction);
 
   const isTagInput = () => ["wd", "e621", "tags"].includes(type());
-  const tags = () =>
-    isTagInput()
-      ? caption()
-          .split(/,\s*/)
-          .map((t) => t.trim())
-          .filter((t) => t)
-      : [];
+  const splitAndCleanTags = (text: string) =>
+    text
+      .split(/,\s*/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+  const tags = () => (isTagInput() ? splitAndCleanTags(caption()) : []);
+
+  const normalizeTagText = (text: string) => splitAndCleanTags(text).join(", ");
 
   const saveWithHistory = (newText: string) => {
     setCaptionHistory((prev) => [...prev, caption()]);
-    const textToSave = isTagInput()
-      ? newText
-          .split(/,\s*/)
-          .map((t) => t.trim())
-          .filter((t) => t)
-          .join(", ")
-      : newText;
-
     save({
-      caption: textToSave,
+      caption: isTagInput() ? normalizeTagText(newText) : newText,
       type: type(),
     });
   };
@@ -133,29 +69,20 @@ export const CaptionInput: Component<
     if (history.length > 0) {
       const previousText = history[history.length - 1];
       setCaptionHistory((prev) => prev.slice(0, -1));
-
-      // Normalize the previous text if it's a tag input
-      const textToSave = isTagInput()
-        ? previousText
-            .split(/,\s*/)
-            .map((t) => t.trim())
-            .filter((t) => t)
-            .join(", ")
-        : previousText;
-
       save({
-        caption: textToSave,
+        caption: isTagInput() ? normalizeTagText(previousText) : previousText,
         type: type(),
       });
     }
   };
 
   const addTag = (tag: string) => {
-    if (!tag.trim()) return;
+    const trimmedTag = tag.trim();
+    if (!trimmedTag) return;
+
     const currentTags = tags();
-    if (!currentTags.includes(tag.trim())) {
-      const newTags = [...currentTags, tag.trim()];
-      saveWithHistory(newTags.join(", "));
+    if (!currentTags.includes(trimmedTag)) {
+      saveWithHistory([...currentTags, trimmedTag].join(", "));
     }
     setNewTag("");
   };
@@ -164,24 +91,6 @@ export const CaptionInput: Component<
     const newTags = tags().filter((tag) => tag !== tagToRemove);
     saveWithHistory(newTags.join(", "));
   };
-
-  createEffect(() => {
-    if (isTagInput() && caption()) {
-      // Normalize the initial tags format
-      const normalizedTags = caption()
-        .split(/,\s*/)
-        .map((t) => t.trim())
-        .filter((t) => t)
-        .join(", ");
-
-      if (normalizedTags !== caption()) {
-        save({
-          caption: normalizedTags,
-          type: type(),
-        });
-      }
-    }
-  });
 
   return (
     <div
