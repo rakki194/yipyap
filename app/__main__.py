@@ -47,7 +47,6 @@ import uvicorn
 import logging
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
 
 
 def run_development_server(dev_port: int, backend_port: int):
@@ -55,7 +54,7 @@ def run_development_server(dev_port: int, backend_port: int):
     # Check if npm dependencies are installed
     if not Path("node_modules").exists():
         logger.info("Installing frontend dependencies...")
-        subprocess.run(["npm", "install", "--include=dev"], check=True)
+        subprocess.run(["npm", "install"], check=True)
 
     # Start the Vite dev server
     env = os.environ.copy()
@@ -103,7 +102,6 @@ def run_production_server(backend_port: int):
     """
     logger.info("Starting production server...")
     logger.info(f"Server will be available at http://localhost:{backend_port}")
-    logger.info("Make sure you've built the frontend with 'npm run build' first!")
 
     if not Path("dist/index.html").exists():
         logger.error("Frontend build not found! Please run 'npm run build' first.")
@@ -129,6 +127,8 @@ def main():
     backend_port = int(
         os.environ.setdefault("BACKEND_PORT", str(dev_port + 1 if is_dev else dev_port))
     )
+
+    logging.basicConfig(level=logging.DEBUG if is_dev else logging.INFO)
 
     logger.info(f"Starting server in {'development' if is_dev else 'production'} mode")
     logger.info(f"DEV_PORT: {dev_port}, BACKEND_PORT: {backend_port}")
