@@ -9,50 +9,39 @@
 .tags-list {
   display: flex;
   flex-flow: row wrap;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) / 3) calc(var(--spacing) / 4);
 }
 
 .tag-bubble {
-  display: inline-flex;
-  align-items: center;
-  padding: calc(var(--half-spacing) / 2) var(--half-spacing);
+  display: inline-block;
+  padding: 0 var(--half-spacing);
   gap: calc(var(--half-spacing) / 2);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   white-space: nowrap;
   border-radius: var(--half-spacing);
   color: var(--text-secondary);
   transition-property: background-color;
+  vertical-align: middle;
 }
 
 .tag-bubble:has(.remove-tag:hover) {
   background-color: #ff000038 !important;
 }
 
-.tag-bubble .tag-text {
-  font-size: inherit;
-  line-height: 1.2;
-}
-
-.tag-bubble .remove-tag {
-  font-size: 0.85rem;
-  opacity: 0.7;
-  transition: opacity 0.2s;
+.tag-bubble > button.remove-tag {
   color: inherit;
-  border: none;
+  border-style: none;
   background: none;
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  min-width: 16px;
-  min-height: 16px;
-}
 
-.tag-bubble .remove-tag svg {
-  width: 100%;
-  height: 100%;
+  opacity: 0.7;
+  font-size: 0.5rem;
+  vertical-align: middle;
+
+  transition-property: opacity;
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .new-tag-input {
@@ -64,8 +53,7 @@
 
 .new-tag-input input {
   flex: 1;
-  border: none;
-  padding: var(--half-spacing);
+  border-style: none;
   border-radius: var(--half-spacing);
   background-color: color-mix(in srgb, var(--secondary-bg) 50%, transparent);
   backdrop-filter: blur(3px);
@@ -76,5 +64,5 @@
 }
 
 .new-tag-input .add-tag {
-  border: none;
+  border-style: none;
 }

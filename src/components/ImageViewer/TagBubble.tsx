@@ -30,7 +30,7 @@ export const TagBubble: Component<{
         "background-color": getTagColor(props.tag),
       }}
     >
-      <span class="tag-text">{props.tag}</span>
+      {props.tag}
       <button
         type="button"
         class="icon remove-tag"

@@ -11,7 +11,7 @@
 
 /* Banana theme striped background for controls */
 [data-theme="banana"] .controls .filters {
-  border: none;
+  border-style: none;
   background: repeating-linear-gradient(
     -45deg,
     var(--bg-color),
@@ -36,7 +36,7 @@
 
 /* Strawberry theme striped background for controls */
 [data-theme="strawberry"] .controls .filters {
-  border: none;
+  border-style: none;
   background: repeating-linear-gradient(
     -45deg,
     #effdf3,
@@ -52,7 +52,7 @@
 
 /* Peanut theme striped background for controls */
 [data-theme="peanut"] .controls .filters {
-  border: none;
+  border-style: none;
   background: repeating-linear-gradient(
     -45deg,
     var(--bg-color),
