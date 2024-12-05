@@ -170,9 +170,9 @@
     & > .caption-input-wrapper {
       position: relative;
       display: flex;
+      flex-direction: row;
       align-items: flex-start;
       gap: var(--spacing);
-
       transition-property: flex;
       flex: 1;
       min-height: 150px;

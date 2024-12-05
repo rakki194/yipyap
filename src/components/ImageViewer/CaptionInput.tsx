@@ -25,6 +25,7 @@ import { useGallery } from "~/contexts/GalleryContext";
 import { preserveState } from "~/directives";
 import { Tools } from "./Tools";
 import { TagBubble } from "./TagBubble";
+import "./CaptionInput.css";
 
 type CaptionType = "wd" | "e621" | "tags" | string;
 
