@@ -1,7 +1,10 @@
 // vite.config.ts
+import { brotliCompress } from "zlib";
+import { promisify } from "util";
 import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import { resolve } from "path";
+import gzipPlugin from "rollup-plugin-gzip";
 
 const DEV_PORT = process.env.DEV_PORT ? Number(process.env.DEV_PORT) : 5173;
 const BACKEND_PORT = process.env.BACKEND_PORT
@@ -11,10 +14,17 @@ const BACKEND_HOST = `http://localhost:${BACKEND_PORT}`;
 
 console.log("vite config", { DEV_PORT, BACKEND_PORT, BACKEND_HOST });
 
+const brotliPromise = promisify(brotliCompress);
+
 export default defineConfig({
   root: "src",
   plugins: [
     solidPlugin(),
+    gzipPlugin(),
+    gzipPlugin({
+      customCompression: (content) => brotliPromise(Buffer.from(content)),
+      fileName: ".br",
+    }),
     {
       name: "configure-server",
       configureServer(server) {
