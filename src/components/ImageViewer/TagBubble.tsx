@@ -6,15 +6,18 @@ export const TagBubble: Component<{
   onRemove: () => void;
 }> = (props) => {
   return (
-    <div class="tag-bubble">
+    <span class="tag-bubble">
       <span class="tag-text">{props.tag}</span>
       <button
         type="button"
         class="icon remove-tag"
+        style={{
+          border: "none",
+        }}
         onClick={props.onRemove}
         title="Remove tag"
         innerHTML={DeleteIcon}
       />
-    </div>
+    </span>
   );
 };

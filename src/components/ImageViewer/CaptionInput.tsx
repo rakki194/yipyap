@@ -140,6 +140,9 @@ export const CaptionInput: Component<
             <input
               type="text"
               value={newTag()}
+              style={{
+                border: "none",
+              }}
               onInput={(e) => setNewTag(e.currentTarget.value)}
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
@@ -152,9 +155,12 @@ export const CaptionInput: Component<
             <button
               type="button"
               class="icon add-tag"
+              style={{
+                border: "none",
+              }}
               onClick={() => addTag(newTag())}
               title="Add tag"
-              innerHTML={SparkleIcon}
+              innerHTML={PlusIcon}
             />
           </div>
         </div>
