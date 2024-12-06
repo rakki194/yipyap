@@ -5,6 +5,7 @@ from typing import Optional
 import torch
 import timm
 from PIL import Image
+import pillow_jxl # type: ignore
 from torch.nn import functional as F
 from huggingface_hub import hf_hub_download
 import pandas as pd
