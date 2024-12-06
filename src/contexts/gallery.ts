@@ -14,6 +14,7 @@ import {
   saveCaption as saveCaptionToBackend,
   deleteImage as deleteImageFromBackend,
   deleteCaption as deleteCaptionFromBackend,
+  generateCaption,
 } from "~/resources/browse";
 import type {
   ImageData,
@@ -242,6 +243,39 @@ export function makeGalleryState() {
     }
   });
 
+  const generateTags = action(async () => {
+    const { image, database } = untrack(() => ({
+      image: selection.editedImage,
+      database: backendData(),
+    }));
+    if (!image) return new Error("No image to save caption for");
+    if (!database) return new Error("No page fetched yet!");
+    try {
+      const response = await generateCaption(database.path, image.name, "jtp2");
+      if (!response.ok) {
+        throw new Error(`Failed to generate tags: ${response.statusText}`);
+      }
+
+      // Get the tags from the response and ensure it's a string
+      const responseText = await response.text();
+      let tags = responseText;
+      try {
+        // Try to parse as JSON in case it's returned that way
+        const parsed = JSON.parse(responseText);
+        if (parsed && typeof parsed === "object") {
+          updateLocalCaptions(image, { type: "tags", caption: tags }, database);
+        }
+      } catch {
+        // If it's not JSON, use the raw text
+        tags = responseText;
+      }
+
+      //FIXME update cache
+    } catch (error) {
+      console.error("Error generating tags:", error);
+    }
+  });
+
   const deleteImage = action(async (idx: number) => {
     const database = untrack(backendData);
     if (!database) return new Error("No page fetched yet!");
@@ -339,6 +373,7 @@ export function makeGalleryState() {
         return [];
       }
     },
+    generateTags,
   };
 
   if (import.meta.env.DEV) {
@@ -380,13 +415,25 @@ function updateLocalCaptions(
 ) {
   const setter = backendData.setters[image.name];
   if (setter) {
-    // Update the captions array with the new caption
-    const newCaptions = image.captions.map(([type, caption]) =>
-      type === data.type ? [type, data.caption] : [type, caption]
+    // Check if caption type exists
+    const existingCaptionIndex = image.captions.findIndex(
+      ([type]) => type === data.type
     );
+
+    let newCaptions: Captions;
+    if (existingCaptionIndex === -1) {
+      // Add new caption type
+      newCaptions = [...image.captions, [data.type, data.caption]] as Captions;
+    } else {
+      // Update existing caption
+      newCaptions = image.captions.map(([type, caption]) =>
+        type === data.type ? [type, data.caption] : [type, caption]
+      ) as Captions;
+    }
+
     return setter({
       ...image,
-      captions: newCaptions as Captions,
+      captions: newCaptions,
     });
   }
 }

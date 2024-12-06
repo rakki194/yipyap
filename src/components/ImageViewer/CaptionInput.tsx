@@ -12,6 +12,7 @@ import getIcon, { captionIconsMap } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { Tools } from "./Tools";
 import { TagBubble } from "./TagBubble";
+import { preserveState } from "~/directives";
 import "./CaptionInput.css";
 
 type CaptionType = "wd" | "e621" | "tags" | string;
@@ -187,7 +188,6 @@ export const CaptionInput: Component<
     }
   };
 
-  // Update effect to handle both refs
   createEffect(() => {
     if (props.state === "expanded") {
       if (isTagInput()) {
@@ -287,7 +287,6 @@ export const CaptionInput: Component<
   );
 };
 
-// Start of Selection
 const StatusIcon = <T extends [{ type: string }], U>(props: {
   status: Partial<Submission<T, U>>;
   type: string;
