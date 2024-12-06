@@ -12,7 +12,7 @@ import { ImageInfo } from "./ImageInfo";
 import { CaptionInput } from "./CaptionInput";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
-import { DownloadIcon, DismissIcon, DeleteIcon } from "~/icons";
+import getIcon from "~/icons";
 import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions } from "~/types";
 import { useSettings } from "~/contexts/settings";
@@ -187,8 +187,9 @@ const ModalHeader = (props: {
           }}
           aria-label="Download image"
           title="Download image"
-          innerHTML={DownloadIcon}
-        />
+        >
+          {getIcon("download")}
+        </button>
         <button
           type="button"
           class="icon delete-button"
@@ -202,16 +203,18 @@ const ModalHeader = (props: {
           onTouchCancel={cancelDelete}
           aria-label="Hold to delete image"
           title="Hold to delete image"
-          innerHTML={DeleteIcon}
-        />
+        >
+          {getIcon("delete")}
+        </button>
         <button
           type="button"
           class="icon"
           onClick={props.onClose}
           aria-label="Close image viewer"
           title="Close image viewer"
-          innerHTML={DismissIcon}
-        />
+        >
+          {getIcon("dismiss")}
+        </button>
       </div>
     </div>
   );

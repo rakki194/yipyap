@@ -2,7 +2,7 @@
 
 import { Component, createSignal } from "solid-js";
 import { useNavigate } from "@solidjs/router";
-import { DimensionsIcon, SpeakerIcon, YipYap } from "~/icons";
+import getIcon from "~/icons";
 import "~/styles.css";
 import "~/components/FadeIn.css";
 import "./FrontPage.css";
@@ -25,7 +25,9 @@ const FrontPage: Component = () => {
   return (
     <div class={`front-page fade-in ${isVisible() ? "visible" : "hidden"}`}>
       <h1 class="title">
-        <span class="icon" innerHTML={YipYap} title="app logo" />
+        <span class="icon" title="app logo">
+          {getIcon("yipyap")}
+        </span>
         <br /> ~yipyap
         <br />{" "}
         <span class="subtitle">
@@ -44,7 +46,7 @@ const FrontPage: Component = () => {
           onClick={() => handleSelection("image")}
           aria-label="Work with Images"
         >
-          <div innerHTML={DimensionsIcon} />
+          {getIcon("dimensions")}
         </button>
         <button
           type="button"
@@ -52,7 +54,7 @@ const FrontPage: Component = () => {
           onClick={() => handleSelection("audio")}
           aria-label="Work with Audio"
         >
-          <div innerHTML={SpeakerIcon} />
+          {getIcon("speaker")}
         </button>
       </div>
     </div>

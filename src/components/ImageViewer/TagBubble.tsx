@@ -1,5 +1,5 @@
-import { Component, createSignal, onMount } from "solid-js";
-import { DismissIcon } from "~/icons";
+import { Component, createSignal } from "solid-js";
+import getIcon from "~/icons";
 
 // Create a simple focus directive
 const focus = (element: HTMLElement) => {
@@ -118,8 +118,9 @@ export const TagBubble: Component<{
         class="icon remove-tag"
         onClick={props.onRemove}
         title="Remove tag"
-        innerHTML={DismissIcon}
-      />
+      >
+        {getIcon("dismiss")}
+      </button>
     </span>
   );
 };

@@ -1,16 +1,7 @@
 // src/components/ImageViewer/CaptionInput.tsx
 import { createSignal, splitProps, Component, JSX, For } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
-import {
-  EditIcon,
-  SuccessIcon,
-  ErrorIcon,
-  SpinnerIcon,
-  captionIconsMap,
-  DeleteIcon,
-  ArrowUndoIcon,
-  PlusIcon,
-} from "~/icons";
+import getIcon, { captionIconsMap } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { preserveState } from "~/directives";
 import { Tools } from "./Tools";
@@ -173,10 +164,9 @@ export const CaptionInput: Component<
       }}
     >
       <div class="caption-icons">
-        <span
-          class="icon"
-          innerHTML={captionIconsMap[type() as keyof typeof captionIconsMap]}
-        />
+        <span class="icon">
+          {getIcon(captionIconsMap[type() as keyof typeof captionIconsMap])}
+        </span>
         <StatusIcon status={submission} type={type()} />
         <Tools onInput={saveWithHistory} caption={caption()} />
         {captionHistory().length > 0 && (
@@ -185,8 +175,9 @@ export const CaptionInput: Component<
             class="icon"
             onClick={undo}
             title="Undo last change"
-            innerHTML={ArrowUndoIcon}
-          />
+          >
+            {getIcon("arrowUndo")}
+          </button>
         )}
         <button
           type="button"
@@ -197,8 +188,9 @@ export const CaptionInput: Component<
             }
           }}
           title={`Delete ${type()} caption`}
-          innerHTML={DeleteIcon}
-        />
+        >
+          {getIcon("delete")}
+        </button>
       </div>
 
       {isTagInput() ? (
@@ -234,8 +226,9 @@ export const CaptionInput: Component<
               class="icon add-tag"
               onClick={() => addTag(newTag())}
               title="Add tag"
-              innerHTML={PlusIcon}
-            />
+            >
+              {getIcon("plus")}
+            </button>
           </div>
         </div>
       ) : (
@@ -255,21 +248,21 @@ const StatusIcon = <T extends [{ type: string }], U>(props: {
 }) => {
   const getStatusIcon = () => {
     if (props.status.input?.[0].type !== props.type)
-      return { innerHTML: EditIcon };
+      return { children: getIcon("edit") };
     if (!props.status.result) {
       if (props.status.pending)
-        return { innerHTML: SpinnerIcon, class: "spin-icon icon" };
-      else return { innerHTML: EditIcon };
+        return { children: getIcon("spinner"), class: "spin-icon icon" };
+      else return { children: getIcon("edit") };
     }
     if (props.status.result instanceof Error)
       return {
-        innerHTML: ErrorIcon,
+        children: getIcon("error"),
         class: "error-icon icon",
         title: props.status.result.message,
       };
     return {
-      innerHTML: SuccessIcon,
+      innerHTML: getIcon("success"),
     };
   };
-  return <span class="icon" {...getStatusIcon()} />;
+  return <span class="icon" {...(getStatusIcon() as any)} />;
 };

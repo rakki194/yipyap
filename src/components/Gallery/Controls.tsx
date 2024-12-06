@@ -3,7 +3,7 @@
 import { createSignal, createEffect } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { useGallery } from "~/contexts/GalleryContext";
-import { SearchIcon } from "~/icons";
+import getIcon from "~/icons";
 import "./Controls.css";
 
 export const Controls = () => {
@@ -24,7 +24,7 @@ export const Controls = () => {
     <div class="controls">
       <div class="filters">
         <div class="search-wrapper">
-          <span class="icon" innerHTML={SearchIcon} />
+          <span class="icon">{getIcon("search")}</span>
           <input
             type="text"
             name="search"

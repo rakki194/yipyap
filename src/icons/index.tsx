@@ -44,65 +44,94 @@ import CalendarDateRegular from "@fluentui/svg-icons/icons/calendar_date_24_regu
 import DocumentArrowDownRegular from "@fluentui/svg-icons/icons/document_arrow_down_24_regular.svg?raw";
 import PlusIcon from "@fluentui/svg-icons/icons/add_24_regular.svg?raw";
 
-// Export all icons
-export {
-  PeanutIcon,
-  BananaIcon,
-  YipYap,
-  HomeIcon,
-  SunIcon,
-  CloudIcon,
-  MoonIcon,
-  FolderIcon,
-  UpIcon,
-  TagIcon,
-  NotepadIcon,
-  SubtitlesIcon,
-  EditIcon,
-  SuccessIcon,
-  QuestionIcon,
-  InfoIcon,
-  WarningIcon,
-  ErrorIcon,
-  SizeIcon,
-  TimeIcon,
-  TypeIcon,
-  DimensionsIcon,
-  DownloadIcon,
-  DeleteIcon,
-  DismissIcon,
-  SpinnerIcon,
-  BowTieIcon,
-  SparkleIcon,
-  TextAlignIcon,
-  TextAlignDistributedIcon,
-  ArrowUndoIcon,
-  SettingsIcon,
-  SearchIcon,
-  SpeakerIcon,
-  FolderArrowUpRegular,
-  StrawberryIcon,
-  BookQuestionMarkRegular,
-  GridRegular,
-  ListRegular,
-  TextSortAscendingRegular,
-  CalendarDateRegular,
-  DocumentArrowDownRegular,
-  PlusIcon,
-};
-
-// Export caption icons map
 export const captionIconsMap = {
-  txt: NotepadIcon,
-  tags: TagIcon,
-  caption: SubtitlesIcon,
-  wd: BowTieIcon,
+  txt: "notepad",
+  tags: "tag",
+  caption: "subtitles",
+  wd: "bowtie",
 };
 
 export const statusIconsMap = {
+  success: "success",
+  question: "question",
+  info: "info",
+  warning: "warning",
+  error: "error",
+};
+
+export const themeIconMap = {
+  light: "sun",
+  gray: "cloud",
+  dark: "moon",
+  banana: "banana",
+  strawberry: "strawberry",
+  peanut: "peanut",
+};
+
+const iconMap: Readonly<Record<string, string>> = {
+  peanut: PeanutIcon,
+  banana: BananaIcon,
+  strawberry: StrawberryIcon,
+  yipyap: YipYap,
+  home: HomeIcon,
+  sun: SunIcon,
+  cloud: CloudIcon,
+  moon: MoonIcon,
+  folder: FolderIcon,
+  up: UpIcon,
+  tag: TagIcon,
+  notepad: NotepadIcon,
+  subtitles: SubtitlesIcon,
+  edit: EditIcon,
   success: SuccessIcon,
   question: QuestionIcon,
   info: InfoIcon,
   warning: WarningIcon,
   error: ErrorIcon,
+  size: SizeIcon,
+  time: TimeIcon,
+  type: TypeIcon,
+  dimensions: DimensionsIcon,
+  download: DownloadIcon,
+  delete: DeleteIcon,
+  dismiss: DismissIcon,
+  spinner: SpinnerIcon,
+  bowtie: BowTieIcon,
+  sparkle: SparkleIcon,
+  textAlign: TextAlignIcon,
+  textAlignDistributed: TextAlignDistributedIcon,
+  arrowUndo: ArrowUndoIcon,
+  settings: SettingsIcon,
+  search: SearchIcon,
+  speaker: SpeakerIcon,
+  folderArrowUp: FolderArrowUpRegular,
+  bookQuestionMark: BookQuestionMarkRegular,
+  grid: GridRegular,
+  list: ListRegular,
+  textSortAscending: TextSortAscendingRegular,
+  calendarDate: CalendarDateRegular,
+  documentArrowDown: DocumentArrowDownRegular,
+  plus: PlusIcon,
 };
+
+/* Returns a SVGElement from the icon map */
+export const getIcon = (name: keyof typeof iconMap): SVGElement => {
+  let icon = iconCache.get(name);
+  if (icon !== undefined) {
+    return icon.cloneNode(true) as SVGElement;
+  }
+
+  const svg_str = iconMap[name];
+  if (!svg_str) {
+    throw new Error(`Icon ${name} not found`);
+  }
+
+  offscreen.innerHTML = svg_str;
+  icon = offscreen.children[0] as any as SVGElement;
+  iconCache.set(name, icon);
+  return icon;
+};
+export default getIcon;
+
+const iconCache = new Map<string, SVGElement>();
+const offscreen = document.createElement("span");

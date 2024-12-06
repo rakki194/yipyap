@@ -1,40 +1,10 @@
 import { createSignal, For, Show, createMemo, Suspense } from "solid-js";
 import { A } from "@solidjs/router";
-import {
-  HomeIcon,
-  SunIcon,
-  MoonIcon,
-  CloudIcon,
-  SpinnerIcon,
-  FolderIcon,
-  DimensionsIcon,
-  SettingsIcon,
-  YipYap,
-  BananaIcon,
-  StrawberryIcon,
-  PeanutIcon,
-} from "~/icons";
+import getIcon, { themeIconMap } from "~/icons";
 import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
 import { Settings } from "~/components/Settings/Settings";
 import "./Breadcrumb.css";
-
-function getThemeIcon(theme: Theme) {
-  switch (theme) {
-    case "light":
-      return SunIcon;
-    case "gray":
-      return CloudIcon;
-    case "dark":
-      return MoonIcon;
-    case "banana":
-      return BananaIcon;
-    case "strawberry":
-      return StrawberryIcon;
-    case "peanut":
-      return PeanutIcon;
-  }
-}
 
 export const Breadcrumb = () => {
   const { params, data } = useGallery();
@@ -75,23 +45,25 @@ export const Breadcrumb = () => {
       <div class="breadcrumb-content">
         <div class="breadcrumb-links">
           <A href="/" aria-label="Return to the front page">
-            <span class="home-icon icon" innerHTML={YipYap} title="home" />
+            <span class="accent-hover icon" title="home">
+              {getIcon("yipyap")}
+            </span>
           </A>
           <A href="/gallery">
-            <span class="gallery-icon icon" innerHTML={DimensionsIcon} />
+            <span class="accent icon">{getIcon("dimensions")}</span>
           </A>
           <Crumbs />
         </div>
         <small>
           <Suspense
-            fallback={<span class="spin-icon icon" innerHTML={SpinnerIcon} />}
+            fallback={<span class="spin-icon icon">{getIcon("spinner")}</span>}
           >
             <Show when={data()} keyed>
               {(data) => (
                 <>
-                  <span class="icon" innerHTML={FolderIcon} />{" "}
+                  <span class="icon">{getIcon("folder")}</span>{" "}
                   {data.total_folders}{" "}
-                  <span class="icon" innerHTML={DimensionsIcon} />{" "}
+                  <span class="icon">{getIcon("dimensions")}</span>{" "}
                   {data.total_images}
                 </>
               )}
@@ -106,8 +78,9 @@ export const Breadcrumb = () => {
             onClick={() => setShowSettings(!showSettings())}
             title="Settings"
             aria-label="Open settings"
-            innerHTML={SettingsIcon}
-          />
+          >
+            {getIcon("settings")}
+          </button>
         </div>
       </div>
       <Show when={showSettings()}>
@@ -127,15 +100,16 @@ function ThemeToggle() {
   return (
     <button
       type="button"
-      class="icon accent-hover"
+      class="icon accent-hover-inverted"
       onClick={theme.toggleTheme}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       title={`Switch to ${getNextTheme(theme.theme)} mode`}
       aria-label={`Switch to ${getNextTheme(theme.theme)} mode`}
-      innerHTML={getThemeIcon(
-        hovered() ? getNextTheme(theme.theme) : theme.theme
+    >
+      {getIcon(
+        themeIconMap[hovered() ? getNextTheme(theme.theme) : theme.theme]
       )}
-    />
+    </button>
   );
 }

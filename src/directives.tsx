@@ -53,12 +53,24 @@ export function preserveState(
       end: textarea.selectionEnd,
       scrollTop: textarea.scrollTop,
     };
+    console.log("preserving state", {
+      signal: v,
+      input: textarea.value,
+      state,
+    });
 
     textarea.value = v;
 
     queueMicrotask(() => {
-      textarea.setSelectionRange(state.start, state.end);
-      textarea.scrollTop = state.scrollTop;
+      if (
+        state.start !== textarea.selectionStart ||
+        state.end !== textarea.selectionEnd
+      ) {
+        textarea.setSelectionRange(state.start, state.end);
+      }
+      if (state.scrollTop !== textarea.scrollTop) {
+        textarea.scrollTop = state.scrollTop;
+      }
     });
   });
 

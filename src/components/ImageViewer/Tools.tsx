@@ -13,8 +13,9 @@ export const Tools: Component<{
           class="icon"
           onClick={() => props.onInput(tool.action(props.caption))}
           title={tool.title}
-          innerHTML={tool.icon}
-        />
+        >
+          {tool.icon()}
+        </button>
       )}
     </For>
   );

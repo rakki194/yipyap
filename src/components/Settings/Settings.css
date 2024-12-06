@@ -209,7 +209,7 @@ kbd {
 /* Hide warning section styling on mobile */
 @media (max-width: 640px) {
   .warning-section {
-    border: none;
+    border-style: none;
     background: none;
     padding: var(--half-spacing);
     margin-top: var(--spacing);
