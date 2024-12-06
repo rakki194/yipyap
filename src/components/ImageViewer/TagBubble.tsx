@@ -10,6 +10,7 @@ export const TagBubble: Component<{
   tag: string;
   onRemove: () => void;
   onEdit: (newTag: string) => void;
+  onNavigate?: (direction: "left" | "right" | "up" | "down") => void;
 }> = (props) => {
   const [isEditing, setIsEditing] = createSignal(false);
   const [editValue, setEditValue] = createSignal(props.tag);
@@ -54,6 +55,24 @@ export const TagBubble: Component<{
     setIsEditing(false);
   };
 
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.shiftKey) {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        props.onNavigate?.("left");
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        props.onNavigate?.("right");
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        props.onNavigate?.("up");
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        props.onNavigate?.("down");
+      }
+    }
+  };
+
   return (
     <span
       class="tag-bubble"
@@ -67,11 +86,11 @@ export const TagBubble: Component<{
           value={editValue()}
           onInput={(e) => {
             setEditValue(e.currentTarget.value);
-            // Dynamically adjust input width
             e.currentTarget.style.width = `${
               e.currentTarget.value.length + 2
             }ch`;
           }}
+          onKeyDown={handleKeyDown}
           onKeyPress={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
