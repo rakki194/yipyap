@@ -1,37 +1,25 @@
 import { createSignal, createRenderEffect } from "solid-js";
 import { createSingletonRoot } from "@solid-primitives/rootless";
 
-export type Theme =
-  | "light"
-  | "gray"
-  | "dark"
-  | "banana"
-  | "strawberry"
-  | "peanut";
-const themes: Theme[] = [
-  "light",
-  "gray",
-  "dark",
-  "banana",
-  "strawberry",
-  "peanut",
-];
+export type Theme = keyof typeof themeIconMap;
+
+export const themeIconMap = {
+  light: "sun",
+  gray: "cloud",
+  dark: "moon",
+  banana: "banana",
+  strawberry: "strawberry",
+  peanut: "peanut",
+};
+
+const themes = Object.keys(themeIconMap) as Theme[];
 
 export function getNextTheme(theme: Theme): Theme {
-  switch (theme) {
-    case "light":
-      return "gray";
-    case "gray":
-      return "dark";
-    case "dark":
-      return "banana";
-    case "banana":
-      return "strawberry";
-    case "strawberry":
-      return "peanut";
-    case "peanut":
-      return "light";
+  const index = themes.indexOf(theme);
+  if (index === -1 || index === themes.length - 1) {
+    return themes[0];
   }
+  return themes[index + 1];
 }
 
 export const useTheme = createSingletonRoot(() => {

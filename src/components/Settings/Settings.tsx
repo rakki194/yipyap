@@ -7,11 +7,12 @@ import {
   createEffect,
   onCleanup,
   onMount,
+  For,
 } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useTheme, Theme } from "~/contexts/theme";
 import { useSettings } from "~/contexts/settings";
-import getIcon from "~/icons";
+import getIcon, { themeIconMap } from "~/icons";
 import "./Settings.css";
 
 const SlideTransition = (props: { show: boolean; children: any }) => {
@@ -145,62 +146,20 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
           <div class="setting-group">
             <label>Theme</label>
             <div class="theme-buttons">
-              <button
-                type="button"
-                class="icon"
-                classList={{ active: theme.theme === "light" }}
-                onClick={() => theme.setTheme("light")}
-                title="Light theme"
-                aria-label="Switch to light theme"
-              >
-                {getIcon("sun")}
-              </button>
-              <button
-                type="button"
-                class="icon"
-                classList={{ active: theme.theme === "gray" }}
-                onClick={() => theme.setTheme("gray")}
-                title="Gray theme"
-                aria-label="Switch to gray theme"
-              >
-                {getIcon("cloud")}
-              </button>
-              <button
-                type="button"
-                class="icon"
-                classList={{ active: theme.theme === "dark" }}
-                onClick={() => theme.setTheme("dark")}
-                title="Dark theme"
-              >
-                {getIcon("moon")}
-              </button>
-              <button
-                type="button"
-                class="icon banana-icon"
-                classList={{ active: theme.theme === "banana" }}
-                onClick={() => theme.setTheme("banana")}
-                title="Banana theme"
-              >
-                {getIcon("banana")}
-              </button>
-              <button
-                type="button"
-                class="icon strawberry-icon"
-                classList={{ active: theme.theme === "strawberry" }}
-                onClick={() => theme.setTheme("strawberry")}
-                title="Strawberry theme"
-              >
-                {getIcon("strawberry")}
-              </button>
-              <button
-                type="button"
-                class="icon peanut-icon"
-                classList={{ active: theme.theme === "peanut" }}
-                onClick={() => theme.setTheme("peanut")}
-                title="Peanut theme"
-              >
-                {getIcon("peanut")}
-              </button>
+              <For each={Object.keys(themeIconMap)}>
+                {(th) => (
+                  <button
+                    type="button"
+                    class="icon"
+                    classList={{ active: theme.theme === th }}
+                    onClick={() => theme.setTheme(th as Theme)}
+                    title={`Switch to ${th} theme`}
+                    aria-label={`Switch to ${th} theme`}
+                  >
+                    {getIcon(themeIconMap[th as Theme])}
+                  </button>
+                )}
+              </For>
             </div>
           </div>
         </div>
