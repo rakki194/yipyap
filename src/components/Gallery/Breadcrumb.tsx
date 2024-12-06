@@ -1,7 +1,7 @@
-import { createSignal, For, Show, createMemo, Suspense } from "solid-js";
+import { createSignal, For, Show, Suspense } from "solid-js";
 import { A } from "@solidjs/router";
-import getIcon, { themeIconMap } from "~/icons";
-import { useTheme, getNextTheme, Theme } from "~/contexts/theme";
+import getIcon from "~/icons";
+import { useTheme, getNextTheme, themeIconMap } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
 import { Settings } from "~/components/Settings/Settings";
 import "./Breadcrumb.css";

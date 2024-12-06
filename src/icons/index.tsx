@@ -59,15 +59,6 @@ export const statusIconsMap = {
   error: "error",
 };
 
-export const themeIconMap = {
-  light: "sun",
-  gray: "cloud",
-  dark: "moon",
-  banana: "banana",
-  strawberry: "strawberry",
-  peanut: "peanut",
-};
-
 const iconMap: Readonly<Record<string, string>> = {
   peanut: PeanutIcon,
   banana: BananaIcon,

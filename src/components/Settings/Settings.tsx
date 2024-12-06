@@ -10,9 +10,9 @@ import {
   For,
 } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
-import { useTheme, Theme } from "~/contexts/theme";
+import { useTheme, Theme, themeIconMap } from "~/contexts/theme";
 import { useSettings } from "~/contexts/settings";
-import getIcon, { themeIconMap } from "~/icons";
+import getIcon from "~/icons";
 import "./Settings.css";
 
 const SlideTransition = (props: { show: boolean; children: any }) => {
