@@ -47,10 +47,6 @@ export const ImageView = (props: ImageViewProps) => {
     )
   );
 
-  onMount(() => {
-    console.log("image viewer mounted");
-  });
-
   return (
     <div class="image-container" {...divProps}>
       {fallback()}

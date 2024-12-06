@@ -1,14 +1,6 @@
 // src/components/Settings/Settings.tsx
 
-import {
-  Component,
-  Show,
-  createSignal,
-  createEffect,
-  onCleanup,
-  onMount,
-  For,
-} from "solid-js";
+import { Component, Show, createSignal, createEffect, For } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAppContext, Theme, themeIconMap } from "~/contexts/app";
 import getIcon from "~/icons";
@@ -85,21 +77,14 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
     }
   };
 
-  // Add keyboard event handler
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
       props.onClose();
     }
   };
 
-  // Add and remove event listener
-  onMount(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
-  });
-
   return (
-    <div class="settings-panel card">
+    <div class="settings-panel card" onKeyDown={handleKeyDown}>
       <div class="settings-header">
         <h2>Settings</h2>
         <button

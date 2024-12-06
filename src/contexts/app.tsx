@@ -109,7 +109,6 @@ const createAppContext = (): AppContext => {
 
 export const AppProvider: ParentComponent = (props) => {
   const value = createAppContext();
-  console.warn("AppProvider", value);
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
   );

@@ -27,14 +27,6 @@ export const Gallery = () => {
       return;
     }
 
-    // console.log(
-    //   "keyDownEvent",
-    //   event,
-    //   activeElement &&
-    //     (activeElement.isContentEditable ||
-    //       ["INPUT", "TEXTAREA"].includes(activeElement.tagName))
-    // );
-
     // Don't act if a modifier key is pressed
     if (event.shiftKey || event.altKey || event.ctrlKey) {
       return;

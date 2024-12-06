@@ -11,8 +11,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import "./FadeIn.css"; // We'll define the necessary CSS here
-import { useLocation } from "@solidjs/router";
+import "./FadeIn.css";
 import { useAppContext } from "~/contexts/app"; // For prev-navigation
 
 interface FadeInProps {
@@ -22,7 +21,6 @@ interface FadeInProps {
 
 const FadeIn: Component<FadeInProps> = (props) => {
   const appContext = useAppContext();
-  const location = useLocation();
   // Disabled if there is no prevRoute or pathname change
   const fadeIn = () => {
     const prevRoute = appContext?.prevRoute;
