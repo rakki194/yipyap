@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 from PIL import Image
+import pillow_jxl # type: ignore
 
 from .base import CaptionGenerator
 from .utils import run_in_executor
