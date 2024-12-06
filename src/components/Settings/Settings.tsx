@@ -169,6 +169,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                     <span>Switch to tag input</span>
                   </div>
                   <div class="shortcut">
+                    <kbd>Double Shift</kbd>
+                    <span>Cycle through caption inputs</span>
+                  </div>
+                  <div class="shortcut">
                     <kbd>Double Shift</kbd> + <kbd>←</kbd>
                     <span>First tag in row</span>
                   </div>
