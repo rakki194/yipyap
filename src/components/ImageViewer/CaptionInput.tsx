@@ -105,96 +105,31 @@ export const CaptionInput: Component<
     const currentTags = tags();
     const currentIndex = currentTags.indexOf(currentTag);
 
-    if (direction === "up" || direction === "down") {
-      const newTagInput = containerRef.querySelector(".new-tag-input input");
-
-      // Get all tag elements and their positions
-      const tagElements = Array.from(
-        containerRef.querySelectorAll(".tag-bubble")
-      );
-      const currentElement = tagElements.find((el) =>
-        el.textContent?.includes(currentTag)
-      );
-      if (!currentElement) return;
-
-      const currentRect = currentElement.getBoundingClientRect();
-      const currentRow = Math.round(currentRect.top / currentRect.height);
-
-      if (direction === "down") {
-        // Find tags in the row below
-        const tagsBelow = tagElements.filter((el) => {
-          const rect = el.getBoundingClientRect();
-          const row = Math.round(rect.top / rect.height);
-          return row === currentRow + 1;
-        });
-
-        if (tagsBelow.length > 0) {
-          // Find the closest tag horizontally
-          const closest = tagsBelow.reduce((prev, curr) => {
-            const prevRect = prev.getBoundingClientRect();
-            const currRect = curr.getBoundingClientRect();
-            const prevDist = Math.abs(prevRect.left - currentRect.left);
-            const currDist = Math.abs(currRect.left - currentRect.left);
-            return currDist < prevDist ? curr : prev;
-          });
-
-          const tagText = closest.querySelector(".tag-text");
-          if (tagText) {
-            (tagText as HTMLElement).click();
-            return;
-          }
-        } else {
-          // If no tags below, go to input
-          setLastEditedTag(currentTag);
-          (newTagInput as HTMLElement)?.focus();
-        }
-        return;
+    // Handle left/right navigation
+    if (direction === "left" || direction === "right") {
+      let newIndex;
+      if (direction === "left") {
+        newIndex = currentIndex > 0 ? currentIndex - 1 : currentTags.length - 1;
       } else {
-        // direction === "up"
-        // Find tags in the row above
-        const tagsAbove = tagElements.filter((el) => {
-          const rect = el.getBoundingClientRect();
-          const row = Math.round(rect.top / rect.height);
-          return row === currentRow - 1;
-        });
-
-        if (tagsAbove.length > 0) {
-          // Find the closest tag horizontally
-          const closest = tagsAbove.reduce((prev, curr) => {
-            const prevRect = prev.getBoundingClientRect();
-            const currRect = curr.getBoundingClientRect();
-            const prevDist = Math.abs(prevRect.left - currentRect.left);
-            const currDist = Math.abs(currRect.left - currentRect.left);
-            return currDist < prevDist ? curr : prev;
-          });
-
-          const tagText = closest.querySelector(".tag-text");
-          if (tagText) {
-            (tagText as HTMLElement).click();
-            return;
-          }
-        }
-        return;
+        newIndex = currentIndex < currentTags.length - 1 ? currentIndex + 1 : 0;
       }
+
+      const tagElements = containerRef.querySelectorAll(".tag-bubble");
+      const targetElement = tagElements[newIndex];
+      const tagText = targetElement?.querySelector(".tag-text");
+      if (tagText) {
+        (tagText as HTMLElement).click();
+      }
+      return;
     }
 
-    // Existing left/right navigation code
-    let newIndex;
-    if (direction === "left") {
-      newIndex = currentIndex > 0 ? currentIndex - 1 : currentTags.length - 1;
-    } else {
-      newIndex = currentIndex < currentTags.length - 1 ? currentIndex + 1 : 0;
-    }
-
-    const tagElements = containerRef.querySelectorAll(".tag-bubble");
-    const targetElement = tagElements[newIndex];
-    const input = targetElement?.querySelector("input");
-    const tagText = targetElement?.querySelector(".tag-text");
-
-    if (input) {
-      input.focus();
-    } else if (tagText) {
-      (tagText as HTMLElement).click();
+    // Handle down navigation
+    if (direction === "down") {
+      const newTagInput = containerRef.querySelector(".new-tag-input input");
+      if (newTagInput) {
+        setLastEditedTag(currentTag);
+        (newTagInput as HTMLElement).focus();
+      }
     }
   };
 
@@ -202,26 +137,28 @@ export const CaptionInput: Component<
     if (!containerRef) return;
     if (e.shiftKey && e.key === "ArrowUp") {
       e.preventDefault();
+      const lastTag = lastEditedTag();
       const tagElements = containerRef.querySelectorAll(".tag-bubble");
-      if (tagElements.length > 0) {
-        const lastTag = lastEditedTag();
-        if (lastTag) {
-          const targetElement = Array.from(tagElements).find((el) =>
-            el.textContent?.includes(lastTag)
-          );
-          if (targetElement) {
-            const tagText = targetElement.querySelector(".tag-text");
+
+      if (tagElements.length === 0) return;
+
+      if (lastTag) {
+        for (const element of tagElements) {
+          if (element.textContent?.includes(lastTag)) {
+            const tagText = element.querySelector(".tag-text");
             if (tagText) {
               (tagText as HTMLElement).click();
               return;
             }
           }
         }
-        const lastElement = tagElements[tagElements.length - 1];
-        const tagText = lastElement?.querySelector(".tag-text");
-        if (tagText) {
-          (tagText as HTMLElement).click();
-        }
+      }
+
+      // Fallback to last tag if no last edited tag is found
+      const lastElement = tagElements[tagElements.length - 1];
+      const tagText = lastElement?.querySelector(".tag-text");
+      if (tagText) {
+        (tagText as HTMLElement).click();
       }
     }
   };
