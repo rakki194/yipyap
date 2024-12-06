@@ -1,6 +1,7 @@
 /* src/components/Settings/styles.css */
 
 .settings-overlay {
+  font-size: var(--font-size);
   position: fixed;
   top: 0;
   left: 0;
@@ -17,13 +18,6 @@
 
 .settings-panel {
   padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 5);
-  line-height: var(--line-height);
-
-  select,
-  input,
-  textarea {
-    margin: var(--double-spacing);
-  }
 }
 
 .warning-section {
@@ -58,24 +52,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-}
-
-.help-button {
-  padding: var(--half-spacing);
-  border-radius: var(--border-radius);
-  transition: background-color var(--transition-duration);
-}
-
-.help-button:hover {
-  background-color: var(--hover-color);
+  margin-bottom: var(--spacing);
 }
 
 .keyboard-shortcuts {
   background: var(--card-bg);
   border-radius: 0.5rem;
   overflow: hidden;
-  transition: height 0.3s ease;
+  transition-property: height;
   margin-top: calc(var(--spacing) * -0.5);
 }
 
@@ -121,8 +105,7 @@ kbd {
 }
 
 .settings-column {
-  flex: 1;
-  min-width: 200px;
+  flex: 1 0 fit-content;
 }
 
 .setting-group {
@@ -134,12 +117,6 @@ kbd {
   gap: var(--spacing);
   flex-wrap: wrap;
   margin-top: var(--half-spacing);
-}
-
-.icon-buttons button {
-  padding: var(--half-spacing);
-  border-radius: var(--border-radius);
-  transition: background-color 0.2s;
 }
 
 .strawberry-icon {
@@ -160,10 +137,6 @@ kbd {
   }
 }
 
-.icon-buttons button:hover {
-  background-color: var(--hover-color);
-}
-
 .icon-buttons button.active {
   background-color: var(--accent);
   color: var(--bg-color);
@@ -175,8 +148,7 @@ kbd {
 
 .theme-buttons {
   display: flex;
-  gap: var(--spacing);
-  flex-wrap: wrap;
+  gap: var(--half-spacing);
   margin-top: var(--half-spacing);
 }
 
@@ -216,7 +188,7 @@ kbd {
 .settings-content,
 .help-content {
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition-property: opacity;
 }
 
 .settings-content.closing,

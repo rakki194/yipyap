@@ -224,12 +224,12 @@
   height: 100%;
   background: rgb(220, 38, 38);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition-property: opacity;
   z-index: -1;
 }
 
 .delete-button svg {
-  transition: fill 0.7s ease;
+  transition-property: fill;
 }
 
 .delete-button.holding svg {
