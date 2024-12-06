@@ -69,6 +69,10 @@ export const TagBubble: Component<{
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
         props.onNavigate?.("down");
+      } else if (e.key === "Delete") {
+        e.preventDefault();
+        setIsEditing(false);
+        props.onRemove();
       }
     }
   };
