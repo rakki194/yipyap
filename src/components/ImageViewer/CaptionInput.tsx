@@ -83,6 +83,16 @@ export const CaptionInput: Component<
     saveWithHistory(newTags.join(", "));
   };
 
+  const editTag = (oldTag: string, newTag: string) => {
+    const currentTags = tags();
+    const tagIndex = currentTags.indexOf(oldTag);
+    if (tagIndex !== -1) {
+      const newTags = [...currentTags];
+      newTags[tagIndex] = newTag;
+      saveWithHistory(newTags.join(", "));
+    }
+  };
+
   return (
     <div
       {...rest}
@@ -124,7 +134,13 @@ export const CaptionInput: Component<
         <div class="tags-container">
           <div class="tags-list">
             <For each={tags()}>
-              {(tag) => <TagBubble tag={tag} onRemove={() => removeTag(tag)} />}
+              {(tag) => (
+                <TagBubble
+                  tag={tag}
+                  onRemove={() => removeTag(tag)}
+                  onEdit={(newTag) => editTag(tag, newTag)}
+                />
+              )}
             </For>
           </div>
           <div class="new-tag-input">
