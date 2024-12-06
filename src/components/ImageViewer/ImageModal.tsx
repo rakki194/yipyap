@@ -1,12 +1,5 @@
 // src/components/ImageViewer/ImageModal.tsx
-import {
-  createEffect,
-  on,
-  createMemo,
-  createSignal,
-  Index,
-  JSX,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, Index, JSX } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
 import { CaptionInput } from "./CaptionInput";
@@ -15,7 +8,7 @@ import { useGallery } from "~/contexts/GalleryContext";
 import getIcon from "~/icons";
 import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions } from "~/types";
-import { useSettings } from "~/contexts/settings";
+import { useAppContext } from "~/contexts/app";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -25,9 +18,9 @@ interface ImageModalProps {
 
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
-
+  const app = useAppContext();
   const getLayout = createMemo(() =>
-    computeLayout(props.imageInfo, windowSize)
+    computeLayout(props.imageInfo, windowSize, app.disableVerticalLayout)
   );
   return (
     <div class="modal-content">
@@ -130,7 +123,7 @@ const ModalHeader = (props: {
   onClose: () => void;
 }) => {
   const gallery = useGallery();
-  const settings = useSettings();
+  const app = useAppContext();
   const deleteImageAction = useAction(gallery.deleteImage);
   const [isHolding, setIsHolding] = createSignal(false);
   const [progress, setProgress] = createSignal(0);
@@ -153,7 +146,7 @@ const ModalHeader = (props: {
   };
 
   const startDelete = () => {
-    if (settings.instantDelete()) {
+    if (app.instantDelete) {
       deleteImage();
       return;
     }
@@ -229,8 +222,11 @@ type LayoutInfo = Size & {
   free_height: number;
 };
 
-function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
-  const settings = useSettings();
+function computeLayout(
+  image: Size,
+  windowSize: Readonly<Size>,
+  disable_vertical?: boolean
+): LayoutInfo {
   const { width: viewWidth, height: viewHeight } = windowSize;
   if (image === null) {
     //FIXME: we don't need this
@@ -248,9 +244,7 @@ function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
   const width_scale = viewWidth / imageWidth;
   const height_scale = viewHeight / imageHeight;
   const layout =
-    settings.disableVerticalLayout() || width_scale > height_scale
-      ? "horizontal"
-      : "vertical";
+    disable_vertical || width_scale > height_scale ? "horizontal" : "vertical";
   const scale = layout === "vertical" ? width_scale : height_scale;
   const width = imageWidth * scale;
   const height = imageHeight * scale;

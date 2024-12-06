@@ -1,7 +1,7 @@
-import { createSignal, For, Show, Suspense } from "solid-js";
+import { createMemo, createSignal, For, Show, Suspense } from "solid-js";
 import { A } from "@solidjs/router";
 import getIcon from "~/icons";
-import { useTheme, getNextTheme, themeIconMap } from "~/contexts/theme";
+import { useAppContext, getNextTheme, themeIconMap } from "~/contexts/app";
 import { useGallery } from "~/contexts/GalleryContext";
 import { Settings } from "~/components/Settings/Settings";
 import "./Breadcrumb.css";
@@ -95,21 +95,20 @@ export const Breadcrumb = () => {
 };
 
 function ThemeToggle() {
-  const theme = useTheme();
+  const app = useAppContext();
   const [hovered, setHovered] = createSignal(false);
+  const nextTheme = createMemo(() => getNextTheme(app.theme));
   return (
     <button
       type="button"
       class="icon accent-hover-inverted"
-      onClick={theme.toggleTheme}
+      onClick={() => app.setTheme(nextTheme())}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      title={`Switch to ${getNextTheme(theme.theme)} mode`}
-      aria-label={`Switch to ${getNextTheme(theme.theme)} mode`}
+      title={`Switch to ${nextTheme()} mode`}
+      aria-label={`Switch to ${nextTheme()} mode`}
     >
-      {getIcon(
-        themeIconMap[hovered() ? getNextTheme(theme.theme) : theme.theme]
-      )}
+      {getIcon(themeIconMap[hovered() ? nextTheme() : app.theme])}
     </button>
   );
 }
