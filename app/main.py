@@ -68,15 +68,19 @@ caption_generators = {}
 
 if hasattr(caption_generation, "JTP2Generator"):
     try:
+        logger.info(f"Initializing JTP2 generator with model path: {JTP2_MODEL_PATH}")
         jtp2_generator = caption_generation.JTP2Generator(
-            model_path=JTP2_MODEL_PATH, tags_path=JTP2_TAGS_PATH, threshold=0.2
+            model_path=JTP2_MODEL_PATH, 
+            tags_path=JTP2_TAGS_PATH, 
+            threshold=0.2
         )
         if jtp2_generator.is_available():
             caption_generators["jtp2"] = jtp2_generator
+            logger.info("JTP2 caption generator initialized successfully")
         else:
-            logger.warning("JTP2 caption generator is not available")
+            logger.warning("JTP2 caption generator is not available - initialization check failed")
     except Exception as e:
-        logger.warning(f"Failed to initialize JTP2 caption generator: {e}")
+        logger.error(f"Failed to initialize JTP2 caption generator: {e}", exc_info=True)
 
 if hasattr(caption_generation, "WDv3Generator"):
     try:
@@ -360,18 +364,23 @@ async def generate_caption(
         if generator not in caption_generators:
             raise HTTPException(
                 status_code=400,
-                detail=f"Unknown caption generator: {generator}"
+                detail=f"Unknown caption generator: {generator}. Available generators: {list(caption_generators.keys())}"
             )
             
         gen = caption_generators[generator]
         if not gen.is_available():
             raise HTTPException(
                 status_code=503,
-                detail=f"Caption generator {generator} is not available"
+                detail=f"Caption generator {generator} is not available. Reason: initialization failed"
             )
             
         # Construct full image path
         image_path = utils.resolve_path(f"{directory}/{filename}", ROOT_DIR)
+        if not image_path.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"Image not found: {image_path}"
+            )
         
         # Check if caption already exists
         caption_path = image_path.with_suffix(f".{gen.caption_type}")
@@ -382,7 +391,14 @@ async def generate_caption(
             )
             
         # Generate caption
-        caption = await gen.generate(image_path)
+        try:
+            caption = await gen.generate(image_path)
+        except Exception as e:
+            logger.error(f"Error generating caption with {generator}: {e}", exc_info=True)
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error generating caption with {generator}: {str(e)}"
+            )
         
         # Save caption
         await data_source.save_caption(image_path, caption, gen.caption_type)
@@ -392,5 +408,5 @@ async def generate_caption(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error generating caption: {e}")
+        logger.error(f"Error generating caption: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

@@ -2,19 +2,20 @@ import json
 import logging
 from pathlib import Path
 from typing import Optional
-
-import torch
-import timm
-import safetensors.torch
 from PIL import Image
-from torchvision.transforms import transforms, InterpolationMode
-import torchvision.transforms.functional as TF
 
 from .base import CaptionGenerator
 from .utils import run_in_executor
 
 logger = logging.getLogger("uvicorn.error")
 
+# Initialize optional dependencies as None
+torch = None
+timm = None
+safetensors = None
+transforms = None
+InterpolationMode = None
+TF = None
 
 class JTP2Generator(CaptionGenerator):
     def __init__(
@@ -41,15 +42,24 @@ class JTP2Generator(CaptionGenerator):
         return "tags"
 
     def is_available(self) -> bool:
-        # Check for required dependencies first
-        if not all((_has_torch, _has_timm, _has_safetensors)):
-            return False
+        """Check if all required dependencies and resources are available"""
+        global torch, timm, safetensors, transforms, InterpolationMode, TF
+        try:
+            # These will raise ImportError if not available
+            import torch
+            import timm
+            import safetensors
+            from torchvision.transforms import transforms, InterpolationMode
+            import torchvision.transforms.functional as TF
             
-        return (
-            self.model_path.exists() 
-            and self.tags_path.exists() 
-            and (not self.force_cpu and torch.cuda.is_available())
-        )
+            return (
+                self.model_path.exists() 
+                and self.tags_path.exists() 
+                and (not self.force_cpu and torch.cuda.is_available())
+            )
+        except ImportError:
+            logger.warning("JTP2 missing required dependencies")
+            return False
 
     def _initialize(self):
         if not self.is_available():
@@ -95,8 +105,11 @@ class JTP2Generator(CaptionGenerator):
         try:
             self._initialize()
             return await run_in_executor(self._generate_sync, image_path)
+        except RuntimeError as e:
+            logger.error(f"JTP2 initialization error: {e}")
+            raise
         except Exception as e:
-            logger.error(f"Error generating caption with JTP2: {e}")
+            logger.error(f"Error generating caption with JTP2: {e}", exc_info=True)
             raise
 
     def _generate_sync(self, image_path: Path) -> str:
