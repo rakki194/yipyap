@@ -9,22 +9,12 @@ import safetensors.torch
 from PIL import Image
 from torchvision.transforms import transforms, InterpolationMode
 import torchvision.transforms.functional as TF
-import importlib.util
 
 from .base import CaptionGenerator
 from .utils import run_in_executor
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn.error")
 
-# Try to import optional dependencies
-_has_torch = importlib.util.find_spec("torch") is not None
-_has_timm = importlib.util.find_spec("timm") is not None
-_has_safetensors = importlib.util.find_spec("safetensors") is not None
-
-if not all((_has_torch, _has_timm, _has_safetensors)):
-    logger.warning(
-        "JTP2 caption generation disabled: missing dependencies (torch, timm, safetensors)"
-    )
 
 class JTP2Generator(CaptionGenerator):
     def __init__(

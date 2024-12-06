@@ -11,7 +11,7 @@ from email.utils import parsedate_to_datetime, format_datetime
 
 from .data_access import CachedFileSystemDataSource
 from . import utils
-from .caption_generation import JTP2Generator
+from . import caption_generation
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -53,23 +53,25 @@ data_source = CachedFileSystemDataSource(ROOT_DIR, THUMBNAIL_SIZE, PREVIEW_SIZE)
 CAPTION_TYPE_ORDER = {".e621": 0, ".tags": 1, ".wd": 2, ".caption": 3}
 
 # Add configuration near other constants
-JTP2_MODEL_PATH = Path("/home/kade/source/repos/JTP2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors")
+JTP2_MODEL_PATH = Path(
+    "/home/kade/source/repos/JTP2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors"
+)
 JTP2_TAGS_PATH = Path("/home/kade/source/repos/JTP2/tags.json")
 
 # Initialize caption generators with graceful fallback
 caption_generators = {}
-try:
-    jtp2_generator = JTP2Generator(
-        model_path=JTP2_MODEL_PATH,
-        tags_path=JTP2_TAGS_PATH,
-        threshold=0.2
-    )
-    if jtp2_generator.is_available():
-        caption_generators["jtp2"] = jtp2_generator
-    else:
-        logger.warning("JTP2 caption generator is not available")
-except Exception as e:
-    logger.warning(f"Failed to initialize JTP2 caption generator: {e}")
+
+if hasattr(caption_generation, "JTP2Generator"):
+    try:
+        jtp2_generator = caption_generation.JTP2Generator(
+            model_path=JTP2_MODEL_PATH, tags_path=JTP2_TAGS_PATH, threshold=0.2
+        )
+        if jtp2_generator.is_available():
+            caption_generators["jtp2"] = jtp2_generator
+        else:
+            logger.warning("JTP2 caption generator is not available")
+    except Exception as e:
+        logger.warning(f"Failed to initialize JTP2 caption generator: {e}")
 
 
 @app.get("/api/browse")

@@ -8,7 +8,7 @@ from typing import Mapping, TypeAlias
 from PIL import Image, ImageCms, ImageFile, PngImagePlugin
 from PIL.ImageCms import Intent
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn.error")
 
 # Suppress the warning for large images
 Image.MAX_IMAGE_PIXELS = None
