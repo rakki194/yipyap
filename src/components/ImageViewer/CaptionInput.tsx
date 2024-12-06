@@ -21,6 +21,7 @@ export const CaptionInput: Component<
   const caption = () => localProps.caption[1];
   const [captionHistory, setCaptionHistory] = createSignal<string[]>([]);
   const [newTag, setNewTag] = createSignal("");
+  const [lastEditedTag, setLastEditedTag] = createSignal<string | null>(null);
 
   const { saveCaption, deleteCaption: deleteCaptionAction } = useGallery();
   const save = useAction(saveCaption);
@@ -74,9 +75,113 @@ export const CaptionInput: Component<
     saveWithHistory(newTags.join(", "));
   };
 
+  const editTag = (oldTag: string, newTag: string) => {
+    const currentTags = tags();
+    const tagIndex = currentTags.indexOf(oldTag);
+    if (tagIndex !== -1) {
+      const newTags = [...currentTags];
+      newTags[tagIndex] = newTag;
+      setLastEditedTag(newTag);
+      saveWithHistory(newTags.join(", "));
+    }
+  };
+
+  let containerRef: HTMLDivElement | undefined;
+
+  const navigateTag = (
+    currentTag: string,
+    direction: "left" | "right" | "up" | "down" | "start" | "end"
+  ) => {
+    if (!containerRef) return;
+    const currentTags = tags();
+    const currentIndex = currentTags.indexOf(currentTag);
+    const tagElements = containerRef.querySelectorAll(".tag-bubble");
+
+    // Handle start/end navigation within the same row
+    if (direction === "start" || direction === "end") {
+      const currentElement = tagElements[currentIndex];
+      const currentRect = currentElement.getBoundingClientRect();
+
+      // Find all elements in the same row (similar y-position)
+      const sameRowElements = Array.from(tagElements).filter((element) => {
+        const rect = element.getBoundingClientRect();
+        return Math.abs(rect.top - currentRect.top) < 5; // 5px tolerance
+      });
+
+      // Get the first or last element in the row
+      const targetElement =
+        direction === "start"
+          ? sameRowElements[0]
+          : sameRowElements[sameRowElements.length - 1];
+
+      const tagText = targetElement?.querySelector(".tag-text");
+      if (tagText) {
+        (tagText as HTMLElement).click();
+      }
+      return;
+    }
+
+    // Handle left/right navigation
+    if (direction === "left" || direction === "right") {
+      let newIndex;
+      if (direction === "left") {
+        newIndex = currentIndex > 0 ? currentIndex - 1 : currentTags.length - 1;
+      } else {
+        newIndex = currentIndex < currentTags.length - 1 ? currentIndex + 1 : 0;
+      }
+
+      const targetElement = tagElements[newIndex];
+      const tagText = targetElement?.querySelector(".tag-text");
+      if (tagText) {
+        (tagText as HTMLElement).click();
+      }
+      return;
+    }
+
+    // Handle down navigation
+    if (direction === "down") {
+      const newTagInput = containerRef.querySelector(".new-tag-input input");
+      if (newTagInput) {
+        setLastEditedTag(currentTag);
+        (newTagInput as HTMLElement).focus();
+      }
+    }
+  };
+
+  const handleNewTagKeyDown = (e: KeyboardEvent) => {
+    if (!containerRef) return;
+    if (e.shiftKey && e.key === "ArrowUp") {
+      e.preventDefault();
+      const lastTag = lastEditedTag();
+      const tagElements = containerRef.querySelectorAll(".tag-bubble");
+
+      if (tagElements.length === 0) return;
+
+      if (lastTag) {
+        for (const element of tagElements) {
+          if (element.textContent?.includes(lastTag)) {
+            const tagText = element.querySelector(".tag-text");
+            if (tagText) {
+              (tagText as HTMLElement).click();
+              return;
+            }
+          }
+        }
+      }
+
+      // Fallback to last tag if no last edited tag is found
+      const lastElement = tagElements[tagElements.length - 1];
+      const tagText = lastElement?.querySelector(".tag-text");
+      if (tagText) {
+        (tagText as HTMLElement).click();
+      }
+    }
+  };
+
   return (
     <div
       {...rest}
+      ref={containerRef}
       class="caption-input-wrapper card"
       classList={{
         [props.state || ""]: props.state !== null,
@@ -116,7 +221,14 @@ export const CaptionInput: Component<
         <div class="tags-container">
           <div class="tags-list">
             <For each={tags()}>
-              {(tag) => <TagBubble tag={tag} onRemove={() => removeTag(tag)} />}
+              {(tag) => (
+                <TagBubble
+                  tag={tag}
+                  onRemove={() => removeTag(tag)}
+                  onEdit={(newTag) => editTag(tag, newTag)}
+                  onNavigate={(direction) => navigateTag(tag, direction)}
+                />
+              )}
             </For>
           </div>
           <div class="new-tag-input">
@@ -124,6 +236,7 @@ export const CaptionInput: Component<
               type="text"
               value={newTag()}
               onInput={(e) => setNewTag(e.currentTarget.value)}
+              onKeyDown={handleNewTagKeyDown}
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();

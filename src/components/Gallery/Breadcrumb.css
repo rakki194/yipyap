@@ -45,16 +45,3 @@
     }
   }
 }
-
-/* Banana theme white background for breadcrumb */
-[data-theme="banana"] .breadcrumb {
-  background: rgb(254, 255, 236);
-}
-
-[data-theme="strawberry"] {
-  body,
-  .breadcrumb,
-  .responsive-grid {
-    background: rgb(239, 253, 243);
-  }
-}
