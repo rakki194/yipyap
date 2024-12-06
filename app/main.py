@@ -56,14 +56,20 @@ CAPTION_TYPE_ORDER = {".e621": 0, ".tags": 1, ".wd": 2, ".caption": 3}
 JTP2_MODEL_PATH = Path("/home/kade/source/repos/JTP2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors")
 JTP2_TAGS_PATH = Path("/home/kade/source/repos/JTP2/tags.json")
 
-# Initialize caption generators
-caption_generators = {
-    "jtp2": JTP2Generator(
+# Initialize caption generators with graceful fallback
+caption_generators = {}
+try:
+    jtp2_generator = JTP2Generator(
         model_path=JTP2_MODEL_PATH,
         tags_path=JTP2_TAGS_PATH,
         threshold=0.2
     )
-}
+    if jtp2_generator.is_available():
+        caption_generators["jtp2"] = jtp2_generator
+    else:
+        logger.warning("JTP2 caption generator is not available")
+except Exception as e:
+    logger.warning(f"Failed to initialize JTP2 caption generator: {e}")
 
 
 @app.get("/api/browse")
@@ -322,16 +328,14 @@ if not is_dev:
         return FileResponse("dist/index.html")
 
 
-@app.post("/api/generate-caption/{path:path}")
+@app.post("/api/generate-caption/{directory}/{filename}")
 async def generate_caption(
-    path: str,
-    generator: str,
-    force: bool = False
+    directory: str,
+    filename: str,
+    generator: str = Query(...),
+    force: bool = Query(False),
 ):
-    """Generate caption for an image using specified generator"""
     try:
-        image_path = utils.resolve_path(path, ROOT_DIR)
-        
         if generator not in caption_generators:
             raise HTTPException(
                 status_code=400,
@@ -345,6 +349,9 @@ async def generate_caption(
                 detail=f"Caption generator {generator} is not available"
             )
             
+        # Construct full image path
+        image_path = utils.resolve_path(f"{directory}/{filename}", ROOT_DIR)
+        
         # Check if caption already exists
         caption_path = image_path.with_suffix(f".{gen.caption_type}")
         if not force and caption_path.exists():
@@ -361,6 +368,8 @@ async def generate_caption(
         
         return {"success": True, "caption": caption}
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error generating caption: {e}")
         raise HTTPException(status_code=500, detail=str(e))
