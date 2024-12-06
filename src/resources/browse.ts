@@ -322,3 +322,21 @@ export async function deleteCaption(path: string, name: string, type: string) {
     // Optionally, handle the error in the UI
   }
 }
+
+export async function generateCaption(
+  path: string,
+  name: string,
+  generator: string,
+  force: boolean = false
+): Promise<Response> {
+  return fetch(
+    `${joinUrlParts(
+      "/api/generate-caption",
+      path,
+      name
+    )}?generator=${generator}&force=${force}`,
+    {
+      method: "POST",
+    }
+  );
+}

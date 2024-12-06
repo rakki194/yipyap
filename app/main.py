@@ -11,6 +11,7 @@ from email.utils import parsedate_to_datetime, format_datetime
 
 from .data_access import CachedFileSystemDataSource
 from . import utils
+from .caption_generation import JTP2Generator
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -50,6 +51,19 @@ data_source = CachedFileSystemDataSource(ROOT_DIR, THUMBNAIL_SIZE, PREVIEW_SIZE)
 
 # Add this constant near the top of the file with other constants
 CAPTION_TYPE_ORDER = {".e621": 0, ".tags": 1, ".wd": 2, ".caption": 3}
+
+# Add configuration near other constants
+JTP2_MODEL_PATH = Path("/home/kade/source/repos/JTP2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors")
+JTP2_TAGS_PATH = Path("/home/kade/source/repos/JTP2/tags.json")
+
+# Initialize caption generators
+caption_generators = {
+    "jtp2": JTP2Generator(
+        model_path=JTP2_MODEL_PATH,
+        tags_path=JTP2_TAGS_PATH,
+        threshold=0.2
+    )
+}
 
 
 @app.get("/api/browse")
@@ -306,3 +320,47 @@ if not is_dev:
 
         logger.debug(f"Serving SPA for path: {request.url.path}")
         return FileResponse("dist/index.html")
+
+
+@app.post("/api/generate-caption/{path:path}")
+async def generate_caption(
+    path: str,
+    generator: str,
+    force: bool = False
+):
+    """Generate caption for an image using specified generator"""
+    try:
+        image_path = utils.resolve_path(path, ROOT_DIR)
+        
+        if generator not in caption_generators:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown caption generator: {generator}"
+            )
+            
+        gen = caption_generators[generator]
+        if not gen.is_available():
+            raise HTTPException(
+                status_code=503,
+                detail=f"Caption generator {generator} is not available"
+            )
+            
+        # Check if caption already exists
+        caption_path = image_path.with_suffix(f".{gen.caption_type}")
+        if not force and caption_path.exists():
+            raise HTTPException(
+                status_code=400,
+                detail=f"Caption already exists: {caption_path}"
+            )
+            
+        # Generate caption
+        caption = await gen.generate(image_path)
+        
+        # Save caption
+        await data_source.save_caption(image_path, caption, gen.caption_type)
+        
+        return {"success": True, "caption": caption}
+        
+    except Exception as e:
+        logger.error(f"Error generating caption: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
