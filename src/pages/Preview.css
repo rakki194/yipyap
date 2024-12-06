@@ -6,7 +6,7 @@
 }
 
 body {
-  padding: 32px;
+  padding: var(--quad-spacing);
   height: 100vh;
   overflow: hidden;
   background: var(--preview-bg);
@@ -14,7 +14,7 @@ body {
 
 .image-container {
   display: flex;
-  gap: 1rem;
+  gap: var(--spacing);
   height: 100%;
   width: 100%;
 }
@@ -38,8 +38,8 @@ body {
 
 .ui {
   flex: 0 0 auto;
-  min-width: 100px;
-  padding: 1rem;
+  min-width: var(--min-width);
+  padding: var(--spacing);
 }
 
 .base-image {

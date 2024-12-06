@@ -16,8 +16,8 @@
 }
 
 .settings-panel {
-  padding: 2.5em 5em;
-  line-height: 2.2;
+  padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 5);
+  line-height: var(--line-height);
 
   select,
   input,
@@ -62,9 +62,9 @@
 }
 
 .help-button {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.2s;
+  padding: var(--half-spacing);
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-duration);
 }
 
 .help-button:hover {
@@ -76,7 +76,7 @@
   border-radius: 0.5rem;
   overflow: hidden;
   transition: height 0.3s ease;
-  margin-top: -0.5rem;
+  margin-top: calc(var(--spacing) * -0.5);
 }
 
 .keyboard-shortcuts.closing {
@@ -84,7 +84,7 @@
 }
 
 .keyboard-shortcuts > div {
-  padding: 1rem;
+  padding: var(--spacing);
 }
 
 .shortcuts-grid {
@@ -104,30 +104,13 @@ kbd {
   background: var(--kbd-bg, #eee);
   border: 1px solid var(--kbd-border, var(--border-color));
   border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
+  padding: var(--half-spacing) var(--half-spacing);
   font-family: monospace;
   font-size: 0.8em;
   min-width: 1.5rem;
   text-align: center;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 1px var(--shadow-color);
   color: var(--kbd-text, #333);
-}
-
-[data-theme="dark"] kbd {
-  --kbd-bg: #333;
-  --kbd-text: #fff;
-}
-
-[data-theme="peanut"] kbd {
-  --kbd-bg: #d4b483;
-  --kbd-border: #b58d3d;
-  --kbd-text: #4a3810;
-}
-
-[data-theme="gray"] kbd {
-  --kbd-bg: #e0e0e0;
-  --kbd-border: #bdbdbd;
-  --kbd-text: #333;
 }
 
 .settings-row {
@@ -175,15 +158,6 @@ kbd {
   svg {
     fill: #ffdb4d;
   }
-}
-
-[data-theme="light"] .banana-icon svg,
-[data-theme="dark"] .banana-icon svg {
-  fill: #ecc62f;
-}
-
-[data-theme="strawberry"] .banana-icon svg {
-  fill: #ebff3c;
 }
 
 .icon-buttons button:hover {

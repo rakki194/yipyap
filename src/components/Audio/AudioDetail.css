@@ -1,5 +1,5 @@
 /* src/components/Audio/AudioDetail.css */
 
 .audio-detail {
-  padding: 20px;
+  padding: var(--spacing);
 }

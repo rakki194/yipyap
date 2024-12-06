@@ -1,0 +1,81 @@
+/* Theme-specific header gradients */
+[data-theme="strawberry"] .modal-header {
+  background: linear-gradient(45deg, #98fb98 0%, #e0ffe0 99%, #e0ffe0 100%);
+}
+
+[data-theme="banana"] .modal-header {
+  background: linear-gradient(120deg, #ffffe0 0%, #fffacd 100%);
+}
+
+/* Theme-specific keyboard styles */
+[data-theme="dark"] kbd {
+  --kbd-bg: #333;
+  --kbd-text: #fff;
+}
+
+[data-theme="peanut"] kbd {
+  --kbd-bg: #d4b483;
+  --kbd-border: #b58d3d;
+  --kbd-text: #4a3810;
+}
+
+[data-theme="gray"] kbd {
+  --kbd-bg: #e0e0e0;
+  --kbd-border: #bdbdbd;
+  --kbd-text: #333;
+}
+
+/* Theme-specific icon colors */
+[data-theme="light"] .banana-icon svg,
+[data-theme="dark"] .banana-icon svg {
+  fill: #ecc62f;
+}
+
+[data-theme="strawberry"] .banana-icon svg {
+  fill: #ebff3c;
+}
+
+/* Theme-specific backgrounds */
+[data-theme="banana"] .controls .filters {
+  border-style: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--bg-color),
+    var(--bg-color) 10px,
+    var(--card-bg) 10px,
+    var(--card-bg) 20px
+  );
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  animation: slide-stripes 300s linear infinite;
+  background-size: 200% 100%;
+}
+
+[data-theme="strawberry"] .controls .filters {
+  border-style: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    #effdf3,
+    #effdf3 10px,
+    var(--card-bg) 10px,
+    var(--card-bg) 20px
+  );
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  animation: slide-stripes 300s linear infinite;
+  background-size: 200% 100%;
+}
+
+[data-theme="banana"] .breadcrumb {
+  background: rgb(254, 255, 236);
+}
+
+/* Animation for striped backgrounds */
+@keyframes slide-stripes {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
