@@ -1,5 +1,12 @@
 // src/components/ImageViewer/CaptionInput.tsx
-import { createSignal, splitProps, Component, JSX, For } from "solid-js";
+import {
+  createSignal,
+  splitProps,
+  Component,
+  JSX,
+  For,
+  createEffect,
+} from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import getIcon, { captionIconsMap } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -14,6 +21,7 @@ export const CaptionInput: Component<
   {
     caption: [CaptionType, string];
     state: "expanded" | "collapsed" | null;
+    onClick: () => void;
   } & JSX.HTMLAttributes<HTMLDivElement>
 > = (props) => {
   const [localProps, rest] = splitProps(props, ["caption"]);
@@ -86,7 +94,9 @@ export const CaptionInput: Component<
     }
   };
 
-  let containerRef: HTMLDivElement | undefined;
+  let containerRef!: HTMLDivElement;
+  let textareaRef!: HTMLTextAreaElement;
+  let inputRef!: HTMLInputElement;
 
   const navigateTag = (
     currentTag: string,
@@ -178,6 +188,17 @@ export const CaptionInput: Component<
     }
   };
 
+  // Update effect to handle both refs
+  createEffect(() => {
+    if (props.state === "expanded") {
+      if (isTagInput()) {
+        inputRef?.focus();
+      } else {
+        textareaRef?.focus();
+      }
+    }
+  });
+
   return (
     <div
       {...rest}
@@ -233,6 +254,7 @@ export const CaptionInput: Component<
           </div>
           <div class="new-tag-input">
             <input
+              ref={inputRef}
               type="text"
               value={newTag()}
               onInput={(e) => setNewTag(e.currentTarget.value)}
@@ -257,6 +279,7 @@ export const CaptionInput: Component<
         </div>
       ) : (
         <textarea
+          ref={textareaRef}
           use:preserveState={[caption, saveWithHistory]}
           placeholder="Add a caption..."
         />

@@ -6,6 +6,7 @@ import {
   createSignal,
   Index,
   JSX,
+  onCleanup,
 } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
@@ -50,6 +51,43 @@ const ModelBody = (props: {
   const [focused, setFocused] = createSignal(false);
   const [focusedType, setFocusedType] = createSignal<string | null>(null);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
+
+  // Add these variables for tracking shift key presses
+  let lastShiftPress = 0;
+  const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
+
+  // Add keyboard event handler
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Shift") {
+      const now = Date.now();
+      if (now - lastShiftPress < DOUBLE_TAP_THRESHOLD) {
+        // Double tap detected - cycle to next caption
+        const currentCaptions = props.captions;
+        if (currentCaptions.length > 0) {
+          const currentIndex = currentCaptions.findIndex(
+            ([type]) => type === focusedType()
+          );
+          const nextIndex =
+            currentIndex === -1 || currentIndex === currentCaptions.length - 1
+              ? 0
+              : currentIndex + 1;
+          setFocused(true);
+          setFocusedType(currentCaptions[nextIndex][0]);
+        }
+        lastShiftPress = 0; // Reset to prevent triple-tap
+      } else {
+        lastShiftPress = now;
+      }
+    }
+  };
+
+  // Add and remove event listener
+  createEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    onCleanup(() => {
+      window.removeEventListener("keydown", handleKeyDown);
+    });
+  });
 
   // Update the style of the image info based on the layout and focus
   createEffect((prev_path) => {
