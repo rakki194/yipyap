@@ -1,17 +1,8 @@
 // src/components/Settings/Settings.tsx
 
-import {
-  Component,
-  Show,
-  createSignal,
-  createEffect,
-  onCleanup,
-  onMount,
-  For,
-} from "solid-js";
+import { Component, Show, createSignal, createEffect, For } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
-import { useTheme, Theme, themeIconMap } from "~/contexts/theme";
-import { useSettings } from "~/contexts/settings";
+import { useAppContext, Theme, themeIconMap } from "~/contexts/app";
 import getIcon from "~/icons";
 import "./Settings.css";
 
@@ -54,8 +45,7 @@ const SlideTransition = (props: { show: boolean; children: any }) => {
 
 export const Settings: Component<{ onClose: () => void }> = (props) => {
   const gallery = useGallery();
-  const theme = useTheme();
-  const settings = useSettings();
+  const app = useAppContext();
   const [showHelp, setShowHelp] = createSignal(false);
   const [showShortcuts, setShowShortcuts] = createSignal(false);
   const [isClosing, setIsClosing] = createSignal(false);
@@ -87,21 +77,14 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
     }
   };
 
-  // Add keyboard event handler
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
       props.onClose();
     }
   };
 
-  // Add and remove event listener
-  onMount(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
-  });
-
   return (
-    <div class="settings-panel card">
+    <div class="settings-panel card" onKeyDown={handleKeyDown}>
       <div class="settings-header">
         <h2>Settings</h2>
         <button
@@ -213,9 +196,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                     {(th) => (
                       <button
                         type="button"
-                        class="icon"
-                        classList={{ active: theme.theme === th }}
-                        onClick={() => theme.setTheme(th as Theme)}
+                        class={`icon ${th}-icon`}
+                        classList={{ active: app.theme === th }}
+                        onClick={() => app.setTheme(th as Theme)}
                         title={`Switch to ${th} theme`}
                         aria-label={`Switch to ${th} theme`}
                       >
@@ -297,14 +280,24 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   <label>
                     <input
                       type="checkbox"
-                      checked={settings.disableVerticalLayout()}
+                      checked={app.disableVerticalLayout}
                       onChange={(e) =>
-                        settings.setDisableVerticalLayout(
-                          e.currentTarget.checked
-                        )
+                        app.setDisableVerticalLayout(e.currentTarget.checked)
                       }
                     />
                     Disable Vertical Layout
+                  </label>
+                </div>
+                <div class="icon-buttons">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={app.disableAnimations}
+                      onChange={(e) =>
+                        app.setDisableAnimations(e.currentTarget.checked)
+                      }
+                    />
+                    Disable Animations
                   </label>
                 </div>
               </div>
@@ -318,10 +311,8 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
             <label>
               <input
                 type="checkbox"
-                checked={settings.instantDelete()}
-                onChange={(e) =>
-                  settings.setInstantDelete(e.currentTarget.checked)
-                }
+                checked={app.instantDelete}
+                onChange={(e) => app.setInstantDelete(e.currentTarget.checked)}
               />
               Enable instant delete (skips confirmation)
             </label>

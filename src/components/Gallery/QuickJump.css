@@ -57,12 +57,12 @@
   display: flex;
   flex-direction: column;
   gap: calc(var(--spacing) * 0.5);
-  transition: background-color 0.2s;
+  transition-property: background-color;
 }
 
 .quick-jump-results li:hover,
 .quick-jump-results li.selected {
-  background-color: var(--hover-color, rgba(125, 125, 125, 0.2));
+  background-color: var(--accent-color, rgba(125, 125, 125, 0.2));
 }
 
 .quick-jump-results .folder-name {

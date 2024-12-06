@@ -12,16 +12,8 @@ import { routes } from "./router";
 import { AppProvider } from "./contexts/app";
 import "./styles.css";
 
-const Layout: ParentComponent = (props) => {
+const CustomErrorBoundary: ParentComponent = (props) => {
   return (
-    <>
-      <AppProvider>{props.children}</AppProvider>
-    </>
-  );
-};
-
-render(
-  () => (
     <ErrorBoundary
       fallback={
         <div class="error-message">
@@ -31,8 +23,26 @@ render(
         </div>
       }
     >
-      <Router root={Layout}>{routes}</Router>
+      {props.children}
     </ErrorBoundary>
+  );
+};
+
+const Layout: ParentComponent = (props) => {
+  return (
+    <>
+      <AppProvider>
+        <CustomErrorBoundary>{props.children}</CustomErrorBoundary>
+      </AppProvider>
+    </>
+  );
+};
+
+render(
+  () => (
+    <CustomErrorBoundary>
+      <Router root={Layout}>{routes}</Router>
+    </CustomErrorBoundary>
   ),
   document.body as HTMLElement
 );

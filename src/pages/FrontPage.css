@@ -21,9 +21,7 @@
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  transition: background-color var(--transition-duration)
-      var(--transition-timing),
-    color var(--transition-duration) var(--transition-timing);
+  transition-property: background-color, color;
 }
 
 .selection-buttons button:hover,

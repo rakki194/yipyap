@@ -169,7 +169,7 @@
 
 .gallery-container {
   opacity: 1;
-  transition: opacity 0.8s ease;
+  transition-property: opacity;
 }
 
 .gallery-container.hidden {

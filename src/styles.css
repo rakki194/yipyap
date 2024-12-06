@@ -40,7 +40,6 @@
   --scroll-track: 0;
   --font-size: 14px;
   --line-height: 1.6;
-  --min-width: 100px;
 }
 
 :root[data-theme="dark"] {
@@ -117,6 +116,12 @@
   --placeholder-color: var(--text-secondary);
 }
 
+.no-animations {
+  --transition-duration: 0;
+  --transition-timing: none;
+  transition: none;
+}
+
 /* Resets and apply theme colors on base styles */
 
 * {
@@ -187,10 +192,8 @@ button {
 textarea,
 input,
 select {
-  min-width: var(--min-width);
-  background-color: var(--card-bg);
   color: var(--text-primary);
-  transition: outline;
+  transition-property: border-color;
   font-family: inherit;
   font-size: var(--font-size);
   line-height: var(--line-height);
@@ -205,6 +208,10 @@ select {
   &:hover {
     border-color: var(--border-secondary);
   }
+}
+
+input[type="checkbox"] {
+  margin-right: var(--half-spacing);
 }
 
 /* Generic UI Elements */

@@ -1,13 +1,5 @@
 import { debounce } from "@solid-primitives/scheduled";
-import {
-  onCleanup,
-  onMount,
-  createSignal,
-  Accessor,
-  Setter,
-  createEffect,
-  createRenderEffect,
-} from "solid-js";
+import { onMount, Accessor, createRenderEffect } from "solid-js";
 
 /**
  * measure the number of columns in the grid, update the setter
@@ -25,7 +17,6 @@ export function measure_columns(
       setColumns(null);
     }
   };
-  let observer: ResizeObserver;
   onMount(() => {
     measure_columns();
     const observer = new ResizeObserver((entries) => {
