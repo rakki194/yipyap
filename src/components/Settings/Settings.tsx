@@ -59,6 +59,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
   const [showHelp, setShowHelp] = createSignal(false);
   const [showShortcuts, setShowShortcuts] = createSignal(false);
   const [isClosing, setIsClosing] = createSignal(false);
+  const [isHelpClosing, setIsHelpClosing] = createSignal(false);
   let shortcutsRef: HTMLDivElement;
 
   const toggleShortcuts = () => {
@@ -71,6 +72,18 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
       }, 300); // Match transition duration from CSS
     } else {
       setShowShortcuts(true);
+    }
+  };
+
+  const toggleHelp = () => {
+    if (showHelp()) {
+      setIsHelpClosing(true);
+      setTimeout(() => {
+        setShowHelp(false);
+        setIsHelpClosing(false);
+      }, 300); // Match transition duration
+    } else {
+      setShowHelp(true);
     }
   };
 
@@ -94,7 +107,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
         <button
           type="button"
           class="icon help-button"
-          onClick={() => setShowHelp(!showHelp())}
+          onClick={toggleHelp}
           title="Keyboard Shortcuts"
           aria-label="Show keyboard shortcuts"
         >
@@ -102,163 +115,215 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
         </button>
       </div>
 
-      <SlideTransition show={showHelp()}>
-        <h3>Keyboard Shortcuts</h3>
-        <div class="shortcuts-grid">
-          <div class="shortcut">
-            <kbd>q</kbd>
-            <span>Quick folder switch</span>
-          </div>
-          <div class="shortcut">
-            <kbd>↑</kbd>
-            <span>Above image</span>
-          </div>
-          <div class="shortcut">
-            <kbd>↓</kbd>
-            <span>Below image</span>
-          </div>
-          <div class="shortcut">
-            <kbd>←</kbd>
-            <span>Previous image</span>
-          </div>
-          <div class="shortcut">
-            <kbd>→</kbd>
-            <span>Next image</span>
-          </div>
-          <div class="shortcut">
-            <kbd>Esc</kbd>
-            <span>Close preview/modal</span>
-          </div>
-          <div class="shortcut">
-            <kbd>Del</kbd>
-            <span>Delete image</span>
-          </div>
-          <div class="shortcut">
-            <kbd>Space</kbd>
-            <span>Toggle image fit</span>
-          </div>
-        </div>
-      </SlideTransition>
+      <Show
+        when={!showHelp()}
+        fallback={
+          <div class="help-content" classList={{ closing: isHelpClosing() }}>
+            <SlideTransition show={showHelp()}>
+              <h3>Keyboard Shortcuts</h3>
+              <div class="shortcuts-grid">
+                <div class="shortcuts-section">
+                  <h4>Gallery Navigation</h4>
+                  <div class="shortcut">
+                    <kbd>q</kbd>
+                    <span>Quick folder switch</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>↑</kbd>
+                    <span>Above image</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>↓</kbd>
+                    <span>Below image</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>←</kbd>
+                    <span>Previous image</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>→</kbd>
+                    <span>Next image</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>Enter</kbd>
+                    <span>Toggle image preview</span>
+                  </div>
+                </div>
 
-      <div class="settings-row">
-        <div class="settings-column">
-          <h3>Appearance</h3>
-          <div class="setting-group">
-            <label>Theme</label>
-            <div class="theme-buttons">
-              <For each={Object.keys(themeIconMap)}>
-                {(th) => (
+                <div class="shortcuts-section">
+                  <h4>Tag Navigation</h4>
+                  <div class="shortcut">
+                    <kbd>Shift</kbd> + <kbd>←</kbd>
+                    <span>Previous tag</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>Shift</kbd> + <kbd>→</kbd>
+                    <span>Next tag</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>Shift</kbd> + <kbd>↑</kbd>
+                    <span>Switch to tag bubble editing</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>Shift</kbd> + <kbd>↓</kbd>
+                    <span>Switch to tag input</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>Double Shift</kbd> + <kbd>←</kbd>
+                    <span>First tag in row</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>Double Shift</kbd> + <kbd>→</kbd>
+                    <span>Last tag in row</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>Shift</kbd> + <kbd>Del</kbd>
+                    <span>Remove tag</span>
+                  </div>
+                </div>
+
+                <div class="shortcuts-section full-width">
+                  <h4>Other</h4>
+                  <div class="shortcut">
+                    <kbd>Esc</kbd>
+                    <span>Close preview/modal</span>
+                  </div>
+                  <div class="shortcut">
+                    <kbd>Del</kbd>
+                    <span>Delete image</span>
+                  </div>
+                </div>
+              </div>
+            </SlideTransition>
+          </div>
+        }
+      >
+        <div class="settings-content" classList={{ closing: isHelpClosing() }}>
+          <div class="settings-row">
+            <div class="settings-column">
+              <h3>Appearance</h3>
+              <div class="setting-group">
+                <label>Theme</label>
+                <div class="theme-buttons">
+                  <For each={Object.keys(themeIconMap)}>
+                    {(th) => (
+                      <button
+                        type="button"
+                        class="icon"
+                        classList={{ active: theme.theme === th }}
+                        onClick={() => theme.setTheme(th as Theme)}
+                        title={`Switch to ${th} theme`}
+                        aria-label={`Switch to ${th} theme`}
+                      >
+                        {getIcon(themeIconMap[th as Theme])}
+                      </button>
+                    )}
+                  </For>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-column">
+              <h3>Gallery</h3>
+              <div class="setting-group">
+                <label>View Mode</label>
+                <div class="icon-buttons">
                   <button
                     type="button"
                     class="icon"
-                    classList={{ active: theme.theme === th }}
-                    onClick={() => theme.setTheme(th as Theme)}
-                    title={`Switch to ${th} theme`}
-                    aria-label={`Switch to ${th} theme`}
+                    classList={{ active: gallery.state.viewMode === "grid" }}
+                    onClick={() => gallery.setViewMode("grid")}
+                    title="Grid view"
+                    aria-label="Switch to grid view"
                   >
-                    {getIcon(themeIconMap[th as Theme])}
+                    {getIcon("grid")}
                   </button>
-                )}
-              </For>
+                  <button
+                    type="button"
+                    class="icon"
+                    classList={{ active: gallery.state.viewMode === "list" }}
+                    onClick={() => gallery.setViewMode("list")}
+                    title="List view"
+                    aria-label="Switch to list view"
+                  >
+                    {getIcon("list")}
+                  </button>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <label>Sort By</label>
+                <div class="icon-buttons">
+                  <button
+                    type="button"
+                    class="icon"
+                    classList={{ active: gallery.state.sort === "name" }}
+                    onClick={() => gallery.setSort("name")}
+                    title="Sort by name"
+                    aria-label="Sort by name"
+                  >
+                    {getIcon("textSortAscending")}
+                  </button>
+                  <button
+                    type="button"
+                    class="icon"
+                    classList={{ active: gallery.state.sort === "date" }}
+                    onClick={() => gallery.setSort("date")}
+                    title="Sort by date modified"
+                    aria-label="Sort by date modified"
+                  >
+                    {getIcon("calendarDate")}
+                  </button>
+                  <button
+                    type="button"
+                    class="icon"
+                    classList={{ active: gallery.state.sort === "size" }}
+                    onClick={() => gallery.setSort("size")}
+                    title="Sort by file size"
+                    aria-label="Sort by file size"
+                  >
+                    {getIcon("documentArrowDown")}
+                  </button>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <label>Layout Options</label>
+                <div class="icon-buttons">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={settings.disableVerticalLayout()}
+                      onChange={(e) =>
+                        settings.setDisableVerticalLayout(
+                          e.currentTarget.checked
+                        )
+                      }
+                    />
+                    Disable Vertical Layout
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
+
+          <section class="warning-section">
+            <p class="warning-text">
+              <span>⚠️警告！これを使うと狼になります！</span>
+            </p>
+            <label>
+              <input
+                type="checkbox"
+                checked={settings.instantDelete()}
+                onChange={(e) =>
+                  settings.setInstantDelete(e.currentTarget.checked)
+                }
+              />
+              Enable instant delete (skips confirmation)
+            </label>
+          </section>
         </div>
-
-        <div class="settings-column">
-          <h3>Gallery</h3>
-          <div class="setting-group">
-            <label>View Mode</label>
-            <div class="icon-buttons">
-              <button
-                type="button"
-                class="icon"
-                classList={{ active: gallery.state.viewMode === "grid" }}
-                onClick={() => gallery.setViewMode("grid")}
-                title="Grid view"
-                aria-label="Switch to grid view"
-              >
-                {getIcon("grid")}
-              </button>
-              <button
-                type="button"
-                class="icon"
-                classList={{ active: gallery.state.viewMode === "list" }}
-                onClick={() => gallery.setViewMode("list")}
-                title="List view"
-                aria-label="Switch to list view"
-              >
-                {getIcon("list")}
-              </button>
-            </div>
-          </div>
-
-          <div class="setting-group">
-            <label>Sort By</label>
-            <div class="icon-buttons">
-              <button
-                type="button"
-                class="icon"
-                classList={{ active: gallery.state.sort === "name" }}
-                onClick={() => gallery.setSort("name")}
-                title="Sort by name"
-                aria-label="Sort by name"
-              >
-                {getIcon("textSortAscending")}
-              </button>
-              <button
-                type="button"
-                class="icon"
-                classList={{ active: gallery.state.sort === "date" }}
-                onClick={() => gallery.setSort("date")}
-                title="Sort by date modified"
-                aria-label="Sort by date modified"
-              >
-                {getIcon("calendarDate")}
-              </button>
-              <button
-                type="button"
-                class="icon"
-                classList={{ active: gallery.state.sort === "size" }}
-                onClick={() => gallery.setSort("size")}
-                title="Sort by file size"
-                aria-label="Sort by file size"
-              >
-                {getIcon("documentArrowDown")}
-              </button>
-            </div>
-          </div>
-
-          <div class="setting-group">
-            <label>Layout Options</label>
-            <div class="icon-buttons">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={settings.disableVerticalLayout()}
-                  onChange={(e) =>
-                    settings.setDisableVerticalLayout(e.currentTarget.checked)
-                  }
-                />
-                Disable Vertical Layout
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <section class="warning-section">
-        <p class="warning-text">
-          <span>⚠️警告！これを使うと狼になります！</span>
-        </p>
-        <label>
-          <input
-            type="checkbox"
-            checked={settings.instantDelete()}
-            onChange={(e) => settings.setInstantDelete(e.currentTarget.checked)}
-          />
-          Enable instant delete (skips confirmation)
-        </label>
-      </section>
+      </Show>
     </div>
   );
 };

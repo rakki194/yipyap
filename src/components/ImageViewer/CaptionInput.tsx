@@ -90,11 +90,36 @@ export const CaptionInput: Component<
 
   const navigateTag = (
     currentTag: string,
-    direction: "left" | "right" | "up" | "down"
+    direction: "left" | "right" | "up" | "down" | "start" | "end"
   ) => {
     if (!containerRef) return;
     const currentTags = tags();
     const currentIndex = currentTags.indexOf(currentTag);
+    const tagElements = containerRef.querySelectorAll(".tag-bubble");
+
+    // Handle start/end navigation within the same row
+    if (direction === "start" || direction === "end") {
+      const currentElement = tagElements[currentIndex];
+      const currentRect = currentElement.getBoundingClientRect();
+
+      // Find all elements in the same row (similar y-position)
+      const sameRowElements = Array.from(tagElements).filter((element) => {
+        const rect = element.getBoundingClientRect();
+        return Math.abs(rect.top - currentRect.top) < 5; // 5px tolerance
+      });
+
+      // Get the first or last element in the row
+      const targetElement =
+        direction === "start"
+          ? sameRowElements[0]
+          : sameRowElements[sameRowElements.length - 1];
+
+      const tagText = targetElement?.querySelector(".tag-text");
+      if (tagText) {
+        (tagText as HTMLElement).click();
+      }
+      return;
+    }
 
     // Handle left/right navigation
     if (direction === "left" || direction === "right") {
@@ -105,7 +130,6 @@ export const CaptionInput: Component<
         newIndex = currentIndex < currentTags.length - 1 ? currentIndex + 1 : 0;
       }
 
-      const tagElements = containerRef.querySelectorAll(".tag-bubble");
       const targetElement = tagElements[newIndex];
       const tagText = targetElement?.querySelector(".tag-text");
       if (tagText) {

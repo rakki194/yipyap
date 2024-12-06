@@ -75,12 +75,12 @@
   background: var(--card-bg);
   border-radius: 0.5rem;
   overflow: hidden;
-  transition: height 0.3s ease, opacity 0.3s ease;
-  opacity: 1;
+  transition: height 0.3s ease;
+  margin-top: -0.5rem;
 }
 
 .keyboard-shortcuts.closing {
-  opacity: 0;
+  height: 0 !important;
 }
 
 .keyboard-shortcuts > div {
@@ -89,8 +89,8 @@
 
 .shortcuts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem var(--double-spacing);
   margin-top: 0.5rem;
 }
 
@@ -213,5 +213,65 @@ kbd {
     background: none;
     padding: var(--half-spacing);
     margin-top: var(--spacing);
+  }
+
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing);
+  }
+
+  .shortcuts-section {
+    margin-bottom: var(--spacing);
+  }
+}
+
+.shortcuts-grid h4 {
+  grid-column: auto / span 1;
+  margin: var(--spacing) 0 calc(var(--spacing) / 2);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.shortcuts-grid h4:first-child {
+  margin-top: 0;
+}
+
+.settings-content,
+.help-content {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.settings-content.closing,
+.help-content.closing {
+  opacity: 0;
+}
+
+.shortcuts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  /* Ensure each section stays in its own column */
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.shortcuts-section.full-width {
+  grid-column: 1 / -1;
+  margin-top: var(--spacing);
+}
+
+/* Only switch to single column on very small screens */
+@media (max-width: 480px) {
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing);
+  }
+
+  .shortcuts-section {
+    margin-bottom: var(--spacing);
   }
 }
