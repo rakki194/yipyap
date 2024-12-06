@@ -1,4 +1,11 @@
-import { Component, createSignal, For, Show, createResource } from "solid-js";
+import {
+  Component,
+  createSignal,
+  For,
+  Show,
+  createResource,
+  onMount,
+} from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
 import "./QuickJump.css";
@@ -12,6 +19,7 @@ interface FolderMatch {
 export const QuickJump: Component<{
   onClose: () => void;
 }> = (props) => {
+  let inputRef: HTMLInputElement | undefined;
   const [search, setSearch] = createSignal("");
   const [selectedIndex, setSelectedIndex] = createSignal(0);
   const navigate = useNavigate();
@@ -77,10 +85,15 @@ export const QuickJump: Component<{
     setSelectedIndex(0);
   };
 
+  onMount(() => {
+    inputRef?.focus();
+  });
+
   return (
     <div class="quick-jump-overlay" onClick={props.onClose}>
       <div class="quick-jump-modal card" onClick={(e) => e.stopPropagation()}>
         <input
+          ref={inputRef}
           type="text"
           value={search()}
           onInput={handleSearchInput}
