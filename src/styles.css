@@ -302,7 +302,28 @@ td {
   }
 }
 
+.accent {
+  color: var(--accent);
+}
+
 .accent-hover {
+  color: var(--text-primary);
+  transition-property: color;
+
+  & > svg {
+    transition-property: fill;
+  }
+
+  &:hover,
+  &.focus {
+    color: var(--accent);
+    & > svg {
+      fill: var(--accent);
+    }
+  }
+}
+
+.accent-hover-inverted {
   transition-property: background-color, border-color, color;
   background-color: var(--secondary-bg);
   & > svg {

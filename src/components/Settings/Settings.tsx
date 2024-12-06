@@ -11,23 +11,7 @@ import {
 import { useGallery } from "~/contexts/GalleryContext";
 import { useTheme, Theme } from "~/contexts/theme";
 import { useSettings } from "~/contexts/settings";
-import {
-  SunIcon,
-  MoonIcon,
-  CloudIcon,
-  DimensionsIcon,
-  SizeIcon,
-  TimeIcon,
-  BananaIcon,
-  StrawberryIcon,
-  PeanutIcon,
-  BookQuestionMarkRegular,
-  GridRegular,
-  ListRegular,
-  TextSortAscendingRegular,
-  CalendarDateRegular,
-  DocumentArrowDownRegular,
-} from "~/icons";
+import getIcon from "~/icons";
 import "./Settings.css";
 
 const SlideTransition = (props: { show: boolean; children: any }) => {
@@ -112,8 +96,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
           onClick={() => setShowHelp(!showHelp())}
           title="Keyboard Shortcuts"
           aria-label="Show keyboard shortcuts"
-          innerHTML={BookQuestionMarkRegular}
-        />
+        >
+          {getIcon("bookQuestionMark")}
+        </button>
       </div>
 
       <SlideTransition show={showHelp()}>
@@ -167,8 +152,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 onClick={() => theme.setTheme("light")}
                 title="Light theme"
                 aria-label="Switch to light theme"
-                innerHTML={SunIcon}
-              />
+              >
+                {getIcon("sun")}
+              </button>
               <button
                 type="button"
                 class="icon"
@@ -176,40 +162,45 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 onClick={() => theme.setTheme("gray")}
                 title="Gray theme"
                 aria-label="Switch to gray theme"
-                innerHTML={CloudIcon}
-              />
+              >
+                {getIcon("cloud")}
+              </button>
               <button
                 type="button"
                 class="icon"
                 classList={{ active: theme.theme === "dark" }}
                 onClick={() => theme.setTheme("dark")}
                 title="Dark theme"
-                innerHTML={MoonIcon}
-              />
+              >
+                {getIcon("moon")}
+              </button>
               <button
                 type="button"
                 class="icon banana-icon"
                 classList={{ active: theme.theme === "banana" }}
                 onClick={() => theme.setTheme("banana")}
                 title="Banana theme"
-                innerHTML={BananaIcon}
-              />
+              >
+                {getIcon("banana")}
+              </button>
               <button
                 type="button"
                 class="icon strawberry-icon"
                 classList={{ active: theme.theme === "strawberry" }}
                 onClick={() => theme.setTheme("strawberry")}
                 title="Strawberry theme"
-                innerHTML={StrawberryIcon}
-              />
+              >
+                {getIcon("strawberry")}
+              </button>
               <button
                 type="button"
                 class="icon peanut-icon"
                 classList={{ active: theme.theme === "peanut" }}
                 onClick={() => theme.setTheme("peanut")}
                 title="Peanut theme"
-                innerHTML={PeanutIcon}
-              />
+              >
+                {getIcon("peanut")}
+              </button>
             </div>
           </div>
         </div>
@@ -226,8 +217,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 onClick={() => gallery.setViewMode("grid")}
                 title="Grid view"
                 aria-label="Switch to grid view"
-                innerHTML={GridRegular}
-              />
+              >
+                {getIcon("grid")}
+              </button>
               <button
                 type="button"
                 class="icon"
@@ -235,8 +227,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 onClick={() => gallery.setViewMode("list")}
                 title="List view"
                 aria-label="Switch to list view"
-                innerHTML={ListRegular}
-              />
+              >
+                {getIcon("list")}
+              </button>
             </div>
           </div>
 
@@ -250,8 +243,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 onClick={() => gallery.setSort("name")}
                 title="Sort by name"
                 aria-label="Sort by name"
-                innerHTML={TextSortAscendingRegular}
-              />
+              >
+                {getIcon("textSortAscending")}
+              </button>
               <button
                 type="button"
                 class="icon"
@@ -259,8 +253,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 onClick={() => gallery.setSort("date")}
                 title="Sort by date modified"
                 aria-label="Sort by date modified"
-                innerHTML={CalendarDateRegular}
-              />
+              >
+                {getIcon("calendarDate")}
+              </button>
               <button
                 type="button"
                 class="icon"
@@ -268,8 +263,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 onClick={() => gallery.setSort("size")}
                 title="Sort by file size"
                 aria-label="Sort by file size"
-                innerHTML={DocumentArrowDownRegular}
-              />
+              >
+                {getIcon("documentArrowDown")}
+              </button>
             </div>
           </div>
 

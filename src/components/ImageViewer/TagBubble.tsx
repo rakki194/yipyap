@@ -1,5 +1,5 @@
 import { Component } from "solid-js";
-import { DismissIcon } from "~/icons";
+import getIcon from "~/icons";
 
 export const TagBubble: Component<{
   tag: string;
@@ -36,8 +36,9 @@ export const TagBubble: Component<{
         class="icon remove-tag"
         onClick={props.onRemove}
         title="Remove tag"
-        innerHTML={DismissIcon}
-      />
+      >
+        {getIcon("dismiss")}
+      </button>
     </span>
   );
 };

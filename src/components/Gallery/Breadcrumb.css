@@ -58,15 +58,3 @@
     background: rgb(239, 253, 243);
   }
 }
-
-.gallery-icon {
-  color: var(--accent);
-}
-
-.home-icon {
-  color: var(--text-primary);
-
-  &:hover svg {
-    fill: var(--accent);
-  }
-}

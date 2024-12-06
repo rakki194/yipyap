@@ -6,12 +6,7 @@ import { useGallery } from "~/contexts/GalleryContext";
 import { formatFileSize } from "~/utils/format";
 import { joinUrlParts } from "~/utils";
 import { measure_columns } from "~/directives";
-import {
-  FolderIcon,
-  SpinnerIcon,
-  captionIconsMap,
-  FolderArrowUpRegular,
-} from "~/icons";
+import getIcon, { captionIconsMap } from "~/icons";
 import type {
   ImageItem as ImageItemType,
   BrowsePagesCached,
@@ -142,7 +137,7 @@ export const ImageItem = (props: {
                 }}
               />
               <Show when={isLoading()}>
-                <span class="spin-icon icon" innerHTML={SpinnerIcon} />
+                <span class="spin-icon icon">{getIcon("spinner")}</span>
               </Show>
             </>
           );
@@ -159,13 +154,11 @@ export const ImageItem = (props: {
               <p>
                 <For each={item.captions.map((c) => c[0]).toSorted()}>
                   {(c) => (
-                    <span
-                      class="icon"
-                      title={c}
-                      innerHTML={
+                    <span class="icon" title={c}>
+                      {getIcon(
                         captionIconsMap[c as keyof typeof captionIconsMap]
-                      }
-                    ></span>
+                      )}
+                    </span>
                   )}
                 </For>
               </p>
@@ -190,10 +183,9 @@ export const DirectoryItem = (props: {
       classList={{ selected: props.selected }}
       href={joinUrlParts("/gallery", props.path, props.name)}
     >
-      <span
-        class="icon"
-        innerHTML={props.name === ".." ? FolderArrowUpRegular : FolderIcon}
-      />
+      <span class="icon">
+        {getIcon(props.name === ".." ? "folderArrowUp" : "folder")}
+      </span>
       <span>{props.name}</span>
     </A>
   );
