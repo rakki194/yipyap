@@ -102,7 +102,7 @@
   --text-secondary: #cc0033;
   --border: #ff8099;
   --border-secondary: #ff1a4d;
-  --placeholder-color: #effdf3;
+  --placeholder-color: #cc0033;
 }
 
 :root[data-theme="peanut"] {
