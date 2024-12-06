@@ -17,6 +17,7 @@ import getIcon from "~/icons";
 import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions } from "~/types";
 import { useSettings } from "~/contexts/settings";
+import { generateCaption } from "~/resources/browse";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -26,6 +27,7 @@ interface ImageModalProps {
 
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
+  const [currentCaptions, setCurrentCaptions] = createSignal(props.captions);
 
   const getLayout = createMemo(() =>
     computeLayout(props.imageInfo, windowSize)
@@ -35,7 +37,8 @@ export const ImageModal = (props: ImageModalProps) => {
       <ModalHeader imageInfo={props.imageInfo} onClose={props.onClose} />
       <ModelBody
         imageInfo={props.imageInfo}
-        captions={props.captions}
+        captions={currentCaptions()}
+        setCaptions={setCurrentCaptions}
         layout={getLayout()}
       />
     </div>
@@ -46,7 +49,9 @@ const ModelBody = (props: {
   captions: Captions;
   imageInfo: ImageInfoType;
   layout: LayoutInfo;
+  setCaptions: (captions: Captions) => void;
 }) => {
+  const gallery = useGallery();
   let refImageInfo!: HTMLDivElement;
   const [focused, setFocused] = createSignal(false);
   const [focusedType, setFocusedType] = createSignal<string | null>(null);
@@ -136,6 +141,78 @@ const ModelBody = (props: {
         }}
       >
         <ImageInfo imageInfo={props.imageInfo} />
+        <button
+          type="button"
+          class="generate-tags-button card"
+          onClick={async () => {
+            try {
+              const fullPath =
+                props.imageInfo.download_path.split("/download/")[1];
+              const [directory, filename] = fullPath.split("/").slice(-2);
+
+              const response = await generateCaption(
+                directory,
+                filename,
+                "jtp2"
+              );
+              if (!response.ok) {
+                throw new Error(
+                  `Failed to generate tags: ${response.statusText}`
+                );
+              }
+
+              // Clear the cache
+              gallery.clearImageCache();
+
+              // Get the tags from the response and ensure it's a string
+              const responseText = await response.text();
+              let tags = responseText;
+              try {
+                // Try to parse as JSON in case it's returned that way
+                const parsed = JSON.parse(responseText);
+                if (parsed && typeof parsed === "object") {
+                  // If it's a response object with success field
+                  if ("success" in parsed) {
+                    // Just get the tags from the file instead of trying to parse the response
+                    const response2 = await fetch(
+                      `/download/${directory}/${filename.replace(
+                        /\.[^/.]+$/,
+                        ".tags"
+                      )}`
+                    );
+                    if (response2.ok) {
+                      tags = await response2.text();
+                    }
+                  }
+                }
+              } catch {
+                // If it's not JSON, use the raw text
+                tags = responseText;
+              }
+
+              // Add the new tags file to the existing captions
+              const currentCaptions = [...props.captions];
+              const tagsCaption: [string, string] = ["tags", tags];
+
+              // Replace existing tags caption or add new one
+              const tagsIndex = currentCaptions.findIndex(
+                ([type]) => type === "tags"
+              );
+              if (tagsIndex !== -1) {
+                currentCaptions[tagsIndex] = tagsCaption;
+              } else {
+                currentCaptions.push(tagsCaption);
+              }
+
+              props.setCaptions(currentCaptions);
+            } catch (error) {
+              console.error("Error generating tags:", error);
+            }
+          }}
+        >
+          <span class="icon">{getIcon("sparkle")}</span>
+          Generate Tags with JTP2
+        </button>
         <div
           class="caption-editor"
           onClick={(e) => {
