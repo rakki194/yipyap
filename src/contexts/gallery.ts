@@ -243,36 +243,39 @@ export function makeGalleryState() {
     }
   });
 
-  const generateTags = action(async () => {
+  const generateTags = action(async (generator: string) => {
     const { image, database } = untrack(() => ({
       image: selection.editedImage,
       database: backendData(),
     }));
     if (!image) return new Error("No image to save caption for");
     if (!database) return new Error("No page fetched yet!");
+
     try {
-      const response = await generateCaption(database.path, image.name, "jtp2");
+      const response = await generateCaption(
+        database.path,
+        image.name,
+        generator
+      );
       if (!response.ok) {
         throw new Error(`Failed to generate tags: ${response.statusText}`);
       }
 
-      // Get the tags from the response and ensure it's a string
-      const responseText = await response.text();
-      let tags = responseText;
-      try {
-        // Try to parse as JSON in case it's returned that way
-        const parsed = JSON.parse(responseText);
-        if (parsed && typeof parsed === "object") {
-          updateLocalCaptions(image, { type: "tags", caption: tags }, database);
-        }
-      } catch {
-        // If it's not JSON, use the raw text
-        tags = responseText;
+      const data = await response.json();
+      if (data.success && data.caption) {
+        // Update local captions with the generated tags
+        updateLocalCaptions(
+          image,
+          {
+            type: generator === "wdv3" ? "wd" : "tags",
+            caption: data.caption,
+          },
+          database
+        );
       }
-
-      //FIXME update cache
     } catch (error) {
       console.error("Error generating tags:", error);
+      throw error; // Re-throw to propagate error to UI
     }
   });
 

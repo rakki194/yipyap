@@ -296,17 +296,17 @@ const StatusIcon = <T extends [{ type: string }], U>(props: {
       return { children: getIcon("edit") };
     if (!props.status.result) {
       if (props.status.pending)
-        return { children: getIcon("spinner"), class: "spin-icon icon" };
+        return { children: getIcon("spinner"), class: "spin-icon" };
       else return { children: getIcon("edit") };
     }
     if (props.status.result instanceof Error)
       return {
         children: getIcon("error"),
-        class: "error-icon icon",
+        class: "error-icon",
         title: props.status.result.message,
       };
     return {
-      innerHTML: getIcon("success"),
+      children: getIcon("success"),
     };
   };
   return <span class="icon" {...(getStatusIcon() as any)} />;

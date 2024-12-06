@@ -58,6 +58,11 @@ JTP2_MODEL_PATH = Path(
 )
 JTP2_TAGS_PATH = Path("/home/kade/source/repos/JTP2/tags.json")
 
+# Add near other constants
+WDV3_MODEL_NAME = os.getenv("WDV3_MODEL_NAME", "vit")
+WDV3_GEN_THRESHOLD = float(os.getenv("WDV3_GEN_THRESHOLD", "0.35"))
+WDV3_CHAR_THRESHOLD = float(os.getenv("WDV3_CHAR_THRESHOLD", "0.75"))
+
 # Initialize caption generators with graceful fallback
 caption_generators = {}
 
@@ -72,6 +77,20 @@ if hasattr(caption_generation, "JTP2Generator"):
             logger.warning("JTP2 caption generator is not available")
     except Exception as e:
         logger.warning(f"Failed to initialize JTP2 caption generator: {e}")
+
+if hasattr(caption_generation, "WDv3Generator"):
+    try:
+        wdv3_generator = caption_generation.WDv3Generator(
+            model_name=WDV3_MODEL_NAME,
+            gen_threshold=WDV3_GEN_THRESHOLD,
+            char_threshold=WDV3_CHAR_THRESHOLD
+        )
+        if wdv3_generator.is_available():
+            caption_generators["wdv3"] = wdv3_generator
+        else:
+            logger.warning("WDv3 caption generator is not available")
+    except Exception as e:
+        logger.warning(f"Failed to initialize WDv3 caption generator: {e}")
 
 
 @app.get("/api/browse")

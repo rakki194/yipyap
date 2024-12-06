@@ -138,14 +138,24 @@ const ModelBody = (props: {
         }}
       >
         <ImageInfo imageInfo={props.imageInfo} />
-        <button
-          type="button"
-          class="generate-tags-button card"
-          onClick={() => generateTags()}
-        >
-          <span class="icon">{getIcon("sparkle")}</span>
-          Generate Tags with JTP2
-        </button>
+        <div class="caption-actions">
+          <button
+            type="button"
+            class="generate-tags-button card"
+            onClick={() => generateTags("jtp2")}
+          >
+            <span class="icon">{getIcon("sparkle")}</span>
+            Generate Tags with JTP2
+          </button>
+          <button
+            type="button"
+            class="generate-tags-button card"
+            onClick={() => generateTags("wdv3")}
+          >
+            <span class="icon">{getIcon("sparkle")}</span>
+            Generate Tags with WDv3
+          </button>
+        </div>
         <div
           class="caption-editor"
           onClick={(e) => {
