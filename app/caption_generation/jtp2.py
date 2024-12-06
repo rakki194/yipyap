@@ -18,76 +18,6 @@ InterpolationMode = None
 TF = None
 
 class JTP2Generator(CaptionGenerator):
-    class Fit(torch.nn.Module):
-        def __init__(
-            self,
-            bounds: tuple[int, int] | int,
-            interpolation=InterpolationMode.LANCZOS,
-            grow: bool = True,
-            pad: float | None = None
-        ):
-            super().__init__()
-            self.bounds = (bounds, bounds) if isinstance(bounds, int) else bounds
-            self.interpolation = interpolation
-            self.grow = grow
-            self.pad = pad
-
-        def forward(self, img: Image) -> Image:
-            wimg, himg = img.size
-            hbound, wbound = self.bounds
-            hscale = hbound / himg
-            wscale = wbound / wimg
-            if not self.grow:
-                hscale = min(hscale, 1.0)
-                wscale = min(wscale, 1.0)
-            scale = min(hscale, wscale)
-            if scale == 1.0:
-                return img
-            hnew = min(round(himg * scale), hbound)
-            wnew = min(round(wimg * scale), wbound)
-            img = TF.resize(img, (hnew, wnew), self.interpolation)
-            if self.pad is None:
-                return img
-            hpad = hbound - hnew
-            wpad = wbound - wnew
-            tpad = hpad 
-            bpad = hpad - tpad
-            lpad = wpad 
-            rpad = wpad - lpad
-            return TF.pad(img, (lpad, tpad, rpad, bpad), self.pad)
-
-    class CompositeAlpha(torch.nn.Module):
-        def __init__(self, background: tuple[float, float, float] | float):
-            super().__init__()
-            self.background = (background, background, background) if isinstance(background, float) else background
-            self.background = torch.tensor(self.background).unsqueeze(1).unsqueeze(2)
-
-        def forward(self, img: torch.Tensor) -> torch.Tensor:
-            if img.shape[-3] == 3:
-                return img
-            alpha = img[..., 3, None, :, :]
-            img[..., :3, :, :] *= alpha
-            background = self.background.expand(-1, img.shape[-2], img.shape[-1])
-            if background.ndim == 1:
-                background = background[:, None, None]
-            elif background.ndim == 2:
-                background = background[None, :, :]
-            img[..., :3, :, :] += (1.0 - alpha) * background
-            return img[..., :3, :, :]
-
-    class GatedHead(torch.nn.Module):
-        def __init__(self, num_features: int, num_classes: int):
-            super().__init__()
-            self.num_classes = num_classes
-            self.linear = torch.nn.Linear(num_features, num_classes * 2)
-            self.act = torch.nn.Sigmoid()
-            self.gate = torch.nn.Sigmoid()
-
-        def forward(self, x: torch.Tensor) -> torch.Tensor:
-            x = self.linear(x)
-            x = self.act(x[:, :self.num_classes]) * self.gate(x[:, self.num_classes:])
-            return x
-
     def __init__(
         self,
         model_path: Path,
@@ -110,6 +40,80 @@ class JTP2Generator(CaptionGenerator):
     @property
     def caption_type(self) -> str:
         return "tags"
+
+    def _create_helper_classes(self):
+        """Create helper classes after torch is imported"""
+        class Fit(torch.nn.Module):
+            def __init__(
+                self,
+                bounds: tuple[int, int] | int,
+                interpolation=InterpolationMode.LANCZOS,
+                grow: bool = True,
+                pad: float | None = None
+            ):
+                super().__init__()
+                self.bounds = (bounds, bounds) if isinstance(bounds, int) else bounds
+                self.interpolation = interpolation
+                self.grow = grow
+                self.pad = pad
+
+            def forward(self, img: Image) -> Image:
+                wimg, himg = img.size
+                hbound, wbound = self.bounds
+                hscale = hbound / himg
+                wscale = wbound / wimg
+                if not self.grow:
+                    hscale = min(hscale, 1.0)
+                    wscale = min(wscale, 1.0)
+                scale = min(hscale, wscale)
+                if scale == 1.0:
+                    return img
+                hnew = min(round(himg * scale), hbound)
+                wnew = min(round(wimg * scale), wbound)
+                img = TF.resize(img, (hnew, wnew), self.interpolation)
+                if self.pad is None:
+                    return img
+                hpad = hbound - hnew
+                wpad = wbound - wnew
+                tpad = hpad 
+                bpad = hpad - tpad
+                lpad = wpad 
+                rpad = wpad - lpad
+                return TF.pad(img, (lpad, tpad, rpad, bpad), self.pad)
+
+        class CompositeAlpha(torch.nn.Module):
+            def __init__(self, background: tuple[float, float, float] | float):
+                super().__init__()
+                self.background = (background, background, background) if isinstance(background, float) else background
+                self.background = torch.tensor(self.background).unsqueeze(1).unsqueeze(2)
+
+            def forward(self, img: torch.Tensor) -> torch.Tensor:
+                if img.shape[-3] == 3:
+                    return img
+                alpha = img[..., 3, None, :, :]
+                img[..., :3, :, :] *= alpha
+                background = self.background.expand(-1, img.shape[-2], img.shape[-1])
+                if background.ndim == 1:
+                    background = background[:, None, None]
+                elif background.ndim == 2:
+                    background = background[None, :, :]
+                img[..., :3, :, :] += (1.0 - alpha) * background
+                return img[..., :3, :, :]
+
+        class GatedHead(torch.nn.Module):
+            def __init__(self, num_features: int, num_classes: int):
+                super().__init__()
+                self.num_classes = num_classes
+                self.linear = torch.nn.Linear(num_features, num_classes * 2)
+                self.act = torch.nn.Sigmoid()
+                self.gate = torch.nn.Sigmoid()
+
+            def forward(self, x: torch.Tensor) -> torch.Tensor:
+                x = self.linear(x)
+                x = self.act(x[:, :self.num_classes]) * self.gate(x[:, self.num_classes:])
+                return x
+
+        return Fit, CompositeAlpha, GatedHead
 
     def is_available(self) -> bool:
         """Check if all required dependencies and resources are available"""
@@ -137,6 +141,9 @@ class JTP2Generator(CaptionGenerator):
             
         if self._model is not None:
             return
+
+        # Create helper classes
+        Fit, CompositeAlpha, GatedHead = self._create_helper_classes()
 
         # Set up image transformation pipeline
         self._transform = transforms.Compose([
