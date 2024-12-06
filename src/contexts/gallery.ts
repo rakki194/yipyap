@@ -327,7 +327,6 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     await deleteCaptionFromBackend(database.path, image.name, type);
-
     refetch();
   });
 

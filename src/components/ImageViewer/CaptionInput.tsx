@@ -198,6 +198,14 @@ export const CaptionInput: Component<
     }
   });
 
+  const handleDeleteCaption = async () => {
+    try {
+      await deleteCaption(type());
+    } catch (error) {
+      console.error("Error deleting caption:", error);
+    }
+  };
+
   return (
     <div
       {...rest}
@@ -226,11 +234,7 @@ export const CaptionInput: Component<
         <button
           type="button"
           class="icon"
-          onClick={async (e) => {
-            if (confirm(`Delete ${type()} caption?`)) {
-              deleteCaption(type());
-            }
-          }}
+          onClick={handleDeleteCaption}
           title={`Delete ${type()} caption`}
         >
           {getIcon("delete")}
