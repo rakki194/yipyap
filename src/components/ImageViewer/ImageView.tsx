@@ -9,7 +9,7 @@ interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
 
 /**
  * An image viewer component that displays a preview and thumbnail image.
- * @param { image: ImageInfo } props - The props for the ImageView component.
+ * @param {ImageViewProps} props - The props for the ImageView component.
  * @returns A JSX element representing the ImageView component.
  */
 export const ImageView = (props: ImageViewProps) => {

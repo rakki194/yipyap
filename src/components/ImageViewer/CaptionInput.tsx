@@ -10,7 +10,6 @@ import {
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import getIcon, { captionIconsMap } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
-import { preserveState } from "~/directives";
 import { Tools } from "./Tools";
 import { TagBubble } from "./TagBubble";
 import "./CaptionInput.css";
