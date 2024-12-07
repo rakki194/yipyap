@@ -30,6 +30,11 @@
     --kbd-bg: #333;
     --kbd-text: #fff;
   }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--bg-color);
+  --scrollbar-thumb: var(--secondary-bg);
+  --scrollbar-thumb-hover: var(--accent);
 }
 
 /* Light theme */
@@ -44,6 +49,11 @@
   --border: var(--card-bg);
   --border-secondary: var(--accent);
   --placeholder-color: var(--text-secondary);
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--secondary-bg);
+  --scrollbar-thumb: var(--card-bg);
+  --scrollbar-thumb-hover: var(--accent);
 }
 
 /* Gray theme */
@@ -68,6 +78,11 @@
     --kbd-border: #bdbdbd;
     --kbd-text: #333;
   }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--bg-color);
+  --scrollbar-thumb: var(--card-bg);
+  --scrollbar-thumb-hover: var(--accent);
 }
 
 /* Banana theme */
@@ -115,6 +130,11 @@
     z-index: 0;
     pointer-events: none;
   }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--secondary-bg);
+  --scrollbar-thumb: var(--card-bg);
+  --scrollbar-thumb-hover: var(--accent);
 }
 
 /* Strawberry theme */
@@ -133,6 +153,11 @@
   .modal-header {
     background: hsl(348deg 100% 97% / 41.1%);
   }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--secondary-bg);
+  --scrollbar-thumb: #ffb3c0;
+  --scrollbar-thumb-hover: var(--accent);
 }
 
 /* Peanut theme */
@@ -168,6 +193,11 @@
     animation: slide-stripes 300s linear infinite;
     background-size: 200% 100%;
   }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--bg-color);
+  --scrollbar-thumb: var(--card-bg);
+  --scrollbar-thumb-hover: var(--accent);
 }
 
 @keyframes slide-stripes {
@@ -460,6 +490,20 @@
   .modal {
     background: var(--bg-color);
   }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--bg-color);
+  --scrollbar-thumb: var(--card-bg);
+  --scrollbar-thumb-hover: var(--accent);
+
+  /* Add candy cane effect to scrollbar */
+  --scrollbar-candy-stripe: repeating-linear-gradient(
+    45deg,
+    var(--accent) 0,
+    var(--accent) 5px,
+    var(--card-bg) 5px,
+    var(--card-bg) 10px
+  );
 }
 
 @keyframes christmas-lights {
@@ -653,6 +697,11 @@
     filter: drop-shadow(1px 1px 0.1px #f00);
     z-index: -1;
   }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--bg-color);
+  --scrollbar-thumb: var(--card-bg);
+  --scrollbar-thumb-hover: var(--accent);
 }
 
 @keyframes float {
@@ -663,5 +712,58 @@
 
   50% {
     transform: translateY(-10px);
+  }
+}
+
+/* Add global scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Webkit scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Christmas theme special scrollbar */
+:root[data-theme="christmas"] ::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-candy-stripe);
+  background-size: 20px 20px;
+  animation: scroll-candy 60s linear infinite;
+}
+
+/* Halloween theme special scrollbar */
+:root[data-theme="halloween"] ::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+:root[data-theme="halloween"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--shadow-accent);
+}
+
+/* Animation for Christmas scrollbar */
+@keyframes scroll-candy {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100px 0;
   }
 }
