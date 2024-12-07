@@ -1,4 +1,6 @@
+/* Modal Layout */
 @layer modal {
+  /* Base Modal Structure */
   .modal-content {
     position: fixed;
     inset: 0;
@@ -8,6 +10,7 @@
     z-index: 10;
   }
 
+  /* Modal Header */
   .modal-header {
     position: absolute;
     inset-block-start: 0;
@@ -29,6 +32,7 @@
     }
   }
 
+  /* Modal Body Container */
   .modal-body {
     container-type: inline-size;
     display: grid;
@@ -36,17 +40,20 @@
     min-block-size: 100%;
   }
 
+  /* Responsive Layout */
   @container (min-width: 768px) {
     .modal-body.horizontal {
       grid-template-columns: auto minmax(min-content, 80rem);
     }
   }
 
+  /* Modal Actions */
   .modal-actions {
     display: flex;
     gap: var(--spacing);
     padding: var(--spacing);
 
+    /* Theme-specific icon styles */
     .icon {
       :root[data-theme="banana"] & {
         background: var(--text-primary);
@@ -61,6 +68,7 @@
   }
 }
 
+/* Image Container and Layout */
 .modal-body {
   position: relative;
   display: flex;
@@ -73,32 +81,13 @@
   background: var(--preview-bg);
   backdrop-filter: saturate(50%) brightness(0.5) blur(10px);
 
-  &.vertical {
-    /* flex-direction: column; */
-    & > .image-container {
-      align-self: center;
 
-      & > img {
-        height: auto;
-        width: 100vw;
-      }
-    }
-  }
-
-  &.horizontal {
-    /* overflow-y: auto; */
-
-    & > .image-container {
-      & > img {
-        /* width: auto; */
-      }
-    }
-  }
-
+  /* Image Container Styles */
   & > .image-container {
     position: relative;
     flex-shrink: 0;
 
+    /* Base Image Styles */
     & > img {
       object-fit: cover;
       width: 100%;
@@ -107,12 +96,14 @@
       image-rendering: high-quality;
     }
 
+    /* Thumbnail Image */
     & > img.thumbnail {
       position: absolute;
       left: 0;
       top: 0;
     }
 
+    /* Preview Image */
     & > img.preview {
       position: relative;
       z-index: 1;
@@ -125,6 +116,7 @@
   }
 }
 
+/* Image Info Panel */
 .image-info {
   flex-grow: 1;
   z-index: 2;
@@ -140,6 +132,7 @@
   background: var(--preview-bg);
   backdrop-filter: saturate(50%) brightness(0.5) blur(10px);
 
+  /* Metadata Table Styles */
   & > .metadata-table {
     border-radius: 1px;
     border-collapse: collapse;
@@ -149,15 +142,14 @@
       margin-top: calc(var(--spacing) * 6);
     }
 
-    & > tbody > tr {
-      & > td:first-child {
-        display: flex;
-        align-items: center;
-        gap: var(--half-spacing);
-      }
+    & > tbody > tr > td:first-child {
+      display: flex;
+      align-items: center;
+      gap: var(--half-spacing);
     }
   }
 
+  /* Caption Editor Styles */
   & > .caption-editor {
     display: flex;
     flex-direction: column;
@@ -169,6 +161,7 @@
       margin-top: var(--spacing);
     }
 
+    /* Caption Input Wrapper */
     & > .caption-input-wrapper {
       position: relative;
       display: flex;
@@ -213,6 +206,7 @@
   }
 }
 
+/* Generate Tags Button Styles */
 .generate-tags-button {
   display: flex;
   align-items: center;
@@ -227,91 +221,61 @@
   transition: all 0.2s ease;
   width: 100%;
   text-align: left;
+
+  &:hover,
+  .dropdown-content &:hover {
+    background: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  &:active,
+  .dropdown-content &:active {
+    background: color-mix(in srgb, var(--accent) 25%, var(--card-bg));
+  }
+
+  .icon {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover .icon {
+    opacity: 1;
+  }
 }
 
-.generate-tags-button:hover,
-.dropdown-content .generate-tags-button:hover {
-  background: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.generate-tags-button:active,
-.dropdown-content .generate-tags-button:active {
-  background: color-mix(in srgb, var(--accent) 25%, var(--card-bg));
-}
-
-.dropdown-content .generate-tags-button {
-  border: none;
-  background: var(--card-bg);
-}
-
-.dropdown-content .generate-tags-button:last-child {
-  border-bottom: none;
-}
-
-.generate-tags-button .icon {
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.generate-tags-button:hover .icon {
-  opacity: 1;
-}
-
+/* Delete Button Styles */
 .delete-button {
   position: relative;
   overflow: hidden;
-}
 
-.delete-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--progress, 0%);
-  height: 100%;
-  background: rgb(220 38 38);
-  opacity: 0;
-  transition-property: opacity;
-  z-index: -1;
-}
-
-.delete-button svg {
-  transition-property: fill;
-}
-
-.delete-button.holding svg {
-  fill: var(--accent);
-  animation: turnWhite 1.3s forwards;
-  filter: drop-shadow(0 0 1px rgb(0 0 0 / 50%));
-}
-
-@keyframes turnWhite {
-  0%,
-  46% {
-    fill: var(--accent);
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--progress, 0%);
+    height: 100%;
+    background: rgb(220 38 38);
+    opacity: 0;
+    transition-property: opacity;
+    z-index: -1;
   }
 
-  54%,
-  100% {
-    fill: white;
+  &.holding {
+    color: white;
+    background: transparent;
+    animation: pulse 0.75s ease-in-out infinite;
+    box-shadow: 0 0 8px rgb(220 38 38 / 50%);
+
+    &::before {
+      opacity: 1;
+    }
+
+    svg {
+      fill: var(--accent);
+    }
   }
-}
-
-.delete-button.holding::before {
-  opacity: 1;
-}
-
-.delete-button:hover {
-  color: inherit;
-}
-
-.delete-button.holding {
-  color: white;
-  background: transparent;
-  animation: pulse 0.75s ease-in-out infinite;
-  box-shadow: 0 0 8px rgb(220 38 38 / 50%);
 }
 
 @keyframes pulse {
@@ -328,23 +292,18 @@
   }
 }
 
-.delete-button.holding {
-  animation: pulse 0.75s ease-in-out infinite;
-  box-shadow: 0 0 8px rgb(220 38 38 / 50%);
-}
-
 .generate-tags-dropdown {
   position: relative;
   width: 100%;
-}
 
-.generate-tags-dropdown .dropdown-icon {
-  margin-left: auto;
-  transition: transform 0.2s ease;
-}
+  &.dropdown-icon {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+  }
 
-.generate-tags-dropdown .dropdown-icon.expanded {
-  transform: rotate(180deg);
+  & .dropdown-icon.expanded {
+    transform: rotate(180deg);
+  }
 }
 
 .dropdown-content {
@@ -365,18 +324,10 @@
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-default);
   overflow: hidden;
-}
 
-.dropdown-content.expanded {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: all;
-}
-
-.dropdown-content .generate-tags-button {
-  border: none;
-}
-
-.dropdown-content .generate-tags-button:last-child {
-  border-bottom: none;
+  &.expanded {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
 }

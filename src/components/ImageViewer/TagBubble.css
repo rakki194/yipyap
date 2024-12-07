@@ -146,13 +146,14 @@
   transition: all 0.3s ease;
   text-shadow: none;
   backdrop-filter: brightness(0.95);
-  backdrop-filter: brightness(0.95);
-}
 
-/* Add subtle transition for input appearance */
-.tag-bubble input {
+  /* Add subtle transition for input appearance */
   opacity: 0;
   animation: input-fade-in 0.2s ease-out forwards;
+
+  /* Adjust input sizing based on content */
+  box-sizing: content-box;
+  max-width: calc(100% - 20px); /* Account for remove button */
 }
 
 @keyframes input-fade-in {
@@ -205,22 +206,8 @@
 .tag-bubble .tag-content {
   position: relative;
   z-index: 2;
-}
 
-/* Adjust input sizing based on content */
-.tag-bubble input {
-  box-sizing: content-box;
-  max-width: calc(100% - 20px); /* Account for remove button */
-}
-
-/* Ensure input doesn't overflow the bubble */
-.tag-bubble .tag-content {
+  /* Ensure input doesn't overflow the bubble */
   max-width: 100%;
   overflow: hidden;
-}
-
-/* Optional: Add a subtle background for dark text on light bubbles */
-.tag-bubble[style*="color: #000000"] input {
-  backdrop-filter: brightness(1.05);
-  backdrop-filter: brightness(1.05);
 }
