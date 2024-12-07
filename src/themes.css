@@ -74,6 +74,85 @@
   --placeholder-color: var(--text-secondary);
 }
 
+/* Some overloads for simple themes
+
+/* Theme-specific header gradients */
+[data-theme="strawberry"] .modal-header {
+  background: linear-gradient(45deg, #98fb98 0%, #e0ffe0 99%, #e0ffe0 100%);
+}
+
+[data-theme="banana"] .modal-header {
+  background: linear-gradient(120deg, #ffffe0 0%, #fffacd 100%);
+}
+
+/* Theme-specific keyboard styles */
+[data-theme="dark"] kbd {
+  --kbd-bg: #333;
+  --kbd-text: #fff;
+}
+
+[data-theme="peanut"] kbd {
+  --kbd-bg: #d4b483;
+  --kbd-border: #b58d3d;
+  --kbd-text: #4a3810;
+}
+
+[data-theme="gray"] kbd {
+  --kbd-bg: #e0e0e0;
+  --kbd-border: #bdbdbd;
+  --kbd-text: #333;
+}
+
+/* Theme-specific icon colors */
+[data-theme="light"] .banana-icon svg,
+[data-theme="dark"] .banana-icon svg {
+  fill: #ecc62f;
+}
+
+[data-theme="strawberry"] .banana-icon svg {
+  fill: #ebff3c;
+}
+
+/* Theme-specific backgrounds */
+[data-theme="banana"] .controls .filters {
+  border-style: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--bg-color),
+    var(--bg-color) 10px,
+    var(--card-bg) 10px,
+    var(--card-bg) 20px
+  );
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  animation: slide-stripes 300s linear infinite;
+  background-size: 200% 100%;
+}
+
+[data-theme="strawberry"] .controls .filters {
+  border-style: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    #effdf3,
+    #effdf3 10px,
+    var(--card-bg) 10px,
+    var(--card-bg) 20px
+  );
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  animation: slide-stripes 300s linear infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes slide-stripes {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
 /* Christmas theme */
 
 :root[data-theme="christmas"] {
@@ -697,105 +776,5 @@
   to {
     box-shadow: 0 0 10px hsla(137.5, 70%, 45%, 0.7),
       0 0 20px hsla(275, 70%, 45%, 0.5);
-  }
-}
-
-/* Theme-specific header gradients */
-[data-theme="strawberry"] .modal-header {
-  background: linear-gradient(45deg, #98fb98 0%, #e0ffe0 99%, #e0ffe0 100%);
-}
-
-[data-theme="banana"] .modal-header {
-  background: linear-gradient(120deg, #ffffe0 0%, #fffacd 100%);
-}
-
-/* Theme-specific keyboard styles */
-[data-theme="dark"] kbd {
-  --kbd-bg: #333;
-  --kbd-text: #fff;
-}
-
-[data-theme="peanut"] kbd {
-  --kbd-bg: #d4b483;
-  --kbd-border: #b58d3d;
-  --kbd-text: #4a3810;
-}
-
-[data-theme="gray"] kbd {
-  --kbd-bg: #e0e0e0;
-  --kbd-border: #bdbdbd;
-  --kbd-text: #333;
-}
-
-/* Theme-specific icon colors */
-[data-theme="light"] .banana-icon svg,
-[data-theme="dark"] .banana-icon svg {
-  fill: #ecc62f;
-}
-
-[data-theme="strawberry"] .banana-icon svg {
-  fill: #ebff3c;
-}
-
-/* Theme-specific backgrounds */
-[data-theme="banana"] .controls .filters {
-  border-style: none;
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--bg-color),
-    var(--bg-color) 10px,
-    var(--card-bg) 10px,
-    var(--card-bg) 20px
-  );
-  padding: var(--spacing);
-  border-radius: var(--border-radius);
-  animation: slide-stripes 300s linear infinite;
-  background-size: 200% 100%;
-}
-
-[data-theme="strawberry"] .controls .filters {
-  border-style: none;
-  background: repeating-linear-gradient(
-    -45deg,
-    #effdf3,
-    #effdf3 10px,
-    var(--card-bg) 10px,
-    var(--card-bg) 20px
-  );
-  padding: var(--spacing);
-  border-radius: var(--border-radius);
-  animation: slide-stripes 300s linear infinite;
-  background-size: 200% 100%;
-}
-
-[data-theme="banana"] .breadcrumb {
-  background: var(--bg-color);
-  overflow: hidden;
-}
-
-[data-theme="banana"] .breadcrumb::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='75' r='4' opacity='0.4' fill='%23ecc62f'/%3E%3Ccircle cx='70' cy='65' r='2.5' opacity='0.4' fill='%23d5b035'/%3E%3Ccircle cx='110' cy='63' r='3.5' opacity='0.4' fill='%23c29c39'/%3E%3Ccircle cx='150' cy='65' r='2.8' opacity='0.4' fill='%23bb943a'/%3E%3Ccircle cx='190' cy='75' r='3.2' opacity='0.4' fill='%23b58d3d'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='35' r='3.8' opacity='0.35' fill='%23ecc62f'/%3E%3Ccircle cx='50' cy='45' r='2.3' opacity='0.35' fill='%23d1ac36'/%3E%3Ccircle cx='90' cy='47' r='3.3' opacity='0.35' fill='%23c7a138'/%3E%3Ccircle cx='130' cy='45' r='2.6' opacity='0.15' fill='%23be963b'/%3E%3Ccircle cx='170' cy='35' r='3.5' fill='%23b58d3d'/%3E%3C/svg%3E");
-  background-repeat: repeat-x, round;
-  background-position: bottom, top;
-  z-index: 0;
-  pointer-events: none;
-}
-
-[data-theme="banana"] .breadcrumb > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Animation for striped backgrounds */
-@keyframes slide-stripes {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 200% 0;
   }
 }
