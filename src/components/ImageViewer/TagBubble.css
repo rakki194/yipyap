@@ -11,7 +11,8 @@
 }
 
 @keyframes tag-bubble-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
   50% {
@@ -60,21 +61,21 @@
 
 /* Add seeds effect */
 [data-theme="strawberry"] .tag-bubble::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background-image: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.2) 1px,
-    transparent 1px
-  ),
-  radial-gradient(
-    circle at 70% 60%,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.2) 1px,
-    transparent 1px
-  );
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.2) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 70% 60%,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.2) 1px,
+      transparent 1px
+    );
   background-size: 8px 8px;
   opacity: 0.5;
   pointer-events: none;
@@ -82,7 +83,8 @@
 
 /* Add strawberry animation */
 @keyframes tag-bubble-strawberry {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1) rotate(0deg);
     filter: saturate(1);
   }
@@ -109,7 +111,7 @@
 
 /* Add leaf decoration to some tags */
 [data-theme="strawberry"] .tag-bubble:nth-child(3n)::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -3px;
   right: -3px;
@@ -142,6 +144,23 @@
   text-shadow: none;
   backdrop-filter: brightness(0.95);
   -webkit-backdrop-filter: brightness(0.95);
+}
+
+/* Add subtle transition for input appearance */
+.tag-bubble input {
+  opacity: 0;
+  animation: input-fade-in 0.2s ease-out forwards;
+}
+
+@keyframes input-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Input styling for light text */
@@ -196,25 +215,8 @@
   overflow: hidden;
 }
 
-/* Add subtle transition for input appearance */
-.tag-bubble input {
-  opacity: 0;
-  animation: input-fade-in 0.2s ease-out forwards;
-}
-
-@keyframes input-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Optional: Add a subtle background for dark text on light bubbles */
 .tag-bubble[style*="color: #000000"] input {
   backdrop-filter: brightness(1.05);
   -webkit-backdrop-filter: brightness(1.05);
-} 
+}
