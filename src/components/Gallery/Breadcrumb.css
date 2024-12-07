@@ -45,3 +45,7 @@
     }
   }
 }
+
+[data-theme="strawberry"] .breadcrumb {
+  background-color: #e4ffeb; /* Light green background for strawberry theme */
+}
