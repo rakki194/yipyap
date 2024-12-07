@@ -343,10 +343,24 @@
   pointer-events: none;
   transition: all 0.2s ease;
   z-index: 1;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-default);
+  overflow: hidden;
 }
 
 .dropdown-content.expanded {
   opacity: 1;
   transform: translateY(0);
   pointer-events: all;
+}
+
+.dropdown-content .generate-tags-button {
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dropdown-content .generate-tags-button:last-child {
+  border-bottom: none;
 }
