@@ -1,4 +1,7 @@
-/* Simple themes */
+/* src/themes.css
+ *
+ * Theme specific styles
+ */
 
 :root[data-theme="dark"] {
   --bg-color: hsl(0, 0%, 15%);
@@ -719,6 +722,10 @@
     fill: #8022c3;
   }
 
+  .icon-buttons button.active svg {
+    fill: #eed6ff;
+  }
+  
   .breadcrumb {
     background-color: hsl(137.5, 70%, 45%);
     color: white;
