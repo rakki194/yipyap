@@ -177,8 +177,7 @@ export type Theme =
   | "strawberry" 
   | "peanut" 
   | "christmas" 
-  | "halloween"
-  | "golden";
+  | "halloween";
 
 /** 
  * Maps theme names to their corresponding icon identifiers.
@@ -193,7 +192,6 @@ export const themeIconMap = {
   peanut: "peanut",
   christmas: "christmas",
   halloween: "ghost",
-  golden: "golden",
 };
 
 const themes = Object.keys(themeIconMap) as Theme[];

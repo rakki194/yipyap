@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 
@@ -12,9 +12,24 @@ let lastNavigationTime = 0;
 let lastNavigationDirection: "left" | "right" | null = null;
 const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
 
+const isColorDark = (hsl: string) => {
+  // Extract lightness value from HSL string
+  const match = hsl.match(/hsl\(\s*\d+\s*,\s*\d+%\s*,\s*(\d+)%\s*\)/);
+  if (!match) return false;
+  const lightness = parseInt(match[1]);
+  
+  // Also check if it's a dark blue hue (around 200-240)
+  const hueMatch = hsl.match(/hsl\(\s*(\d+)\s*,/);
+  const hue = hueMatch ? parseInt(hueMatch[1]) : 0;
+  
+  // Return true if either:
+  // 1. Lightness is low (< 60%)
+  // 2. It's a dark blue (hue 200-240) with lightness < 70%
+  return lightness < 60 || (hue >= 200 && hue <= 240 && lightness < 70);
+};
+
 export const TagBubble: Component<{
   tag: string;
-  index: number;
   onRemove: () => void;
   onEdit: (newTag: string) => void;
   onNavigate?: (
@@ -43,82 +58,78 @@ export const TagBubble: Component<{
     }
   };
 
-  const getTagLCH = createMemo((): OKLCHColor => {
-    const currentTheme = app.theme;
-    let hash = 0,
-      hue: number;
-    if (currentTheme === "golden") {
-      hue = props.index * 137.508;
-    } else {
-      const tag = props.tag;
-      for (let i = 0; i < tag.length; i++) {
-        hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      hue = hash % 360;
+  const getTagColor = (tag: string) => {
+    let hash = 0;
+    for (let i = 0; i < tag.length; i++) {
+      hash = tag.charCodeAt(i) + ((hash << 5) - hash);
     }
+    const hue = hash % 360;
+
+    const currentTheme = app.theme;
 
     switch (currentTheme) {
       case "dark":
-        return { l: 25, c: 0.1, h: hue };
+        return `hsl(${hue}, 30%, 25%)`;
 
       case "light":
-        return { l: 85, c: 0.1, h: hue };
+        return `hsl(${hue}, 40%, 85%)`;
 
       case "gray":
-        return { l: 45 + (hash % 20), c: 0.05, h: hue };
+        return `hsl(0, 0%, ${45 + (hash % 20)}%)`;
 
       case "banana":
-        return {
-          l: 75 + (hash % 15),
-          c: 0.15 + (hash % 10) / 100,
-          h: 40 + (hash % 40),
-        };
+        // Warm yellow-based colors
+        return `hsl(${40 + (hash % 40)}, ${60 + (hash % 20)}%, ${
+          75 + (hash % 15)
+        }%)`;
 
       case "strawberry":
-        const strawberryHues = [350, 335, 15, 120, 150];
+        // Strawberry-inspired colors: reds, pinks, and greens for leaves
+        const strawberryHues = [
+          350, // Deep red
+          335, // Pink-red
+          15, // Coral-red
+          120, // Leaf green
+          150, // Light green
+        ];
         const selectedStrawberryHue =
           strawberryHues[hash % strawberryHues.length];
-        const isGreen = selectedStrawberryHue >= 120;
 
+        // Adjust saturation and lightness based on the hue
+        const isGreen = selectedStrawberryHue >= 120;
         return isGreen
-          ? {
-              l: 30 + (hash % 15),
-              c: 0.15 + (hash % 10) / 100,
-              h: selectedStrawberryHue,
-            }
-          : {
-              l: 70 + (hash % 20),
-              c: 0.2 + (hash % 10) / 100,
-              h: selectedStrawberryHue,
-            };
+          ? `hsl(${selectedStrawberryHue}, ${50 + (hash % 20)}%, ${
+              30 + (hash % 15)
+            }%)` // Green leaves
+          : `hsl(${selectedStrawberryHue}, ${80 + (hash % 15)}%, ${
+              70 + (hash % 20)
+            }%)`; // Red/pink fruit
 
       case "peanut":
-        return {
-          l: 35 + (hash % 15),
-          c: 0.15 + (hash % 10) / 100,
-          h: 20 + (hash % 30),
-        };
+        // Brown and warm earth tones
+        return `hsl(${20 + (hash % 30)}, ${50 + (hash % 20)}%, ${
+          35 + (hash % 15)
+        }%)`;
 
       case "christmas":
+        // Alternate between Christmas colors
         return hash % 2 === 0
-          ? { l: 35, c: 0.2, h: 350 } // Red
-          : { l: 25, c: 0.2, h: 120 }; // Green
+          ? `hsl(350, ${70 + (hash % 20)}%, ${35 + (hash % 15)}%)` // Red
+          : `hsl(120, ${60 + (hash % 20)}%, ${25 + (hash % 15)}%)`; // Green
 
       case "halloween":
-        const halloweenHues = [25, 280, 150];
+        // Halloween colors: orange, purple, and dark green
+        const halloweenHues = [25, 280, 150]; // Orange, Purple, Dark Green
         const selectedHue = halloweenHues[hash % halloweenHues.length];
-        return { l: 45, c: 0.2, h: selectedHue };
+        return `hsl(${selectedHue}, ${70 + (hash % 20)}%, ${
+          45 + (hash % 15)
+        }%)`;
 
       default:
-        return { l: 80, c: 0.12, h: hue };
+        // Fallback to original behavior
+        return `hsl(${hue}, 40%, 85%)`;
     }
-  });
-
-  const getTagColor = () => {
-    return formatOKLCH(getTagLCH());
   };
-
-  const isColorDark = () => getTagLCH().l < 50;
 
   // Add theme-specific hover effects
   const getHoverStyles = () => {
@@ -135,12 +146,6 @@ export const TagBubble: Component<{
         return {
           transform: "scale(1.05) rotate(-2deg)",
           boxShadow: "0 0 8px rgba(255, 102, 0, 0.5)",
-        };
-
-      case "golden":
-        return {
-          transform: "scale(1.05)",
-          boxShadow: `0 0 8px hsla(137.5, 70%, 45%, 0.5)`,
         };
 
       case "strawberry":
@@ -168,9 +173,6 @@ export const TagBubble: Component<{
 
       case "halloween":
         return "tag-bubble-float 3s ease-in-out infinite";
-
-      case "golden":
-        return "tag-bubble-golden-pulse 4s ease-in-out infinite";
 
       case "strawberry":
         return "tag-bubble-strawberry 3s ease-in-out infinite";
@@ -241,8 +243,8 @@ export const TagBubble: Component<{
     <span
       class="tag-bubble"
       style={{
-        "background-color": getTagColor(),
-        color: isColorDark() ? "#ffffff" : "#000000",
+        "background-color": getTagColor(props.tag),
+        color: isColorDark(getTagColor(props.tag)) ? "#ffffff" : "#000000",
         ...getHoverStyles(),
       }}
     >
@@ -289,14 +291,4 @@ export const TagBubble: Component<{
       </button>
     </span>
   );
-};
-
-type OKLCHColor = {
-  l: number; // Lightness percentage (0-100)
-  c: number; // Chroma (0-0.4 typically)
-  h: number; // Hue (0-360)
-};
-
-const formatOKLCH = ({ l, c, h }: OKLCHColor): string => {
-  return `oklch(${l}% ${c} ${h})`;
 };

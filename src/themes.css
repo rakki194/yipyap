@@ -1,7 +1,17 @@
-/* src/themes.css
- *
- * Theme specific styles
- */
+/* src/themes.css */
+
+/* Theme-specific icon colors */
+
+[data-theme="light"] .banana-icon svg,
+[data-theme="dark"] .banana-icon svg {
+  fill: #ecc62f;
+}
+
+[data-theme="strawberry"] .banana-icon svg {
+  fill: #ebff3c;
+}
+
+/* Dark theme */
 
 :root[data-theme="dark"] {
   --bg-color: hsl(0, 0%, 15%);
@@ -12,6 +22,17 @@
   --accent: #8c51ad;
   --secondary-bg: hsl(0, 0%, 18%);
 }
+
+[data-theme="dark"] .delete-button.holding::before {
+  opacity: 1;
+}
+
+[data-theme="dark"] kbd {
+  --kbd-bg: #333;
+  --kbd-text: #fff;
+}
+
+/* Light theme */
 
 :root[data-theme="light"] {
   --accent: #8839ef;
@@ -24,6 +45,8 @@
   --border-secondary: var(--accent);
   --placeholder-color: var(--text-secondary);
 }
+
+/* Gray theme */
 
 :root[data-theme="gray"] {
   --accent: hsl(265, 54%, 54%);
@@ -41,6 +64,14 @@
   }
 }
 
+[data-theme="gray"] kbd {
+  --kbd-bg: #e0e0e0;
+  --kbd-border: #bdbdbd;
+  --kbd-text: #333;
+}
+
+/* Banana theme */
+
 :root[data-theme="banana"] {
   --accent: #803e00;
   --bg-color: #fff7e6;
@@ -53,70 +84,10 @@
   --placeholder-color: var(--border-secondary);
 }
 
-:root[data-theme="strawberry"] {
-  --accent: #ff3366;
-  --bg-color: #fff0f3;
-  --secondary-bg: #ffd6e0;
-  --card-bg: #ffb3c0;
-  --text-primary: #800020;
-  --text-secondary: #cc0033;
-  --border: #ff8099;
-  --border-secondary: #ff1a4d;
-  --placeholder-color: #cc0033;
-}
-
-:root[data-theme="peanut"] {
-  --accent: #d4a056;
-  --bg-color: #2c1810;
-  --secondary-bg: #402418;
-  --card-bg: #573019;
-  --text-primary: #ffd7aa;
-  --text-secondary: #d4a056;
-  --border: #8b4513;
-  --border-secondary: #d4a056;
-  --placeholder-color: var(--text-secondary);
-}
-
-/* Some overloads for simple themes
-
-/* Theme-specific header gradients */
-[data-theme="strawberry"] .modal-header {
-  background: hsla(348, 100%, 97%, 0.411);
-}
-
 [data-theme="banana"] .modal-header {
   background: linear-gradient(120deg, #ffffe0 0%, #fffacd 100%);
 }
 
-/* Theme-specific keyboard styles */
-[data-theme="dark"] kbd {
-  --kbd-bg: #333;
-  --kbd-text: #fff;
-}
-
-[data-theme="peanut"] kbd {
-  --kbd-bg: #d4b483;
-  --kbd-border: #b58d3d;
-  --kbd-text: #4a3810;
-}
-
-[data-theme="gray"] kbd {
-  --kbd-bg: #e0e0e0;
-  --kbd-border: #bdbdbd;
-  --kbd-text: #333;
-}
-
-/* Theme-specific icon colors */
-[data-theme="light"] .banana-icon svg,
-[data-theme="dark"] .banana-icon svg {
-  fill: #ecc62f;
-}
-
-[data-theme="strawberry"] .banana-icon svg {
-  fill: #ebff3c;
-}
-
-/* Theme-specific backgrounds */
 [data-theme="banana"] .controls .filters {
   border-style: none;
   background: repeating-linear-gradient(
@@ -130,6 +101,60 @@
   border-radius: var(--border-radius);
   animation: slide-stripes 300s linear infinite;
   background-size: 200% 100%;
+}
+
+[data-theme="banana"] .breadcrumb::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='75' r='4' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='70' cy='65' r='2.5' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='110' cy='63' r='3.5' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='150' cy='65' r='2.8' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='190' cy='75' r='3.2' fill='%23663300' opacity='0.4'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='35' r='3.8' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='50' cy='45' r='2.3' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='90' cy='47' r='3.3' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='130' cy='45' r='2.6' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='170' cy='35' r='3.5' fill='%23331a00' opacity='0.35'/%3E%3C/svg%3E");
+  background-size: 200px 100px, 200px 100px;
+  background-repeat: repeat-x, repeat-x;
+  background-position: bottom, top;
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Strawberry theme */
+
+:root[data-theme="strawberry"] {
+  --accent: #ff3366;
+  --bg-color: #fff0f3;
+  --secondary-bg: #ffd6e0;
+  --card-bg: #ffb3c0;
+  --text-primary: #800020;
+  --text-secondary: #cc0033;
+  --border: #ff8099;
+  --border-secondary: #ff1a4d;
+  --placeholder-color: #cc0033;
+}
+
+[data-theme="strawberry"] .modal-header {
+  background: hsla(348, 100%, 97%, 0.411);
+}
+
+
+/* Peanut theme */
+
+:root[data-theme="peanut"] {
+  --accent: #d4a056;
+  --bg-color: #2c1810;
+  --secondary-bg: #402418;
+  --card-bg: #573019;
+  --text-primary: #ffd7aa;
+  --text-secondary: #d4a056;
+  --border: #8b4513;
+  --border-secondary: #d4a056;
+  --placeholder-color: var(--text-secondary);
+}
+
+[data-theme="peanut"] kbd {
+  --kbd-bg: #d4b483;
+  --kbd-border: #b58d3d;
+  --kbd-text: #4a3810;
 }
 
 [data-theme="strawberry"] .controls .filters {
@@ -176,9 +201,10 @@
   /* Add Christmas-specific header gradient */
   .modal-header,
   .breadcrumb {
-    background: linear-gradient(45deg, #c41e3a 0%, #003320 100%);
+    background: linear-gradient(45deg, #c41e3aa2 0%, #0033209f 100%);
     overflow: hidden;
     color: var(--text-primary);
+    padding: 0 var(--spacing);
   }
 
   /* Update breadcrumb link colors */
@@ -620,6 +646,10 @@
     background: var(--bg-color);
   }
 
+  .modal-header {
+    background: linear-gradient(45deg, #c41e3aa2 0%, #0033209f 100%);
+  }
+
   /* Optional: Add a ::after pseudo-element for additional splatter if desired */
   .breadcrumb::after {
     content: "";
@@ -648,113 +678,4 @@
   50% {
     transform: translateY(-10px);
   }
-}
-
-/* Golden theme */
-
-:root[data-theme="golden"] {
-  --accent: hsl(137.5, 70%, 45%);
-  --bg-color: hsl(275, 20%, 95%);
-  --secondary-bg: hsl(52.5, 15%, 90%);
-  --card-bg: hsl(190, 10%, 85%);
-  --text-primary: hsl(327.5, 30%, 25%);
-  --text-secondary: hsl(465, 25%, 35%);
-  --border: hsl(602.5, 15%, 75%);
-  --border-secondary: var(--accent);
-  --placeholder-color: var(--text-secondary);
-  --shadow-color: hsla(137.5, 70%, 45%, 0.2);
-  --shadow-accent: hsla(275, 70%, 45%, 0.3);
-
-  /* Add golden angle gradient to header elements */
-  .modal-header,
-  .breadcrumb {
-    background: linear-gradient(
-      137.5deg,
-      hsl(137.5, 70%, 45%) 0%,
-      var(--bg-color) 100%
-    );
-    color: white;
-  }
-
-  .breadcrumb svg {
-    fill: #8022c3;
-  }
-
-  .icon-buttons button.active svg {
-    fill: #eed6ff;
-  }
-  
-  .breadcrumb {
-    background-color: hsl(137.5, 70%, 45%);
-    color: white;
-  }
-
-  .breadcrumb a,
-  .breadcrumb small {
-    color: white;
-  }
-
-  .card,
-  .image-info {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before,
-  .image-info::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      137.5deg,
-      transparent 0%,
-      transparent 20px,
-      hsla(137.5, 50%, 50%, 0.03) 20px,
-      hsla(137.5, 50%, 50%, 0.03) 40px
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .icon-buttons button.active {
-    background: linear-gradient(137.5deg, #22c351 0%, #8022c3 100%);
-    color: white;
-    animation: golden-glow 2s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes golden-spin {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(137.5deg);
-  }
-}
-
-@keyframes golden-glow {
-  from {
-    box-shadow: 0 0 5px hsla(137.5, 70%, 45%, 0.5),
-      0 0 10px hsla(275, 70%, 45%, 0.3);
-  }
-  to {
-    box-shadow: 0 0 10px hsla(137.5, 70%, 45%, 0.7),
-      0 0 20px hsla(275, 70%, 45%, 0.5);
-  }
-}
-
-[data-theme="banana"] .breadcrumb::before{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: 
-    url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='75' r='4' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='70' cy='65' r='2.5' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='110' cy='63' r='3.5' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='150' cy='65' r='2.8' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='190' cy='75' r='3.2' fill='%23663300' opacity='0.4'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='35' r='3.8' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='50' cy='45' r='2.3' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='90' cy='47' r='3.3' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='130' cy='45' r='2.6' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='170' cy='35' r='3.5' fill='%23331a00' opacity='0.35'/%3E%3C/svg%3E");
-  background-size: 200px 100px, 200px 100px;
-  background-repeat: repeat-x, repeat-x;
-  background-position: bottom, top;
-  opacity: 0.5;
-  z-index: 0;
-  pointer-events: none;
 }
