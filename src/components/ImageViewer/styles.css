@@ -1,14 +1,43 @@
-.modal-content {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+@layer modal {
+  .modal-content {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    position: absolute;
+    inset-block-start: 0;
+    inline-size: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: clamp(0.5rem, 2vw, 1rem);
+    padding-block: clamp(0.25rem, 1vw, 0.5rem);
+    color: var(--accent);
+    z-index: 10;
+    font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+    
+    @supports (backdrop-filter: blur(10px)) {
+      background: transparent;
+      backdrop-filter: blur(10px);
+    }
+  }
+
+  .modal-body {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-block-size: 100%;
+  }
+
+  @container (min-width: 768px) {
+    .modal-body.horizontal {
+      grid-template-columns: auto minmax(min-content, 80rem);
+    }
+  }
 }
 
 .modal-header {
@@ -216,26 +245,41 @@
   gap: var(--spacing);
   padding: var(--spacing);
   margin: 0;
-  background: var(--secondary-bg);
-  border: none;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   cursor: pointer;
-  color: var(--text);
+  color: var(--text-primary);
   font-size: 1rem;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   width: 100%;
   text-align: left;
 }
 
-.generate-tags-button:hover {
-  background: var(--hover-bg);
+.generate-tags-button:hover,
+.dropdown-content .generate-tags-button:hover {
+  background: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
-.generate-tags-button:active {
-  background: var(--active-bg);
+.generate-tags-button:active,
+.dropdown-content .generate-tags-button:active {
+  background: color-mix(in srgb, var(--accent) 25%, var(--card-bg));
+}
+
+.dropdown-content .generate-tags-button {
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
+}
+
+.dropdown-content .generate-tags-button:last-child {
+  border-bottom: none;
 }
 
 .generate-tags-button .icon {
   opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
 .generate-tags-button:hover .icon {
