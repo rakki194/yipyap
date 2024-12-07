@@ -774,4 +774,13 @@ textarea::placeholder {
   pointer-events: none;
   transform: scale(0.8);
   filter: drop-shadow(1px 1px 0.1px #ff0000);
+  z-index: -1;
+}
+
+/* Ensure textareas, inputs, and selects are above SVG splatters */
+textarea,
+input,
+select {
+  position: relative;
+  z-index: 0;
 }
