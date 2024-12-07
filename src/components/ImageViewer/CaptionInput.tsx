@@ -6,6 +6,7 @@ import {
   JSX,
   For,
   createEffect,
+  Index,
 } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import getIcon, { captionIconsMap } from "~/icons";
@@ -244,16 +245,17 @@ export const CaptionInput: Component<
       {isTagInput() ? (
         <div class="tags-container">
           <div class="tags-list">
-            <For each={tags()}>
-              {(tag) => (
+            <Index each={tags()}>
+              {(getTag, i) => (
                 <TagBubble
-                  tag={tag}
-                  onRemove={() => removeTag(tag)}
-                  onEdit={(newTag) => editTag(tag, newTag)}
-                  onNavigate={(direction) => navigateTag(tag, direction)}
+                  tag={getTag()}
+                  index={i}
+                  onRemove={() => removeTag(getTag())}
+                  onEdit={(newTag) => editTag(getTag(), newTag)}
+                  onNavigate={(direction) => navigateTag(getTag(), direction)}
                 />
               )}
-            </For>
+            </Index>
           </div>
           <div class="new-tag-input">
             <input

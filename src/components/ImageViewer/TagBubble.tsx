@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createMemo, createSignal } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 
@@ -12,17 +12,9 @@ let lastNavigationTime = 0;
 let lastNavigationDirection: "left" | "right" | null = null;
 const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
 
-// Add this helper function at the top of the file
-const isColorDark = (hsl: string) => {
-  // Extract lightness value from HSL string
-  const match = hsl.match(/hsl\(\s*\d+\s*,\s*\d+%\s*,\s*(\d+)%\s*\)/);
-  if (!match) return false;
-  const lightness = parseInt(match[1]);
-  return lightness < 50;
-};
-
 export const TagBubble: Component<{
   tag: string;
+  index: number;
   onRemove: () => void;
   onEdit: (newTag: string) => void;
   onNavigate?: (
@@ -51,84 +43,82 @@ export const TagBubble: Component<{
     }
   };
 
-  const getTagColor = (tag: string) => {
-    let hash = 0;
-    for (let i = 0; i < tag.length; i++) {
-      hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const hue = hash % 360;
-
+  const getTagLCH = createMemo((): OKLCHColor => {
     const currentTheme = app.theme;
+    let hash = 0,
+      hue: number;
+    if (currentTheme === "golden") {
+      hue = props.index * 137.508;
+    } else {
+      const tag = props.tag;
+      for (let i = 0; i < tag.length; i++) {
+        hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      hue = hash % 360;
+    }
 
     switch (currentTheme) {
       case "dark":
-        return `hsl(${hue}, 30%, 25%)`;
+        return { l: 25, c: 0.1, h: hue };
 
       case "light":
-        return `hsl(${hue}, 40%, 85%)`;
+        return { l: 85, c: 0.1, h: hue };
 
       case "gray":
-        return `hsl(0, 0%, ${45 + (hash % 20)}%)`;
+        return { l: 45 + (hash % 20), c: 0.05, h: hue };
 
       case "banana":
-        // Warm yellow-based colors
-        return `hsl(${40 + (hash % 40)}, ${60 + (hash % 20)}%, ${
-          75 + (hash % 15)
-        }%)`;
+        return {
+          l: 75 + (hash % 15),
+          c: 0.15 + (hash % 10) / 100,
+          h: 40 + (hash % 40),
+        };
 
       case "strawberry":
-        // Strawberry-inspired colors: reds, pinks, and greens for leaves
-        const strawberryHues = [
-          350, // Deep red
-          335, // Pink-red
-          15, // Coral-red
-          120, // Leaf green
-          150, // Light green
-        ];
+        const strawberryHues = [350, 335, 15, 120, 150];
         const selectedStrawberryHue =
           strawberryHues[hash % strawberryHues.length];
-
-        // Adjust saturation and lightness based on the hue
         const isGreen = selectedStrawberryHue >= 120;
+
         return isGreen
-          ? `hsl(${selectedStrawberryHue}, ${50 + (hash % 20)}%, ${
-              30 + (hash % 15)
-            }%)` // Green leaves
-          : `hsl(${selectedStrawberryHue}, ${80 + (hash % 15)}%, ${
-              70 + (hash % 20)
-            }%)`; // Red/pink fruit
+          ? {
+              l: 30 + (hash % 15),
+              c: 0.15 + (hash % 10) / 100,
+              h: selectedStrawberryHue,
+            }
+          : {
+              l: 70 + (hash % 20),
+              c: 0.2 + (hash % 10) / 100,
+              h: selectedStrawberryHue,
+            };
 
       case "peanut":
-        // Brown and warm earth tones
-        return `hsl(${20 + (hash % 30)}, ${50 + (hash % 20)}%, ${
-          35 + (hash % 15)
-        }%)`;
+        return {
+          l: 35 + (hash % 15),
+          c: 0.15 + (hash % 10) / 100,
+          h: 20 + (hash % 30),
+        };
 
       case "christmas":
-        // Alternate between Christmas colors
         return hash % 2 === 0
-          ? `hsl(350, ${70 + (hash % 20)}%, ${35 + (hash % 15)}%)` // Red
-          : `hsl(120, ${60 + (hash % 20)}%, ${25 + (hash % 15)}%)`; // Green
+          ? { l: 35, c: 0.2, h: 350 } // Red
+          : { l: 25, c: 0.2, h: 120 }; // Green
 
       case "halloween":
-        // Halloween colors: orange, purple, and dark green
-        const halloweenHues = [25, 280, 150]; // Orange, Purple, Dark Green
+        const halloweenHues = [25, 280, 150];
         const selectedHue = halloweenHues[hash % halloweenHues.length];
-        return `hsl(${selectedHue}, ${70 + (hash % 20)}%, ${
-          45 + (hash % 15)
-        }%)`;
-
-      case "golden":
-        // Use golden angle (137.5°) to generate harmonious colors
-        const goldenAngle = 137.5;
-        const rotation = (hash % 8) * goldenAngle;
-        return `hsl(${rotation}, 70%, 45%)`;
+        return { l: 45, c: 0.2, h: selectedHue };
 
       default:
-        // Fallback to original behavior
-        return `hsl(${hue}, 40%, 85%)`;
+        return { l: 80, c: 0.12, h: hue };
     }
+  });
+
+  const getTagColor = () => {
+    return formatOKLCH(getTagLCH());
   };
+
+  const isColorDark = () => getTagLCH().l < 50;
 
   // Add theme-specific hover effects
   const getHoverStyles = () => {
@@ -251,8 +241,8 @@ export const TagBubble: Component<{
     <span
       class="tag-bubble"
       style={{
-        "background-color": getTagColor(props.tag),
-        color: isColorDark(getTagColor(props.tag)) ? "#ffffff" : "#000000",
+        "background-color": getTagColor(),
+        color: isColorDark() ? "#ffffff" : "#000000",
         ...getHoverStyles(),
       }}
     >
@@ -299,4 +289,14 @@ export const TagBubble: Component<{
       </button>
     </span>
   );
+};
+
+type OKLCHColor = {
+  l: number; // Lightness percentage (0-100)
+  c: number; // Chroma (0-0.4 typically)
+  h: number; // Hue (0-360)
+};
+
+const formatOKLCH = ({ l, c, h }: OKLCHColor): string => {
+  return `oklch(${l}% ${c} ${h})`;
 };
