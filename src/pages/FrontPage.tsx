@@ -6,10 +6,31 @@ import getIcon from "~/icons";
 import "~/styles.css";
 import "~/components/FadeIn.css";
 import "./FrontPage.css";
+import { useAppContext } from "~/contexts/app";
 
 const FrontPage: Component = () => {
   const navigate = useNavigate();
+  const app = useAppContext();
   const [isVisible, setIsVisible] = createSignal(true);
+
+  const getRandomSubtitle = () => {
+    if (app.disableJapanese) {
+      return "";
+    }
+    
+    const japaneseSubtitles = [
+      "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+      "私たちは別の祈り方を見つけました",
+      "デジタルの残響は沈黙の皮膚を貫通し、不可視の共鳴を囁く",
+      "虚ろな瞳に映る、無限の宇宙",
+      "錆びた心、新たな芽吹き",
+      "夢と現実が交錯する、不思議な境地",
+      "未知の領域、無限の可能性",
+      "時の流れを超えた、永遠の愛",
+    ];
+
+    return japaneseSubtitles[Math.floor(Math.random() * japaneseSubtitles.length)];
+  };
 
   const handleSelection = (type: "image" | "audio") => {
     setIsVisible(false); // Trigger the fade-out transition
@@ -30,14 +51,7 @@ const FrontPage: Component = () => {
         </span>
         <br /> ~yipyap
         <br />{" "}
-        <span class="subtitle">
-          {
-            [
-              "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-              "私たちは別の祈り方を見つけました",
-            ][Math.floor(Math.random() * 2)]
-          }
-        </span>
+        <span class="subtitle">{getRandomSubtitle()}</span>
       </h1>
       <div class="selection-buttons">
         <button

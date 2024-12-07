@@ -302,12 +302,30 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 </div>
               </div>
             </div>
+
+            <div class="settings-column">
+              <h3>Language</h3>
+              <div class="setting-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={app.disableJapanese}
+                    onChange={(e) =>
+                      app.setDisableJapanese(e.currentTarget.checked)
+                    }
+                  />
+                  Disable Japanese Text
+                </label>
+              </div>
+            </div>
           </div>
 
           <section class="warning-section">
-            <p class="warning-text">
-              <span>⚠️警告！これを使うと狼になります！</span>
-            </p>
+            <Show when={!app.disableJapanese}>
+              <p class="warning-text">
+                <span>⚠️警告！これを使うと狼になります！</span>
+              </p>
+            </Show>
             <label>
               <input
                 type="checkbox"
