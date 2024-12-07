@@ -566,17 +566,17 @@
 /* Halloween theme */
 
 :root[data-theme="halloween"] {
-  --accent: #f60;
+  --accent: rgb(255, 0, 0);
   --bg-color: #1a1a1a;
   --secondary-bg: #2d2d2d;
   --card-bg: #333;
   --text-primary: #f0f0f0;
   --text-secondary: #b3b3b3;
-  --border: #f60;
-  --border-secondary: #800080;
+  --border: rgb(255, 0, 0);
+  --border-secondary: #800000;
   --placeholder-color: var(--text-secondary);
-  --shadow-color: rgb(255 102 0 / 40%);
-  --shadow-accent: #800080;
+  --shadow-color: rgba(255, 0, 0, 0.4);
+  --shadow-accent: #800000;
 
   /* Add Halloween-specific header gradient */
   .modal-header,
@@ -606,7 +606,7 @@
   .breadcrumb a,
   .breadcrumb .icon svg {
     color: #f00;
-    fill: #f00;
+    fill: rgb(255, 255, 255);
     text-shadow: 0 0 4px rgb(255 0 0 / 30%);
   }
 
@@ -620,7 +620,7 @@
 
   /* Add spooky shadow effect to cards */
   .card {
-    box-shadow: 0 4px 8px rgb(255 102 0 / 20%);
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.2);
     border-color: var(--border);
     transition: all 0.3s ease;
   }
@@ -658,12 +658,12 @@
 
   /* Make selection overlay orange */
   .item.selected::after {
-    box-shadow: inset 0 0 0 2px #f60;
+    box-shadow: inset 0 0 0 2px rgb(255, 0, 0);
   }
 
   /* Add glow effect to selected items */
   .item.selected {
-    box-shadow: 0 0 15px rgb(255 102 0 / 30%);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
   }
 
   /* Fix modal header spacing in Halloween theme */
