@@ -7,6 +7,7 @@ import {
   JSX,
   onCleanup,
   Component,
+  Show,
 } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
@@ -76,14 +77,22 @@ export const ImageModal = (props: ImageModalProps) => {
   const getLayout = createMemo(() =>
     computeLayout(props.imageInfo, windowSize)
   );
+  const [showMetadata, setShowMetadata] = createSignal(false);
+
   return (
     <div class="modal-content">
-      <ModalHeader imageInfo={props.imageInfo} onClose={props.onClose} />
+      <ModalHeader imageInfo={props.imageInfo} onClose={props.onClose} 
+        onToggleMetadata={() => setShowMetadata(prev => !prev)} 
+      />
       <ModelBody
         imageInfo={props.imageInfo}
         captions={props.captions}
         layout={getLayout()}
-      />
+      >
+        <Show when={showMetadata()}>
+          <ImageInfo imageInfo={props.imageInfo} />
+        </Show>
+      </ModelBody>
     </div>
   );
 };
@@ -92,6 +101,7 @@ const ModelBody = (props: {
   captions: Captions;
   imageInfo: ImageInfoType;
   layout: LayoutInfo;
+  children?: JSX.Element;
 }) => {
   const gallery = useGallery();
   let refImageInfo!: HTMLDivElement;
@@ -179,7 +189,6 @@ const ModelBody = (props: {
           setFocused(true);
         }}
       >
-        <ImageInfo imageInfo={props.imageInfo} />
         <div class="caption-actions">
           <GenerateTagsDropdown imageInfo={props.imageInfo} />
         </div>
@@ -205,6 +214,7 @@ const ModelBody = (props: {
             )}
           </Index>
         </div>
+        {props.children}
       </div>
     </div>
   );
@@ -213,6 +223,7 @@ const ModelBody = (props: {
 const ModalHeader = (props: {
   imageInfo: ImageInfoType;
   onClose: () => void;
+  onToggleMetadata: () => void;
 }) => {
   const gallery = useGallery();
   const app = useAppContext();
@@ -299,6 +310,15 @@ const ModalHeader = (props: {
           title="Close image viewer"
         >
           {getIcon("dismiss")}
+        </button>
+        <button
+          type="button"
+          class="icon metadata-button"
+          onClick={props.onToggleMetadata}
+          title="Show Metadata"
+          aria-label="Show Metadata"
+        >
+          {getIcon("info")}
         </button>
       </div>
     </div>
