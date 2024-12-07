@@ -293,18 +293,6 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   <label>
                     <input
                       type="checkbox"
-                      checked={app.disableVerticalLayout}
-                      onChange={(e) =>
-                        app.setDisableVerticalLayout(e.currentTarget.checked)
-                      }
-                    />
-                    Disable Vertical Layout
-                  </label>
-                </div>
-                <div class="icon-buttons">
-                  <label>
-                    <input
-                      type="checkbox"
                       checked={app.disableAnimations}
                       onChange={(e) =>
                         app.setDisableAnimations(e.currentTarget.checked)

@@ -73,9 +73,8 @@ const GenerateTagsDropdown: Component<{ imageInfo: ImageInfoType }> = (props) =>
 
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
-  const app = useAppContext();
   const getLayout = createMemo(() =>
-    computeLayout(props.imageInfo, windowSize, app.disableVerticalLayout)
+    computeLayout(props.imageInfo, windowSize)
   );
   return (
     <div class="modal-content">
@@ -157,14 +156,10 @@ const ModelBody = (props: {
         });
       }
     } else {
-      const offset = layout.free_height - refImageInfo.offsetHeight;
-      if (offset >= 0) {
-        setStyle(undefined);
-      } else {
-        setStyle({
-          transform: `translateY(${offset}px)`,
-        });
-      }
+      const offset = -refImageInfo.offsetWidth;
+      setStyle({
+        transform: `translateX(${offset}px)`,
+      });
     }
 
     return path;
@@ -319,11 +314,7 @@ type LayoutInfo = Size & {
   free_height: number;
 };
 
-function computeLayout(
-  image: Size,
-  windowSize: Readonly<Size>,
-  disable_vertical?: boolean
-): LayoutInfo {
+function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
   const { width: viewWidth, height: viewHeight } = windowSize;
   if (image === null) {
     //FIXME: we don't need this
@@ -340,8 +331,7 @@ function computeLayout(
 
   const width_scale = viewWidth / imageWidth;
   const height_scale = viewHeight / imageHeight;
-  const layout =
-    disable_vertical || width_scale > height_scale ? "horizontal" : "vertical";
+  const layout = width_scale > height_scale ? "horizontal" : "vertical";
   const scale = layout === "vertical" ? width_scale : height_scale;
   const width = imageWidth * scale;
   const height = imageHeight * scale;

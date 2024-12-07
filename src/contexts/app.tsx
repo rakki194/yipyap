@@ -27,9 +27,7 @@ export interface AppContext {
   // Settings
   readonly instantDelete: boolean;           // Whether to skip delete confirmation
   setInstantDelete: (value: boolean) => void;
-  readonly disableVerticalLayout: boolean;   // Layout preference
-  setDisableVerticalLayout: (value: boolean) => void;
-  readonly disableAnimations: boolean;       // Animation preference
+  readonly disableAnimations: boolean;
   setDisableAnimations: (value: boolean) => void;
   readonly disableJapanese: boolean;         // Language preference
   setDisableJapanese: (value: boolean) => void;
@@ -45,14 +43,11 @@ const createAppContext = (): AppContext => {
     prevRoute?: Location;
     theme: Theme;
     instantDelete: boolean;
-    disableVerticalLayout: boolean;
     disableAnimations: boolean;
     disableJapanese: boolean;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
-    disableVerticalLayout:
-      localStorage.getItem("disableVerticalLayout") === "true",
     disableAnimations: localStorage.getItem("disableAnimations") === "true",
     disableJapanese: localStorage.getItem("disableJapanese") === "true",
   });
@@ -76,12 +71,6 @@ const createAppContext = (): AppContext => {
   });
   createRenderEffect(() =>
     localStorage.setItem("instantDelete", store.instantDelete.toString())
-  );
-  createRenderEffect(() =>
-    localStorage.setItem(
-      "disableVerticalLayout",
-      store.disableVerticalLayout.toString()
-    )
   );
   createRenderEffect(() => {
     localStorage.setItem(
@@ -125,11 +114,6 @@ const createAppContext = (): AppContext => {
       return store.instantDelete;
     },
     setInstantDelete: (value: boolean) => setStore("instantDelete", value),
-    get disableVerticalLayout() {
-      return store.disableVerticalLayout;
-    },
-    setDisableVerticalLayout: (value: boolean) =>
-      setStore("disableVerticalLayout", value),
     get disableAnimations() {
       return store.disableAnimations;
     },
