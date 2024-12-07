@@ -1,4 +1,5 @@
 import { Component, createSignal } from "solid-js";
+import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 
 // Create a simple focus directive
@@ -28,6 +29,7 @@ export const TagBubble: Component<{
     direction: "left" | "right" | "up" | "down" | "start" | "end"
   ) => void;
 }> = (props) => {
+  const app = useAppContext();
   const [isEditing, setIsEditing] = createSignal(false);
   const [editValue, setEditValue] = createSignal(props.tag);
   let inputRef: HTMLInputElement | undefined;
@@ -56,62 +58,72 @@ export const TagBubble: Component<{
     }
     const hue = hash % 360;
 
-    // Get the current theme
-    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const currentTheme = app.theme;
 
     switch (currentTheme) {
       case "dark":
         return `hsl(${hue}, 30%, 25%)`;
-        
+
       case "light":
         return `hsl(${hue}, 40%, 85%)`;
-        
+
       case "gray":
         return `hsl(0, 0%, ${45 + (hash % 20)}%)`;
-        
+
       case "banana":
         // Warm yellow-based colors
-        return `hsl(${40 + (hash % 40)}, ${60 + (hash % 20)}%, ${75 + (hash % 15)}%)`;
-        
+        return `hsl(${40 + (hash % 40)}, ${60 + (hash % 20)}%, ${
+          75 + (hash % 15)
+        }%)`;
+
       case "strawberry":
         // Strawberry-inspired colors: reds, pinks, and greens for leaves
         const strawberryHues = [
-          350,  // Deep red
-          335,  // Pink-red
-          15,   // Coral-red
-          120,  // Leaf green
-          150   // Light green
+          350, // Deep red
+          335, // Pink-red
+          15, // Coral-red
+          120, // Leaf green
+          150, // Light green
         ];
-        const selectedStrawberryHue = strawberryHues[hash % strawberryHues.length];
-        
+        const selectedStrawberryHue =
+          strawberryHues[hash % strawberryHues.length];
+
         // Adjust saturation and lightness based on the hue
         const isGreen = selectedStrawberryHue >= 120;
-        return isGreen 
-          ? `hsl(${selectedStrawberryHue}, ${50 + (hash % 20)}%, ${30 + (hash % 15)}%)`  // Green leaves
-          : `hsl(${selectedStrawberryHue}, ${80 + (hash % 15)}%, ${70 + (hash % 20)}%)`; // Red/pink fruit
-        
+        return isGreen
+          ? `hsl(${selectedStrawberryHue}, ${50 + (hash % 20)}%, ${
+              30 + (hash % 15)
+            }%)` // Green leaves
+          : `hsl(${selectedStrawberryHue}, ${80 + (hash % 15)}%, ${
+              70 + (hash % 20)
+            }%)`; // Red/pink fruit
+
       case "peanut":
         // Brown and warm earth tones
-        return `hsl(${20 + (hash % 30)}, ${50 + (hash % 20)}%, ${35 + (hash % 15)}%)`;
-        
+        return `hsl(${20 + (hash % 30)}, ${50 + (hash % 20)}%, ${
+          35 + (hash % 15)
+        }%)`;
+
       case "christmas":
         // Alternate between Christmas colors
         return hash % 2 === 0
-          ? `hsl(350, ${70 + (hash % 20)}%, ${35 + (hash % 15)}%)`  // Red
+          ? `hsl(350, ${70 + (hash % 20)}%, ${35 + (hash % 15)}%)` // Red
           : `hsl(120, ${60 + (hash % 20)}%, ${25 + (hash % 15)}%)`; // Green
-        
+
       case "halloween":
         // Halloween colors: orange, purple, and dark green
         const halloweenHues = [25, 280, 150]; // Orange, Purple, Dark Green
         const selectedHue = halloweenHues[hash % halloweenHues.length];
-        return `hsl(${selectedHue}, ${70 + (hash % 20)}%, ${45 + (hash % 15)}%)`;
-        
+        return `hsl(${selectedHue}, ${70 + (hash % 20)}%, ${
+          45 + (hash % 15)
+        }%)`;
+
       case "golden":
         // Use golden angle (137.5°) to generate harmonious colors
         const goldenAngle = 137.5;
         const rotation = (hash % 8) * goldenAngle;
         return `hsl(${rotation}, 70%, 45%)`;
-        
+
       default:
         // Fallback to original behavior
         return `hsl(${hue}, 40%, 85%)`;
@@ -121,33 +133,33 @@ export const TagBubble: Component<{
   // Add theme-specific hover effects
   const getHoverStyles = () => {
     const currentTheme = document.documentElement.getAttribute("data-theme");
-    
+
     switch (currentTheme) {
       case "christmas":
         return {
           transform: "scale(1.05)",
           boxShadow: "0 0 8px rgba(196, 30, 58, 0.5)",
         };
-        
+
       case "halloween":
         return {
           transform: "scale(1.05) rotate(-2deg)",
           boxShadow: "0 0 8px rgba(255, 102, 0, 0.5)",
         };
-        
+
       case "golden":
         return {
           transform: "scale(1.05)",
           boxShadow: `0 0 8px hsla(137.5, 70%, 45%, 0.5)`,
         };
-        
+
       case "strawberry":
         return {
           transform: "scale(1.05)",
           boxShadow: "0 0 8px rgba(255, 51, 102, 0.5)",
           filter: "saturate(1.2)",
         };
-        
+
       default:
         return {
           transform: "scale(1.05)",
@@ -159,20 +171,20 @@ export const TagBubble: Component<{
   // Add CSS for theme-specific animations
   const getTagBubbleAnimations = () => {
     const currentTheme = document.documentElement.getAttribute("data-theme");
-    
+
     switch (currentTheme) {
       case "christmas":
         return "tag-bubble-twinkle 2s ease-in-out infinite alternate";
-        
+
       case "halloween":
         return "tag-bubble-float 3s ease-in-out infinite";
-        
+
       case "golden":
         return "tag-bubble-golden-pulse 4s ease-in-out infinite";
-        
+
       case "strawberry":
         return "tag-bubble-strawberry 3s ease-in-out infinite";
-        
+
       default:
         return "none";
     }
@@ -240,7 +252,7 @@ export const TagBubble: Component<{
       class="tag-bubble"
       style={{
         "background-color": getTagColor(props.tag),
-        "color": isColorDark(getTagColor(props.tag)) ? "#ffffff" : "#000000",
+        color: isColorDark(getTagColor(props.tag)) ? "#ffffff" : "#000000",
         ...getHoverStyles(),
       }}
     >
@@ -250,7 +262,7 @@ export const TagBubble: Component<{
             type="text"
             value={editValue()}
             style={{
-              "color": "inherit",
+              color: "inherit",
               "background-color": "transparent",
               "border-color": "currentColor",
             }}
