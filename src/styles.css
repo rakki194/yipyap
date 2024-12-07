@@ -140,8 +140,8 @@
   .modal-header,
   .breadcrumb {
     background: linear-gradient(45deg, #c41e3a 0%, #003320 100%);
-    position: relative;
     overflow: hidden;
+    color: var(--text-primary);
   }
 
   /* Update breadcrumb link colors */
@@ -361,9 +361,9 @@
 
 /* Add Christmas-specific keyboard styles */
 [data-theme="christmas"] kbd {
-  --kbd-bg: #1a472a;
-  --kbd-border: #d42426;
-  --kbd-text: #f8b229;
+  --kbd-bg: var(--card-bg);
+  --kbd-border: var(--border);
+  --kbd-text: var(--text-secondary);
 }
 
 .no-animations {

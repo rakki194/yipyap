@@ -18,7 +18,7 @@ const isColorDark = (hsl: string) => {
   const match = hsl.match(/hsl\(\s*\d+\s*,\s*\d+%\s*,\s*(\d+)%\s*\)/);
   if (!match) return false;
   const lightness = parseInt(match[1]);
-  return lightness < 60;
+  return lightness < 50;
 };
 
 export const TagBubble: Component<{
