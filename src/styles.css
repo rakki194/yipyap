@@ -1,4 +1,4 @@
-@import './themes.css';
+@import "./themes.css";
 
 @layer reset, modal;
 
@@ -121,6 +121,22 @@
   --placeholder-color: var(--text-secondary);
 }
 
+@keyframes christmas-lights {
+  0%,
+  100% {
+    fill: #0066cc;
+  } /* Darker Blue */
+  25% {
+    fill: #ff4a4a;
+  } /* Red */
+  50% {
+    fill: #4aff4a;
+  } /* Green */
+  75% {
+    fill: #ffd700;
+  } /* Gold */
+}
+
 :root[data-theme="christmas"] {
   --accent: #c41e3a; /* Traditional Christmas red */
   --bg-color: #003320; /* Rich forest green */
@@ -171,154 +187,145 @@
   .overlay .icon:nth-child(4n) svg {
     animation-delay: -3s;
   }
-}
 
-@keyframes christmas-lights {
-  0%,
-  100% {
-    fill: #0066cc;
-  } /* Darker Blue */
-  25% {
-    fill: #ff4a4a;
-  } /* Red */
-  50% {
-    fill: #4aff4a;
-  } /* Green */
-  75% {
-    fill: #ffd700;
-  } /* Gold */
-}
+  /* Add falling snow animation to modal header */
+  .modal-header::before,
+  .breadcrumb::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background-image: radial-gradient(
+        1.5px 1.5px at 10% 30%,
+        rgba(255, 255, 255, 0.9) 100%,
+        transparent
+      ),
+      radial-gradient(
+        2px 2px at 25% 50%,
+        rgba(255, 255, 255, 0.8) 100%,
+        transparent
+      ),
+      radial-gradient(
+        2.5px 2.5px at 40% 70%,
+        rgba(255, 255, 255, 0.7) 100%,
+        transparent
+      ),
+      radial-gradient(
+        3px 3px at 55% 25%,
+        rgba(255, 255, 255, 0.9) 100%,
+        transparent
+      ),
+      radial-gradient(
+        1.5px 1.5px at 70% 90%,
+        rgba(255, 255, 255, 0.8) 100%,
+        transparent
+      ),
+      radial-gradient(
+        2px 2px at 85% 45%,
+        rgba(255, 255, 255, 0.7) 100%,
+        transparent
+      ),
+      radial-gradient(
+        2.5px 2.5px at 95% 65%,
+        rgba(255, 255, 255, 0.9) 100%,
+        transparent
+      );
+    background-size: 500px 500px;
+    animation: snow 20s linear infinite;
+    pointer-events: none;
+    opacity: 0.5;
+  }
 
-/* Add falling snow animation to modal header */
-[data-theme="christmas"] .modal-header::before,
-[data-theme="christmas"] .breadcrumb::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  right: -50%;
-  bottom: -50%;
-  background-image: radial-gradient(
-      1.5px 1.5px at 10% 30%,
-      rgba(255, 255, 255, 0.9) 100%,
-      transparent
-    ),
-    radial-gradient(
-      2px 2px at 25% 50%,
-      rgba(255, 255, 255, 0.8) 100%,
-      transparent
-    ),
-    radial-gradient(
-      2.5px 2.5px at 40% 70%,
-      rgba(255, 255, 255, 0.7) 100%,
-      transparent
-    ),
-    radial-gradient(
-      3px 3px at 55% 25%,
-      rgba(255, 255, 255, 0.9) 100%,
-      transparent
-    ),
-    radial-gradient(
-      1.5px 1.5px at 70% 90%,
-      rgba(255, 255, 255, 0.8) 100%,
-      transparent
-    ),
-    radial-gradient(
-      2px 2px at 85% 45%,
-      rgba(255, 255, 255, 0.7) 100%,
-      transparent
-    ),
-    radial-gradient(
-      2.5px 2.5px at 95% 65%,
-      rgba(255, 255, 255, 0.9) 100%,
-      transparent
-    );
-  background-size: 500px 500px;
-  animation: snow 20s linear infinite;
-  pointer-events: none;
-  opacity: 0.5;
-}
+  /* Add a second snow layer for depth */
+  .modal-header::after,
+  .breadcrumb::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background-image: radial-gradient(
+        2px 2px at 15% 15%,
+        rgba(255, 255, 255, 0.6) 100%,
+        transparent
+      ),
+      radial-gradient(
+        2.5px 2.5px at 35% 85%,
+        rgba(255, 255, 255, 0.5) 100%,
+        transparent
+      ),
+      radial-gradient(
+        1.5px 1.5px at 50% 40%,
+        rgba(255, 255, 255, 0.6) 100%,
+        transparent
+      ),
+      radial-gradient(
+        2px 2px at 65% 60%,
+        rgba(255, 255, 255, 0.5) 100%,
+        transparent
+      ),
+      radial-gradient(
+        2.5px 2.5px at 80% 25%,
+        rgba(255, 255, 255, 0.6) 100%,
+        transparent
+      ),
+      radial-gradient(
+        1.5px 1.5px at 90% 75%,
+        rgba(255, 255, 255, 0.5) 100%,
+        transparent
+      );
+    background-size: 400px 400px;
+    animation: snow-drift 15s linear infinite;
+    pointer-events: none;
+    opacity: 0.3;
+  }
 
-/* Add a second snow layer for depth */
-[data-theme="christmas"] .modal-header::after,
-[data-theme="christmas"] .breadcrumb::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  right: -50%;
-  bottom: -50%;
-  background-image: radial-gradient(
-      2px 2px at 15% 15%,
-      rgba(255, 255, 255, 0.6) 100%,
-      transparent
-    ),
-    radial-gradient(
-      2.5px 2.5px at 35% 85%,
-      rgba(255, 255, 255, 0.5) 100%,
-      transparent
-    ),
-    radial-gradient(
-      1.5px 1.5px at 50% 40%,
-      rgba(255, 255, 255, 0.6) 100%,
-      transparent
-    ),
-    radial-gradient(
-      2px 2px at 65% 60%,
-      rgba(255, 255, 255, 0.5) 100%,
-      transparent
-    ),
-    radial-gradient(
-      2.5px 2.5px at 80% 25%,
-      rgba(255, 255, 255, 0.6) 100%,
-      transparent
-    ),
-    radial-gradient(
-      1.5px 1.5px at 90% 75%,
-      rgba(255, 255, 255, 0.5) 100%,
-      transparent
-    );
-  background-size: 400px 400px;
-  animation: snow-drift 15s linear infinite;
-  pointer-events: none;
-  opacity: 0.3;
-}
+  /* Add twinkling stars to the background */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(
+        2px 2px at 20px 30px,
+        #ffffff77,
+        transparent
+      ),
+      radial-gradient(2px 2px at 40px 70px, #ffffff66, transparent),
+      radial-gradient(2px 2px at 50px 160px, #ffffff77, transparent),
+      radial-gradient(2px 2px at 90px 40px, #ffffff66, transparent),
+      radial-gradient(2px 2px at 130px 80px, #ffffff77, transparent),
+      radial-gradient(2px 2px at 160px 120px, #ffffff66, transparent);
+    background-repeat: repeat;
+    animation: twinkle 4s ease-in-out infinite alternate;
+    pointer-events: none;
+    opacity: 0.3;
+  }
 
-/* Add twinkling stars to the background */
-[data-theme="christmas"] body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: radial-gradient(
-      2px 2px at 20px 30px,
-      #ffffff77,
-      transparent
-    ),
-    radial-gradient(2px 2px at 40px 70px, #ffffff66, transparent),
-    radial-gradient(2px 2px at 50px 160px, #ffffff77, transparent),
-    radial-gradient(2px 2px at 90px 40px, #ffffff66, transparent),
-    radial-gradient(2px 2px at 130px 80px, #ffffff77, transparent),
-    radial-gradient(2px 2px at 160px 120px, #ffffff66, transparent);
-  background-repeat: repeat;
-  animation: twinkle 4s ease-in-out infinite alternate;
-  pointer-events: none;
-  opacity: 0.3;
-}
+  /* Add subtle candy cane striped border to cards */
+  .card {
+    border-image: repeating-linear-gradient(
+        45deg,
+        #c41e3a,
+        #c41e3a 10px,
+        #ffffff 10px,
+        #ffffff 20px
+      )
+      1;
+    animation: candy-border 60s linear infinite;
+  }
 
-/* Add subtle candy cane striped border to cards */
-[data-theme="christmas"] .card {
-  border-image: repeating-linear-gradient(
-      45deg,
-      #c41e3a,
-      #c41e3a 10px,
-      #ffffff 10px,
-      #ffffff 20px
-    )
-    1;
-  animation: candy-border 60s linear infinite;
+  /* Add Christmas-specific keyboard styles */
+  kbd {
+    --kbd-bg: var(--card-bg);
+    --kbd-border: var(--border);
+    --kbd-text: var(--text-secondary);
+  }
 }
 
 /* Animation keyframes */
@@ -357,13 +364,6 @@
   100% {
     background-position: 50px 400px;
   }
-}
-
-/* Add Christmas-specific keyboard styles */
-[data-theme="christmas"] kbd {
-  --kbd-bg: var(--card-bg);
-  --kbd-border: var(--border);
-  --kbd-text: var(--text-secondary);
 }
 
 .no-animations {
@@ -765,76 +765,128 @@ textarea::placeholder {
   --placeholder-color: var(--text-secondary);
   --shadow-color: rgba(255, 102, 0, 0.4);
   --shadow-accent: #800080;
-}
 
-/* Add Halloween-specific header gradient */
-[data-theme="halloween"] .modal-header,
-[data-theme="halloween"] .breadcrumb {
-  background: #000000;
-}
+  /* Add Halloween-specific header gradient */
+  .modal-header,
+  .breadcrumb {
+    background: #000000;
+  }
 
-/* Add blood splatter to breadcrumb */
-[data-theme="halloween"] .breadcrumb::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 150px;
-  height: 100%;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path fill="%23c41e3a" d="M15 45c0 0 32-24 38-8s-15 20-8 28 28 3 32 10-8 15-3 24 21 2 26 9-2 18 6 24 21-6 30 0 9 21 18 18 15-14 24-8 12 17 21 14 14-12 21-6 11 15 18 12 11-9 15-3 6 11 12 8 9-8 12-2 5 9 9 6 6-5 6 2 2 6 3 3 5-3 5 0 0 5 2 2 3-2 3 2"/></svg>');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: top left;
-  opacity: 0.8;
-  pointer-events: none;
-  transform: scale(0.9);
-  filter: drop-shadow(1px 1px 0.1px #ff0000);
-}
+  /* Add blood splatter to breadcrumb */
+  .breadcrumb::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 150px;
+    height: 100%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path fill="%23c41e3a" d="M15 45c0 0 32-24 38-8s-15 20-8 28 28 3 32 10-8 15-3 24 21 2 26 9-2 18 6 24 21-6 30 0 9 21 18 18 15-14 24-8 12 17 21 14 14-12 21-6 11 15 18 12 11-9 15-3 6 11 12 8 9-8 12-2 5 9 9 6 6-5 6 2 2 6 3 3 5-3 5 0 0 5 2 2 3-2 3 2"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top left;
+    opacity: 0.8;
+    pointer-events: none;
+    transform: scale(0.9);
+    filter: drop-shadow(1px 1px 0.1px #ff0000);
+  }
 
-/* Update breadcrumb link colors for Halloween theme */
-[data-theme="halloween"] .breadcrumb a,
-[data-theme="halloween"] .breadcrumb .icon svg {
-  color: #ff0000;
-  fill: #ff0000;
-  text-shadow: 0 0 4px rgba(255, 0, 0, 0.3);
-}
+  /* Update breadcrumb link colors for Halloween theme */
+  .breadcrumb a,
+  .breadcrumb .icon svg {
+    color: #ff0000;
+    fill: #ff0000;
+    text-shadow: 0 0 4px rgba(255, 0, 0, 0.3);
+  }
 
-[data-theme="halloween"] .breadcrumb a:hover {
-  color: #ff3333;
-}
+  .breadcrumb a:hover {
+    color: #ff3333;
+  }
 
-[data-theme="halloween"] .breadcrumb {
-  color: #ffffff;
-}
+  .breadcrumb {
+    color: #ffffff;
+  }
 
-/* Add spooky shadow effect to cards */
-[data-theme="halloween"] .card {
-  box-shadow: 0 4px 8px rgba(255, 102, 0, 0.2);
-  border-color: var(--border);
-  transition: all 0.3s ease;
-}
+  /* Add spooky shadow effect to cards */
+  .card {
+    box-shadow: 0 4px 8px rgba(255, 102, 0, 0.2);
+    border-color: var(--border);
+    transition: all 0.3s ease;
+  }
 
-[data-theme="halloween"] .card:hover {
-  box-shadow: 0 8px 16px rgba(128, 0, 128, 0.3);
-  transform: translateY(-2px);
-}
+  .card:hover {
+    box-shadow: 0 8px 16px rgba(128, 0, 128, 0.3);
+    transform: translateY(-2px);
+  }
 
-[data-theme="halloween"] .item.image .overlay .icon svg {
-  animation: float 3s ease-in-out infinite;
-}
+  .item.image .overlay .icon svg {
+    animation: float 3s ease-in-out infinite;
+  }
 
-[data-theme="halloween"] .item.image .overlay {
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.7) 100%
-  );
-}
+  .item.image .overlay {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  }
 
-[data-theme="halloween"] .item.image .overlay p {
-  color: white;
-  text-shadow: var(--text-shadow);
-  font-size: var(--font-size);
+  .item.image .overlay p {
+    color: white;
+    text-shadow: var(--text-shadow);
+    font-size: var(--font-size);
+  }
+
+  /* Add spooky glow to buttons */
+  button:hover {
+    box-shadow: 0 0 15px var(--accent);
+  }
+
+  /* Make tag icons blood red in image grid */
+  .item.image .overlay .icon svg {
+    fill: #c41e3a;
+  }
+
+  /* Make selection overlay orange */
+  .item.selected::after {
+    box-shadow: inset 0 0 0 2px #ff6600;
+  }
+
+  /* Add glow effect to selected items */
+  .item.selected {
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+  }
+
+  /* Fix modal header spacing in Halloween theme */
+  .modal {
+    background: var(--bg-color);
+  }
+
+  .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.75);
+  }
+
+  .modal {
+    background: var(--bg-color);
+  }
+
+  /* Optional: Add a ::after pseudo-element for additional splatter if desired */
+  .breadcrumb::after {
+    content: "";
+    position: absolute;
+    left: 20px; /* Adjust as needed */
+    top: 20px; /* Adjust as needed */
+    width: 100px;
+    height: 100px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23c41e3a" d="M10 20c0 0 16-12 19-4s-9 13-4 18 16 2 16 5-5 9-3 14 7 1 9 4-3 9 2 12 7-3 10 0 4 7 7 7"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top left; /* Position additional splatter as needed */
+    opacity: 0.6;
+    pointer-events: none;
+    transform: scale(0.8);
+    filter: drop-shadow(1px 1px 0.1px #ff0000);
+    z-index: -1;
+  }
 }
 
 @keyframes float {
@@ -845,58 +897,6 @@ textarea::placeholder {
   50% {
     transform: translateY(-10px);
   }
-}
-
-/* Add spooky glow to buttons */
-[data-theme="halloween"] button:hover {
-  box-shadow: 0 0 15px var(--accent);
-}
-
-/* Make tag icons blood red in image grid */
-[data-theme="halloween"] .item.image .overlay .icon svg {
-  fill: #c41e3a;
-}
-
-/* Make selection overlay orange */
-[data-theme="halloween"] .item.selected::after {
-  box-shadow: inset 0 0 0 2px #ff6600;
-}
-
-/* Add glow effect to selected items */
-[data-theme="halloween"] .item.selected {
-  box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
-}
-
-/* Fix modal header spacing in Halloween theme */
-[data-theme="halloween"] .modal {
-  background: var(--bg-color);
-}
-
-[data-theme="halloween"] .modal-overlay {
-  background-color: rgba(0, 0, 0, 0.75);
-}
-
-[data-theme="halloween"] .modal {
-  background: var(--bg-color);
-}
-
-/* Optional: Add a ::after pseudo-element for additional splatter if desired */
-[data-theme="halloween"] .breadcrumb::after {
-  content: "";
-  position: absolute;
-  left: 20px; /* Adjust as needed */
-  top: 20px; /* Adjust as needed */
-  width: 100px;
-  height: 100px;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23c41e3a" d="M10 20c0 0 16-12 19-4s-9 13-4 18 16 2 16 5-5 9-3 14 7 1 9 4-3 9 2 12 7-3 10 0 4 7 7 7"/></svg>');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: top left; /* Position additional splatter as needed */
-  opacity: 0.6;
-  pointer-events: none;
-  transform: scale(0.8);
-  filter: drop-shadow(1px 1px 0.1px #ff0000);
-  z-index: -1;
 }
 
 /* Ensure textareas, inputs, and selects are above SVG splatters */
@@ -919,60 +919,59 @@ select {
   --placeholder-color: var(--text-secondary);
   --shadow-color: hsla(137.5, 70%, 45%, 0.2);
   --shadow-accent: hsla(275, 70%, 45%, 0.3);
-}
 
-/* Add golden angle gradient to header elements */
-[data-theme="golden"] .modal-header,
-[data-theme="golden"] .breadcrumb {
-  background: linear-gradient(
-    137.5deg,
-    hsl(137.5, 70%, 45%) 0%,
-    var(--bg-color) 100%
-  );
-  color: white;
-}
+  /* Add golden angle gradient to header elements */
+  .modal-header,
+  .breadcrumb {
+    background: linear-gradient(
+      137.5deg,
+      hsl(137.5, 70%, 45%) 0%,
+      var(--bg-color) 100%
+    );
+    color: white;
+  }
 
-[data-theme="golden"] .breadcrumb svg {
-  fill: #8022c3;
-}
+  .breadcrumb svg {
+    fill: #8022c3;
+  }
 
-[data-theme="golden"] .breadcrumb {
-  background-color: hsl(137.5, 70%, 45%);
-  color: white;
-}
+  .breadcrumb {
+    background-color: hsl(137.5, 70%, 45%);
+    color: white;
+  }
 
-[data-theme="golden"] .breadcrumb a,
-[data-theme="golden"] .breadcrumb small {
-  color: white;
-}
+  .breadcrumb a,
+  .breadcrumb small {
+    color: white;
+  }
 
-/* Add subtle golden angle patterns */
-[data-theme="golden"] .card,
-[data-theme="golden"] .image-info {
-  position: relative;
-  overflow: hidden;
-}
+  .card,
+  .image-info {
+    position: relative;
+    overflow: hidden;
+  }
 
-[data-theme="golden"] .card::before,
-[data-theme="golden"] .image-info::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    137.5deg,
-    transparent 0%,
-    transparent 20px,
-    hsla(137.5, 50%, 50%, 0.03) 20px,
-    hsla(137.5, 50%, 50%, 0.03) 40px
-  );
-  pointer-events: none;
-  z-index: 1;
-}
+  .card::before,
+  .image-info::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      137.5deg,
+      transparent 0%,
+      transparent 20px,
+      hsla(137.5, 50%, 50%, 0.03) 20px,
+      hsla(137.5, 50%, 50%, 0.03) 40px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 
-/* Add golden icon styles */
-.golden-icon svg {
-  fill: hsl(137.5, 70%, 45%);
-  animation: golden-spin 3s ease-in-out infinite;
+  .icon-buttons button.active {
+    background: linear-gradient(137.5deg, #22c351 0%, #8022c3 100%);
+    color: white;
+    animation: golden-glow 2s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes golden-spin {
@@ -983,17 +982,6 @@ select {
   50% {
     transform: rotate(137.5deg);
   }
-}
-
-/* Update icon-buttons for golden theme */
-[data-theme="golden"] .icon-buttons button.active {
-  background: linear-gradient(
-    137.5deg,
-    #22c351 0%,
-    #8022c3 100%
-  );
-  color: white;
-  animation: golden-glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes golden-glow {
