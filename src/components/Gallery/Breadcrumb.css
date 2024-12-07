@@ -2,17 +2,17 @@
   position: sticky;
   top: 0;
   z-index: 2;
-  padding: var(--spacing);
+  padding: calc(var(--spacing) * 0.5);
   margin-bottom: var(--spacing);
   border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-color);
   border-radius: 0;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
 
   & a {
     color: var(--accent);
     text-decoration: none;
-    padding: var(--spacing);
+    padding: calc(var(--spacing) * 0.5);
   }
 
   & > .breadcrumb-content {
@@ -33,9 +33,9 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: var(--spacing);
+      padding: calc(var(--spacing) * 0.5);
       flex-grow: 0.618;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 500;
       color: var(--text-primary);
       word-spacing: var(--half-spacing);
@@ -51,7 +51,6 @@
 
 [data-theme="strawberry"] .breadcrumb {
   background-color: #e4ffeb; /* Light green background for strawberry theme */
-  position: relative; /* To position the strawberry icon */
 }
 
 [data-theme="strawberry"] .breadcrumb::before {

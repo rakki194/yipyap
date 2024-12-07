@@ -1,3 +1,5 @@
+@import './themes.css';
+
 @layer reset, modal;
 
 /* src/styles.css
@@ -51,7 +53,7 @@
   --text-primary: hsl(0, 0%, 80%);
   --text-secondary: hsl(0, 0%, 60%);
   --border: #333;
-  --accent: #bf97d6;
+  --accent: #8c51ad;
   --secondary-bg: hsl(0, 0%, 18%);
 }
 
@@ -68,7 +70,7 @@
 }
 
 :root[data-theme="gray"] {
-  --accent: hsl(266, 50%, 77%);
+  --accent: hsl(265, 54%, 54%);
   --bg-color: hsl(0, 0%, 50%);
   --card-bg: hsl(0, 0%, 45%);
   --text-primary: hsl(0, 0%, 95%);
@@ -84,7 +86,7 @@
 }
 
 :root[data-theme="banana"] {
-  --accent: #ffd700;
+  --accent: #000000;
   --bg-color: #fff7e6;
   --secondary-bg: #ffe4b3;
   --card-bg: #ffdb4d;
@@ -925,9 +927,22 @@ select {
   background: linear-gradient(
     137.5deg,
     hsl(137.5, 70%, 45%) 0%,
-    hsl(275, 70%, 45%) 50%,
-    hsl(412.5, 70%, 45%) 100%
+    var(--bg-color) 100%
   );
+  color: white;
+}
+
+[data-theme="golden"] .breadcrumb svg {
+  fill: #8022c3;
+}
+
+[data-theme="golden"] .breadcrumb {
+  background-color: hsl(137.5, 70%, 45%);
+  color: white;
+}
+
+[data-theme="golden"] .breadcrumb a,
+[data-theme="golden"] .breadcrumb small {
   color: white;
 }
 
@@ -974,8 +989,8 @@ select {
 [data-theme="golden"] .icon-buttons button.active {
   background: linear-gradient(
     137.5deg,
-    hsl(137.5, 70%, 45%) 0%,
-    hsl(275, 70%, 45%) 100%
+    #22c351 0%,
+    #8022c3 100%
   );
   color: white;
   animation: golden-glow 2s ease-in-out infinite alternate;

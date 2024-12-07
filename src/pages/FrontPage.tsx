@@ -27,7 +27,8 @@ const FrontPage: Component = () => {
       "夢と現実が交錯する、不思議な境地",
       "未知の領域、無限の可能性",
       "時の流れを超えた、永遠の愛",
-    ];
+      "これで追い出されますよ！",
+     ];
 
     return japaneseSubtitles[Math.floor(Math.random() * japaneseSubtitles.length)];
   };

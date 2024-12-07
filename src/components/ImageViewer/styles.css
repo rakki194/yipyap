@@ -191,7 +191,7 @@
     overflow: hidden;
 
     .horizontal & {
-      margin-top: var(--quad-spacing);
+      margin-top: calc(var(--spacing)*6);
     }
 
     & > tbody > tr {
