@@ -111,10 +111,12 @@ export function makeGalleryState() {
     page?: string;
   }>();
 
+  const params = useParams<{ path: string }>();
+
   // State that is not part of the URL
   // Also some unused stuff: only `page`, `selected`, and `mode` are used. The rest is here for future use
   const [state, setState] = createStaticStore<GalleryState>({
-    path: "",
+    path: params.path,
     viewMode: "grid",
     sort: "name",
     search: "",
@@ -122,8 +124,6 @@ export function makeGalleryState() {
   });
   const setPage = (page: number) =>
     startTransition(() => setState("page", page));
-
-  const params = useParams<{ path: string }>();
 
   // Data sources and actions
   const [config, refetchConfig] = createConfigResource();
