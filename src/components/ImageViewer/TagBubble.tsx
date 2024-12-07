@@ -11,6 +11,15 @@ let lastNavigationTime = 0;
 let lastNavigationDirection: "left" | "right" | null = null;
 const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
 
+// Add this helper function at the top of the file
+const isColorDark = (hsl: string) => {
+  // Extract lightness value from HSL string
+  const match = hsl.match(/hsl\(\s*\d+\s*,\s*\d+%\s*,\s*(\d+)%\s*\)/);
+  if (!match) return false;
+  const lightness = parseInt(match[1]);
+  return lightness < 60;
+};
+
 export const TagBubble: Component<{
   tag: string;
   onRemove: () => void;
@@ -47,15 +56,126 @@ export const TagBubble: Component<{
     }
     const hue = hash % 360;
 
-    // Get the current theme from document.documentElement
+    // Get the current theme
     const currentTheme = document.documentElement.getAttribute("data-theme");
 
-    // Adjust saturation and lightness based on theme
-    const isDarkTheme = ["peanut", "gray", "dark"].includes(currentTheme || "");
-    const saturation = isDarkTheme ? "30%" : "40%";
-    const lightness = isDarkTheme ? "25%" : "85%";
+    switch (currentTheme) {
+      case "dark":
+        return `hsl(${hue}, 30%, 25%)`;
+        
+      case "light":
+        return `hsl(${hue}, 40%, 85%)`;
+        
+      case "gray":
+        return `hsl(0, 0%, ${45 + (hash % 20)}%)`;
+        
+      case "banana":
+        // Warm yellow-based colors
+        return `hsl(${40 + (hash % 40)}, ${60 + (hash % 20)}%, ${75 + (hash % 15)}%)`;
+        
+      case "strawberry":
+        // Strawberry-inspired colors: reds, pinks, and greens for leaves
+        const strawberryHues = [
+          350,  // Deep red
+          335,  // Pink-red
+          15,   // Coral-red
+          120,  // Leaf green
+          150   // Light green
+        ];
+        const selectedStrawberryHue = strawberryHues[hash % strawberryHues.length];
+        
+        // Adjust saturation and lightness based on the hue
+        const isGreen = selectedStrawberryHue >= 120;
+        return isGreen 
+          ? `hsl(${selectedStrawberryHue}, ${50 + (hash % 20)}%, ${30 + (hash % 15)}%)`  // Green leaves
+          : `hsl(${selectedStrawberryHue}, ${80 + (hash % 15)}%, ${70 + (hash % 20)}%)`; // Red/pink fruit
+        
+      case "peanut":
+        // Brown and warm earth tones
+        return `hsl(${20 + (hash % 30)}, ${50 + (hash % 20)}%, ${35 + (hash % 15)}%)`;
+        
+      case "christmas":
+        // Alternate between Christmas colors
+        return hash % 2 === 0
+          ? `hsl(350, ${70 + (hash % 20)}%, ${35 + (hash % 15)}%)`  // Red
+          : `hsl(120, ${60 + (hash % 20)}%, ${25 + (hash % 15)}%)`; // Green
+        
+      case "halloween":
+        // Halloween colors: orange, purple, and dark green
+        const halloweenHues = [25, 280, 150]; // Orange, Purple, Dark Green
+        const selectedHue = halloweenHues[hash % halloweenHues.length];
+        return `hsl(${selectedHue}, ${70 + (hash % 20)}%, ${45 + (hash % 15)}%)`;
+        
+      case "golden":
+        // Use golden angle (137.5°) to generate harmonious colors
+        const goldenAngle = 137.5;
+        const rotation = (hash % 8) * goldenAngle;
+        return `hsl(${rotation}, 70%, 45%)`;
+        
+      default:
+        // Fallback to original behavior
+        return `hsl(${hue}, 40%, 85%)`;
+    }
+  };
 
-    return `hsl(${hue}, ${saturation}, ${lightness})`;
+  // Add theme-specific hover effects
+  const getHoverStyles = () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    
+    switch (currentTheme) {
+      case "christmas":
+        return {
+          transform: "scale(1.05)",
+          boxShadow: "0 0 8px rgba(196, 30, 58, 0.5)",
+        };
+        
+      case "halloween":
+        return {
+          transform: "scale(1.05) rotate(-2deg)",
+          boxShadow: "0 0 8px rgba(255, 102, 0, 0.5)",
+        };
+        
+      case "golden":
+        return {
+          transform: "scale(1.05)",
+          boxShadow: `0 0 8px hsla(137.5, 70%, 45%, 0.5)`,
+        };
+        
+      case "strawberry":
+        return {
+          transform: "scale(1.05)",
+          boxShadow: "0 0 8px rgba(255, 51, 102, 0.5)",
+          filter: "saturate(1.2)",
+        };
+        
+      default:
+        return {
+          transform: "scale(1.05)",
+          boxShadow: "0 0 8px var(--shadow-color)",
+        };
+    }
+  };
+
+  // Add CSS for theme-specific animations
+  const getTagBubbleAnimations = () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    
+    switch (currentTheme) {
+      case "christmas":
+        return "tag-bubble-twinkle 2s ease-in-out infinite alternate";
+        
+      case "halloween":
+        return "tag-bubble-float 3s ease-in-out infinite";
+        
+      case "golden":
+        return "tag-bubble-golden-pulse 4s ease-in-out infinite";
+        
+      case "strawberry":
+        return "tag-bubble-strawberry 3s ease-in-out infinite";
+        
+      default:
+        return "none";
+    }
   };
 
   const handleSubmit = () => {
@@ -120,6 +240,8 @@ export const TagBubble: Component<{
       class="tag-bubble"
       style={{
         "background-color": getTagColor(props.tag),
+        "color": isColorDark(getTagColor(props.tag)) ? "#ffffff" : "#000000",
+        ...getHoverStyles(),
       }}
     >
       <span class="tag-content" ref={contentRef}>
@@ -127,6 +249,11 @@ export const TagBubble: Component<{
           <input
             type="text"
             value={editValue()}
+            style={{
+              "color": "inherit",
+              "background-color": "transparent",
+              "border-color": "currentColor",
+            }}
             onInput={(e) => {
               setEditValue(e.currentTarget.value);
             }}

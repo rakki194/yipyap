@@ -169,7 +169,16 @@ export const useAppContext = () => {
  ****************************************************/
 
 /** Available theme options for the application */
-export type Theme = keyof typeof themeIconMap;
+export type Theme = 
+  | "light" 
+  | "gray" 
+  | "dark" 
+  | "banana" 
+  | "strawberry" 
+  | "peanut" 
+  | "christmas" 
+  | "halloween"
+  | "golden";
 
 /** 
  * Maps theme names to their corresponding icon identifiers.
@@ -184,6 +193,7 @@ export const themeIconMap = {
   peanut: "peanut",
   christmas: "christmas",
   halloween: "ghost",
+  golden: "golden",
 };
 
 const themes = Object.keys(themeIconMap) as Theme[];

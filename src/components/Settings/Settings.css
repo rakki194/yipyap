@@ -295,3 +295,20 @@ kbd {
                 0 0 30px #800080;
   }
 }
+
+/* Add Golden icon styles */
+.golden-icon {
+  svg {
+    fill: hsl(137.5, 70%, 45%);
+    animation: golden-pulse 4s ease-in-out infinite;
+  }
+}
+
+@keyframes golden-pulse {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(137.5deg);
+  }
+}
