@@ -41,7 +41,6 @@
   font-size: 3em;
   text-shadow: 2px 2px 4px var(--shadow-color), 4px 4px 6px var(--accent),
     6px 6px 8px var(--card-bg);
-
   animation: color-transition 60s infinite alternate;
 }
 
@@ -49,6 +48,7 @@
   from {
     color: var(--text-primary);
   }
+
   to {
     color: var(--accent);
   }

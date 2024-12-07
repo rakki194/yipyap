@@ -8,7 +8,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "check": "tsc --noEmit",
-    "types": "tsc --emitDeclarationOnly"
+    "types": "tsc --emitDeclarationOnly",
+    "styles": "stylelint 'src/**/*.css'"
   },
   "dependencies": {
     "@fluentui/svg-icons": "1.1.266",
@@ -22,8 +23,11 @@
     "@types/node": "22.10.1",
     "rollup-plugin-gzip": "^4.0.1",
     "solid-js": "1.9.3",
+    "stylelint": "^16.11.0",
+    "stylelint-config-standard": "^36.0.1",
     "typescript": "5.7.2",
     "vite": "6.0.2",
-    "vite-plugin-solid": "2.11.0"
+    "vite-plugin-solid": "2.11.0",
+    "vite-plugin-stylelint": "^6.0.0"
   }
 }

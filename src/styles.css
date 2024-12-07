@@ -1,4 +1,4 @@
-@import "./themes.css";
+@import url("./themes.css");
 
 @layer reset, modal;
 
@@ -25,14 +25,14 @@
   --quad-spacing: calc(var(--spacing) * 4);
   --border-radius: 2px;
   --container-max-width: 1600px;
-  --shadow-color: rgba(0, 0, 0, 0.2);
+  --shadow-color: rgb(0 0 0 / 20%);
   --shadow-accent: var(--accent);
   --shadow-default: 0 2px 4px var(--shadow-color);
   --shadow-hover: 0 4px 6px var(--shadow-accent);
   --hover-transform: translateY(-4px);
-  --overlay-bg: rgba(0, 0, 0, 0.2);
+  --overlay-bg: rgb(0 0 0 / 20%);
   --overlay-backdrop: brightness(0.5) saturate(0.5);
-  --text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
   --grid-item-min-width: 250px;
   --directory-item-min-width: 125px;
   --directory-aspect-ratio: 4/1;
@@ -50,6 +50,7 @@
 .no-animations {
   --transition-duration: 0;
   --transition-timing: none;
+
   transition: none;
 }
 
@@ -89,7 +90,6 @@ code {
   background-color: var(--secondary-bg);
   color: var(--text-primary);
   padding: 0.2em 0.4em;
-
   font-family: monospace;
 }
 
@@ -134,6 +134,10 @@ select {
   padding: var(--half-spacing) var(--spacing);
   background: var(--bg-color);
 
+  /* Ensure textareas, inputs, and selects are above SVG splatters */
+  position: relative;
+  z-index: 0;
+
   &:focus {
     outline: none;
   }
@@ -153,7 +157,9 @@ input[type="checkbox"] {
 .card {
   padding: var(--spacing);
   color: var(--text-primary);
+
   --border-color: var(--text-secondary);
+
   border-color: var(--border-color);
   background: var(--card-bg);
   border-style: solid;
@@ -217,6 +223,7 @@ td {
   & > svg {
     width: var(--icon-size);
     height: var(--icon-size);
+
     /* fill: var(--text-secondary); */
     transition-property: fill;
   }
@@ -238,6 +245,7 @@ td {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -258,6 +266,7 @@ td {
   &:hover,
   &.focus {
     color: var(--accent);
+
     & > svg {
       fill: var(--accent);
     }
@@ -267,6 +276,7 @@ td {
 .accent-hover-inverted {
   transition-property: background-color, border-color, color;
   background-color: var(--secondary-bg);
+
   & > svg {
     transition-property: fill;
   }
@@ -288,12 +298,4 @@ select::placeholder,
 textarea::placeholder {
   color: var(--placeholder-color);
   opacity: 1;
-}
-
-/* Ensure textareas, inputs, and selects are above SVG splatters */
-textarea,
-input,
-select {
-  position: relative;
-  z-index: 0;
 }

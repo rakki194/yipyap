@@ -3,10 +3,7 @@
 .settings-overlay {
   font-size: var(--font-size);
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: var(--overlay-bg);
   backdrop-filter: var(--overlay-backdrop);
   z-index: 1000;
@@ -23,13 +20,13 @@
 .warning-section {
   margin-top: var(--double-spacing);
   padding: var(--spacing);
-  border: 2px solid rgb(220, 38, 38);
+  border: 2px solid rgb(220 38 38);
   border-radius: var(--border-radius);
-  background: rgba(220, 38, 38, 0.1);
+  background: rgb(220 38 38 / 10%);
 }
 
 .warning-text {
-  color: rgb(220, 38, 38);
+  color: rgb(220 38 38);
   font-weight: bold;
   font-size: 1.1em;
   margin-bottom: var(--spacing);
@@ -121,13 +118,13 @@ kbd {
 
 .strawberry-icon {
   svg {
-    fill: #ff3366;
+    fill: #f36;
   }
 }
 
 .peanut-icon {
   svg {
-    fill: #996600;
+    fill: #960;
   }
 }
 
@@ -153,7 +150,7 @@ kbd {
 }
 
 /* Hide warning section styling on mobile */
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .warning-section {
     border-style: none;
     background: none;
@@ -200,6 +197,7 @@ kbd {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+
   /* Ensure each section stays in its own column */
   break-inside: avoid;
   page-break-inside: avoid;
@@ -211,7 +209,7 @@ kbd {
 }
 
 /* Only switch to single column on very small screens */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .shortcuts-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing);
@@ -242,6 +240,7 @@ kbd {
   0%, 100% {
     transform: rotate(-10deg);
   }
+
   50% {
     transform: rotate(10deg);
   }
@@ -253,6 +252,7 @@ kbd {
                 0 0 10px #c41e3a,
                 0 0 15px #dc143c;
   }
+
   to {
     box-shadow: 0 0 10px #c41e3a,
                 0 0 20px #c41e3a,
@@ -262,7 +262,7 @@ kbd {
 
 .halloween-icon {
   svg {
-    fill: #ff6600;
+    fill: #f60;
     animation: spooky-spin 3s ease-in-out infinite;
   }
 }
@@ -271,6 +271,7 @@ kbd {
   0%, 100% {
     transform: rotate(0deg) scale(1);
   }
+
   50% {
     transform: rotate(10deg) scale(1.1);
   }
@@ -278,20 +279,21 @@ kbd {
 
 /* Update icon-buttons for Halloween theme */
 [data-theme="halloween"] .icon-buttons button.active {
-  background-color: #ff6600;
+  background-color: #f60;
   color: #1a1a1a;
   animation: spooky-glow 1.5s ease-in-out infinite alternate;
 }
 
 @keyframes spooky-glow {
   from {
-    box-shadow: 0 0 5px #ff6600,
-                0 0 10px #ff6600,
+    box-shadow: 0 0 5px #f60,
+                0 0 10px #f60,
                 0 0 15px #800080;
   }
+
   to {
-    box-shadow: 0 0 10px #ff6600,
-                0 0 20px #ff6600,
+    box-shadow: 0 0 10px #f60,
+                0 0 20px #f60,
                 0 0 30px #800080;
   }
 }

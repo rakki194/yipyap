@@ -14,13 +14,13 @@
 /* Dark theme */
 
 :root[data-theme="dark"] {
-  --bg-color: hsl(0, 0%, 15%);
-  --card-bg: hsl(0, 0%, 20%);
-  --text-primary: hsl(0, 0%, 80%);
-  --text-secondary: hsl(0, 0%, 60%);
+  --bg-color: hsl(0deg 0% 15%);
+  --card-bg: hsl(0deg 0% 20%);
+  --text-primary: hsl(0deg 0% 80%);
+  --text-secondary: hsl(0deg 0% 60%);
   --border: #333;
   --accent: #8c51ad;
-  --secondary-bg: hsl(0, 0%, 18%);
+  --secondary-bg: hsl(0deg 0% 18%);
 }
 
 [data-theme="dark"] .delete-button.holding::before {
@@ -49,15 +49,15 @@
 /* Gray theme */
 
 :root[data-theme="gray"] {
-  --accent: hsl(265, 54%, 54%);
-  --bg-color: hsl(0, 0%, 50%);
-  --card-bg: hsl(0, 0%, 45%);
-  --text-primary: hsl(0, 0%, 95%);
-  --text-secondary: hsl(0, 0%, 85%);
-  --border: hsl(0, 0%, 40%);
-  --secondary-bg: hsl(0, 0%, 47%);
+  --accent: hsl(265deg 54% 54%);
+  --bg-color: hsl(0deg 0% 50%);
+  --card-bg: hsl(0deg 0% 45%);
+  --text-primary: hsl(0deg 0% 95%);
+  --text-secondary: hsl(0deg 0% 85%);
+  --border: hsl(0deg 0% 40%);
+  --secondary-bg: hsl(0deg 0% 47%);
   --placeholder-color: var(--text-secondary);
-  --icon-button-active-color: hsl(0, 0%, 0%);
+  --icon-button-active-color: hsl(0deg 0% 0%);
 
   .icon-buttons button.active svg {
     fill: var(--icon-button-active-color);
@@ -77,10 +77,10 @@
   --bg-color: #fff7e6;
   --secondary-bg: #ffe4b3;
   --card-bg: #ffdb4d;
-  --text-primary: #664400;
-  --text-secondary: #996600;
-  --border: #ffcc00;
-  --border-secondary: #cc9900;
+  --text-primary: #640;
+  --text-secondary: #960;
+  --border: #fc0;
+  --border-secondary: #c90;
   --placeholder-color: var(--border-secondary);
 }
 
@@ -103,12 +103,11 @@
   background-size: 200% 100%;
 }
 
-[data-theme="banana"] .breadcrumb::before{
+[data-theme="banana"] .breadcrumb::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: 
-    url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='75' r='4' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='70' cy='65' r='2.5' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='110' cy='63' r='3.5' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='150' cy='65' r='2.8' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='190' cy='75' r='3.2' fill='%23663300' opacity='0.4'/%3E%3C/svg%3E"),
+  background-image: url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='75' r='4' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='70' cy='65' r='2.5' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='110' cy='63' r='3.5' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='150' cy='65' r='2.8' fill='%23663300' opacity='0.4'/%3E%3Ccircle cx='190' cy='75' r='3.2' fill='%23663300' opacity='0.4'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg width='200' height='100' viewBox='0 0 200 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='35' r='3.8' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='50' cy='45' r='2.3' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='90' cy='47' r='3.3' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='130' cy='45' r='2.6' fill='%23331a00' opacity='0.35'/%3E%3Ccircle cx='170' cy='35' r='3.5' fill='%23331a00' opacity='0.35'/%3E%3C/svg%3E");
   background-size: 200px 100px, 200px 100px;
   background-repeat: repeat-x, repeat-x;
@@ -121,21 +120,20 @@
 /* Strawberry theme */
 
 :root[data-theme="strawberry"] {
-  --accent: #ff3366;
+  --accent: #f36;
   --bg-color: #fff0f3;
   --secondary-bg: #ffd6e0;
   --card-bg: #ffb3c0;
   --text-primary: #800020;
-  --text-secondary: #cc0033;
+  --text-secondary: #c03;
   --border: #ff8099;
   --border-secondary: #ff1a4d;
-  --placeholder-color: #cc0033;
+  --placeholder-color: #c03;
 }
 
 [data-theme="strawberry"] .modal-header {
-  background: hsla(348, 100%, 97%, 0.411);
+  background: hsl(348deg 100% 97% / 41.1%);
 }
-
 
 /* Peanut theme */
 
@@ -176,6 +174,7 @@
   from {
     background-position: 0 0;
   }
+
   to {
     background-position: 200% 0;
   }
@@ -193,8 +192,9 @@
   --border: #c41e3a; /* Match accent */
   --border-secondary: #dc143c; /* Crimson */
   --placeholder-color: var(--text-secondary);
-  --shadow-color: rgba(196, 30, 58, 0.4);
+  --shadow-color: rgb(196 30 58 / 40%);
   --shadow-accent: #dc143c;
+
   /* Add snow overlay */
   --snow-overlay: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Cpath d='M25 10v30M10 25h30M17.5 17.5l15 15M32.5 17.5l-15 15M25 22.5l2.5 2.5-2.5 2.5-2.5-2.5z' stroke='rgba(255,255,255,0.2)' stroke-width='1' fill='none'/%3E%3C/svg%3E");
 
@@ -211,7 +211,7 @@
   .breadcrumb a,
   .breadcrumb .icon svg {
     fill: #ffd29b;
-    text-shadow: 0 0 2px rgba(255, 140, 0, 0.5);
+    text-shadow: 0 0 2px rgb(255 140 0 / 50%);
   }
 
   .breadcrumb a:hover {
@@ -240,43 +240,40 @@
   .breadcrumb::before {
     content: "";
     position: absolute;
-    top: -50%;
-    left: -50%;
-    right: -50%;
-    bottom: -50%;
+    inset: -50%;
     background-image: radial-gradient(
         1.5px 1.5px at 10% 30%,
-        rgba(255, 255, 255, 0.9) 100%,
+        rgb(255 255 255 / 90%) 100%,
         transparent
       ),
       radial-gradient(
         2px 2px at 25% 50%,
-        rgba(255, 255, 255, 0.8) 100%,
+        rgb(255 255 255 / 80%) 100%,
         transparent
       ),
       radial-gradient(
         2.5px 2.5px at 40% 70%,
-        rgba(255, 255, 255, 0.7) 100%,
+        rgb(255 255 255 / 70%) 100%,
         transparent
       ),
       radial-gradient(
         3px 3px at 55% 25%,
-        rgba(255, 255, 255, 0.9) 100%,
+        rgb(255 255 255 / 90%) 100%,
         transparent
       ),
       radial-gradient(
         1.5px 1.5px at 70% 90%,
-        rgba(255, 255, 255, 0.8) 100%,
+        rgb(255 255 255 / 80%) 100%,
         transparent
       ),
       radial-gradient(
         2px 2px at 85% 45%,
-        rgba(255, 255, 255, 0.7) 100%,
+        rgb(255 255 255 / 70%) 100%,
         transparent
       ),
       radial-gradient(
         2.5px 2.5px at 95% 65%,
-        rgba(255, 255, 255, 0.9) 100%,
+        rgb(255 255 255 / 90%) 100%,
         transparent
       );
     background-size: 500px 500px;
@@ -290,38 +287,35 @@
   .breadcrumb::after {
     content: "";
     position: absolute;
-    top: -50%;
-    left: -50%;
-    right: -50%;
-    bottom: -50%;
+    inset: -50%;
     background-image: radial-gradient(
         2px 2px at 15% 15%,
-        rgba(255, 255, 255, 0.6) 100%,
+        rgb(255 255 255 / 60%) 100%,
         transparent
       ),
       radial-gradient(
         2.5px 2.5px at 35% 85%,
-        rgba(255, 255, 255, 0.5) 100%,
+        rgb(255 255 255 / 50%) 100%,
         transparent
       ),
       radial-gradient(
         1.5px 1.5px at 50% 40%,
-        rgba(255, 255, 255, 0.6) 100%,
+        rgb(255 255 255 / 60%) 100%,
         transparent
       ),
       radial-gradient(
         2px 2px at 65% 60%,
-        rgba(255, 255, 255, 0.5) 100%,
+        rgb(255 255 255 / 50%) 100%,
         transparent
       ),
       radial-gradient(
         2.5px 2.5px at 80% 25%,
-        rgba(255, 255, 255, 0.6) 100%,
+        rgb(255 255 255 / 60%) 100%,
         transparent
       ),
       radial-gradient(
         1.5px 1.5px at 90% 75%,
-        rgba(255, 255, 255, 0.5) 100%,
+        rgb(255 255 255 / 50%) 100%,
         transparent
       );
     background-size: 400px 400px;
@@ -334,20 +328,17 @@
   body::before {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background-image: radial-gradient(
         2px 2px at 20px 30px,
-        #ffffff77,
+        #fff7,
         transparent
       ),
-      radial-gradient(2px 2px at 40px 70px, #ffffff66, transparent),
-      radial-gradient(2px 2px at 50px 160px, #ffffff77, transparent),
-      radial-gradient(2px 2px at 90px 40px, #ffffff66, transparent),
-      radial-gradient(2px 2px at 130px 80px, #ffffff77, transparent),
-      radial-gradient(2px 2px at 160px 120px, #ffffff66, transparent);
+      radial-gradient(2px 2px at 40px 70px, #fff6, transparent),
+      radial-gradient(2px 2px at 50px 160px, #fff7, transparent),
+      radial-gradient(2px 2px at 90px 40px, #fff6, transparent),
+      radial-gradient(2px 2px at 130px 80px, #fff7, transparent),
+      radial-gradient(2px 2px at 160px 120px, #fff6, transparent);
     background-repeat: repeat;
     animation: twinkle 4s ease-in-out infinite alternate;
     pointer-events: none;
@@ -360,8 +351,8 @@
         45deg,
         #c41e3a,
         #c41e3a 10px,
-        #ffffff 10px,
-        #ffffff 20px
+        #fff 10px,
+        #fff 20px
       )
       1;
     animation: candy-border 60s linear infinite;
@@ -390,37 +381,37 @@
     background: linear-gradient(45deg, #c41e3a 0%, #003320 100%);
     background-image: radial-gradient(
         1.5px 1.5px at 10% 30%,
-        rgba(255, 255, 255, 0.9) 100%,
+        rgb(255 255 255 / 90%) 100%,
         transparent
       ),
       radial-gradient(
         2px 2px at 25% 50%,
-        rgba(255, 255, 255, 0.8) 100%,
+        rgb(255 255 255 / 80%) 100%,
         transparent
       ),
       radial-gradient(
         2.5px 2.5px at 40% 70%,
-        rgba(255, 255, 255, 0.7) 100%,
+        rgb(255 255 255 / 70%) 100%,
         transparent
       ),
       radial-gradient(
         3px 3px at 55% 25%,
-        rgba(255, 255, 255, 0.9) 100%,
+        rgb(255 255 255 / 90%) 100%,
         transparent
       ),
       radial-gradient(
         1.5px 1.5px at 70% 90%,
-        rgba(255, 255, 255, 0.8) 100%,
+        rgb(255 255 255 / 80%) 100%,
         transparent
       ),
       radial-gradient(
         2px 2px at 85% 45%,
-        rgba(255, 255, 255, 0.7) 100%,
+        rgb(255 255 255 / 70%) 100%,
         transparent
       ),
       radial-gradient(
         2.5px 2.5px at 95% 65%,
-        rgba(255, 255, 255, 0.9) 100%,
+        rgb(255 255 255 / 90%) 100%,
         transparent
       );
     background-size: 500px 500px;
@@ -436,32 +427,32 @@
     z-index: -1;
     background-image: radial-gradient(
         2px 2px at 15% 15%,
-        rgba(255, 255, 255, 0.6) 100%,
+        rgb(255 255 255 / 60%) 100%,
         transparent
       ),
       radial-gradient(
         2.5px 2.5px at 35% 85%,
-        rgba(255, 255, 255, 0.5) 100%,
+        rgb(255 255 255 / 50%) 100%,
         transparent
       ),
       radial-gradient(
         1.5px 1.5px at 50% 40%,
-        rgba(255, 255, 255, 0.6) 100%,
+        rgb(255 255 255 / 60%) 100%,
         transparent
       ),
       radial-gradient(
         2px 2px at 65% 60%,
-        rgba(255, 255, 255, 0.5) 100%,
+        rgb(255 255 255 / 50%) 100%,
         transparent
       ),
       radial-gradient(
         2.5px 2.5px at 80% 25%,
-        rgba(255, 255, 255, 0.6) 100%,
+        rgb(255 255 255 / 60%) 100%,
         transparent
       ),
       radial-gradient(
         1.5px 1.5px at 90% 75%,
-        rgba(255, 255, 255, 0.5) 100%,
+        rgb(255 255 255 / 50%) 100%,
         transparent
       );
     background-size: 400px 400px;
@@ -478,7 +469,7 @@
 @keyframes christmas-lights {
   0%,
   100% {
-    fill: #0066cc;
+    fill: #06c;
   } /* Darker Blue */
   25% {
     fill: #ff4a4a;
@@ -495,6 +486,7 @@
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: -50px 500px;
   }
@@ -505,6 +497,7 @@
   100% {
     opacity: 0.3;
   }
+
   50% {
     opacity: 0.6;
   }
@@ -514,6 +507,7 @@
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -523,6 +517,7 @@
   0% {
     background-position: 0 0;
   }
+
   100% {
     background-position: 50px 400px;
   }
@@ -531,22 +526,22 @@
 /* Halloween theme */
 
 :root[data-theme="halloween"] {
-  --accent: #ff6600;
+  --accent: #f60;
   --bg-color: #1a1a1a;
   --secondary-bg: #2d2d2d;
-  --card-bg: #333333;
+  --card-bg: #333;
   --text-primary: #f0f0f0;
   --text-secondary: #b3b3b3;
-  --border: #ff6600;
+  --border: #f60;
   --border-secondary: #800080;
   --placeholder-color: var(--text-secondary);
-  --shadow-color: rgba(255, 102, 0, 0.4);
+  --shadow-color: rgb(255 102 0 / 40%);
   --shadow-accent: #800080;
 
   /* Add Halloween-specific header gradient */
   .modal-header,
   .breadcrumb {
-    background: #000000;
+    background: #000;
   }
 
   /* Add blood splatter to breadcrumb */
@@ -564,34 +559,34 @@
     opacity: 0.8;
     pointer-events: none;
     transform: scale(0.9);
-    filter: drop-shadow(1px 1px 0.1px #ff0000);
+    filter: drop-shadow(1px 1px 0.1px #f00);
   }
 
   /* Update breadcrumb link colors for Halloween theme */
   .breadcrumb a,
   .breadcrumb .icon svg {
-    color: #ff0000;
-    fill: #ff0000;
-    text-shadow: 0 0 4px rgba(255, 0, 0, 0.3);
+    color: #f00;
+    fill: #f00;
+    text-shadow: 0 0 4px rgb(255 0 0 / 30%);
   }
 
   .breadcrumb a:hover {
-    color: #ff3333;
+    color: #f33;
   }
 
   .breadcrumb {
-    color: #ffffff;
+    color: #fff;
   }
 
   /* Add spooky shadow effect to cards */
   .card {
-    box-shadow: 0 4px 8px rgba(255, 102, 0, 0.2);
+    box-shadow: 0 4px 8px rgb(255 102 0 / 20%);
     border-color: var(--border);
     transition: all 0.3s ease;
   }
 
   .card:hover {
-    box-shadow: 0 8px 16px rgba(128, 0, 128, 0.3);
+    box-shadow: 0 8px 16px rgb(128 0 128 / 30%);
     transform: translateY(-2px);
   }
 
@@ -603,7 +598,7 @@
     background: linear-gradient(
       to bottom,
       transparent 0%,
-      rgba(0, 0, 0, 0.7) 100%
+      rgb(0 0 0 / 70%) 100%
     );
   }
 
@@ -625,12 +620,12 @@
 
   /* Make selection overlay orange */
   .item.selected::after {
-    box-shadow: inset 0 0 0 2px #ff6600;
+    box-shadow: inset 0 0 0 2px #f60;
   }
 
   /* Add glow effect to selected items */
   .item.selected {
-    box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+    box-shadow: 0 0 15px rgb(255 102 0 / 30%);
   }
 
   /* Fix modal header spacing in Halloween theme */
@@ -639,7 +634,7 @@
   }
 
   .modal-overlay {
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgb(0 0 0 / 75%);
   }
 
   .modal {
@@ -665,7 +660,7 @@
     opacity: 0.6;
     pointer-events: none;
     transform: scale(0.8);
-    filter: drop-shadow(1px 1px 0.1px #ff0000);
+    filter: drop-shadow(1px 1px 0.1px #f00);
     z-index: -1;
   }
 }
@@ -675,6 +670,7 @@
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
