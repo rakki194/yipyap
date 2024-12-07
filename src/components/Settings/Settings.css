@@ -259,3 +259,39 @@ kbd {
                 0 0 30px #dc143c;
   }
 }
+
+.halloween-icon {
+  svg {
+    fill: #ff6600;
+    animation: spooky-spin 3s ease-in-out infinite;
+  }
+}
+
+@keyframes spooky-spin {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(10deg) scale(1.1);
+  }
+}
+
+/* Update icon-buttons for Halloween theme */
+[data-theme="halloween"] .icon-buttons button.active {
+  background-color: #ff6600;
+  color: #1a1a1a;
+  animation: spooky-glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes spooky-glow {
+  from {
+    box-shadow: 0 0 5px #ff6600,
+                0 0 10px #ff6600,
+                0 0 15px #800080;
+  }
+  to {
+    box-shadow: 0 0 10px #ff6600,
+                0 0 20px #ff6600,
+                0 0 30px #800080;
+  }
+}

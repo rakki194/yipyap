@@ -630,3 +630,130 @@ textarea::placeholder {
   margin: 0;
   padding: 0;
 }
+
+:root[data-theme="halloween"] {
+  --accent: #ff6600;
+  --bg-color: #1a1a1a;
+  --secondary-bg: #2d2d2d;
+  --card-bg: #333333;
+  --text-primary: #f0f0f0;
+  --text-secondary: #b3b3b3;
+  --border: #ff6600;
+  --border-secondary: #800080;
+  --placeholder-color: var(--text-secondary);
+  --shadow-color: rgba(255, 102, 0, 0.4);
+  --shadow-accent: #800080;
+}
+
+/* Add Halloween-specific header gradient */
+[data-theme="halloween"] .modal-header,
+[data-theme="halloween"] .breadcrumb {
+  background: #000000;
+}
+
+/* Add blood splatter to breadcrumb */
+[data-theme="halloween"] .breadcrumb::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 150px;
+  height: 100%;
+  background-image: url('data:image/svg+xml;utf8,<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="%23c41e3a" d="M15 45c0 0 32-24 38-8s-15 20-8 28 28 3 32 10-8 15-3 24 21 2 26 9-2 18 6 24 21-6 30 0 9 21 18 18 15-14 24-8 12 17 21 14 14-12 21-6 11 15 18 12 11-9 15-3 6 11 12 8 9-8 12-2 5 9 9 6 6-5 6 2 2 6 3 3 5-3 5 0 0 5 2 2 3-2 3 2"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: left center;
+  opacity: 0.8;
+  pointer-events: none;
+  transform: scale(0.9);
+  filter: drop-shadow(1px 1px 0.1px #ff0000);
+}
+
+/* Update breadcrumb link colors for Halloween theme */
+[data-theme="halloween"] .breadcrumb a,
+[data-theme="halloween"] .breadcrumb .icon svg {
+  color: #ff0000;
+  fill: #ff0000;
+  text-shadow: 0 0 4px rgba(255, 0, 0, 0.3);
+}
+
+[data-theme="halloween"] .breadcrumb a:hover {
+  color: #ff3333;
+}
+
+[data-theme="halloween"] .breadcrumb {
+  color: #ffffff;
+}
+
+/* Add spooky shadow effect to cards */
+[data-theme="halloween"] .card {
+  box-shadow: 0 4px 8px rgba(255, 102, 0, 0.2);
+  border-color: var(--border);
+  transition: all 0.3s ease;
+}
+
+[data-theme="halloween"] .card:hover {
+  box-shadow: 0 8px 16px rgba(128, 0, 128, 0.3);
+  transform: translateY(-2px);
+}
+
+
+[data-theme="halloween"] .item.image .overlay .icon svg {
+  animation: float 3s ease-in-out infinite;
+}
+
+[data-theme="halloween"] .item.image .overlay {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+[data-theme="halloween"] .item.image .overlay p {
+  color: white;
+  text-shadow: var(--text-shadow);
+  font-size: var(--font-size);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Add spooky glow to buttons */
+[data-theme="halloween"] button:hover {
+  box-shadow: 0 0 15px var(--accent);
+}
+
+/* Make tag icons blood red in image grid */
+[data-theme="halloween"] .item.image .overlay .icon svg {
+  fill: #c41e3a;
+}
+
+/* Make selection overlay orange */
+[data-theme="halloween"] .item.selected::after {
+  box-shadow: inset 0 0 0 2px #ff6600;
+}
+
+/* Add glow effect to selected items */
+[data-theme="halloween"] .item.selected {
+  box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+}
+
+/* Fix modal header spacing in Halloween theme */
+[data-theme="halloween"] .modal {
+  background: var(--bg-color);
+}
+
+[data-theme="halloween"] .modal-overlay {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="halloween"] .modal {
+  background: var(--bg-color);
+}

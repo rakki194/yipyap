@@ -2,7 +2,7 @@
 
 import { Component, Show, createSignal, createEffect, For, createMemo } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
-import { useAppContext, Theme, themeIconMap, isChristmasSeason } from "~/contexts/app";
+import { useAppContext, Theme, themeIconMap, isChristmasSeason, isHalloweenSeason } from "~/contexts/app";
 import getIcon from "~/icons";
 import "./Settings.css";
 
@@ -85,11 +85,15 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
 
   const availableThemes = createMemo(() => {
     const themes = Object.keys(themeIconMap);
-    // Filter out Christmas theme if not in season
-    if (!isChristmasSeason()) {
-      return themes.filter(theme => theme !== "christmas");
+    if (import.meta.env.DEV) {
+      return themes;
     }
-    return themes;
+    const filtered = themes.filter(theme => {
+      if (theme === "christmas" && !isChristmasSeason()) return false;
+      if (theme === "halloween" && !isHalloweenSeason()) return false;
+      return true;
+    });
+    return filtered;
   });
 
   return (

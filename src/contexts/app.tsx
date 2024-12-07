@@ -108,9 +108,15 @@ const createAppContext = (): AppContext => {
       return store.theme;
     },
     setTheme: (theme: Theme) => {
-      if (theme === "christmas" && !isChristmasSeason()) {
-        console.warn("Christmas theme is only available during the holiday season");
-        return;
+      if (!import.meta.env.DEV) {
+        if (theme === "christmas" && !isChristmasSeason()) {
+          console.warn("Christmas theme is only available during the holiday season");
+          return;
+        }
+        if (theme === "halloween" && !isHalloweenSeason()) {
+          console.warn("Halloween theme is only available during the spooky season");
+          return;
+        }
       }
       setStore("theme", theme);
     },
@@ -177,6 +183,7 @@ export const themeIconMap = {
   strawberry: "strawberry",
   peanut: "peanut",
   christmas: "christmas",
+  halloween: "ghost",
 };
 
 const themes = Object.keys(themeIconMap) as Theme[];
@@ -195,14 +202,12 @@ export function getNextTheme(theme: Theme): Theme {
 }
 
 /**
- * Determines the initial theme based on:
- * 1. localStorage preference
- * 2. HTML data-theme attribute
- * 3. System color scheme preference
- * 4. Falls back to 'gray' theme
- * @returns Initial theme to use
+ * Determines if it's Christmas season (Dec 1 to Jan 10)
+ * Always returns true in development mode
  */
 export function isChristmasSeason(): boolean {
+  if (import.meta.env.DEV) return true;
+  
   const today = new Date();
   const month = today.getMonth(); // 0-based (0 = January, 11 = December)
   const date = today.getDate();
@@ -211,18 +216,47 @@ export function isChristmasSeason(): boolean {
   return (month === 11 && date >= 1) || (month === 0 && date <= 10);
 }
 
+/**
+ * Determines if it's Halloween season (1 week before, during, and 4 days after)
+ * Always returns true in development mode
+ */
+export function isHalloweenSeason(): boolean {
+  if (import.meta.env.DEV) return true;
+  
+  const today = new Date();
+  const month = today.getMonth(); // 0-based (0 = January, 11 = December)
+  const date = today.getDate();
+
+  // Halloween is October 31st
+  if (month === 9) { // October
+    // Available from October 24th to November 4th
+    return date >= 24;
+  } else if (month === 10) { // November
+    return date <= 4;
+  }
+  
+  return false;
+}
+
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem("theme");
   
-  // If Christmas season and previously using Christmas theme, keep it
+  // Check for seasonal themes
+  if (isHalloweenSeason() && stored === "halloween") {
+    return "halloween";
+  }
   if (isChristmasSeason() && stored === "christmas") {
     return "christmas";
   }
   
   // Otherwise fall back to normal theme selection logic
   if (stored && Object.keys(themeIconMap).includes(stored)) {
-    // Don't allow Christmas theme outside of season
-    return stored === "christmas" && !isChristmasSeason() ? "light" : (stored as Theme);
+    // Don't allow seasonal themes outside of their seasons
+    if ((stored === "halloween" && !isHalloweenSeason()) ||
+        (stored === "christmas" && !isChristmasSeason())) {
+      return "light";
+    }
+    return stored as Theme;
   }
 
   const dsTheme = document.documentElement.dataset.theme;
