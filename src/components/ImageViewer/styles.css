@@ -215,25 +215,23 @@
   align-items: center;
   gap: var(--spacing);
   padding: var(--spacing);
-  margin: var(--spacing) 0;
+  margin: 0;
   background: var(--secondary-bg);
   border: none;
   cursor: pointer;
   color: var(--text);
   font-size: 1rem;
   transition: background-color 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
 
-  &:hover {
-    background: var(--hover-bg);
-  }
+.generate-tags-button:hover {
+  background: var(--hover-bg);
+}
 
-  &:active {
-    background: var(--active-bg);
-  }
-
-  .horizontal & {
-    margin-top: var(--spacing);
-  }
+.generate-tags-button:active {
+  background: var(--active-bg);
 }
 
 .generate-tags-button .icon {
@@ -315,4 +313,40 @@
 .delete-button.holding {
   animation: pulse 0.75s ease-in-out infinite;
   box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+}
+
+.generate-tags-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.generate-tags-dropdown .dropdown-icon {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+.generate-tags-dropdown .dropdown-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  gap: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.dropdown-content.expanded {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
 }

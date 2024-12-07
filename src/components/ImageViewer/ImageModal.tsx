@@ -6,6 +6,7 @@ import {
   Index,
   JSX,
   onCleanup,
+  Component,
 } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
@@ -22,6 +23,53 @@ interface ImageModalProps {
   captions: Captions;
   onClose: () => void;
 }
+
+const GenerateTagsDropdown: Component<{ imageInfo: ImageInfoType }> = (props) => {
+  const [isExpanded, setIsExpanded] = createSignal(false);
+  const gallery = useGallery();
+  const generateTags = useAction(gallery.generateTags);
+
+  return (
+    <div class="generate-tags-dropdown">
+      <button
+        type="button"
+        class="generate-tags-button card"
+        onClick={() => setIsExpanded(x => !x)}
+      >
+        <span class="icon">{getIcon("sparkle")}</span>
+        Generate Tags
+        <span class="icon dropdown-icon" classList={{ expanded: isExpanded() }}>
+          {getIcon("chevronDown")}
+        </span>
+      </button>
+      
+      <div class="dropdown-content" classList={{ expanded: isExpanded() }}>
+        <button
+          type="button"
+          class="generate-tags-button card"
+          onClick={() => {
+            generateTags("jtp2");
+            setIsExpanded(false);
+          }}
+        >
+          <span class="icon">{getIcon("sparkle")}</span>
+          Generate with JTP2
+        </button>
+        <button
+          type="button"
+          class="generate-tags-button card"
+          onClick={() => {
+            generateTags("wdv3");
+            setIsExpanded(false);
+          }}
+        >
+          <span class="icon">{getIcon("sparkle")}</span>
+          Generate with WDv3
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
@@ -138,22 +186,7 @@ const ModelBody = (props: {
       >
         <ImageInfo imageInfo={props.imageInfo} />
         <div class="caption-actions">
-          <button
-            type="button"
-            class="generate-tags-button card"
-            onClick={() => generateTags("jtp2")}
-          >
-            <span class="icon">{getIcon("sparkle")}</span>
-            Generate Tags with JTP2
-          </button>
-          <button
-            type="button"
-            class="generate-tags-button card"
-            onClick={() => generateTags("wdv3")}
-          >
-            <span class="icon">{getIcon("sparkle")}</span>
-            Generate Tags with WDv3
-          </button>
+          <GenerateTagsDropdown imageInfo={props.imageInfo} />
         </div>
         <div
           class="caption-editor"

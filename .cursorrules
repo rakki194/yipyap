@@ -1,3 +1,3 @@
 The frontend is a solidjs application, not a react one! Use solidjs syntax and features.
-The backend is Rust but originally it was in Python using FastAPI.
-Try to keep the same naming conventions as the original implementation and try to reuse as much code as possible, this applies to CSS too!
+The backend is Python using FastAPI.
+Try to keep the same naming conventions as the original implementation when sensible and try to reuse as much code as possible, this applies to CSS too! Always take into account the base style rules in the src/styles.css file.

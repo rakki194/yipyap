@@ -43,6 +43,7 @@ import TextSortAscendingRegular from "@fluentui/svg-icons/icons/text_sort_ascend
 import CalendarDateRegular from "@fluentui/svg-icons/icons/calendar_date_24_regular.svg?raw";
 import DocumentArrowDownRegular from "@fluentui/svg-icons/icons/document_arrow_down_24_regular.svg?raw";
 import PlusIcon from "@fluentui/svg-icons/icons/add_24_regular.svg?raw";
+import ChevronDownIcon from "@fluentui/svg-icons/icons/chevron_down_24_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -103,6 +104,7 @@ const iconMap: Readonly<Record<string, string>> = {
   calendarDate: CalendarDateRegular,
   documentArrowDown: DocumentArrowDownRegular,
   plus: PlusIcon,
+  chevronDown: ChevronDownIcon,
 };
 
 /* Returns a SVGElement from the icon map */
