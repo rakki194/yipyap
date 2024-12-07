@@ -1,3 +1,5 @@
+/* src/components/Gallery/Breadcrumb.css */
+
 .breadcrumb {
   position: sticky;
   top: 0;
@@ -50,7 +52,7 @@
 }
 
 [data-theme="strawberry"] .breadcrumb {
-  background-color: #e4ffeb; /* Light green background for strawberry theme */
+  background-color: #e4ffeb;
 }
 
 [data-theme="strawberry"] .breadcrumb::before {

@@ -42,7 +42,7 @@
 }
 
 :root[data-theme="banana"] {
-  --accent: #000000;
+  --accent: #803e00;
   --bg-color: #fff7e6;
   --secondary-bg: #ffe4b3;
   --card-bg: #ffdb4d;
@@ -81,7 +81,7 @@
 
 /* Theme-specific header gradients */
 [data-theme="strawberry"] .modal-header {
-  background: linear-gradient(45deg, #98fb98 0%, #e0ffe0 99%, #e0ffe0 100%);
+  background: hsla(348, 100%, 97%, 0.411);
 }
 
 [data-theme="banana"] .modal-header {
@@ -444,50 +444,8 @@
     opacity: 0.3;
   }
 
-  /* Fix modal header spacing in Christmas theme */
   .modal {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
     background: var(--bg-color);
-    padding: 0;
-    margin: 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    max-width: none;
-  }
-
-  .modal-header {
-    margin: 0;
-    padding: var(--double-spacing);
-    border-radius: 0;
-  }
-
-  .modal-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding: var(--double-spacing);
-    padding: 0;
-  }
-
-  .image-container {
-    margin: 0;
-    padding: 0;
-  }
-
-  .image-view {
-    margin: 0;
-    padding: 0;
-  }
-
-  .image-wrapper {
-    margin: 0;
-    padding: 0;
   }
 }
 
