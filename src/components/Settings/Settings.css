@@ -221,3 +221,41 @@ kbd {
     margin-bottom: var(--spacing);
   }
 }
+
+/* Add Christmas icon styles */
+.christmas-icon {
+  svg {
+    fill: #c41e3a;
+    animation: jingle 2s ease-in-out infinite;
+  }
+}
+
+/* Update icon-buttons for Christmas theme */
+[data-theme="christmas"] .icon-buttons button.active {
+  background-color: #c41e3a;
+  color: #f8b229;
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+/* Add Christmas-specific animations */
+@keyframes jingle {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 5px #c41e3a,
+                0 0 10px #c41e3a,
+                0 0 15px #dc143c;
+  }
+  to {
+    box-shadow: 0 0 10px #c41e3a,
+                0 0 20px #c41e3a,
+                0 0 30px #dc143c;
+  }
+}

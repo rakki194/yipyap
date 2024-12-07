@@ -44,6 +44,7 @@ import CalendarDateRegular from "@fluentui/svg-icons/icons/calendar_date_24_regu
 import DocumentArrowDownRegular from "@fluentui/svg-icons/icons/document_arrow_down_24_regular.svg?raw";
 import PlusIcon from "@fluentui/svg-icons/icons/add_24_regular.svg?raw";
 import ChevronDownIcon from "@fluentui/svg-icons/icons/chevron_down_24_regular.svg?raw";
+import ChristmasTreeIcon from "@fluentui/svg-icons/icons/tree_evergreen_20_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -105,6 +106,7 @@ const iconMap: Readonly<Record<string, string>> = {
   documentArrowDown: DocumentArrowDownRegular,
   plus: PlusIcon,
   chevronDown: ChevronDownIcon,
+  christmas: ChristmasTreeIcon,
 };
 
 /* Returns a SVGElement from the icon map */

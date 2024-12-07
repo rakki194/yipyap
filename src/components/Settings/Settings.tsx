@@ -1,8 +1,8 @@
 // src/components/Settings/Settings.tsx
 
-import { Component, Show, createSignal, createEffect, For } from "solid-js";
+import { Component, Show, createSignal, createEffect, For, createMemo } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
-import { useAppContext, Theme, themeIconMap } from "~/contexts/app";
+import { useAppContext, Theme, themeIconMap, isChristmasSeason } from "~/contexts/app";
 import getIcon from "~/icons";
 import "./Settings.css";
 
@@ -82,6 +82,15 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
       props.onClose();
     }
   };
+
+  const availableThemes = createMemo(() => {
+    const themes = Object.keys(themeIconMap);
+    // Filter out Christmas theme if not in season
+    if (!isChristmasSeason()) {
+      return themes.filter(theme => theme !== "christmas");
+    }
+    return themes;
+  });
 
   return (
     <div class="settings-panel card" onKeyDown={handleKeyDown}>
@@ -192,7 +201,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               <div class="setting-group">
                 <label>Theme</label>
                 <div class="theme-buttons">
-                  <For each={Object.keys(themeIconMap)}>
+                  <For each={availableThemes()}>
                     {(th) => (
                       <button
                         type="button"

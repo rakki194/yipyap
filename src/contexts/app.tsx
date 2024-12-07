@@ -107,7 +107,13 @@ const createAppContext = (): AppContext => {
     get theme() {
       return store.theme;
     },
-    setTheme: (theme: Theme) => setStore("theme", theme),
+    setTheme: (theme: Theme) => {
+      if (theme === "christmas" && !isChristmasSeason()) {
+        console.warn("Christmas theme is only available during the holiday season");
+        return;
+      }
+      setStore("theme", theme);
+    },
     // Settings
     get instantDelete() {
       return store.instantDelete;
@@ -170,6 +176,7 @@ export const themeIconMap = {
   banana: "banana",
   strawberry: "strawberry",
   peanut: "peanut",
+  christmas: "christmas",
 };
 
 const themes = Object.keys(themeIconMap) as Theme[];
@@ -195,14 +202,31 @@ export function getNextTheme(theme: Theme): Theme {
  * 4. Falls back to 'gray' theme
  * @returns Initial theme to use
  */
+export function isChristmasSeason(): boolean {
+  const today = new Date();
+  const month = today.getMonth(); // 0-based (0 = January, 11 = December)
+  const date = today.getDate();
+
+  // Available Dec 1 to Jan 10
+  return (month === 11 && date >= 1) || (month === 0 && date <= 10);
+}
+
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem("theme");
-  if (stored && themes.includes(stored as Theme)) {
-    return stored as Theme;
+  
+  // If Christmas season and previously using Christmas theme, keep it
+  if (isChristmasSeason() && stored === "christmas") {
+    return "christmas";
+  }
+  
+  // Otherwise fall back to normal theme selection logic
+  if (stored && Object.keys(themeIconMap).includes(stored)) {
+    // Don't allow Christmas theme outside of season
+    return stored === "christmas" && !isChristmasSeason() ? "light" : (stored as Theme);
   }
 
   const dsTheme = document.documentElement.dataset.theme;
-  if (dsTheme && themes.includes(dsTheme as Theme)) {
+  if (dsTheme && Object.keys(themeIconMap).includes(dsTheme)) {
     return dsTheme as Theme;
   }
 
