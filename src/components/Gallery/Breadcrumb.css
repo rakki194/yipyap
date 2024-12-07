@@ -1,8 +1,11 @@
 .breadcrumb {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   padding: var(--spacing);
   margin-bottom: var(--spacing);
   border-bottom: 1px solid var(--border-color);
-  background: none;
+  background-color: var(--bg-color);
   border-radius: 0;
   font-size: 1.4rem;
 
@@ -52,7 +55,7 @@
 }
 
 [data-theme="strawberry"] .breadcrumb::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -80px;
   width: 100px;

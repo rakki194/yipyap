@@ -5,6 +5,7 @@
     display: grid;
     place-items: center;
     overflow: hidden;
+    z-index: 10;
   }
 
   .modal-header {
