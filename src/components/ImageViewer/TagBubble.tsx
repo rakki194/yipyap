@@ -44,17 +44,14 @@ export const TagBubble: Component<{
 
   const getTagLCH = createMemo((): OKLCHColor => {
     const currentTheme = app.theme;
-    let hash = 0,
-      hue: number;
-    if (currentTheme === "golden") {
-      hue = props.index * 137.508;
-    } else {
-      const tag = props.tag;
-      for (let i = 0; i < tag.length; i++) {
-        hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      hue = hash % 360;
+    let hash = 0;
+    let hue: number;
+    const tag = props.tag;
+
+    for (let i = 0; i < tag.length; i++) {
+      hash = tag.charCodeAt(i) + ((hash << 5) - hash);
     }
+    hue = hash % 360;
 
     switch (currentTheme) {
       case "dark":
