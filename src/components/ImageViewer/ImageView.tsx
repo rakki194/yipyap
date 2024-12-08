@@ -60,36 +60,35 @@ export const ImageView = (props: ImageViewProps) => {
     )
   );
 
-  // Updated wheel zoom handler
+  // Updated wheel zoom handler with smoother zoom behavior
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
     if (!containerRef) return;
 
-    // Make zoom more gradual
-    const delta = e.deltaY * -0.002; // Reduced from 0.01 to 0.002
-    const newScale = Math.min(Math.max(scale() * (1 + delta), 1), 5);
+    // Make zoom more gradual and smooth
+    const delta = e.deltaY * -0.001; // Reduced from 0.002 to 0.001 for smoother zoom
+    const zoomFactor = Math.exp(delta);
+    const newScale = Math.min(Math.max(scale() * zoomFactor, 1), 5);
     
     if (newScale !== scale()) {
       const rect = containerRef.getBoundingClientRect();
       const containerWidth = rect.width;
       const containerHeight = rect.height;
 
-      // Get cursor position relative to the image center
-      const cursorX = e.clientX - rect.left - containerWidth / 2;
-      const cursorY = e.clientY - rect.top - containerHeight / 2;
+      // Get cursor position relative to the container
+      const cursorX = e.clientX - rect.left;
+      const cursorY = e.clientY - rect.top;
 
-      // Calculate new position
-      if (newScale === 1) {
-        setPosition({ x: 0, y: 0 });
-      } else {
-        const scaleChange = newScale - scale();
-        setPosition({
-          x: position().x - (cursorX * scaleChange / scale()),
-          y: position().y - (cursorY * scaleChange / scale())
-        });
-      }
-      
+      // Calculate cursor position relative to the image center
+      const relativeX = (cursorX - containerWidth / 2 - position().x) / scale();
+      const relativeY = (cursorY - containerHeight / 2 - position().y) / scale();
+
+      // Calculate new position to keep the cursor point fixed
+      const newX = cursorX - containerWidth / 2 - relativeX * newScale;
+      const newY = cursorY - containerHeight / 2 - relativeY * newScale;
+
       setScale(newScale);
+      setPosition({ x: newX, y: newY });
     }
   };
 
@@ -200,7 +199,8 @@ export const ImageView = (props: ImageViewProps) => {
       onMouseLeave={handleMouseUp}
       onDblClick={handleDoubleClick}
       style={{
-        cursor: scale() > 1 ? (isDragging() ? 'grabbing' : 'grab') : 'default'
+        cursor: scale() > 1 ? (isDragging() ? 'grabbing' : 'grab') : 'default',
+        "touch-action": "none" // Add this to prevent default touch behaviors
       }}
       data-zoom={scale() > 1 ? `${Math.round(scale() * 100)}%` : undefined}
     >
@@ -208,12 +208,14 @@ export const ImageView = (props: ImageViewProps) => {
         style={{
           transform: `scale(${scale()}) translate(${position().x / scale()}px, ${position().y / scale()}px)`,
           "transform-origin": "center",
-          transition: isDragging() ? 'none' : 'transform 0.2s ease-out',
+          // Adjust transition timing for smoother zoom
+          transition: isDragging() ? 'none' : 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
           height: '100%',
           width: '100%',
           display: 'flex',
           "justify-content": 'center',
-          "align-items": 'center'
+          "align-items": 'center',
+          "will-change": "transform" // Add this for better performance
         }}
       >
         {localProps.imageInfo.preview_img.isLoaded() ? (
