@@ -1,7 +1,8 @@
 import { createMemo, createSignal, For, Show, Suspense } from "solid-js";
 import { A } from "@solidjs/router";
 import getIcon from "~/icons";
-import { useAppContext, getNextTheme, themeIconMap } from "~/contexts/app";
+import { useAppContext } from "~/contexts/app";
+import { getNextTheme, themeIconMap } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
 import { Settings } from "~/components/Settings/Settings";
 import "./Breadcrumb.css";
@@ -108,7 +109,7 @@ function ThemeToggle() {
       title={`Switch to ${nextTheme()} mode`}
       aria-label={`Switch to ${nextTheme()} mode`}
     >
-      {getIcon(themeIconMap[hovered() ? nextTheme() : app.theme])}
+      {getIcon(themeIconMap[hovered() ? nextTheme() : app.theme]!)}
     </button>
   );
 }

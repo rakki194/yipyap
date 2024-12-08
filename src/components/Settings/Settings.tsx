@@ -1,8 +1,9 @@
 // src/components/Settings/Settings.tsx
 
-import { Component, Show, createSignal, createEffect, For, createMemo } from "solid-js";
+import { Component, Show, createSignal, createEffect, For } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
-import { useAppContext, Theme, themeIconMap, isChristmasSeason, isHalloweenSeason } from "~/contexts/app";
+import { useAppContext } from "~/contexts/app";
+import { Theme, themeIconMap, themes } from "~/contexts/theme";
 import getIcon from "~/icons";
 import "./Settings.css";
 
@@ -82,19 +83,6 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
       props.onClose();
     }
   };
-
-  const availableThemes = createMemo(() => {
-    const themes = Object.keys(themeIconMap);
-    if (import.meta.env.DEV) {
-      return themes;
-    }
-    const filtered = themes.filter(theme => {
-      if (theme === "christmas" && !isChristmasSeason()) return false;
-      if (theme === "halloween" && !isHalloweenSeason()) return false;
-      return true;
-    });
-    return filtered;
-  });
 
   return (
     <div class="settings-panel card" onKeyDown={handleKeyDown}>
@@ -205,7 +193,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               <div class="setting-group">
                 <label>Theme</label>
                 <div class="theme-buttons">
-                  <For each={availableThemes()}>
+                  <For each={themes}>
                     {(th) => (
                       <button
                         type="button"
@@ -215,7 +203,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                         title={`Switch to ${th} theme`}
                         aria-label={`Switch to ${th} theme`}
                       >
-                        {getIcon(themeIconMap[th as Theme])}
+                        {getIcon(themeIconMap[th as Theme]!)}
                       </button>
                     )}
                   </For>
