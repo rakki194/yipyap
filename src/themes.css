@@ -180,17 +180,14 @@
   }
 
   .controls .filters {
-    border-style: none;
     background: repeating-linear-gradient(
       -45deg,
-      #effdf3,
-      #effdf3 10px,
-      var(--card-bg) 10px,
-      var(--card-bg) 20px
+      var(--secondary-bg),
+      var(--secondary-bg) 10px,
+      var(--border-secondary) 10px,
+      var(--card-bg) 30px
     );
-    padding: var(--spacing);
-    border-radius: var(--border-radius);
-    animation: slide-stripes 300s linear infinite;
+    animation: slide-stripes 220s linear infinite;
     background-size: 200% 100%;
   }
 
@@ -234,7 +231,6 @@
     background: linear-gradient(45deg, #c41e3aa2 0%, #0033209f 100%);
     overflow: hidden;
     color: var(--text-primary);
-    padding: 0 var(--spacing);
   }
 
   /* Update breadcrumb link colors */
