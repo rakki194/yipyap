@@ -126,10 +126,6 @@
     border-collapse: collapse;
     overflow: hidden;
 
-    .horizontal & {
-      margin-top: calc(var(--spacing) * 6);
-    }
-
     & > tbody > tr > td:first-child {
       display: flex;
       align-items: center;
@@ -146,7 +142,7 @@
     overflow: hidden;
 
     .horizontal & {
-      margin-top: var(--spacing);
+      margin-top: calc(var(--spacing) * 6);
     }
 
     /* Caption Input Wrapper */
@@ -281,44 +277,30 @@
 }
 
 .generate-tags-dropdown {
-  position: relative;
-  width: 100%;
-  margin-top: calc(var(--triple-spacing)*2);
-
-  &.dropdown-icon {
-    margin-left: auto;
-    transition: transform 0.2s ease;
-  }
-
-  & .dropdown-icon.expanded {
-    transform: rotate(180deg);
-  }
-}
-
-.dropdown-content {
   position: absolute;
   top: 100%;
-  left: 0;
   right: 0;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  padding: 0;
-  gap: 0;
-  opacity: 0;
-  transform: translateY(-10px);
-  pointer-events: none;
-  transition: all 0.2s ease;
-  z-index: 1;
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-default);
-  overflow: hidden;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  z-index: 1000;
+}
 
-  &.expanded {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
-  }
+.generate-tags-dropdown button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  border-radius: var(--radius);
+}
+
+.generate-tags-dropdown button:hover {
+  background: var(--hover);
 }
 
 /* Metadata Bubble Styling */

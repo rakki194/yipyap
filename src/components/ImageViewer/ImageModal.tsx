@@ -25,53 +25,6 @@ interface ImageModalProps {
   onClose: () => void;
 }
 
-const GenerateTagsDropdown: Component<{ imageInfo: ImageInfoType }> = (props) => {
-  const [isExpanded, setIsExpanded] = createSignal(false);
-  const gallery = useGallery();
-  const generateTags = useAction(gallery.generateTags);
-
-  return (
-    <div class="generate-tags-dropdown">
-      <button
-        type="button"
-        class="generate-tags-button card"
-        onClick={() => setIsExpanded(x => !x)}
-      >
-        <span class="icon">{getIcon("sparkle")}</span>
-        Generate Tags
-        <span class="icon dropdown-icon" classList={{ expanded: isExpanded() }}>
-          {getIcon("chevronDown")}
-        </span>
-      </button>
-      
-      <div class="dropdown-content" classList={{ expanded: isExpanded() }}>
-        <button
-          type="button"
-          class="generate-tags-button card"
-          onClick={() => {
-            generateTags("jtp2");
-            setIsExpanded(false);
-          }}
-        >
-          <span class="icon">{getIcon("sparkle")}</span>
-          Generate with JTP2
-        </button>
-        <button
-          type="button"
-          class="generate-tags-button card"
-          onClick={() => {
-            generateTags("wdv3");
-            setIsExpanded(false);
-          }}
-        >
-          <span class="icon">{getIcon("sparkle")}</span>
-          Generate with WDv3
-        </button>
-      </div>
-    </div>
-  );
-};
-
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
   const getLayout = createMemo(() =>
@@ -194,11 +147,7 @@ const ModelBody = (props: {
           setFocused(true);
         }}
       >
-        <div class="caption-actions">
-          <GenerateTagsDropdown imageInfo={props.imageInfo} />
-        </div>
-        <div
-          class="caption-editor"
+        <div class="caption-editor"
           onClick={(e) => {
             if (e.currentTarget === e.target) setFocusedType(null);
           }}
@@ -233,8 +182,10 @@ const ModalHeader = (props: {
   const gallery = useGallery();
   const app = useAppContext();
   const deleteImageAction = useAction(gallery.deleteImage);
+  const generateTags = useAction(gallery.generateTags);
   const [isHolding, setIsHolding] = createSignal(false);
   const [progress, setProgress] = createSignal(0);
+  const [isExpanded, setIsExpanded] = createSignal(false);
   let deleteTimeout: number;
   let progressInterval: number;
 
@@ -327,6 +278,23 @@ const ModalHeader = (props: {
         >
           {getIcon("info")}
         </button>
+        <Show when={isMetadataOpen()}>
+          <div 
+            class="metadata-bubble" 
+            ref={metadataBubbleRef}
+          >
+            <ImageInfo imageInfo={props.imageInfo} />
+          </div>
+        </Show>
+        <button
+          type="button"
+          class="icon"
+          onClick={() => setIsExpanded((x: boolean) => !x)}
+          title="Generate Tags"
+          aria-label="Generate Tags"
+        >
+          {getIcon("sparkle")}
+        </button>
         <button
           type="button"
           class="icon"
@@ -363,6 +331,28 @@ const ModalHeader = (props: {
         >
           {getIcon("dismiss")}
         </button>
+        <Show when={isExpanded()}>
+          <div class="generate-tags-dropdown card">
+            <button
+              type="button"
+              onClick={() => {
+                generateTags("jtp2");
+                setIsExpanded(false);
+              }}
+            >
+              Generate with JTP2
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                generateTags("wdv3");
+                setIsExpanded(false);
+              }}
+            >
+              Generate with WDv3
+            </button>
+          </div>
+        </Show>
       </div>
     </div>
   );
