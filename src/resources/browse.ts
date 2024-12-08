@@ -218,12 +218,15 @@ export function createGalleryResourceCached(
       { value: prev_value, refetching }
     ): Promise<BrowsePagesCached> => {
       let pages = {} as PageToItems;
+      let setters = {} as Record<string, Setter<AnyData | undefined>>;
+      
       if (prev_value !== undefined && path === prev_value?.path) {
         if (prev_value.pages[page] !== undefined && !refetching) {
           // console.log("skipping fetch", { path, page });
           return prev_value;
         } else {
           pages = { ...prev_value.pages };
+          setters = { ...prev_value.setters }; // Keep previous setters
         }
       }
 
@@ -249,7 +252,7 @@ export function createGalleryResourceCached(
         mtime: result.mtime,
         pages,
         items,
-        setters: result.setters,
+        setters: { ...setters, ...result.setters }, // Use merged setters
       };
     }
   );
