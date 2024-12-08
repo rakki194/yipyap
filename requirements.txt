@@ -3,4 +3,5 @@ python-magic
 python-multipart
 pillow
 aiofiles
-uvicorn
+uvicorn[standard]
+watchfiles

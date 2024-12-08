@@ -90,6 +90,7 @@ def run_development_server(dev_port: int, backend_port: int):
         port=backend_port,
         log_level="debug" if reload else "info",
         reload=reload,
+        reload_dirs=["app"],
     )
 
     frontend.terminate()
