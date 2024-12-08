@@ -319,6 +319,16 @@ const ModalHeader = (props: {
       <div class="modal-actions">
         <button
           type="button"
+          class="icon metadata-button"
+          onClick={() => setIsMetadataOpen(prev => !prev)}
+          ref={metadataButtonRef}
+          title="Show Metadata"
+          aria-label="Show Metadata"
+        >
+          {getIcon("info")}
+        </button>
+        <button
+          type="button"
           class="icon"
           onClick={() => {
             window.location.href = props.imageInfo.download_path;
@@ -353,24 +363,6 @@ const ModalHeader = (props: {
         >
           {getIcon("dismiss")}
         </button>
-        <button
-          type="button"
-          class="icon metadata-button"
-          onClick={() => setIsMetadataOpen(prev => !prev)}
-          ref={metadataButtonRef}
-          title="Show Metadata"
-          aria-label="Show Metadata"
-        >
-          {getIcon("info")}
-        </button>
-        <Show when={isMetadataOpen()}>
-          <div 
-            class="metadata-bubble" 
-            ref={metadataBubbleRef}
-          >
-            <ImageInfo imageInfo={props.imageInfo} />
-          </div>
-        </Show>
       </div>
     </div>
   );
