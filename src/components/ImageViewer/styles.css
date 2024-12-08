@@ -74,14 +74,19 @@
   & > .image-container {
     position: relative;
     flex-shrink: 0;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
 
     /* Base Image Styles */
-    & > img {
-      object-fit: cover;
+    & > div > img {
+      object-fit: contain;
       width: 100%;
       height: 100%;
-      transition-property: opacity, aspect-ratio;
+      transition-property: opacity;
       image-rendering: high-quality;
+      pointer-events: none;
     }
 
     /* Thumbnail Image */
@@ -92,7 +97,7 @@
     }
 
     /* Preview Image */
-    & > img.preview {
+    & > div > img.preview {
       position: relative;
       z-index: 1;
       opacity: 0;
@@ -339,4 +344,24 @@
   height: 8px;
   background: var(--card-bg);
   transform: rotate(45deg);
+}
+
+/* Add zoom indicator */
+.image-container::after {
+  content: attr(data-zoom);
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.image-container[data-zoom]:hover::after {
+  opacity: 1;
 }

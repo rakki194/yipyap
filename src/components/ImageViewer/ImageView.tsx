@@ -1,5 +1,5 @@
 // src/components/ImageViewer/ImageView.tsx
-import { createEffect, createMemo, on, onMount, splitProps } from "solid-js";
+import { createEffect, createMemo, on, onMount, splitProps, createSignal } from "solid-js";
 import type { JSX } from "solid-js";
 import type { ImageInfo } from "~/types";
 
@@ -14,6 +14,11 @@ interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
  */
 export const ImageView = (props: ImageViewProps) => {
   const [localProps, divProps] = splitProps(props, ["imageInfo"]);
+  const [scale, setScale] = createSignal(1);
+  const [isDragging, setIsDragging] = createSignal(false);
+  const [position, setPosition] = createSignal({ x: 0, y: 0 });
+  const [startPos, setStartPos] = createSignal({ x: 0, y: 0 });
+  let containerRef: HTMLDivElement | undefined;
 
   const fallback = createMemo(
     on(
@@ -47,10 +52,96 @@ export const ImageView = (props: ImageViewProps) => {
     )
   );
 
+  // Updated wheel zoom handler
+  const handleWheel = (e: WheelEvent) => {
+    e.preventDefault();
+    if (!containerRef) return;
+
+    // Make zoom more gradual
+    const delta = e.deltaY * -0.002; // Reduced from 0.01 to 0.002
+    const newScale = Math.min(Math.max(scale() * (1 + delta), 1), 5);
+    
+    if (newScale !== scale()) {
+      const rect = containerRef.getBoundingClientRect();
+      const containerWidth = rect.width;
+      const containerHeight = rect.height;
+
+      // Get cursor position relative to the image center
+      const cursorX = e.clientX - rect.left - containerWidth / 2;
+      const cursorY = e.clientY - rect.top - containerHeight / 2;
+
+      // Calculate new position
+      if (newScale === 1) {
+        setPosition({ x: 0, y: 0 });
+      } else {
+        const scaleChange = newScale - scale();
+        setPosition({
+          x: position().x - (cursorX * scaleChange / scale()),
+          y: position().y - (cursorY * scaleChange / scale())
+        });
+      }
+      
+      setScale(newScale);
+    }
+  };
+
+  // Handle drag to pan when zoomed
+  const handleMouseDown = (e: MouseEvent) => {
+    if (scale() > 1) {
+      setIsDragging(true);
+      setStartPos({ x: e.clientX - position().x, y: e.clientY - position().y });
+    }
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (isDragging() && scale() > 1) {
+      const newX = e.clientX - startPos().x;
+      const newY = e.clientY - startPos().y;
+      setPosition({ x: newX, y: newY });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Double click to reset zoom
+  const handleDoubleClick = () => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  };
+
   return (
-    <div class="image-container" {...divProps}>
+    <div 
+      ref={containerRef}
+      class="image-container" 
+      {...divProps}
+      onWheel={handleWheel}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onDblClick={handleDoubleClick}
+      style={{
+        cursor: scale() > 1 ? (isDragging() ? 'grabbing' : 'grab') : 'default'
+      }}
+      data-zoom={scale() > 1 ? `${Math.round(scale() * 100)}%` : undefined}
+    >
       {fallback()}
-      {localProps.imageInfo.preview_img.img}
+      <div 
+        style={{
+          transform: `scale(${scale()}) translate(${position().x / scale()}px, ${position().y / scale()}px)`,
+          "transform-origin": "center",
+          transition: isDragging() ? 'none' : 'transform 0.2s ease-out',
+          height: '100%',
+          width: '100%',
+          display: 'flex',
+          "justify-content": 'center',
+          "align-items": 'center'
+        }}
+      >
+        {localProps.imageInfo.preview_img.img}
+      </div>
     </div>
   );
 };
