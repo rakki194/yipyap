@@ -1,6 +1,6 @@
 // src/pages/FrontPage.tsx
 
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, onMount, onCleanup } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import getIcon from "~/icons";
 import "~/styles.css";
@@ -12,6 +12,13 @@ const FrontPage: Component = () => {
   const navigate = useNavigate();
   const app = useAppContext();
   const [isVisible, setIsVisible] = createSignal(true);
+
+  onMount(() => {
+    document.body.classList.add('on-front-page');
+    onCleanup(() => {
+      document.body.classList.remove('on-front-page');
+    });
+  });
 
   const getRandomSubtitle = () => {
     if (app.disableJapanese) {

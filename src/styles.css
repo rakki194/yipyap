@@ -299,3 +299,7 @@ textarea::placeholder {
   color: var(--placeholder-color);
   opacity: 1;
 }
+
+body.on-front-page {
+  overflow: hidden;
+}
