@@ -36,6 +36,10 @@ export interface AppContext {
   readonly jtp2TagsPath: string;
   setJtp2ModelPath: (value: string) => void;
   setJtp2TagsPath: (value: string) => void;
+  enableZoom: boolean;
+  enableMinimap: boolean;
+  setEnableZoom: (value: boolean) => void;
+  setEnableMinimap: (value: boolean) => void;
 }
 
 /**
@@ -52,6 +56,8 @@ const createAppContext = (): AppContext => {
     disableJapanese: boolean;
     jtp2ModelPath: string;
     jtp2TagsPath: string;
+    enableZoom: boolean;
+    enableMinimap: boolean;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
@@ -59,6 +65,8 @@ const createAppContext = (): AppContext => {
     disableJapanese: localStorage.getItem("disableJapanese") === "true",
     jtp2ModelPath: localStorage.getItem("jtp2ModelPath") || "",
     jtp2TagsPath: localStorage.getItem("jtp2TagsPath") || "",
+    enableZoom: false,
+    enableMinimap: false,
   });
 
   // Previous Location tracking
@@ -101,6 +109,12 @@ const createAppContext = (): AppContext => {
   createRenderEffect(() =>
     localStorage.setItem("jtp2TagsPath", store.jtp2TagsPath)
   );
+  createRenderEffect(() =>
+    localStorage.setItem("enableZoom", store.enableZoom.toString())
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("enableMinimap", store.enableMinimap.toString())
+  );
 
   const setJtp2ModelPath = (value: string) => {
     setStore("jtp2ModelPath", value);
@@ -110,6 +124,16 @@ const createAppContext = (): AppContext => {
   const setJtp2TagsPath = (value: string) => {
     setStore("jtp2TagsPath", value);
     localStorage.setItem("jtp2TagsPath", value);
+  };
+
+  const setEnableZoom = (value: boolean) => {
+    setStore("enableZoom", value);
+    localStorage.setItem("enableZoom", value.toString());
+  };
+
+  const setEnableMinimap = (value: boolean) => {
+    setStore("enableMinimap", value);
+    localStorage.setItem("enableMinimap", value.toString());
   };
 
   const updateJtp2Config = async (config: { model_path?: string; tags_path?: string }) => {
@@ -174,6 +198,14 @@ const createAppContext = (): AppContext => {
     },
     setJtp2ModelPath: (path: string) => updateJtp2Config({ model_path: path }),
     setJtp2TagsPath: (path: string) => updateJtp2Config({ tags_path: path }),
+    get enableZoom() {
+      return store.enableZoom;
+    },
+    get enableMinimap() {
+      return store.enableMinimap;
+    },
+    setEnableZoom: (value: boolean) => setEnableZoom(value),
+    setEnableMinimap: (value: boolean) => setEnableMinimap(value),
   };
 };
 

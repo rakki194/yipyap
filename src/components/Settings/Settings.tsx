@@ -367,6 +367,26 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               />
               Enable instant delete (skips confirmation)
             </label>
+
+            <h4 class="experimental-header">Experimental Features</h4>
+            <div class="experimental-options">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={app.enableZoom}
+                  onChange={(e) => app.setEnableZoom(e.currentTarget.checked)}
+                />
+                Enable image zooming
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={app.enableMinimap}
+                  onChange={(e) => app.setEnableMinimap(e.currentTarget.checked)}
+                />
+                Enable minimap when zoomed
+              </label>
+            </div>
           </section>
         </div>
       </Show>

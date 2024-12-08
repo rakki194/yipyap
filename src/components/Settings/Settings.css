@@ -341,3 +341,26 @@ kbd {
   height: 1em;
   fill: currentColor;
 }
+
+.experimental-header {
+  margin-top: var(--spacing);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.experimental-options {
+  margin-top: var(--half-spacing);
+  display: flex;
+  flex-direction: column;
+  gap: var(--half-spacing);
+}
+
+.experimental-options label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  color: var(--text-primary);
+}

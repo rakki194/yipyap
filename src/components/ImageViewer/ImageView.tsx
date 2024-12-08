@@ -1,7 +1,8 @@
 // src/components/ImageViewer/ImageView.tsx
-import { createEffect, createMemo, on, onMount, onCleanup, splitProps, createSignal } from "solid-js";
+import { createEffect, createMemo, on, onMount, onCleanup, splitProps, createSignal, Show } from "solid-js";
 import type { JSX } from "solid-js";
 import type { ImageInfo } from "~/types";
+import { useAppContext } from "~/contexts/app";
 
 interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
   imageInfo: ImageInfo;
@@ -14,6 +15,7 @@ interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
  */
 export const ImageView = (props: ImageViewProps) => {
   const [localProps, divProps] = splitProps(props, ["imageInfo"]);
+  const app = useAppContext();
   const [scale, setScale] = createSignal(1);
   const [isDragging, setIsDragging] = createSignal(false);
   const [position, setPosition] = createSignal({ x: 0, y: 0 });
@@ -62,6 +64,7 @@ export const ImageView = (props: ImageViewProps) => {
 
   // Updated wheel zoom handler with smoother zoom behavior
   const handleWheel = (e: WheelEvent) => {
+    if (!app.enableZoom) return;
     e.preventDefault();
     if (!containerRef) return;
 
@@ -230,30 +233,32 @@ export const ImageView = (props: ImageViewProps) => {
         )}
       </div>
       
-      {/* Add minimap */}
-      <div class="minimap" onClick={handleMinimapClick}>
-        <img 
-          src={localProps.imageInfo.thumbnail_img.img.src} 
-          alt="Navigation minimap" 
-        />
-        <div class="overlay" 
-          style={{
-            "--viewport-left": viewportStyle().left,
-            "--viewport-top": viewportStyle().top,
-            "--viewport-right": `calc(${viewportStyle().left} + ${viewportStyle().width})`,
-            "--viewport-bottom": `calc(${viewportStyle().top} + ${viewportStyle().height})`
-          }}
-        />
-        <div 
-          class="viewport" 
-          style={{
-            width: viewportStyle().width,
-            height: viewportStyle().height,
-            left: viewportStyle().left,
-            top: viewportStyle().top
-          }}
-        />
-      </div>
+      {/* Update minimap conditional rendering */}
+      <Show when={scale() > 1 && app.enableZoom && app.enableMinimap}>
+        <div class="minimap" onClick={handleMinimapClick}>
+          <img 
+            src={localProps.imageInfo.thumbnail_img.img.src} 
+            alt="Navigation minimap" 
+          />
+          <div class="overlay" 
+            style={{
+              "--viewport-left": viewportStyle().left,
+              "--viewport-top": viewportStyle().top,
+              "--viewport-right": `calc(${viewportStyle().left} + ${viewportStyle().width})`,
+              "--viewport-bottom": `calc(${viewportStyle().top} + ${viewportStyle().height})`
+            }}
+          />
+          <div 
+            class="viewport" 
+            style={{
+              width: viewportStyle().width,
+              height: viewportStyle().height,
+              left: viewportStyle().left,
+              top: viewportStyle().top
+            }}
+          />
+        </div>
+      </Show>
       
       {/* Zoom indicator */}
       <div class="zoom-indicator">
