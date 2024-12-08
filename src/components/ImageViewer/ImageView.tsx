@@ -186,7 +186,6 @@ export const ImageView = (props: ImageViewProps) => {
       }}
       data-zoom={scale() > 1 ? `${Math.round(scale() * 100)}%` : undefined}
     >
-      {fallback()}
       <div 
         style={{
           transform: `scale(${scale()}) translate(${position().x / scale()}px, ${position().y / scale()}px)`,
@@ -199,17 +198,24 @@ export const ImageView = (props: ImageViewProps) => {
           "align-items": 'center'
         }}
       >
-        <img 
-          ref={imageRef}
-          src={localProps.imageInfo.preview_img.img.src}
-          alt={localProps.imageInfo.preview_img.img.alt}
-          style={{ width: '100%', height: '100%', "object-fit": 'contain' }}
-        />
+        {localProps.imageInfo.preview_img.isLoaded() ? (
+          <img 
+            ref={imageRef}
+            src={localProps.imageInfo.preview_img.img.src}
+            alt={localProps.imageInfo.preview_img.img.alt}
+            style={{ width: '100%', height: '100%', "object-fit": 'contain' }}
+          />
+        ) : (
+          fallback()
+        )}
       </div>
       
       {/* Add minimap */}
       <div class="minimap">
-        <img src={props.imageInfo.thumbnail_path} alt="Navigation minimap" />
+        <img 
+          src={localProps.imageInfo.thumbnail_img.img.src} 
+          alt="Navigation minimap" 
+        />
         <div 
           class="viewport" 
           style={{
