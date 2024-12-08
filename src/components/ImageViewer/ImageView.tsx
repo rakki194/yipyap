@@ -1,5 +1,5 @@
 // src/components/ImageViewer/ImageView.tsx
-import { createEffect, createMemo, on, onMount, splitProps, createSignal } from "solid-js";
+import { createEffect, createMemo, on, onMount, onCleanup, splitProps, createSignal } from "solid-js";
 import type { JSX } from "solid-js";
 import type { ImageInfo } from "~/types";
 
@@ -19,6 +19,14 @@ export const ImageView = (props: ImageViewProps) => {
   const [position, setPosition] = createSignal({ x: 0, y: 0 });
   const [startPos, setStartPos] = createSignal({ x: 0, y: 0 });
   let containerRef: HTMLDivElement | undefined;
+  let imageRef: HTMLImageElement | undefined;
+
+  const [viewportStyle, setViewportStyle] = createSignal({
+    width: '0%',
+    height: '0%',
+    left: '0%',
+    top: '0%'
+  });
 
   const fallback = createMemo(
     on(
@@ -111,6 +119,57 @@ export const ImageView = (props: ImageViewProps) => {
     setPosition({ x: 0, y: 0 });
   };
 
+  // Update this whenever scale or position changes
+  const updateMinimapViewport = () => {
+    if (!containerRef || !imageRef) return;
+
+    const containerWidth = containerRef.clientWidth;
+    const containerHeight = containerRef.clientHeight;
+    const imageWidth = imageRef.clientWidth;
+    const imageHeight = imageRef.clientHeight;
+
+    // Calculate the visible portion of the image
+    const viewportWidth = (containerWidth / (imageWidth * scale())) * 100;
+    const viewportHeight = (containerHeight / (imageHeight * scale())) * 100;
+
+    // Calculate the position of the viewport in the minimap
+    // Convert the position from pixels to percentage of the total scaled image size
+    const left = (-position().x / (imageWidth * scale())) * 100;
+    const top = (-position().y / (imageHeight * scale())) * 100;
+
+    setViewportStyle({
+      width: `${Math.min(100, viewportWidth)}%`,
+      height: `${Math.min(100, viewportHeight)}%`,
+      left: `${Math.max(0, Math.min(100 - viewportWidth, left))}%`,
+      top: `${Math.max(0, Math.min(100 - viewportHeight, top))}%`
+    });
+  };
+
+  // Add effect to update viewport when scale or position changes
+  createEffect(() => {
+    // Dependencies that should trigger an update
+    const _ = scale();
+    const pos = position();
+    
+    // Update the viewport
+    updateMinimapViewport();
+  });
+
+  // Also update on window resize
+  onMount(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      updateMinimapViewport();
+    });
+    
+    if (containerRef) {
+      resizeObserver.observe(containerRef);
+    }
+
+    onCleanup(() => {
+      resizeObserver.disconnect();
+    });
+  });
+
   return (
     <div 
       ref={containerRef}
@@ -140,7 +199,31 @@ export const ImageView = (props: ImageViewProps) => {
           "align-items": 'center'
         }}
       >
-        {localProps.imageInfo.preview_img.img}
+        <img 
+          ref={imageRef}
+          src={localProps.imageInfo.preview_img.img.src}
+          alt={localProps.imageInfo.preview_img.img.alt}
+          style={{ width: '100%', height: '100%', "object-fit": 'contain' }}
+        />
+      </div>
+      
+      {/* Add minimap */}
+      <div class="minimap">
+        <img src={props.imageInfo.thumbnail_path} alt="Navigation minimap" />
+        <div 
+          class="viewport" 
+          style={{
+            width: viewportStyle().width,
+            height: viewportStyle().height,
+            left: viewportStyle().left,
+            top: viewportStyle().top
+          }}
+        />
+      </div>
+      
+      {/* Zoom indicator */}
+      <div class="zoom-indicator">
+        {Math.round(scale() * 100)}%
       </div>
     </div>
   );

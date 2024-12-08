@@ -87,6 +87,7 @@
       transition-property: opacity;
       image-rendering: high-quality;
       pointer-events: none;
+      transform-origin: 0 0;
     }
 
     /* Thumbnail Image */
@@ -94,6 +95,9 @@
       position: absolute;
       left: 0;
       top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     /* Preview Image */
@@ -101,6 +105,7 @@
       position: relative;
       z-index: 1;
       opacity: 0;
+      transform-origin: 0 0;
 
       &.loaded {
         opacity: 1;
@@ -363,5 +368,58 @@
 }
 
 .image-container[data-zoom]:hover::after {
+  opacity: 1;
+}
+
+/* Minimap styles */
+.image-container .minimap {
+  position: absolute;
+  top: 5rem;
+  left: 1rem;
+  width: 150px;
+  height: 100px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.image-container .minimap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.image-container .minimap .viewport {
+  position: absolute;
+  border: 1px solid var(--accent, #fff);
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+/* Show minimap when zoomed and hovered */
+.image-container[data-zoom]:hover .minimap {
+  opacity: 1;
+}
+
+/* Update existing zoom indicator styles for consistency */
+.image-container .zoom-indicator {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.image-container[data-zoom]:hover .zoom-indicator {
   opacity: 1;
 }
