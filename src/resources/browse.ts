@@ -234,9 +234,6 @@ export function createGalleryResourceCached(
         console.debug("fetching page", { path, page });
       }
       const result = await fetchPageItemsAsSignals(path, page);
-      if (import.meta.env.DEV) {
-        console.debug("fetched page", { path, page, result });
-      }
 
       pages[page] = result.items;
       const items = Object.values(pages).reduce((acc, pageItems) => {
@@ -244,7 +241,7 @@ export function createGalleryResourceCached(
         return acc;
       }, [] as AnyItem[]);
 
-      return {
+      const value: BrowsePagesCached = {
         path,
         total_pages: result.total_pages,
         total_folders: result.total_folders,
@@ -254,6 +251,12 @@ export function createGalleryResourceCached(
         items,
         setters: { ...setters, ...result.setters }, // Use merged setters
       };
+
+      if (import.meta.env.DEV) {
+        console.debug("fetched page", { path, page, result, pages, items });
+      }
+
+      return value;
     }
   );
 }
