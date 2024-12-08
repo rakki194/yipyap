@@ -170,6 +170,24 @@ export const ImageView = (props: ImageViewProps) => {
     });
   });
 
+  // Add handleMinimapClick function
+  const handleMinimapClick = (e: MouseEvent) => {
+    if (!containerRef || !imageRef) return;
+    
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    
+    const imageWidth = imageRef.clientWidth;
+    const imageHeight = imageRef.clientHeight;
+    
+    // Calculate the new position
+    const newX = -(x * imageWidth * scale() - containerRef.clientWidth / 2);
+    const newY = -(y * imageHeight * scale() - containerRef.clientHeight / 2);
+    
+    setPosition({ x: newX, y: newY });
+  };
+
   return (
     <div 
       ref={containerRef}
@@ -211,7 +229,7 @@ export const ImageView = (props: ImageViewProps) => {
       </div>
       
       {/* Add minimap */}
-      <div class="minimap">
+      <div class="minimap" onClick={handleMinimapClick}>
         <img 
           src={localProps.imageInfo.thumbnail_img.img.src} 
           alt="Navigation minimap" 
