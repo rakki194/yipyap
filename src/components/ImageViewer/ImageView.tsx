@@ -216,6 +216,14 @@ export const ImageView = (props: ImageViewProps) => {
           src={localProps.imageInfo.thumbnail_img.img.src} 
           alt="Navigation minimap" 
         />
+        <div class="overlay" 
+          style={{
+            "--viewport-left": viewportStyle().left,
+            "--viewport-top": viewportStyle().top,
+            "--viewport-right": `calc(${viewportStyle().left} + ${viewportStyle().width})`,
+            "--viewport-bottom": `calc(${viewportStyle().top} + ${viewportStyle().height})`
+          }}
+        />
         <div 
           class="viewport" 
           style={{

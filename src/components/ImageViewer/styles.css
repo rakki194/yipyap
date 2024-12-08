@@ -392,13 +392,43 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  position: relative;
+  z-index: 0;
 }
 
 .image-container .minimap .viewport {
   position: absolute;
   border: 1px solid var(--accent, #fff);
-  background: rgba(255, 255, 255, 0.1);
+  background: transparent;
   pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Move the darkening overlay between the image and viewport */
+.image-container .minimap .overlay {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(1px);
+  z-index: 1;
+  /* Fix the clip-path to ensure a properly closed shape */
+  clip-path: polygon(
+    /* Outer shape */
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 0,
+    /* Inner cutout - make sure to close the shape */
+    var(--viewport-left) var(--viewport-top),
+    var(--viewport-left) var(--viewport-bottom),
+    var(--viewport-right) var(--viewport-bottom),
+    var(--viewport-right) var(--viewport-top),
+    var(--viewport-left) var(--viewport-top)
+  );
 }
 
 /* Show minimap when zoomed and hovered */
