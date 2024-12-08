@@ -319,6 +319,50 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 </label>
               </div>
             </div>
+
+            <div class="settings-column">
+              <h3>Model Settings</h3>
+              <div class="setting-group">
+                <label>JTP2 Model Path</label>
+                <input
+                  type="text"
+                  value={app.jtp2ModelPath}
+                  onChange={(e) => app.setJtp2ModelPath(e.currentTarget.value)}
+                  placeholder="/path/to/jtp2/model.safetensors"
+                />
+                <div class="setting-info">
+                  <a 
+                    href="https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="download-link"
+                  >
+                    <span class="icon">{getIcon("documentArrowDown")}</span>
+                    Download Model (1.8GB)
+                  </a>
+                </div>
+              </div>
+              <div class="setting-group">
+                <label>JTP2 Tags Path</label>
+                <input
+                  type="text"
+                  value={app.jtp2TagsPath}
+                  onChange={(e) => app.setJtp2TagsPath(e.currentTarget.value)}
+                  placeholder="/path/to/jtp2/tags.json"
+                />
+                <div class="setting-info">
+                  <a 
+                    href="https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/tags.json"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="download-link"
+                  >
+                    <span class="icon">{getIcon("documentArrowDown")}</span>
+                    Download Tags (195KB)
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
           <section class="warning-section">

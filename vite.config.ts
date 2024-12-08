@@ -79,6 +79,10 @@ export default defineConfig({
         target: BACKEND_HOST,
         changeOrigin: true,
       },
+      "/api/config": {
+        target: BACKEND_HOST,
+        changeOrigin: true,
+      },
     },
     port: DEV_PORT,
   },

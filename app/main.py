@@ -53,10 +53,14 @@ data_source = CachedFileSystemDataSource(ROOT_DIR, THUMBNAIL_SIZE, PREVIEW_SIZE)
 CAPTION_TYPE_ORDER = {".e621": 0, ".tags": 1, ".wd": 2, ".caption": 3}
 
 # Add configuration near other constants
-JTP2_MODEL_PATH = Path(
+JTP2_MODEL_PATH = Path(os.getenv(
+    "JTP2_MODEL_PATH",
     "/home/kade/source/repos/JTP2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors"
-)
-JTP2_TAGS_PATH = Path("/home/kade/source/repos/JTP2/tags.json")
+))
+JTP2_TAGS_PATH = Path(os.getenv(
+    "JTP2_TAGS_PATH", 
+    "/home/kade/source/repos/JTP2/tags.json"
+))
 
 # Add near other constants
 WDV3_MODEL_NAME = os.getenv("WDV3_MODEL_NAME", "vit")
@@ -410,3 +414,30 @@ async def generate_caption(
     except Exception as e:
         logger.error(f"Error generating caption: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Add new endpoint to update model path
+@app.put("/api/config/jtp2")
+async def update_jtp2_config(config: dict):
+    """Update JTP2 model configuration"""
+    global JTP2_MODEL_PATH, JTP2_TAGS_PATH
+    
+    if "model_path" in config:
+        JTP2_MODEL_PATH = Path(config["model_path"])
+    if "tags_path" in config:
+        JTP2_TAGS_PATH = Path(config["tags_path"])
+        
+    # Reinitialize caption generator with new paths
+    if "jtp2" in caption_generators:
+        try:
+            caption_generators["jtp2"] = caption_generation.JTP2Generator(
+                model_path=JTP2_MODEL_PATH,
+                tags_path=JTP2_TAGS_PATH,
+                threshold=0.2
+            )
+            logger.info("JTP2 caption generator reinitialized with new paths")
+        except Exception as e:
+            logger.error(f"Failed to reinitialize JTP2 generator: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+            
+    return {"success": True}

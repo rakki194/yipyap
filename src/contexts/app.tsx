@@ -31,6 +31,10 @@ export interface AppContext {
   setDisableAnimations: (value: boolean) => void;
   readonly disableJapanese: boolean;         // Language preference
   setDisableJapanese: (value: boolean) => void;
+  readonly jtp2ModelPath: string;
+  readonly jtp2TagsPath: string;
+  setJtp2ModelPath: (value: string) => void;
+  setJtp2TagsPath: (value: string) => void;
 }
 
 /**
@@ -45,11 +49,15 @@ const createAppContext = (): AppContext => {
     instantDelete: boolean;
     disableAnimations: boolean;
     disableJapanese: boolean;
+    jtp2ModelPath: string;
+    jtp2TagsPath: string;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
     disableAnimations: localStorage.getItem("disableAnimations") === "true",
     disableJapanese: localStorage.getItem("disableJapanese") === "true",
+    jtp2ModelPath: localStorage.getItem("jtp2ModelPath") || "",
+    jtp2TagsPath: localStorage.getItem("jtp2TagsPath") || "",
   });
 
   // Previous Location tracking
@@ -86,6 +94,48 @@ const createAppContext = (): AppContext => {
   createRenderEffect(() =>
     localStorage.setItem("disableJapanese", store.disableJapanese.toString())
   );
+  createRenderEffect(() =>
+    localStorage.setItem("jtp2ModelPath", store.jtp2ModelPath)
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("jtp2TagsPath", store.jtp2TagsPath)
+  );
+
+  const setJtp2ModelPath = (value: string) => {
+    setStore("jtp2ModelPath", value);
+    localStorage.setItem("jtp2ModelPath", value);
+  };
+
+  const setJtp2TagsPath = (value: string) => {
+    setStore("jtp2TagsPath", value);
+    localStorage.setItem("jtp2TagsPath", value);
+  };
+
+  const updateJtp2Config = async (config: { model_path?: string; tags_path?: string }) => {
+    try {
+      const response = await fetch("/api/config/jtp2", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(config),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to update JTP2 config: ${response.statusText}`);
+      }
+      
+      if (config.model_path) {
+        setJtp2ModelPath(config.model_path);
+      }
+      if (config.tags_path) {
+        setJtp2TagsPath(config.tags_path);
+      }
+    } catch (error) {
+      console.error("Error updating JTP2 config:", error);
+      throw error;
+    }
+  };
 
   return {
     get prevRoute() {
@@ -125,6 +175,14 @@ const createAppContext = (): AppContext => {
     setDisableJapanese(value: boolean) {
       setStore("disableJapanese", value);
     },
+    get jtp2ModelPath() {
+      return store.jtp2ModelPath;
+    },
+    get jtp2TagsPath() {
+      return store.jtp2TagsPath;
+    },
+    setJtp2ModelPath: (path: string) => updateJtp2Config({ model_path: path }),
+    setJtp2TagsPath: (path: string) => updateJtp2Config({ tags_path: path }),
   };
 };
 

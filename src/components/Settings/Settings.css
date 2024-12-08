@@ -295,3 +295,49 @@ kbd {
                 0 0 30px #800080;
   }
 }
+
+.setting-group input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--input-background);
+  color: var(--text-color);
+}
+
+.setting-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.setting-info {
+  margin-top: var(--half-spacing);
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
+
+.download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--half-spacing);
+  color: var(--accent-color);
+  text-decoration: none;
+  padding: var(--half-spacing);
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+}
+
+.download-link:hover {
+  background-color: var(--hover-bg);
+}
+
+.download-link .icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.download-link .icon svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
