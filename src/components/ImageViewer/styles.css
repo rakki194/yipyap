@@ -150,9 +150,10 @@
     gap: var(--spacing);
     flex: 1;
     overflow: hidden;
+    margin-top: calc(var(--spacing) * 10);
 
     .horizontal & {
-      margin-top: calc(var(--spacing) * 6);
+      margin-top: calc(var(--spacing) * 10);
     }
 
     /* Caption Input Wrapper */
