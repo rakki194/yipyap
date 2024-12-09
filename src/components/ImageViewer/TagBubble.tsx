@@ -13,9 +13,10 @@
  * - Accessibility support with ARIA attributes
  */
 
-import { Component, createMemo, createSignal } from "solid-js";
+import { Component, createMemo, createSignal, Show } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
+import { useTranslation } from '~/hooks/useTranslation';
 
 /**
  * Focus directive that programmatically focuses an HTML element
@@ -182,8 +183,9 @@ export const TagBubble: Component<{
   const app = useAppContext();
   const [isEditing, setIsEditing] = createSignal(false);
   let inputRef: HTMLInputElement | undefined;
-  let contentRef: HTMLSpanElement | undefined;
+  let contentRef: HTMLDivElement | undefined;
   const getTagColor = createTagColorGenerator();
+  const { t } = useTranslation();
 
   /**
    * Initiates the tag editing mode
@@ -343,7 +345,7 @@ export const TagBubble: Component<{
   };
 
   return (
-    <span
+    <div
       class="tag-bubble"
       style={{
         "background-color": formatOKLCH(getTagLCH()),
@@ -355,37 +357,41 @@ export const TagBubble: Component<{
         ...getHoverStyles(),
       }}
     >
-      <span class="tag-content" ref={contentRef}>
-        {isEditing() ? (
-          <input
-            type="text"
-            value={props.tag}
-            style={{
-              color: "inherit",
-              "background-color": "transparent",
-              "border-color": "currentColor",
-              "min-width": "100%", // Allow growing but not shrinking
-              "box-sizing": "border-box",
-              transition: "all 0.2s ease", // Smooth transition for size changes
-            }}
-            onKeyDown={handleKeyDown}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                handleSubmit(e.currentTarget.value);
-              }
-              if (e.key === "Escape") {
-                setIsEditing(false);
-              }
-            }}
-            onBlur={(e) => handleSubmit(e.currentTarget.value)}
-            ref={inputRef}
-          />
-        ) : (
+      <div class="tag-content" ref={contentRef}>
+        <Show
+          when={!isEditing()}
+          fallback={
+            <input
+              type="text"
+              value={props.tag}
+              style={{
+                color: "inherit",
+                "background-color": "transparent",
+                "border-color": "currentColor",
+                "min-width": "100%", // Allow growing but not shrinking
+                "box-sizing": "border-box",
+                transition: "all 0.2s ease", // Smooth transition for size changes
+              }}
+              onKeyDown={handleKeyDown}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSubmit(e.currentTarget.value);
+                }
+                if (e.key === "Escape") {
+                  setIsEditing(false);
+                }
+              }}
+              onBlur={(e) => handleSubmit(e.currentTarget.value)}
+              ref={inputRef}
+              placeholder={t('gallery.addTag')}
+            />
+          }
+        >
           <span class="tag-text" onClick={startEditing}>
             {props.tag}
           </span>
-        )}
-      </span>
+        </Show>
+      </div>
       <button
         type="button"
         class="icon remove-tag"
@@ -394,7 +400,7 @@ export const TagBubble: Component<{
       >
         {getIcon("dismiss")}
       </button>
-    </span>
+    </div>
   );
 };
 

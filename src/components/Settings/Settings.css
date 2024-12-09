@@ -364,3 +364,29 @@ kbd {
   gap: var(--spacing);
   color: var(--text-primary);
 }
+
+.language-buttons {
+  display: flex;
+  gap: var(--spacing);
+  margin-bottom: var(--spacing);
+}
+
+.language-button {
+  padding: var(--half-spacing) var(--spacing);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.language-button:hover {
+  background: var(--secondary-bg);
+}
+
+.language-button.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}

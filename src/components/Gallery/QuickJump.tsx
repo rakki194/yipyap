@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
 import "./QuickJump.css";
+import { useTranslation } from '~/hooks/useTranslation';
 
 interface FolderMatch {
   name: string;
@@ -19,6 +20,7 @@ interface FolderMatch {
 export const QuickJump: Component<{
   onClose: () => void;
 }> = (props) => {
+  const { t } = useTranslation();
   let inputRef: HTMLInputElement | undefined;
   const [search, setSearch] = createSignal("");
   const [selectedIndex, setSelectedIndex] = createSignal(0);
@@ -98,12 +100,12 @@ export const QuickJump: Component<{
           value={search()}
           onInput={handleSearchInput}
           onKeyDown={handleKeyDown}
-          placeholder="Jump to folder..."
+          placeholder={t('gallery.quickJump')}
           autofocus
         />
         <Show
           when={!folders.loading}
-          fallback={<div class="loading">Loading folders...</div>}
+          fallback={<div class="loading">{t('gallery.loadingFolders')}</div>}
         >
           <Show when={matches().length > 0}>
             <ul class="quick-jump-results">

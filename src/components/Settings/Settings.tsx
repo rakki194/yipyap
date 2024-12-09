@@ -6,6 +6,7 @@ import { useAppContext } from "~/contexts/app";
 import { Theme, themeIconMap, themes } from "~/contexts/theme";
 import getIcon from "~/icons";
 import "./Settings.css";
+import { useTranslation } from "~/hooks/useTranslation";
 
 const SlideTransition = (props: { show: boolean; children: any }) => {
   let contentRef: HTMLDivElement | undefined;
@@ -52,6 +53,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
   const [isClosing, setIsClosing] = createSignal(false);
   const [isHelpClosing, setIsHelpClosing] = createSignal(false);
   let shortcutsRef: HTMLDivElement;
+  const { t } = useTranslation();
 
   const toggleShortcuts = () => {
     if (showShortcuts()) {
@@ -87,13 +89,13 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
   return (
     <div class="settings-panel card" onKeyDown={handleKeyDown}>
       <div class="settings-header">
-        <h2>Settings</h2>
+        <h2>{t('settings.title')}</h2>
         <button
           type="button"
           class="icon help-button"
           onClick={toggleHelp}
-          title="Keyboard Shortcuts"
-          aria-label="Show keyboard shortcuts"
+          title={t('shortcuts.title')}
+          aria-label={t('shortcuts.title')}
         >
           {getIcon("bookQuestionMark")}
         </button>
@@ -104,49 +106,49 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
         fallback={
           <div class="help-content" classList={{ closing: isHelpClosing() }}>
             <SlideTransition show={showHelp()}>
-              <h3>Keyboard Shortcuts</h3>
+              <h3>{t('shortcuts.title')}</h3>
               <div class="shortcuts-grid">
                 <div class="shortcuts-section">
-                  <h4>Gallery Navigation</h4>
+                  <h4>{t('shortcuts.galleryNavigation')}</h4>
                   <div class="shortcut">
                     <kbd>q</kbd>
-                    <span>Quick folder switch</span>
+                    <span>{t('shortcuts.quickFolderSwitch')}</span>
                   </div>
                   <div class="shortcut">
                     <kbd>↑</kbd>
-                    <span>Above image</span>
+                    <span>{t('shortcuts.aboveImage')}</span>
                   </div>
                   <div class="shortcut">
                     <kbd>↓</kbd>
-                    <span>Below image</span>
+                    <span>{t('shortcuts.belowImage')}</span>
                   </div>
                   <div class="shortcut">
                     <kbd>←</kbd>
-                    <span>Previous image</span>
+                    <span>{t('shortcuts.previousImage')}</span>
                   </div>
                   <div class="shortcut">
                     <kbd>→</kbd>
-                    <span>Next image</span>
+                    <span>{t('shortcuts.nextImage')}</span>
                   </div>
                   <div class="shortcut">
                     <kbd>Enter</kbd>
-                    <span>Toggle image preview</span>
+                    <span>{t('shortcuts.togglePreview')}</span>
                   </div>
                 </div>
 
                 <div class="shortcuts-section">
-                  <h4>Tag Navigation</h4>
+                  <h4>{t('shortcuts.tagNavigation')}</h4>
                   <div class="shortcut">
                     <kbd>Shift</kbd> + <kbd>←</kbd>
-                    <span>Previous tag</span>
+                    <span>{t('shortcuts.previousTag')}</span>
                   </div>
                   <div class="shortcut">
                     <kbd>Shift</kbd> + <kbd>→</kbd>
-                    <span>Next tag</span>
+                    <span>{t('shortcuts.nextTag')}</span>
                   </div>
                   <div class="shortcut">
                     <kbd>Shift</kbd> + <kbd>↑</kbd>
-                    <span>Switch to tag bubble editing</span>
+                    <span>{t('shortcuts.switchTagBubble')}</span>
                   </div>
                   <div class="shortcut">
                     <kbd>Shift</kbd> + <kbd>↓</kbd>
@@ -293,17 +295,34 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
             </div>
 
             <div class="settings-column">
-              <h3>Language</h3>
+              <h3>{t('settings.language')}</h3>
               <div class="setting-group">
+                <label>Language / 言語</label>
+                <div class="language-buttons">
+                  <button
+                    type="button"
+                    class="language-button"
+                    classList={{ active: app.locale === 'en' }}
+                    onClick={() => app.setLocale('en')}
+                  >
+                    English
+                  </button>
+                  <button
+                    type="button"
+                    class="language-button"
+                    classList={{ active: app.locale === 'ja' }}
+                    onClick={() => app.setLocale('ja')}
+                  >
+                    日本語
+                  </button>
+                </div>
                 <label>
                   <input
                     type="checkbox"
                     checked={app.disableJapanese}
-                    onChange={(e) =>
-                      app.setDisableJapanese(e.currentTarget.checked)
-                    }
+                    onChange={(e) => app.setDisableJapanese(e.currentTarget.checked)}
                   />
-                  Disable Japanese Text
+                  {t('settings.disableJapanese')}
                 </label>
               </div>
             </div>

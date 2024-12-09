@@ -14,6 +14,7 @@ import { Location, useLocation } from "@solidjs/router";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { AppContext } from "~/contexts/contexts";
 import { Theme, getInitialTheme } from "~/contexts/theme";
+import { Locale } from "~/i18n/translations";
 
 /**
  * Interface defining the shape of the app context.
@@ -40,6 +41,8 @@ export interface AppContext {
   enableMinimap: boolean;
   setEnableZoom: (value: boolean) => void;
   setEnableMinimap: (value: boolean) => void;
+  readonly locale: Locale;
+  setLocale: (locale: Locale) => void;
 }
 
 /**
@@ -58,6 +61,7 @@ const createAppContext = (): AppContext => {
     jtp2TagsPath: string;
     enableZoom: boolean;
     enableMinimap: boolean;
+    locale: Locale;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
@@ -67,6 +71,7 @@ const createAppContext = (): AppContext => {
     jtp2TagsPath: localStorage.getItem("jtp2TagsPath") || "",
     enableZoom: false,
     enableMinimap: false,
+    locale: (localStorage.getItem('locale') as Locale) || 'en',
   });
 
   // Previous Location tracking
@@ -115,6 +120,10 @@ const createAppContext = (): AppContext => {
   createRenderEffect(() =>
     localStorage.setItem("enableMinimap", store.enableMinimap.toString())
   );
+  createRenderEffect(() => {
+    localStorage.setItem('locale', store.locale);
+    document.documentElement.lang = store.locale;
+  });
 
   const setJtp2ModelPath = (value: string) => {
     setStore("jtp2ModelPath", value);
@@ -206,6 +215,12 @@ const createAppContext = (): AppContext => {
     },
     setEnableZoom: (value: boolean) => setEnableZoom(value),
     setEnableMinimap: (value: boolean) => setEnableMinimap(value),
+    get locale() {
+      return store.locale;
+    },
+    setLocale: (locale: Locale) => {
+      setStore('locale', locale);
+    },
   };
 };
 

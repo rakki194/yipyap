@@ -6,9 +6,11 @@ import { getNextTheme, themeIconMap } from "~/contexts/theme";
 import { useGallery } from "~/contexts/GalleryContext";
 import { Settings } from "~/components/Settings/Settings";
 import "./Breadcrumb.css";
+import { useTranslation } from '~/hooks/useTranslation';
 
 export const Breadcrumb = () => {
   const { params, data } = useGallery();
+  const { t } = useTranslation();
 
   const Crumbs = () => {
     const segments = () => params.path.split("/").filter(Boolean) || [];
@@ -30,7 +32,7 @@ export const Breadcrumb = () => {
           const path = crumb.href;
           return (
             <>
-              {" / "}
+              {t('common.pathSeparator')}
               <A href={crumb.href}>{crumb.children}</A>
             </>
           );

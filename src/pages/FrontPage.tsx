@@ -7,10 +7,12 @@ import "~/styles.css";
 import "~/components/FadeIn.css";
 import "./FrontPage.css";
 import { useAppContext } from "~/contexts/app";
+import { useTranslation } from '~/hooks/useTranslation';
 
 const FrontPage: Component = () => {
   const navigate = useNavigate();
   const app = useAppContext();
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = createSignal(true);
 
   onMount(() => {
@@ -25,19 +27,8 @@ const FrontPage: Component = () => {
       return "";
     }
     
-    const japaneseSubtitles = [
-      "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      "私たちは別の祈り方を見つけました",
-      //"デジタルの残響は沈黙の皮膚を貫通し、不可視の共鳴を囁く",
-      "虚ろな瞳に映る、無限の宇宙",
-      "錆びた心、新たな芽吹き",
-      "夢と現実が交錯する、不思議な境地",
-      "未知の領域、無限の可能性",
-      "時の流れを超えた、永遠の愛",
-      "これで追い出されますよ！",
-     ];
-
-    return japaneseSubtitles[Math.floor(Math.random() * japaneseSubtitles.length)];
+    const subtitleKeys = Array.from({ length: 8 }, (_, i) => `frontPage.subtitle.${i + 1}`);
+    return t(subtitleKeys[Math.floor(Math.random() * subtitleKeys.length)]);
   };
 
   const handleSelection = (type: "image" | "audio") => {
@@ -66,7 +57,7 @@ const FrontPage: Component = () => {
           type="button"
           class="icon"
           onClick={() => handleSelection("image")}
-          aria-label="Work with Images"
+          aria-label={t('frontPage.imageWork')}
         >
           {getIcon("dimensions")}
         </button>
@@ -74,7 +65,7 @@ const FrontPage: Component = () => {
           type="button"
           class="icon"
           onClick={() => handleSelection("audio")}
-          aria-label="Work with Audio"
+          aria-label={t('frontPage.audioWork')}
         >
           {getIcon("speaker")}
         </button>
