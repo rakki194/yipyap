@@ -111,6 +111,7 @@ export default {
       caption: "Skapa ny .caption-fil",
       wd: "Skapa ny .wd-fil"
     },
+    noCaptionFiles: "Inga bildtextfiler än!",
   },
   shortcuts: {
     title: "Kortkommandon",

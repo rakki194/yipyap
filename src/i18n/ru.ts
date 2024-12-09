@@ -104,6 +104,7 @@ export default {
     generateTags: "Сгенерировать теги",
     generatingTags: "Генерация тегов...",
     removeTags: "Удалить теги",
+    noCaptionFiles: "Пока нет файлов подписей!",
   },
   shortcuts: {
     title: "Горячие клавиши",

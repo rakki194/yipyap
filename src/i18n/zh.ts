@@ -111,6 +111,7 @@ export default {
       caption: "创建新.caption文件",
       wd: "创建新.wd文件"
     },
+    noCaptionFiles: "还没有说明文件！",
   },
   shortcuts: {
     title: "键盘快捷键",

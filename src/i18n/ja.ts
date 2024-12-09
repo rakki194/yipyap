@@ -111,6 +111,7 @@ export default {
       caption: "新規.captionファイルを作成",
       wd: "新規.wdファイルを作成"
     },
+    noCaptionFiles: "キャプションファイルがまだありません！",
   },
   shortcuts: {
     title: "キーボードショートカット",

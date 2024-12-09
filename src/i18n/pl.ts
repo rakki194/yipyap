@@ -111,6 +111,7 @@ export default {
       caption: "Utwórz nowy plik .caption",
       wd: "Utwórz nowy plik .wd"
     },
+    noCaptionFiles: "Brak plików podpisów!",
   },
   shortcuts: {
     title: "Kortkommandon",

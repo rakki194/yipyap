@@ -111,6 +111,7 @@ export default {
       caption: "Créer un nouveau fichier .caption",
       wd: "Créer un nouveau fichier .wd"
     },
+    noCaptionFiles: "Pas encore de fichiers de légende !",
   },
   shortcuts: {
     title: "Raccourcis clavier",

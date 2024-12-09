@@ -480,10 +480,18 @@
   -ms-interpolation-mode: nearest-neighbor;
   opacity: 0.7;
   filter: invert(1);
+  margin-bottom: var(--spacing);
   
   [data-theme="light"] & {
     filter: invert(0);
   }
+}
+
+.empty-state-message {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin: var(--spacing) 0;
+  opacity: 0.8;
 }
 
 .caption-creation {
@@ -529,4 +537,53 @@
 
 .primary-button:hover {
   background-color: var(--primary-hover);
+}
+
+.caption-type-dropdown {
+  min-width: 20rem;
+}
+
+/* Add background and shadow for dropdown cards */
+.caption-type-dropdown.card,
+.generate-tags-dropdown.card {
+  background: var(--bg-color);
+  box-shadow: var(--shadow-default);
+  border: 1px solid var(--border-color);
+  padding: var(--spacing);
+}
+
+/* Add hover effects for dropdown buttons */
+.caption-type-dropdown button:hover,
+.generate-tags-dropdown button:hover {
+  background: var(--secondary-bg);
+  color: var(--accent);
+}
+
+.caption-creation button {
+  display: inline-flex;
+  gap: var(--spacing);
+  padding: var(--spacing);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  cursor: pointer;
+  width: 100%;
+  transition-property: background-color, border-color, color;
+  justify-content: space-between;
+}
+
+.caption-creation button:hover {
+  background: var(--secondary-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.caption-creation button .icon {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.caption-creation button:hover .icon {
+  opacity: 1;
 }

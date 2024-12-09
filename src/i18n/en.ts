@@ -111,6 +111,7 @@ export default {
       caption: "Create new .caption file",
       wd: "Create new .wd file"
     },
+    noCaptionFiles: "No caption files yet!",
   },
   shortcuts: {
     title: "Keyboard Shortcuts",

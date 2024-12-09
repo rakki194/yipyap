@@ -366,7 +366,7 @@ const EmptyCaptionState = (props: {
         role="img"
         aria-label="No captions"
       />
-      <p>{t('gallery.noCaptions')}</p>
+      <p class="empty-state-message">{t('gallery.noCaptionFiles')}</p>
       <div class="caption-creation">
         <button
           type="button"

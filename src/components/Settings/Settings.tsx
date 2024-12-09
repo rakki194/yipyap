@@ -296,64 +296,37 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
             <div class="settings-column">
               <h3>{t('settings.language')}</h3>
               <div class="setting-group">
-                <div class="language-buttons">
-                  <button
-                    type="button"
-                    class="language-button"
-                    classList={{ active: app.locale === 'en' }}
-                    onClick={() => app.setLocale('en')}
-                  >
-                    English
-                  </button>
-                  <button
-                    type="button"
-                    class="language-button"
-                    classList={{ active: app.locale === 'ja' }}
-                    onClick={() => app.setLocale('ja')}
-                  >
-                    日本語
-                  </button>
-                  <button
-                    type="button"
-                    class="language-button"
-                    classList={{ active: app.locale === 'fr' }}
-                    onClick={() => app.setLocale('fr')}
-                  >
-                    Français
-                  </button>
-                  <button
-                    type="button"
-                    class="language-button"
-                    classList={{ active: app.locale === 'ru' }}
-                    onClick={() => app.setLocale('ru')}
-                  >
-                    Русский
-                  </button>
-                  <button
-                    type="button"
-                    class="language-button"
-                    classList={{ active: app.locale === 'zh' }}
-                    onClick={() => app.setLocale('zh')}
-                  >
-                    简体中文
-                  </button>
-                  <button
-                    type="button"
-                    class="language-button"
-                    classList={{ active: app.locale === 'sv' }}
-                    onClick={() => app.setLocale('sv')}
-                  >
-                    Svenska
-                  </button>
-                  <button
-                    type="button"
-                    class="language-button"
-                    classList={{ active: app.locale === 'pl' }}
-                    onClick={() => app.setLocale('pl')}
-                  >
-                    Polski
-                  </button>
-                </div>
+                <select
+                  class="language-select"
+                  value={app.locale}
+                  onChange={(e) => app.setLocale(e.currentTarget.value as any)}
+                >
+                  <option value="en">English</option>
+                  <option value="ja">日本語</option>
+                  <option value="fr">Français</option>
+                  <option value="ru">Русский</option>
+                  <option value="zh">简体中文</option>
+                  <option value="sv">Svenska</option>
+                  <option value="pl">Polski</option>
+                  <option value="uk">Українська</option>
+                  <option value="fi">Suomi</option>
+                  <option value="de">Deutsch</option>
+                  <option value="es">Español</option>
+                  <option value="it">Italiano</option>
+                  <option value="pt">Português</option>
+                  <option value="ko">한국어</option>
+                  <option value="nl">Nederlands</option>
+                  <option value="tr">Türkçe</option>
+                  <option value="vi">Tiếng Việt</option>
+                  <option value="th">ไทย</option>
+                  <option value="ar">العربية</option>
+                  <option value="he">עברית</option>
+                  <option value="hi">हिन्दी</option>
+                  <option value="id">Bahasa Indonesia</option>
+                  <option value="cs">Čeština</option>
+                  <option value="el">Ελληνικά</option>
+                  <option value="hu">Magyar</option>
+                </select>
                 <label>
                   <input
                     type="checkbox"

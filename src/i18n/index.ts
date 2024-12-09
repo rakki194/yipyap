@@ -1,4 +1,5 @@
-export type Locale = "en" | "ja" | "fr" | "ru" | "zh" | "sv" | "pl";
+export type Locale = "en" | "ja" | "fr" | "ru" | "zh" | "sv" | "pl" | "uk" | "fi" | "de" | "es" | "it" | 
+  "pt" | "ko" | "nl" | "tr" | "vi" | "th" | "ar" | "he" | "hi" | "id" | "cs" | "el" | "hu";
 
 export function getPathSeparator(locale: Locale) {
   if (locale === "ja") return "￥";
