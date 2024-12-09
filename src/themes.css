@@ -49,6 +49,7 @@
   --border: var(--card-bg);
   --border-secondary: var(--accent);
   --placeholder-color: var(--text-secondary);
+  --preview-bg: rgb(239 241 245 / 85%);
 
   /* Scrollbar styles */
   --scrollbar-track: var(--secondary-bg);
@@ -149,6 +150,7 @@
   --border: #ff8099;
   --border-secondary: #ff1a4d;
   --placeholder-color: #c03;
+  --preview-bg: rgb(255 240 243 / 85%);
 
   .modal-header {
     background: hsl(348deg 100% 97% / 41.1%);

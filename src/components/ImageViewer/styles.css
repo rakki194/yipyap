@@ -130,6 +130,16 @@
   background: var(--preview-bg);
   backdrop-filter: saturate(50%) brightness(0.5) blur(10px);
 
+  [data-theme="light"] & {
+    background: rgb(239 241 245 / 85%);
+    backdrop-filter: saturate(100%) brightness(1.1) blur(10px);
+  }
+
+  [data-theme="strawberry"] & {
+    background: rgb(255 240 243 / 85%);
+    backdrop-filter: saturate(100%) brightness(1.1) blur(10px);
+  }
+
   /* Metadata Table Styles */
   & > .metadata-table {
     border-radius: 1px;
@@ -482,7 +492,8 @@
   filter: invert(1);
   margin-bottom: var(--spacing);
   
-  [data-theme="light"] & {
+  [data-theme="light"] &,
+  [data-theme="strawberry"] & {
     filter: invert(0);
   }
 }
