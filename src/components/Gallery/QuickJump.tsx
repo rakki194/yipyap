@@ -9,7 +9,7 @@ import {
 import { useNavigate } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
 import "./QuickJump.css";
-import { useTranslation } from '~/hooks/useTranslation';
+import { useAppContext } from "~/contexts/app";
 
 interface FolderMatch {
   name: string;
@@ -20,7 +20,7 @@ interface FolderMatch {
 export const QuickJump: Component<{
   onClose: () => void;
 }> = (props) => {
-  const { t } = useTranslation();
+  const { t } = useAppContext();
   let inputRef: HTMLInputElement | undefined;
   const [search, setSearch] = createSignal("");
   const [selectedIndex, setSelectedIndex] = createSignal(0);

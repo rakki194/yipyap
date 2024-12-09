@@ -7,12 +7,11 @@ import "~/styles.css";
 import "~/components/FadeIn.css";
 import "./FrontPage.css";
 import { useAppContext } from "~/contexts/app";
-import { useTranslation } from '~/hooks/useTranslation';
 
 const FrontPage: Component = () => {
   const navigate = useNavigate();
   const app = useAppContext();
-  const { t } = useTranslation();
+  const t = app.t;
   const [isVisible, setIsVisible] = createSignal(true);
 
   onMount(() => {

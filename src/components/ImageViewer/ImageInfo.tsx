@@ -4,12 +4,12 @@ import type { Component } from "solid-js";
 import type { ImageInfo as ImageInfoType } from "~/types";
 // Import Fluent icons
 import getIcon from "~/icons";
-import { useTranslation } from '~/hooks/useTranslation';
+import { useAppContext } from "~/contexts/app";
 
 export const ImageInfo: Component<{
   imageInfo: ImageInfoType;
 }> = (props) => {
-  const { t } = useTranslation();
+  const { t } = useAppContext();
 
   return (
     <table class="metadata-table card">

@@ -6,7 +6,6 @@ import { useAppContext } from "~/contexts/app";
 import { Theme, themeIconMap, themes } from "~/contexts/theme";
 import getIcon from "~/icons";
 import "./Settings.css";
-import { useTranslation } from "~/hooks/useTranslation";
 
 const SlideTransition = (props: { show: boolean; children: any }) => {
   let contentRef: HTMLDivElement | undefined;
@@ -52,8 +51,8 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
   const [showShortcuts, setShowShortcuts] = createSignal(false);
   const [isClosing, setIsClosing] = createSignal(false);
   const [isHelpClosing, setIsHelpClosing] = createSignal(false);
+  const t = app.t;
   let shortcutsRef: HTMLDivElement;
-  const { t } = useTranslation();
 
   const toggleShortcuts = () => {
     if (showShortcuts()) {

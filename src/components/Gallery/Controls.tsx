@@ -4,12 +4,12 @@ import { createSignal, createEffect } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { useGallery } from "~/contexts/GalleryContext";
 import getIcon from "~/icons";
-import { useTranslation } from '~/hooks/useTranslation';
+import { useAppContext } from "~/contexts/app";
 import "./Controls.css";
 
 export const Controls = () => {
   const gallery = useGallery();
-  const { t } = useTranslation();
+  const { t } = useAppContext();
   const [searchValue, setSearchValue] = createSignal(gallery.state.search);
 
   const debouncedSearch = debounce((value: string) => {

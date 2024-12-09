@@ -9,12 +9,13 @@ import {
   type ParentComponent,
   createRenderEffect,
   createEffect,
+  createResource,
 } from "solid-js";
 import { Location, useLocation } from "@solidjs/router";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { AppContext } from "~/contexts/contexts";
 import { Theme, getInitialTheme } from "~/contexts/theme";
-import { Locale } from "~/i18n/translations";
+import { Locale, translations } from "~/i18n";
 
 /**
  * Interface defining the shape of the app context.
@@ -43,6 +44,7 @@ export interface AppContext {
   setEnableMinimap: (value: boolean) => void;
   readonly locale: Locale;
   setLocale: (locale: Locale) => void;
+  t: (id: string) => string;
 }
 
 /**
@@ -71,7 +73,7 @@ const createAppContext = (): AppContext => {
     jtp2TagsPath: localStorage.getItem("jtp2TagsPath") || "",
     enableZoom: false,
     enableMinimap: false,
-    locale: (localStorage.getItem('locale') as Locale) || 'en',
+    locale: (localStorage.getItem("locale") as Locale) || "en",
   });
 
   // Previous Location tracking
@@ -121,7 +123,7 @@ const createAppContext = (): AppContext => {
     localStorage.setItem("enableMinimap", store.enableMinimap.toString())
   );
   createRenderEffect(() => {
-    localStorage.setItem('locale', store.locale);
+    localStorage.setItem("locale", store.locale);
     document.documentElement.lang = store.locale;
   });
 
@@ -145,7 +147,10 @@ const createAppContext = (): AppContext => {
     localStorage.setItem("enableMinimap", value.toString());
   };
 
-  const updateJtp2Config = async (config: { model_path?: string; tags_path?: string }) => {
+  const updateJtp2Config = async (config: {
+    model_path?: string;
+    tags_path?: string;
+  }) => {
     try {
       const response = await fetch("/api/config/jtp2", {
         method: "PUT",
@@ -154,11 +159,11 @@ const createAppContext = (): AppContext => {
         },
         body: JSON.stringify(config),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to update JTP2 config: ${response.statusText}`);
       }
-      
+
       if (config.model_path) {
         setJtp2ModelPath(config.model_path);
       }
@@ -170,6 +175,14 @@ const createAppContext = (): AppContext => {
       throw error;
     }
   };
+
+  const [translation] = createResource(
+    () => store.locale,
+    (locale) => {
+      console.log("locale", { locale, translations, f: translations[locale] });
+      return translations[locale]();
+    }
+  );
 
   return {
     get prevRoute() {
@@ -219,7 +232,18 @@ const createAppContext = (): AppContext => {
       return store.locale;
     },
     setLocale: (locale: Locale) => {
-      setStore('locale', locale);
+      setStore("locale", locale);
+    },
+    t: (key: string) => {
+      const keys = key.split(".");
+      let value: any = translation();
+
+      for (const k of keys) {
+        if (value === undefined) return key;
+        value = value[k];
+      }
+
+      return value || key;
     },
   };
 };

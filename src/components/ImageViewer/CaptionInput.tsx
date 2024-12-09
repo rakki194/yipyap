@@ -15,7 +15,7 @@ import { Tools } from "./Tools";
 import { TagBubble } from "./TagBubble";
 import { preserveState } from "~/directives";
 import "./CaptionInput.css";
-import { useTranslation } from '~/hooks/useTranslation';
+import { useAppContext } from "~/contexts/app";
 
 type CaptionType = "wd" | "e621" | "tags" | string;
 
@@ -26,7 +26,7 @@ export const CaptionInput: Component<
     onClick: () => void;
   } & JSX.HTMLAttributes<HTMLDivElement>
 > = (props) => {
-  const { t } = useTranslation();
+  const { t } = useAppContext();
   const [localProps, rest] = splitProps(props, ["caption"]);
   const type = () => localProps.caption[0];
   const caption = () => localProps.caption[1];

@@ -1,12 +1,12 @@
 import { Component, For } from "solid-js";
 import { CAPTION_TOOLS } from "./captionTools";
-import { useTranslation } from '~/hooks/useTranslation';
+import { useAppContext } from "~/contexts/app";
 
 export const Tools: Component<{
   onInput: (value: string) => void;
   caption: string;
 }> = (props) => {
-  const { t } = useTranslation();
+  const { t } = useAppContext();
   
   return (
     <For each={CAPTION_TOOLS}>

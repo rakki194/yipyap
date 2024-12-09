@@ -16,7 +16,6 @@
 import { Component, createMemo, createSignal, Show } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
-import { useTranslation } from '~/hooks/useTranslation';
 
 /**
  * Focus directive that programmatically focuses an HTML element
@@ -181,11 +180,11 @@ export const TagBubble: Component<{
   ) => void;
 }> = (props) => {
   const app = useAppContext();
+  const t = app.t;
   const [isEditing, setIsEditing] = createSignal(false);
   let inputRef: HTMLInputElement | undefined;
   let contentRef: HTMLDivElement | undefined;
   const getTagColor = createTagColorGenerator();
-  const { t } = useTranslation();
 
   /**
    * Initiates the tag editing mode
