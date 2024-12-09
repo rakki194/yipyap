@@ -215,7 +215,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
 
             <div class="settings-column">
               <h3>{t('settings.gallery')}</h3>
-              <div class="setting-group">
+              {/* <div class="setting-group">
                 <label>{t('settings.viewMode')}</label>
                 <div class="icon-buttons">
                   <button
@@ -275,7 +275,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                     {getIcon("documentArrowDown")}
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <div class="setting-group">
                 <label>{t('settings.layoutOptions')}</label>
