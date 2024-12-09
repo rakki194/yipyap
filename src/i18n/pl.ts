@@ -29,6 +29,7 @@ export default {
     none: "Żadne",
     pathSeparator: getPathSeparator("pl"),
     toggleTheme: "Przełącz motyw",
+    theme: "Motyw",
     returnToFrontPage: "Powrót do strony głównej",
     home: "Strona główna",
     openSettings: "Otwórz ustawienia",

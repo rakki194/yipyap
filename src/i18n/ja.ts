@@ -29,6 +29,7 @@ export default {
     none: "なし",
     pathSeparator: getPathSeparator("ja"),
     toggleTheme: "テーマを切り替え",
+    theme: "テーマ",
     returnToFrontPage: "フロントページに戻る",
     home: "ホーム",
     openSettings: "設定を開く",
@@ -72,7 +73,7 @@ export default {
   frontPage: {
     subtitle: {
       1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見���けました",
+      2: "私たちは別の祈り方を見けました",
       3: "虚ろな瞳に映る、無限の宇宙",
       4: "錆びた心、新たな芽吹き",
       5: "夢と現実が交錯する、不思議な境地",

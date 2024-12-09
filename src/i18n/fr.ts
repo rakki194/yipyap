@@ -29,6 +29,7 @@ export default {
     none: "Aucun",
     pathSeparator: getPathSeparator("fr"),
     toggleTheme: "Changer de thème",
+    theme: "Thème",
     returnToFrontPage: "Retour à la page d'accueil",
     home: "Accueil",
     openSettings: "Ouvrir les paramètres",

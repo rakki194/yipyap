@@ -192,7 +192,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
             <div class="settings-column">
               <h3>{t('settings.appearance')}</h3>
               <div class="setting-group">
-                <label>{t('settings.theme')}</label>
+                <label>{t("common.theme")}</label>
                 <div class="theme-buttons">
                   <For each={themes}>
                     {(th) => (

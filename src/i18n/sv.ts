@@ -29,6 +29,7 @@ export default {
     none: "Ingen",
     pathSeparator: getPathSeparator("sv"),
     toggleTheme: "Växla tema",
+    theme: "Tema",
     returnToFrontPage: "Återgå till startsidan",
     home: "Hem",
     openSettings: "Öppna inställningar",

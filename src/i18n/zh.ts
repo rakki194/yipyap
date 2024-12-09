@@ -29,6 +29,7 @@ export default {
     none: "无",
     pathSeparator: getPathSeparator("zh"),
     toggleTheme: "切换主题",
+    theme: "主题",
     returnToFrontPage: "返回首页",
     home: "首页",
     openSettings: "打开设置",

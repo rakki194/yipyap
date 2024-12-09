@@ -243,6 +243,11 @@ const createAppContext = (): AppContext => {
         value = value[k];
       }
 
+      if (import.meta.env.DEV && typeof value !== "string") {
+        console.warn(`Translation for key "${key}" is not a string:`, value);
+        return "";
+      }
+
       return value || key;
     },
   };

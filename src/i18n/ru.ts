@@ -29,6 +29,7 @@ export default {
     none: "Ничего",
     pathSeparator: getPathSeparator("ru"),
     toggleTheme: "Переключить тему",
+    theme: "Тема",
     returnToFrontPage: "Вернуться на главную",
     home: "Главная",
     openSettings: "Открыть настройки",
