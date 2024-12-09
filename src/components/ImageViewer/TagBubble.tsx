@@ -31,7 +31,32 @@ let lastNavigationDirection: "left" | "right" | null = null;
 const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
 
 /**
- * Creates a memoized color generator with caching for tag colors
+ * Interface for OKLCH color representation
+ * OKLCH is a perceptually uniform color space that represents colors using:
+ * - Lightness (L): 0-100%, where 0 is black and 100 is white
+ * - Chroma (C): 0+, represents color intensity/saturation
+ * - Hue (H): 0-360 degrees on the color wheel
+ */
+type OKLCHColor = {
+  l: number; // Lightness percentage (0-100)
+  c: number; // Chroma (0-0.4 typically)
+  h: number; // Hue (0-360)
+};
+
+/**
+ * Creates a memoized color generator with caching for tag colors.
+ * Uses a deterministic hashing algorithm to generate consistent colors for the same tag.
+ * Colors are theme-aware and optimized for accessibility and visual harmony.
+ * 
+ * Color generation strategy per theme:
+ * - dark: Low lightness (25%), subtle chroma for muted colors
+ * - light: High lightness (85%), subtle chroma for soft colors
+ * - gray: Variable lightness (40-80%), zero chroma for grayscale
+ * - banana: Warm yellows and creams with high lightness
+ * - strawberry: Red/pink tones with green accents
+ * - peanut: Warm browns and tans
+ * - christmas: Alternating red and green
+ * - halloween: Orange, purple, and green palette
  * 
  * @returns A function that computes and caches OKLCH colors for tags
  */
@@ -41,79 +66,93 @@ function createTagColorGenerator() {
   return function getTagColor(theme: string, tag: string): OKLCHColor {
     const cacheKey = `${theme}:${tag}`;
     
-    // Check cache first
+    // Return cached color if available
     const cachedColor = colorCache.get(cacheKey);
     if (cachedColor) {
       return cachedColor;
     }
 
-    // If not in cache, compute the color
+    /**
+     * Generate a deterministic hash from the tag string
+     * This ensures the same tag always gets the same color
+     * The hash is used to vary hue, lightness, and chroma values
+     */
     let hash = 0;
     for (let i = 0; i < tag.length; i++) {
       hash = tag.charCodeAt(i) + ((hash << 5) - hash);
     }
     const hue = hash % 360;
 
-    // Compute and cache the color
+    // Theme-specific color generation
     const color = (() => {
       switch (theme) {
         case "dark":
+          // Dark theme: Low lightness for dark background, subtle color variations
           return { l: 25, c: 0.1, h: hue };
 
         case "light":
+          // Light theme: High lightness for light background, subtle color variations
           return { l: 85, c: 0.1, h: hue };
 
         case "gray":
+          // Gray theme: Variable lightness, no chroma for pure grayscale
           return { l: 40 + (hash % 40), c: 0.0, h: hue };
 
         case "banana":
+          // Banana theme: Warm yellows and creams
           return {
-            l: 75 + (hash % 15),
-            c: 0.15 + (hash % 10) / 100,
-            h: 40 + (hash % 40),
+            l: 75 + (hash % 15),  // High lightness range: 75-90%
+            c: 0.15 + (hash % 10) / 100,  // Subtle chroma variations
+            h: 40 + (hash % 40),  // Hue range: 40-80 (yellow to orange)
           };
 
         case "strawberry": {
-          const strawberryHues = [350, 335, 15, 120, 150];
+          // Strawberry theme: Red/pink with green accents
+          const strawberryHues = [350, 335, 15, 120, 150]; // Red, pink, coral, green hues
           const selectedStrawberryHue = strawberryHues[hash % strawberryHues.length];
           const isGreen = selectedStrawberryHue >= 120;
 
           return isGreen
             ? {
-                l: 30 + (hash % 15),
+                l: 30 + (hash % 15),  // Darker for greens
                 c: 0.15 + (hash % 10) / 100,
                 h: selectedStrawberryHue,
               }
             : {
-                l: 70 + (hash % 20),
+                l: 70 + (hash % 20),  // Lighter for reds/pinks
                 c: 0.2 + (hash % 10) / 100,
                 h: selectedStrawberryHue,
               };
         }
 
         case "peanut":
+          // Peanut theme: Warm browns and tans
           return {
-            l: 35 + (hash % 15),
-            c: 0.15 + (hash % 10) / 100,
-            h: 20 + (hash % 30),
+            l: 35 + (hash % 15),  // Mid-range lightness
+            c: 0.15 + (hash % 10) / 100,  // Moderate chroma
+            h: 20 + (hash % 30),  // Brown hue range
           };
 
         case "christmas":
+          // Christmas theme: Alternating red and green
           return hash % 2 === 0
             ? { l: 35, c: 0.2, h: 350 } // Red
             : { l: 25, c: 0.2, h: 120 }; // Green
 
         case "halloween": {
-          const halloweenHues = [25, 280, 150];
+          // Halloween theme: Orange, purple, and green
+          const halloweenHues = [25, 280, 150]; // Orange, purple, green
           const selectedHue = halloweenHues[hash % halloweenHues.length];
           return { l: 45, c: 0.2, h: selectedHue };
         }
 
         default:
+          // Default theme: Soft, neutral colors
           return { l: 80, c: 0.12, h: hue };
       }
     })();
 
+    // Cache and return the computed color
     colorCache.set(cacheKey, color);
     return color;
   };
@@ -360,21 +399,10 @@ export const TagBubble: Component<{
 };
 
 /**
- * Represents a color in the OKLCH color space
- */
-type OKLCHColor = {
-  l: number; // Lightness percentage (0-100)
-  c: number; // Chroma (0-0.4 typically)
-  h: number; // Hue (0-360)
-};
-
-/**
  * Formats an OKLCH color object into a CSS color string
  * 
- * @param l - Lightness value
- * @param c - Chroma value
- * @param h - Hue value
- * @returns CSS color string in OKLCH format
+ * @param color - OKLCH color object with lightness, chroma, and hue values
+ * @returns CSS color string in OKLCH format (e.g., "oklch(80% 0.12 240)")
  */
 const formatOKLCH = ({ l, c, h }: OKLCHColor): string => {
   return `oklch(${l}% ${c} ${h})`;
