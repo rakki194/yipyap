@@ -323,6 +323,38 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   >
                     Français
                   </button>
+                  <button
+                    type="button"
+                    class="language-button"
+                    classList={{ active: app.locale === 'ru' }}
+                    onClick={() => app.setLocale('ru')}
+                  >
+                    Русский
+                  </button>
+                  <button
+                    type="button"
+                    class="language-button"
+                    classList={{ active: app.locale === 'zh' }}
+                    onClick={() => app.setLocale('zh')}
+                  >
+                    简体中文
+                  </button>
+                  <button
+                    type="button"
+                    class="language-button"
+                    classList={{ active: app.locale === 'sv' }}
+                    onClick={() => app.setLocale('sv')}
+                  >
+                    Svenska
+                  </button>
+                  <button
+                    type="button"
+                    class="language-button"
+                    classList={{ active: app.locale === 'pl' }}
+                    onClick={() => app.setLocale('pl')}
+                  >
+                    Polski
+                  </button>
                 </div>
                 <label>
                   <input
@@ -383,7 +415,11 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
           <section class="warning-section">
             <Show when={!app.disableJapanese}>
               <p class="warning-text">
-                <span>⚠️警告！これを使うと狼になります！</span>
+                <span>
+                  {app.locale === 'pl' 
+                    ? "⚠️UWAGA! To zamieni cię w bobra!"
+                    : "⚠️警告！これはあなたをビーバーに変えてしまいます！"}
+                </span>
               </p>
             </Show>
             <label>
