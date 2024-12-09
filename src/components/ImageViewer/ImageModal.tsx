@@ -40,7 +40,6 @@ export const ImageModal = (props: ImageModalProps) => {
       <ModalHeader 
         imageInfo={props.imageInfo} 
         onClose={props.onClose} 
-        onToggleMetadata={() => setIsMetadataOpen(prev => !prev)} // Update toggle handler
       />
       <ModelBody
         imageInfo={props.imageInfo}
@@ -66,7 +65,6 @@ const ModelBody = (props: {
   const [focused, setFocused] = createSignal(false);
   const [focusedType, setFocusedType] = createSignal<string | null>(null);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
-  const generateTags = useAction(gallery.generateTags);
 
   // Add these variables for tracking shift key presses
   let lastShiftPress = 0;
@@ -177,7 +175,6 @@ const ModelBody = (props: {
 const ModalHeader = (props: {
   imageInfo: ImageInfoType;
   onClose: () => void;
-  onToggleMetadata: () => void;
 }) => {
   const gallery = useGallery();
   const app = useAppContext();
@@ -189,11 +186,7 @@ const ModalHeader = (props: {
   let deleteTimeout: number;
   let progressInterval: number;
 
-  // Add state for metadata bubble visibility
-  const [isMetadataOpen, setIsMetadataOpen] = createSignal(false);
-
   // Reference to the metadata bubble for click detection
-  let metadataBubbleRef: HTMLDivElement | undefined;
   let metadataButtonRef: HTMLButtonElement | undefined;
 
   const deleteImage = async () => {
@@ -234,35 +227,7 @@ const ModalHeader = (props: {
     clearInterval(progressInterval);
   };
 
-  // Handle clicks outside the metadata bubble to close it
-  createEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (
-        metadataBubbleRef &&
-        !metadataBubbleRef.contains(target) &&
-        metadataButtonRef &&
-        !metadataButtonRef.contains(target)
-      ) {
-        setIsMetadataOpen(false);
-      }
-    };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isMetadataOpen()) {
-        setIsMetadataOpen(false);
-      }
-    };
-
-    if (isMetadataOpen()) {
-      window.addEventListener('click', handleClickOutside);
-      window.addEventListener('keydown', handleKeyDown);
-      onCleanup(() => {
-        window.removeEventListener('click', handleClickOutside);
-        window.removeEventListener('keydown', handleKeyDown);
-      });
-    }
-  });
 
   return (
     <div class="modal-header">
@@ -271,21 +236,12 @@ const ModalHeader = (props: {
         <button
           type="button"
           class="icon metadata-button"
-          onClick={() => setIsMetadataOpen(prev => !prev)}
           ref={metadataButtonRef}
           title="Show Metadata"
           aria-label="Show Metadata"
         >
           {getIcon("info")}
         </button>
-        <Show when={isMetadataOpen()}>
-          <div 
-            class="metadata-bubble" 
-            ref={metadataBubbleRef}
-          >
-            <ImageInfo imageInfo={props.imageInfo} />
-          </div>
-        </Show>
         <button
           type="button"
           class="icon"
@@ -369,17 +325,6 @@ type LayoutInfo = Size & {
 
 function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
   const { width: viewWidth, height: viewHeight } = windowSize;
-  if (image === null) {
-    //FIXME: we don't need this
-    return {
-      width: 0,
-      height: 0,
-      scale: 0,
-      layout: "vertical",
-      free_width: viewWidth,
-      free_height: viewHeight,
-    };
-  }
   const { width: imageWidth, height: imageHeight } = image!;
 
   const width_scale = viewWidth / imageWidth;
