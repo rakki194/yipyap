@@ -21,6 +21,7 @@
 }
 
 .warning-section {
+  grid-column: 1 / -1;
   margin-top: var(--double-spacing);
   padding: var(--spacing);
   border: 2px solid rgb(220, 38, 38);
@@ -98,14 +99,14 @@ kbd {
 }
 
 .settings-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--double-spacing);
   margin-bottom: var(--double-spacing);
 }
 
 .settings-column {
-  flex: 1 0 fit-content;
+  width: 100%;
 }
 
 .setting-group {
@@ -389,4 +390,11 @@ kbd {
   background: var(--accent);
   color: var(--bg);
   border-color: var(--accent);
+}
+
+/* Add responsive layout for mobile */
+@media (max-width: 768px) {
+  .settings-row {
+    grid-template-columns: 1fr;
+  }
 }
