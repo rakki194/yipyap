@@ -1,5 +1,10 @@
 export type Locale = 'en' | 'ja' | 'fr';
 
+function getPathSeparator(locale: Locale) {
+  if (locale === 'ja') return '￥';
+  return navigator.userAgent.toLowerCase().includes('win') ? ' \\ ' : ' / ';
+}
+
 export const translations = {
   en: {
     common: {
@@ -28,7 +33,7 @@ export const translations = {
       selected: 'Selected',
       all: 'All',
       none: 'None',
-      pathSeparator: navigator.userAgent.toLowerCase().includes('win') ? ' \\ ' : ' / ',
+      pathSeparator: getPathSeparator('en'),
       toggleTheme: 'Toggle theme',
       returnToFrontPage: 'Return to the front page',
       home: 'Home',
@@ -177,7 +182,7 @@ export const translations = {
       selected: '選択済み',
       all: 'すべて',
       none: 'なし',
-      pathSeparator: '￥',
+      pathSeparator: getPathSeparator('ja'),
       toggleTheme: 'テーマを切り替え',
       returnToFrontPage: 'フロントページに戻る',
       home: 'ホーム',
@@ -326,7 +331,7 @@ export const translations = {
       selected: 'Sélectionné',
       all: 'Tout',
       none: 'Aucun',
-      pathSeparator: ' / ',
+      pathSeparator: getPathSeparator('fr'),
       toggleTheme: 'Changer de thème',
       returnToFrontPage: 'Retour à la page d\'accueil',
       home: 'Accueil',
