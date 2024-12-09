@@ -297,7 +297,6 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
             <div class="settings-column">
               <h3>{t('settings.language')}</h3>
               <div class="setting-group">
-                <label>Language / 言語</label>
                 <div class="language-buttons">
                   <button
                     type="button"
