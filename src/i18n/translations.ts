@@ -28,7 +28,7 @@ export const translations = {
       selected: 'Selected',
       all: 'All',
       none: 'None',
-      pathSeparator: ' \\ ',
+      pathSeparator: navigator.userAgent.toLowerCase().includes('win') ? ' \\ ' : ' / ',
       toggleTheme: 'Toggle theme',
       returnToFrontPage: 'Return to the front page',
       home: 'Home',
@@ -147,6 +147,7 @@ export const translations = {
       rotateRight: 'Rotate right',
       downloadImage: 'Download image',
       imageInfo: 'Image information',
+      dimensions: 'Dimensions',
     },
   },
   ja: {
@@ -295,6 +296,7 @@ export const translations = {
       rotateRight: '右に回転',
       downloadImage: '画像をダウンロード',
       imageInfo: '画像情報',
+      dimensions: '寸法',
     },
   },
   fr: {
@@ -443,6 +445,7 @@ export const translations = {
       rotateRight: 'Rotation à droite',
       downloadImage: 'Télécharger l\'image',
       imageInfo: 'Informations sur l\'image',
+      dimensions: 'Dimensions',
     },
   },
 }; 
