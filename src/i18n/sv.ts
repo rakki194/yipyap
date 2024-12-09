@@ -104,6 +104,13 @@ export default {
     generateTags: "Generera taggar",
     generatingTags: "Genererar taggar...",
     removeTags: "Ta bort taggar",
+    createCaption: "Skapa bildtext",
+    captionTypes: {
+      txt: "Skapa ny textfil",
+      tags: "Skapa ny .tags-fil",
+      caption: "Skapa ny .caption-fil",
+      wd: "Skapa ny .wd-fil"
+    },
   },
   shortcuts: {
     title: "Kortkommandon",

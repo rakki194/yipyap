@@ -104,6 +104,13 @@ export default {
     generateTags: "Générer les tags",
     generatingTags: "Génération des tags...",
     removeTags: "Supprimer les tags",
+    createCaption: "Créer une légende",
+    captionTypes: {
+      txt: "Créer un nouveau fichier texte",
+      tags: "Créer un nouveau fichier .tags",
+      caption: "Créer un nouveau fichier .caption",
+      wd: "Créer un nouveau fichier .wd"
+    },
   },
   shortcuts: {
     title: "Raccourcis clavier",

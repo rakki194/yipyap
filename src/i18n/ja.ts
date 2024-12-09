@@ -104,6 +104,13 @@ export default {
     generateTags: "タグを生成",
     generatingTags: "タグを生成中...",
     removeTags: "タグを削除",
+    createCaption: "キャプションを作成",
+    captionTypes: {
+      txt: "新規テキストファイルを作成",
+      tags: "新規.tagsファイルを作成",
+      caption: "新規.captionファイルを作成",
+      wd: "新規.wdファイルを作成"
+    },
   },
   shortcuts: {
     title: "キーボードショートカット",

@@ -104,6 +104,13 @@ export default {
     generateTags: "Generate Tags",
     generatingTags: "Generating tags...",
     removeTags: "Remove Tags",
+    createCaption: "Create Caption",
+    captionTypes: {
+      txt: "Create new Text file",
+      tags: "Create new .tags file", 
+      caption: "Create new .caption file",
+      wd: "Create new .wd file"
+    },
   },
   shortcuts: {
     title: "Keyboard Shortcuts",

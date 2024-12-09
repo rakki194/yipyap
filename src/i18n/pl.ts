@@ -104,6 +104,13 @@ export default {
     generateTags: "Generera taggar",
     generatingTags: "Genererar taggar...",
     removeTags: "Ta bort taggar",
+    createCaption: "Utwórz podpis",
+    captionTypes: {
+      txt: "Utwórz nowy plik tekstowy",
+      tags: "Utwórz nowy plik .tags",
+      caption: "Utwórz nowy plik .caption",
+      wd: "Utwórz nowy plik .wd"
+    },
   },
   shortcuts: {
     title: "Kortkommandon",

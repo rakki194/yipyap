@@ -104,6 +104,13 @@ export default {
     generateTags: "生成标签",
     generatingTags: "生成标签中...",
     removeTags: "移除标签",
+    createCaption: "创建说明",
+    captionTypes: {
+      txt: "创建新文本文件",
+      tags: "创建新.tags文件",
+      caption: "创建新.caption文件",
+      wd: "创建新.wd文件"
+    },
   },
   shortcuts: {
     title: "键盘快捷键",
