@@ -31,6 +31,95 @@ let lastNavigationDirection: "left" | "right" | null = null;
 const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
 
 /**
+ * Creates a memoized color generator with caching for tag colors
+ * 
+ * @returns A function that computes and caches OKLCH colors for tags
+ */
+function createTagColorGenerator() {
+  const colorCache = new Map<string, OKLCHColor>();
+  
+  return function getTagColor(theme: string, tag: string): OKLCHColor {
+    const cacheKey = `${theme}:${tag}`;
+    
+    // Check cache first
+    const cachedColor = colorCache.get(cacheKey);
+    if (cachedColor) {
+      return cachedColor;
+    }
+
+    // If not in cache, compute the color
+    let hash = 0;
+    for (let i = 0; i < tag.length; i++) {
+      hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = hash % 360;
+
+    // Compute and cache the color
+    const color = (() => {
+      switch (theme) {
+        case "dark":
+          return { l: 25, c: 0.1, h: hue };
+
+        case "light":
+          return { l: 85, c: 0.1, h: hue };
+
+        case "gray":
+          return { l: 40 + (hash % 40), c: 0.0, h: hue };
+
+        case "banana":
+          return {
+            l: 75 + (hash % 15),
+            c: 0.15 + (hash % 10) / 100,
+            h: 40 + (hash % 40),
+          };
+
+        case "strawberry": {
+          const strawberryHues = [350, 335, 15, 120, 150];
+          const selectedStrawberryHue = strawberryHues[hash % strawberryHues.length];
+          const isGreen = selectedStrawberryHue >= 120;
+
+          return isGreen
+            ? {
+                l: 30 + (hash % 15),
+                c: 0.15 + (hash % 10) / 100,
+                h: selectedStrawberryHue,
+              }
+            : {
+                l: 70 + (hash % 20),
+                c: 0.2 + (hash % 10) / 100,
+                h: selectedStrawberryHue,
+              };
+        }
+
+        case "peanut":
+          return {
+            l: 35 + (hash % 15),
+            c: 0.15 + (hash % 10) / 100,
+            h: 20 + (hash % 30),
+          };
+
+        case "christmas":
+          return hash % 2 === 0
+            ? { l: 35, c: 0.2, h: 350 } // Red
+            : { l: 25, c: 0.2, h: 120 }; // Green
+
+        case "halloween": {
+          const halloweenHues = [25, 280, 150];
+          const selectedHue = halloweenHues[hash % halloweenHues.length];
+          return { l: 45, c: 0.2, h: selectedHue };
+        }
+
+        default:
+          return { l: 80, c: 0.12, h: hue };
+      }
+    })();
+
+    colorCache.set(cacheKey, color);
+    return color;
+  };
+}
+
+/**
  * TagBubble Component
  * 
  * A component that renders an individual tag with editing and navigation capabilities.
@@ -55,6 +144,7 @@ export const TagBubble: Component<{
   const [isEditing, setIsEditing] = createSignal(false);
   let inputRef: HTMLInputElement | undefined;
   let contentRef: HTMLSpanElement | undefined;
+  const getTagColor = createTagColorGenerator();
 
   /**
    * Initiates the tag editing mode
@@ -78,78 +168,14 @@ export const TagBubble: Component<{
   };
 
   /**
-   * Computes the OKLCH color values for the tag based on the current theme
+   * Computes and caches the OKLCH color values for the tag based on the current theme
    * Uses a hash of the tag text to generate consistent colors
    * 
    * @returns OKLCHColor object with lightness, chroma, and hue values
    */
-  const getTagLCH = createMemo((): OKLCHColor => {
-    const currentTheme = app.theme;
-    let hash = 0;
-    let hue: number;
-    const tag = props.tag;
-
-    for (let i = 0; i < tag.length; i++) {
-      hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    hue = hash % 360;
-
-    switch (currentTheme) {
-      case "dark":
-        return { l: 25, c: 0.1, h: hue };
-
-      case "light":
-        return { l: 85, c: 0.1, h: hue };
-
-      case "gray":
-        return { l: 40 + (hash % 40), c: 0.0, h: hue };
-
-      case "banana":
-        return {
-          l: 75 + (hash % 15),
-          c: 0.15 + (hash % 10) / 100,
-          h: 40 + (hash % 40),
-        };
-
-      case "strawberry":
-        const strawberryHues = [350, 335, 15, 120, 150];
-        const selectedStrawberryHue =
-          strawberryHues[hash % strawberryHues.length];
-        const isGreen = selectedStrawberryHue >= 120;
-
-        return isGreen
-          ? {
-              l: 30 + (hash % 15),
-              c: 0.15 + (hash % 10) / 100,
-              h: selectedStrawberryHue,
-            }
-          : {
-              l: 70 + (hash % 20),
-              c: 0.2 + (hash % 10) / 100,
-              h: selectedStrawberryHue,
-            };
-
-      case "peanut":
-        return {
-          l: 35 + (hash % 15),
-          c: 0.15 + (hash % 10) / 100,
-          h: 20 + (hash % 30),
-        };
-
-      case "christmas":
-        return hash % 2 === 0
-          ? { l: 35, c: 0.2, h: 350 } // Red
-          : { l: 25, c: 0.2, h: 120 }; // Green
-
-      case "halloween":
-        const halloweenHues = [25, 280, 150];
-        const selectedHue = halloweenHues[hash % halloweenHues.length];
-        return { l: 45, c: 0.2, h: selectedHue };
-
-      default:
-        return { l: 80, c: 0.12, h: hue };
-    }
-  });
+  const getTagLCH = createMemo(() => 
+    getTagColor(app.theme, props.tag)
+  );
 
   /**
    * Generates theme-specific hover effect styles
