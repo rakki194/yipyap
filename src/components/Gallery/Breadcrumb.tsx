@@ -47,8 +47,8 @@ export const Breadcrumb = () => {
     <nav class="breadcrumb">
       <div class="breadcrumb-content">
         <div class="breadcrumb-links">
-          <A href="/" aria-label="Return to the front page">
-            <span class="accent-hover icon" title="home">
+          <A href="/" aria-label={t('common.returnToFrontPage')}>
+            <span class="accent-hover icon" title={t('common.home')}>
               {getIcon("yipyap")}
             </span>
           </A>
@@ -79,8 +79,8 @@ export const Breadcrumb = () => {
             type="button"
             class="icon"
             onClick={() => setShowSettings(!showSettings())}
-            title="Settings"
-            aria-label="Open settings"
+            title={t('settings.title')}
+            aria-label={t('common.openSettings')}
           >
             {getIcon("settings")}
           </button>
@@ -99,6 +99,7 @@ export const Breadcrumb = () => {
 
 function ThemeToggle() {
   const app = useAppContext();
+  const { t } = useTranslation();
   const [hovered, setHovered] = createSignal(false);
   const nextTheme = createMemo(() => getNextTheme(app.theme));
   return (
@@ -108,8 +109,8 @@ function ThemeToggle() {
       onClick={() => app.setTheme(nextTheme())}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      title={`Switch to ${nextTheme()} mode`}
-      aria-label={`Switch to ${nextTheme()} mode`}
+      title={t('common.toggleTheme')}
+      aria-label={t('common.toggleTheme')}
     >
       {getIcon(themeIconMap[hovered() ? nextTheme() : app.theme]!)}
     </button>

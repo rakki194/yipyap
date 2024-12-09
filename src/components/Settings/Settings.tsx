@@ -152,35 +152,35 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   </div>
                   <div class="shortcut">
                     <kbd>Shift</kbd> + <kbd>↓</kbd>
-                    <span>Switch to tag input</span>
+                    <span>{t('shortcuts.switchTagInput')}</span>
                   </div>
                   <div class="shortcut">
-                    <kbd>Double Shift</kbd>
-                    <span>Cycle through caption inputs</span>
+                    <kbd>{t('shortcuts.doubleShift')}</kbd>
+                    <span>{t('shortcuts.cycleCaptions')}</span>
                   </div>
                   <div class="shortcut">
-                    <kbd>Double Shift</kbd> + <kbd>←</kbd>
-                    <span>First tag in row</span>
+                    <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>←</kbd>
+                    <span>{t('shortcuts.firstTagRow')}</span>
                   </div>
                   <div class="shortcut">
-                    <kbd>Double Shift</kbd> + <kbd>→</kbd>
-                    <span>Last tag in row</span>
+                    <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>→</kbd>
+                    <span>{t('shortcuts.lastTagRow')}</span>
                   </div>
                   <div class="shortcut">
-                    <kbd>Shift</kbd> + <kbd>Del</kbd>
-                    <span>Remove tag</span>
+                    <kbd>{t('shortcuts.shift')}</kbd> + <kbd>{t('shortcuts.del')}</kbd>
+                    <span>{t('shortcuts.removeTag')}</span>
                   </div>
                 </div>
 
                 <div class="shortcuts-section full-width">
-                  <h4>Other</h4>
+                  <h4>{t('shortcuts.other')}</h4>
                   <div class="shortcut">
-                    <kbd>Esc</kbd>
-                    <span>Close preview/modal</span>
+                    <kbd>{t('shortcuts.esc')}</kbd>
+                    <span>{t('shortcuts.closePreview')}</span>
                   </div>
                   <div class="shortcut">
-                    <kbd>Del</kbd>
-                    <span>Delete image</span>
+                    <kbd>{t('shortcuts.del')}</kbd>
+                    <span>{t('shortcuts.deleteImage')}</span>
                   </div>
                 </div>
               </div>
@@ -191,9 +191,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
         <div class="settings-content" classList={{ closing: isHelpClosing() }}>
           <div class="settings-row">
             <div class="settings-column">
-              <h3>Appearance</h3>
+              <h3>{t('settings.appearance')}</h3>
               <div class="setting-group">
-                <label>Theme</label>
+                <label>{t('settings.theme')}</label>
                 <div class="theme-buttons">
                   <For each={themes}>
                     {(th) => (
@@ -202,8 +202,8 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                         class={`icon ${th}-icon`}
                         classList={{ active: app.theme === th }}
                         onClick={() => app.setTheme(th as Theme)}
-                        title={`Switch to ${th} theme`}
-                        aria-label={`Switch to ${th} theme`}
+                        title={t(`settings.theme.${th}`)}
+                        aria-label={t(`settings.theme.${th}`)}
                       >
                         {getIcon(themeIconMap[th as Theme]!)}
                       </button>
@@ -214,9 +214,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
             </div>
 
             <div class="settings-column">
-              <h3>Gallery</h3>
+              <h3>{t('settings.gallery')}</h3>
               <div class="setting-group">
-                <label>View Mode</label>
+                <label>{t('settings.viewMode')}</label>
                 <div class="icon-buttons">
                   <button
                     type="button"
@@ -242,7 +242,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               </div>
 
               <div class="setting-group">
-                <label>Sort By</label>
+                <label>{t('settings.sortBy')}</label>
                 <div class="icon-buttons">
                   <button
                     type="button"
@@ -278,7 +278,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               </div>
 
               <div class="setting-group">
-                <label>Layout Options</label>
+                <label>{t('settings.layoutOptions')}</label>
                 <div class="icon-buttons">
                   <label>
                     <input
@@ -288,7 +288,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                         app.setDisableAnimations(e.currentTarget.checked)
                       }
                     />
-                    Disable Animations
+                    {t('settings.disableAnimations')}
                   </label>
                 </div>
               </div>
@@ -315,6 +315,14 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   >
                     日本語
                   </button>
+                  <button
+                    type="button"
+                    class="language-button"
+                    classList={{ active: app.locale === 'fr' }}
+                    onClick={() => app.setLocale('fr')}
+                  >
+                    Français
+                  </button>
                 </div>
                 <label>
                   <input
@@ -328,9 +336,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
             </div>
 
             <div class="settings-column">
-              <h3>Model Settings</h3>
+              <h3>{t('settings.modelSettings')}</h3>
               <div class="setting-group">
-                <label>JTP2 Model Path</label>
+                <label>{t('settings.jtp2ModelPath')}</label>
                 <input
                   type="text"
                   value={app.jtp2ModelPath}
@@ -345,12 +353,12 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                     class="download-link"
                   >
                     <span class="icon">{getIcon("documentArrowDown")}</span>
-                    Download Model (1.8GB)
+                    {t('settings.downloadModel')}
                   </a>
                 </div>
               </div>
               <div class="setting-group">
-                <label>JTP2 Tags Path</label>
+                <label>{t('settings.jtp2TagsPath')}</label>
                 <input
                   type="text"
                   value={app.jtp2TagsPath}
@@ -365,7 +373,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                     class="download-link"
                   >
                     <span class="icon">{getIcon("documentArrowDown")}</span>
-                    Download Tags (195KB)
+                    {t('settings.downloadTags')}
                   </a>
                 </div>
               </div>
@@ -384,10 +392,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 checked={app.instantDelete}
                 onChange={(e) => app.setInstantDelete(e.currentTarget.checked)}
               />
-              Enable instant delete (skips confirmation)
+              {t('settings.instantDelete')}
             </label>
 
-            <h4 class="experimental-header">Experimental Features</h4>
+            <h4 class="experimental-header">{t('settings.experimentalFeatures')}</h4>
             <div class="experimental-options">
               <label>
                 <input
@@ -395,7 +403,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   checked={app.enableZoom}
                   onChange={(e) => app.setEnableZoom(e.currentTarget.checked)}
                 />
-                Enable image zooming
+                {t('settings.enableZoom')}
               </label>
               <label>
                 <input
@@ -403,7 +411,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   checked={app.enableMinimap}
                   onChange={(e) => app.setEnableMinimap(e.currentTarget.checked)}
                 />
-                Enable minimap when zoomed
+                {t('settings.enableMinimap')}
               </label>
             </div>
           </section>

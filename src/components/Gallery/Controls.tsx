@@ -4,10 +4,12 @@ import { createSignal, createEffect } from "solid-js";
 import { debounce } from "@solid-primitives/scheduled";
 import { useGallery } from "~/contexts/GalleryContext";
 import getIcon from "~/icons";
+import { useTranslation } from '~/hooks/useTranslation';
 import "./Controls.css";
 
 export const Controls = () => {
   const gallery = useGallery();
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = createSignal(gallery.state.search);
 
   const debouncedSearch = debounce((value: string) => {
@@ -28,7 +30,7 @@ export const Controls = () => {
           <input
             type="text"
             name="search"
-            placeholder="Search..."
+            placeholder={t('common.search')}
             value={searchValue()}
             onInput={(e) => setSearchValue(e.currentTarget.value)}
           />
@@ -40,8 +42,8 @@ export const Controls = () => {
             gallery.setViewMode(e.currentTarget.value as "grid" | "list")
           }
         >
-          <option value="grid">Grid</option>
-          <option value="list">List</option>
+          <option value="grid">{t('settings.gridView')}</option>
+          <option value="list">{t('settings.listView')}</option>
         </select>
         <select
           name="sort-by"
@@ -50,9 +52,9 @@ export const Controls = () => {
             gallery.setSort(e.currentTarget.value as "name" | "date" | "size")
           }
         >
-          <option value="name">Name</option>
-          <option value="date">Modified</option>
-          <option value="size">Size</option>
+          <option value="name">{t('settings.sortByName')}</option>
+          <option value="date">{t('settings.sortByDate')}</option>
+          <option value="size">{t('settings.sortBySize')}</option>
         </select>
       </div>
     </div>

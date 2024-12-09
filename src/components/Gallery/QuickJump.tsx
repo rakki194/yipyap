@@ -94,36 +94,38 @@ export const QuickJump: Component<{
   return (
     <div class="quick-jump-overlay" onClick={props.onClose}>
       <div class="quick-jump-modal card" onClick={(e) => e.stopPropagation()}>
+        <h2>{t('gallery.quickJump')}</h2>
         <input
           ref={inputRef}
           type="text"
           value={search()}
           onInput={handleSearchInput}
           onKeyDown={handleKeyDown}
-          placeholder={t('gallery.quickJump')}
+          placeholder={t('common.search')}
           autofocus
         />
-        <Show
-          when={!folders.loading}
-          fallback={<div class="loading">{t('gallery.loadingFolders')}</div>}
-        >
-          <Show when={matches().length > 0}>
-            <ul class="quick-jump-results">
-              <For each={matches()}>
-                {(folder, index) => (
-                  <li
-                    onClick={() => handleSelect(folder)}
-                    classList={{
-                      selected: index() === selectedIndex(),
-                    }}
-                  >
-                    <span class="folder-name">{folder.name}</span>
-                    <span class="folder-path">{folder.path || "/"}</span>
-                  </li>
-                )}
-              </For>
-            </ul>
-          </Show>
+        <Show when={folders.loading}>
+          <div class="loading">{t('gallery.loadingFolders')}</div>
+        </Show>
+        <Show when={!folders.loading && (!matches() || matches()?.length === 0)}>
+          <div class="no-results">{t('gallery.noResults')}</div>
+        </Show>
+        <Show when={matches().length > 0}>
+          <ul class="quick-jump-results">
+            <For each={matches()}>
+              {(folder, index) => (
+                <li
+                  onClick={() => handleSelect(folder)}
+                  classList={{
+                    selected: index() === selectedIndex(),
+                  }}
+                >
+                  <span class="folder-name">{folder.name}</span>
+                  <span class="folder-path">{folder.path || "/"}</span>
+                </li>
+              )}
+            </For>
+          </ul>
         </Show>
       </div>
     </div>
