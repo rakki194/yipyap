@@ -115,18 +115,6 @@ export function fetchPageItemsAsSignals(
     const items = new Map<string, AnyItem>();
     const setters = {} as Record<string, Setter<AnyData | undefined>>;
 
-    // Add parent directory if not at root AND on first page (page 1)
-    if (path !== "/" && path !== "" && page === 1) {
-      const [item, setItem] = createSignal<DirectoryData>();
-      const parentItem = Object.assign(item, {
-        file_name: "..",
-        loaded: false,
-        type: "directory" as const,
-      });
-      items.set("..", parentItem);
-      setters[".."] = setItem as Setter<AnyData | undefined>;
-    }
-
     fetchPage(
       path,
       page,
@@ -136,17 +124,15 @@ export function fetchPageItemsAsSignals(
           const [item, setItem] = createSignal<DirectoryData>();
           last_item = Object.assign(item, {
             file_name: folder_name,
-            loaded: false,
             type: "directory" as const,
           });
           items.set(folder_name, last_item);
-          setters[folder_name] = setItem as Setter<AnyData | undefined>;
+          // setters[folder_name] = setItem as Setter<AnyData | undefined>;
         }
         for (const file_name of folderHeader.images) {
           const [item, setItem] = createSignal<ImageData>();
           last_item = Object.assign(item, {
             file_name,
-            loaded: false,
             type: "image" as const,
           });
           items.set(file_name, last_item);
@@ -219,7 +205,7 @@ export function createGalleryResourceCached(
     ): Promise<BrowsePagesCached> => {
       let pages = {} as PageToItems;
       let setters = {} as Record<string, Setter<AnyData | undefined>>;
-      
+
       if (prev_value !== undefined && path === prev_value?.path) {
         if (prev_value.pages[page] !== undefined && !refetching) {
           // console.log("skipping fetch", { path, page });
