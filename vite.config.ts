@@ -83,6 +83,10 @@ export default defineConfig({
         target: BACKEND_HOST,
         changeOrigin: true,
       },
+      "/assets": {
+        target: BACKEND_HOST,
+        changeOrigin: true,
+      },
     },
     port: DEV_PORT,
   },

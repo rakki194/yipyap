@@ -8,6 +8,7 @@ import {
   onCleanup,
   Component,
   Show,
+  For,
 } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
@@ -18,6 +19,8 @@ import getIcon from "~/icons";
 import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions } from "~/types";
 import { useAppContext } from "~/contexts/app";
+import { captionIconsMap } from "~/icons";
+import { useTranslation } from "~/hooks/useTranslation";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -131,6 +134,17 @@ const ModelBody = (props: {
     return path;
   });
 
+  const saveCaption = useAction(gallery.saveCaption);
+
+  const handleCreateCaption = (type: string) => {
+    saveCaption({
+      type,
+      caption: "",
+    });
+    setFocused(true);
+    setFocusedType(type);
+  };
+
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
       <ImageView
@@ -150,21 +164,28 @@ const ModelBody = (props: {
             if (e.currentTarget === e.target) setFocusedType(null);
           }}
         >
-          <Index each={props.captions}>
-            {(caption, idx) => (
-              <CaptionInput
-                caption={caption()}
-                onClick={() => setFocusedType(caption()[0])}
-                state={
-                  focusedType() === null || !focused()
-                    ? null
-                    : focusedType() === caption()[0]
-                    ? "expanded"
-                    : "collapsed"
-                }
-              />
-            )}
-          </Index>
+          <Show
+            when={props.captions.length > 0}
+            fallback={
+              <EmptyCaptionState onCreateCaption={handleCreateCaption} />
+            }
+          >
+            <Index each={props.captions}>
+              {(caption, idx) => (
+                <CaptionInput
+                  caption={caption()}
+                  onClick={() => setFocusedType(caption()[0])}
+                  state={
+                    focusedType() === null || !focused()
+                      ? null
+                      : focusedType() === caption()[0]
+                      ? "expanded"
+                      : "collapsed"
+                  }
+                />
+              )}
+            </Index>
+          </Show>
         </div>
         {props.children}
       </div>
@@ -329,6 +350,53 @@ const ExpandableMenu = (props: {
         </div>
       </Show>
     </>
+  );
+};
+
+// Add this component for the empty state
+const EmptyCaptionState = (props: {
+  onCreateCaption: (type: string) => void;
+}) => {
+  const [isExpanded, setIsExpanded] = createSignal(false);
+  const { t } = useTranslation();
+
+  return (
+    <div class="empty-captions-state">
+      <div 
+        class="empty-state-image"
+        role="img"
+        aria-label="No captions"
+      />
+      <p>{t('gallery.noCaptions')}</p>
+      <div class="caption-creation">
+        <button
+          type="button"
+          class="primary-button"
+          onClick={() => setIsExpanded(x => !x)}
+        >
+          {t('gallery.createCaption')}
+        </button>
+        <Show when={isExpanded()}>
+          <div class="caption-type-dropdown card">
+            <For each={Object.entries(captionIconsMap)}>
+              {([type, icon]) => (
+                <button
+                  type="button"
+                  class="caption-type-option"
+                  onClick={() => {
+                    props.onCreateCaption(type);
+                    setIsExpanded(false);
+                  }}
+                >
+                  <span class="icon">{getIcon(icon)}</span>
+                  {t(`gallery.captionTypes.${type}`)}
+                </button>
+              )}
+            </For>
+          </div>
+        </Show>
+      </div>
+    </div>
   );
 };
 

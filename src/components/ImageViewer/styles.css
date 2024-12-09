@@ -455,3 +455,78 @@
 .image-container[data-zoom]:hover .zoom-indicator {
   opacity: 1;
 }
+
+/* Add to existing styles */
+.empty-captions-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing);
+  padding: var(--spacing);
+  text-align: center;
+  min-height: 200px;
+}
+
+.empty-state-image {
+  width: 256px;
+  height: 256px;
+  background-image: url('/assets/chimken-20x.png');
+  background-size: 256px 256px;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+  opacity: 0.7;
+  filter: invert(1);
+  
+  [data-theme="light"] & {
+    filter: invert(0);
+  }
+}
+
+.caption-creation {
+  position: relative;
+}
+
+.caption-type-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: var(--half-spacing);
+  min-width: 150px;
+  z-index: 1;
+}
+
+.caption-type-option {
+  display: flex;
+  align-items: center;
+  gap: var(--half-spacing);
+  width: 100%;
+  padding: var(--half-spacing);
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.caption-type-option:hover {
+  background-color: var(--hover-bg);
+}
+
+.primary-button {
+  padding: var(--half-spacing) var(--spacing);
+  border-radius: var(--border-radius);
+  border: none;
+  background-color: var(--primary);
+  color: var(--text-on-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primary-button:hover {
+  background-color: var(--primary-hover);
+}
