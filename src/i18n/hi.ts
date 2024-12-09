@@ -1,3 +1,5 @@
+import { getPathSeparator } from "~/i18n";
+
 const translations = {
   common: {
     theme: "थीम",
@@ -13,6 +15,7 @@ const translations = {
     edit: "संपादित करें",
     close: "बंद करें",
     confirm: "पुष्टि करें",
+    pathSeparator: getPathSeparator("hi"),
   },
   settings: {
     appearance: "दिखावट",
@@ -31,6 +34,38 @@ const translations = {
     disableJapanese: "जापानी बंद करें",
     enableZoom: "ज़ूम सक्षम करें",
     enableMinimap: "मिनीमैप सक्षम करें",
+    layoutOptions: "लेआउट विकल्प",
+    modelSettings: "मॉडल सेटिंग्स",
+    jtp2ModelPath: "JTP2 मॉडल पथ",
+    gallery: "गैलरी",
+    defaultView: "डिफ़ॉल्ट व्यू",
+    defaultSort: "डिफ़ॉल्ट क्रम",
+    defaultFilter: "डिफ़ॉल्ट फ़िल्टर",
+    gridSize: "ग्रिड आकार",
+    showCaptions: "कैप्शन दिखाएं",
+    showTags: "टैग दिखाएं",
+    showFilenames: "फ़ाइल नाम दिखाएं",
+    showDimensions: "आयाम दिखाएं",
+    showFilesize: "फ़ाइल आकार दिखाएं",
+    sortOptions: {
+      name: "नाम",
+      date: "दिनांक",
+      size: "आकार",
+      random: "यादृच्छिक",
+    },
+    filterOptions: {
+      all: "सभी",
+      tagged: "टैग किए गए",
+      untagged: "टैग नहीं किए गए",
+      favorite: "पसंदीदा",
+    },
+    viewOptions: {
+      grid: "ग्रिड",
+      list: "सूची",
+      compact: "कॉम्पैक्ट",
+    },
+    title: "सेटिंग्स",
+    experimentalFeatures: "प्रायोगिक सुविधाएं",
   },
   frontPage: {
     subtitle: {
