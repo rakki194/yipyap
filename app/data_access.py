@@ -90,6 +90,38 @@ class ImageDataSource:
 
 
 class CachedFileSystemDataSource(ImageDataSource):
+    """A file system data source that caches image metadata and thumbnails in SQLite.
+
+    This class extends ImageDataSource to provide caching of image metadata and thumbnails
+    in a SQLite database. The cache helps avoid expensive image operations like thumbnail
+    generation and metadata extraction on subsequent requests.
+
+    The caching strategy is:
+    - Image metadata and thumbnails are cached in SQLite with the full directory path and filename as key
+    - Directory listings are cached in memory temporarily (cleared when contents change)
+    - Cache entries include:
+        - Image metadata as JSON (size, dimensions, captions etc)
+        - WebP thumbnail blob
+        - Cache timestamp
+        - Soft delete flag
+    - Cache invalidation occurs:
+        - When images are modified (checked via mtime)
+        - When images or captions are deleted
+        - When directory contents change
+
+    Notes:
+    - Directory paths stored in the database are full absolute paths (root_dir + relative path)
+    - Each thread gets its own SQLite connection to avoid threading issues
+    - Soft deletion is supported - deleted images are marked but kept in cache
+    - The cache uses a busy timeout to handle concurrent access
+
+    Args:
+        root_dir (Path): Base directory for all images
+        thumbnail_size (tuple[int, int]): Max width/height for thumbnails
+        preview_size (tuple[int, int]): Max width/height for preview images
+        db_path (str, optional): Path to SQLite database file. Defaults to "cache.db"
+    """
+
     def __init__(
         self,
         root_dir: Path,
@@ -483,27 +515,27 @@ class CachedFileSystemDataSource(ImageDataSource):
             full_path = (self.root_dir / path).resolve()
             # Construct caption file path by replacing image extension with caption extension
             caption_path = full_path.with_suffix(f".{caption_type}")
-            
+
             # Delete the file if it exists
             if caption_path.exists():
                 caption_path.unlink()
                 logger.info(f"Deleted caption file {caption_path}")
             else:
                 logger.warning(f"Caption file not found: {caption_path}")
-                caption_path.unlink()
 
             # Update cache
-            directory = full_path.parent
+            directory = str(full_path.parent)
             name = full_path.name
             conn = self._get_connection()
             result = conn.execute(
                 "SELECT info FROM image_info WHERE directory = ? AND name = ?",
-                (str(directory.relative_to(self.root_dir)), name),
+                (directory, name),
             ).fetchone()
 
             if result:
                 info = ImageModel.model_validate_json(result[0])
                 # Remove the caption from cached info
+                original_captions = info.captions
                 info.captions = [(t, c) for t, c in info.captions if t != caption_type]
 
                 # Update cache
@@ -516,13 +548,14 @@ class CachedFileSystemDataSource(ImageDataSource):
                     (
                         info.model_dump_json(),
                         int(datetime.now(timezone.utc).timestamp()),
-                        str(directory.relative_to(self.root_dir)),
+                        directory,
                         name,
                     ),
                 )
                 conn.commit()
                 logger.info(f"Updated cache for {name} after caption deletion")
-
+            else:
+                logger.warning(f"No cached info found for {directory}/{name}")
         except Exception as e:
             logger.error(f"Error deleting caption for {path}: {e}")
             raise
