@@ -37,6 +37,9 @@
 .tag-bubble {
   transition: all 0.3s ease;
   color: inherit;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--half-spacing);
 }
 
 .tag-bubble:hover {
@@ -210,4 +213,9 @@
   /* Ensure input doesn't overflow the bubble */
   max-width: 100%;
   overflow: hidden;
+}
+
+/* Update remove button positioning */
+.tag-bubble > button.remove-tag {
+  margin-inline-start: calc(var(--half-spacing) / 2);
 }

@@ -1,11 +1,39 @@
-export default {
+import { getPathSeparator } from "~/i18n";
+import type { Translations } from "./types";
+
+const translations: Translations = {
   common: {
-    search: "Căutare",
-    toggleTheme: "Comutare temă",
+    close: "Închide",
+    delete: "Șterge",
+    cancel: "Anulează",
+    save: "Salvează",
+    edit: "Editează",
+    add: "Adaugă",
+    remove: "Elimină",
     loading: "Se încarcă...",
-    theme: "Temă",
     error: "Eroare",
     success: "Succes",
+    confirm: "Confirmă",
+    download: "Descarcă",
+    path: "Cale",
+    size: "Dimensiune",
+    date: "Dată",
+    name: "Nume",
+    type: "Tip",
+    actions: "Acțiuni",
+    search: "Căutare",
+    filter: "Filtrare",
+    apply: "Aplică",
+    reset: "Resetează",
+    selected: "Selectat",
+    all: "Toate",
+    none: "Niciunul",
+    pathSeparator: getPathSeparator("ro"),
+    toggleTheme: "Comutare temă",
+    theme: "Temă",
+    returnToFrontPage: "Înapoi la pagina principală",
+    home: "Acasă",
+    openSettings: "Deschide setările",
   },
   settings: {
     title: "Setări",
@@ -22,18 +50,17 @@ export default {
     enableMinimap: "Activare minimapă",
     theme: {
       light: "Luminos",
-      dark: "Întunecat",
-      black: "Negru",
       gray: "Gri",
-      nord: "Nord",
-      sunset: "Apus",
-      moonlight: "Lumină lunară",
-      forest: "Pădure",
+      dark: "Întunecat",
+      banana: "Banană",
+      strawberry: "Căpșună",
+      peanut: "Arahidă",
       halloween: "Halloween",
       christmas: "Crăciun",
     },
     gridView: "Vizualizare grilă",
     listView: "Vizualizare listă",
+    sortBy: "Sortare după",
     sortByName: "Sortare după nume",
     sortByDate: "Sortare după dată",
     sortBySize: "Sortare după mărime",
@@ -41,6 +68,8 @@ export default {
     jtp2TagsPath: "Cale etichete JTP2",
     downloadModel: "Descărcare model",
     downloadTags: "Descărcare etichete",
+    viewMode: "Mod vizualizare",
+    warning: "Avertisment",
   },
   frontPage: {
     subtitle: {
@@ -134,4 +163,6 @@ export default {
     replaceNewlinesWithCommas: "Înlocuire linii noi cu virgule",
     replaceUnderscoresWithSpaces: "Înlocuire underscore cu spații",
   },
-}; 
+};
+
+export default translations; 

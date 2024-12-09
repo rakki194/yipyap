@@ -150,6 +150,7 @@
       display: flex;
       align-items: center;
       gap: var(--half-spacing);
+      padding-inline-end: var(--spacing);
     }
   }
 

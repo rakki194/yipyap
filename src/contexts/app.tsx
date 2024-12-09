@@ -15,7 +15,8 @@ import { Location, useLocation } from "@solidjs/router";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { AppContext } from "~/contexts/contexts";
 import { Theme, getInitialTheme } from "~/contexts/theme";
-import { Locale, translations } from "~/i18n";
+import { Locale, getTranslationValue, translations } from "~/i18n";
+import type { Translations } from "~/i18n/types";
 
 /**
  * Interface defining the shape of the app context.
@@ -44,7 +45,7 @@ export interface AppContext {
   setEnableMinimap: (value: boolean) => void;
   readonly locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (id: string) => string;
+  t: (key: string) => string;
 }
 
 /**
@@ -125,6 +126,7 @@ const createAppContext = (): AppContext => {
   createRenderEffect(() => {
     localStorage.setItem("locale", store.locale);
     document.documentElement.lang = store.locale;
+    document.documentElement.dir = ["ar", "he", "fa"].includes(store.locale) ? "rtl" : "ltr";
   });
 
   const setJtp2ModelPath = (value: string) => {
@@ -178,8 +180,10 @@ const createAppContext = (): AppContext => {
 
   const [translation] = createResource(
     () => store.locale,
-    (locale) => {
-      console.log("locale", { locale, translations, f: translations[locale] });
+    async (locale) => {
+      if (import.meta.env.DEV) {
+        console.log("Loading translations for locale:", locale);
+      }
       return translations[locale]();
     }
   );
@@ -235,12 +239,11 @@ const createAppContext = (): AppContext => {
       setStore("locale", locale);
     },
     t: (key: string) => {
-      const keys = key.split(".");
-      let value: any = translation();
-
-      for (const k of keys) {
-        if (value === undefined) return key;
-        value = value[k];
+      const value = getTranslationValue(translation(), key);
+      
+      if (import.meta.env.DEV && value === undefined) {
+        console.warn(`Missing translation for key: ${key}`);
+        return key;
       }
 
       if (import.meta.env.DEV && typeof value !== "string") {

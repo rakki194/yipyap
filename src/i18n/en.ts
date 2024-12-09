@@ -1,6 +1,7 @@
 import { getPathSeparator } from "~/i18n";
+import type { Translations } from "./types";
 
-export default {
+const translations: Translations = {
   common: {
     close: "Close",
     delete: "Delete",
@@ -163,3 +164,5 @@ export default {
     replaceUnderscoresWithSpaces: "Replace underscores with spaces",
   },
 };
+
+export default translations;
