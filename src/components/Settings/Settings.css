@@ -368,6 +368,7 @@ kbd {
 
 .language-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing);
   margin-bottom: var(--spacing);
 }
