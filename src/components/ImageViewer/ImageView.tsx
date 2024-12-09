@@ -40,15 +40,18 @@ export const ImageView = (props: ImageViewProps) => {
           prev_img.thumbnail_img.setPriority("low");
         }
         if (img.preview_img.isLoaded()) {
-          console.log("fallback: preview loaded");
+          if (import.meta.env.DEV)
+            console.debug("fallback: preview loaded");
           return null;
         } else {
           img.preview_img.setPriority("high");
           if (img.thumbnail_img.isLoaded()) {
-            console.log("fallback: thumbnail loaded");
+            if (import.meta.env.DEV)
+              console.debug("fallback: thumbnail loaded");
             return img.thumbnail_img.img;
           } else {
-            console.log("fallback: spin");
+            if (import.meta.env.DEV)
+              console.debug("fallback: spin");
             img.thumbnail_img.setPriority("high");
             return (
               <span

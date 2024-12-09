@@ -56,6 +56,7 @@ export type ImageInfo = {
   aspect_ratio: string;
   preview_img: ReactiveImage;
   thumbnail_img: ReactiveImage;
+  readonly captions: Captions;
 };
 
 const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
@@ -91,7 +92,7 @@ const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
   };
 
   if (import.meta.env.DEV) {
-    console.log("ImageInfo", idx, imageInfo);
+    console.debug("ImageInfo", idx, imageInfo);
   }
 
   return imageInfo;
@@ -141,7 +142,7 @@ export function makeGalleryState() {
 
   const [getEditedImage, clearImageCache] = cacheNavigation(
     () => backendData()?.items || [],
-    () => selection.selected,
+    () => selection.mode === "edit" ? selection.selected : null,
     (item, idx) => {
       const image_info = getImageInfo(item, idx, backendData()?.path);
       if (image_info == undefined) return undefined;
@@ -167,6 +168,9 @@ export function makeGalleryState() {
 
       return {
         ...image_info,
+        get captions() {
+          return image_info.captions;
+        },
         idx,
         preview_img,
         thumbnail_img,
@@ -275,7 +279,7 @@ export function makeGalleryState() {
       }
     } catch (error) {
       console.error("Error generating tags:", error);
-      throw error; // Re-throw to propagate error to UI
+      return error; // Re-throw to propagate error to UI
     }
   });
 
@@ -283,7 +287,8 @@ export function makeGalleryState() {
     const database = untrack(backendData);
     if (!database) return new Error("No page fetched yet!");
     const image = database.items[idx];
-    console.log("Deleting image", idx, { ...image }, { ...image() });
+    if (import.meta.env.DEV)
+      console.debug("Deleting image", idx, { ...image }, { ...image() });
     if (!image || image.type !== "image")
       return new Error("No image to delete");
 
@@ -313,8 +318,10 @@ export function makeGalleryState() {
       total_folders: database.total_folders,
       total_images: database.total_images,
     };
-    setData(data);
-
+    batch(() => {
+      setData(data);
+      clearImageCache();
+    });
     return items;
   });
 
@@ -326,8 +333,13 @@ export function makeGalleryState() {
     if (!image) return new Error("No image to delete");
     if (!database) return new Error("No page fetched yet!");
 
-    await deleteCaptionFromBackend(database.path, image.name, type);
-    refetch();
+    try {
+      await deleteCaptionFromBackend(database.path, image.name, type);
+      updateLocalCaptions(image, { type, caption: undefined }, database);
+    } catch (error) {
+      if (import.meta.env.DEV) console.error("Failed to delete caption", error);
+      return new Error("Failed to delete caption");
+    }
   });
 
   const windowSize = createWindowSize();
@@ -355,7 +367,7 @@ export function makeGalleryState() {
     windowSize,
     params,
     data: backendData,
-    state,
+    // state,
     saveCaption,
     deleteImage,
     deleteCaption,
@@ -412,25 +424,32 @@ export function makeGalleryState() {
 // Function to update local captions after a successful save
 function updateLocalCaptions(
   image: ImageData,
-  data: SaveCaption,
+  { type, caption }: { type: string; caption?: string },
   backendData: BrowsePagesCached
 ) {
   const setter = backendData.setters[image.name];
   if (setter) {
     // Check if caption type exists
     const existingCaptionIndex = image.captions.findIndex(
-      ([type]) => type === data.type
+      ([ty]) => ty === type
     );
 
     let newCaptions: Captions;
-    if (existingCaptionIndex === -1) {
-      // Add new caption type
-      newCaptions = [...image.captions, [data.type, data.caption]] as Captions;
-    } else {
-      // Update existing caption
-      newCaptions = image.captions.map(([type, caption]) =>
-        type === data.type ? [type, data.caption] : [type, caption]
+    if (existingCaptionIndex === -1 && caption) {
+      if (import.meta.env.DEV)
+        console.debug("updateLocalCaptions: Adding new caption type", { type, caption });
+      newCaptions = [...image.captions, [type, caption]] as Captions;
+    }
+    else if (caption) {
+      if (import.meta.env.DEV)
+        console.debug("updateLocalCaptions: Updating existing caption", { type, caption });
+      newCaptions = image.captions.map(([ty, caption]) =>
+        ty === type ? [ty, caption] : [ty, caption]
       ) as Captions;
+    } else {
+      if (import.meta.env.DEV)
+        console.debug("updateLocalCaptions: Removing caption type", { type });
+      newCaptions = image.captions.filter(([ty]) => ty !== type) as Captions;
     }
 
     return setter({

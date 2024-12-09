@@ -44,11 +44,13 @@ export function preserveState(
       end: textarea.selectionEnd,
       scrollTop: textarea.scrollTop,
     };
-    console.log("preserving state", {
-      signal: v,
-      input: textarea.value,
-      state,
-    });
+    if (import.meta.env.DEV) {
+      console.debug("preserving input state", {
+        signal: v,
+        input: textarea.value,
+        state,
+      });
+    }
 
     textarea.value = v;
 

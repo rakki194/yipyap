@@ -7,6 +7,7 @@ import { formatFileSize } from "~/utils/format";
 import { joinUrlParts } from "~/utils";
 import { measure_columns } from "~/directives";
 import getIcon, { captionIconsMap } from "~/icons";
+import type { AnyItem } from "~/resources/browse";
 import type {
   ImageItem as ImageItemType,
   BrowsePagesCached,
@@ -14,34 +15,44 @@ import type {
 
 export const ImageGrid = (props: {
   data: BrowsePagesCached;
+  items: AnyItem[];
+  path: string;
   onImageClick: (idx: number) => void;
 }) => {
   const gallery = useGallery();
   const setColumns = gallery.selection.setColumns;
   const addObserved = makeIntersectionObserver(gallery.setPage);
 
+  const isActive = (ref: HTMLElement, idx: number) => {
+    if (gallery.mode === "view" && gallery.selected === idx) {
+      ref.scrollIntoView({ behavior: "instant", block: "nearest" });
+      return true;
+    }
+    return false;
+  };
+
   return (
     <div class="responsive-grid" use:measure_columns={setColumns}>
-      <For each={props.data.items}>
+      <Show when={props.path}>
+        <DirectoryItem
+          name=".."
+          path={props.path}
+          selected={gallery.selected === null}
+        />
+      </Show>
+      <For each={props.items}>
         {(item, getIdx) => {
           let ref!: HTMLElement;
           const next_page = item.next_page;
           if (next_page !== undefined) {
             onMount(() => addObserved(ref, next_page));
           }
-          const isActive = () => {
-            if (gallery.mode === "view" && gallery.selected === getIdx()) {
-              ref.scrollIntoView({ behavior: "instant", block: "nearest" });
-              return true;
-            }
-            return false;
-          };
           return item.type === "image" ? (
             <ImageItem
               ref={ref as HTMLDivElement}
               item={item}
-              path={props.data.path}
-              selected={isActive()}
+              path={props.path}
+              selected={isActive(ref, getIdx())}
               onClick={() => {
                 props.onImageClick(getIdx());
                 gallery.select(getIdx());
@@ -51,8 +62,8 @@ export const ImageGrid = (props: {
             <DirectoryItem
               ref={ref as HTMLAnchorElement}
               name={item.file_name}
-              path={props.data.path}
-              selected={isActive()}
+              path={props.path}
+              selected={isActive(ref, getIdx())}
             />
           );
         }}
@@ -171,7 +182,7 @@ export const ImageItem = (props: {
 };
 
 export const DirectoryItem = (props: {
-  ref: HTMLAnchorElement;
+  ref?: HTMLAnchorElement;
   path: string;
   name: string;
   selected: boolean;

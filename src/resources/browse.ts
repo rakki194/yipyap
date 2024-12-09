@@ -127,7 +127,7 @@ export function fetchPageItemsAsSignals(
             type: "directory" as const,
           });
           items.set(folder_name, last_item);
-          // setters[folder_name] = setItem as Setter<AnyData | undefined>;
+          setters[folder_name] = setItem as Setter<AnyData | undefined>;
         }
         for (const file_name of folderHeader.images) {
           const [item, setItem] = createSignal<ImageData>();

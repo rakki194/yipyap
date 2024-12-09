@@ -31,23 +31,31 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
      */
     select: (idx: number | "last" | null) => {
       const data = backendData();
-      if (!data) return false;
-      if (idx === null) {
-        setState({ mode: "view", selected: null });
-        return true;
-      }
-      const l = data.items.length;
-      if (l === 0) {
+      // Return false if no data or explicitly selecting null
+      if (!data?.items.length) {
+        setState("selected", null);
         return false;
       }
-      if (idx === "last" || idx >= l) {
+      const l = data.items.length;
+      // Handle special cases:
+      if (idx === null) {
+        idx = null;
+      } else if (idx === "last" || idx >= l) {
+        // "last" or overflow - select last item
         idx = l - 1;
       } else if (idx < 0) {
-        idx = 0;
+        // Negative index means deselect or select the parent directory item (..)
+        // This happens when navigating up from first item
+        idx = null;
       }
-
-      setState("selected", idx);
-      return true;
+      let changed = false;
+      setState((prev) => {
+        const mode = idx === null || data.items[idx].type !== "image" ? "view" : prev.mode;
+        if (prev.selected === idx && prev.mode === mode) return prev;
+        changed = true;
+        return { selected: idx, mode };
+      });
+      return changed;
     },
     /**
      * Gets the currently selected image, if any

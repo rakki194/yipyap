@@ -18,12 +18,13 @@ export default function Preview() {
             src="/preview/_/amicus/1_amicus_(adastra)/0ba82ac422ef52902cd8d50fa75f79cb.webp"
             alt="Preview Image"
             onLoad={(e) => {
-              console.log("large image loaded:", {
-                naturalHeight: e.currentTarget.naturalHeight,
-                naturalWidth: e.currentTarget.naturalWidth,
-                clientHeight: e.currentTarget.clientHeight,
-                clientWidth: e.currentTarget.clientWidth,
-                containerHeight: e.currentTarget.parentElement?.clientHeight,
+              if (import.meta.env.DEV)
+                console.debug("large image loaded:", {
+                  naturalHeight: e.currentTarget.naturalHeight,
+                  naturalWidth: e.currentTarget.naturalWidth,
+                  clientHeight: e.currentTarget.clientHeight,
+                  clientWidth: e.currentTarget.clientWidth,
+                  containerHeight: e.currentTarget.parentElement?.clientHeight,
                 containerWidth: e.currentTarget.parentElement?.clientWidth,
               });
             }}
@@ -33,12 +34,13 @@ export default function Preview() {
             src="/thumbnail/_/amicus/1_amicus_(adastra)/0ba82ac422ef52902cd8d50fa75f79cb.webp"
             alt="Thumbnail Image"
             onLoad={(e) => {
-              console.log("small image loaded:", {
-                naturalHeight: e.currentTarget.naturalHeight,
-                naturalWidth: e.currentTarget.naturalWidth,
-                clientHeight: e.currentTarget.clientHeight,
-                clientWidth: e.currentTarget.clientWidth,
-                containerHeight: e.currentTarget.parentElement?.clientHeight,
+              if (import.meta.env.DEV)
+                console.debug("small image loaded:", {
+                  naturalHeight: e.currentTarget.naturalHeight,
+                  naturalWidth: e.currentTarget.naturalWidth,
+                  clientHeight: e.currentTarget.clientHeight,
+                  clientWidth: e.currentTarget.clientWidth,
+                  containerHeight: e.currentTarget.parentElement?.clientHeight,
                 containerWidth: e.currentTarget.parentElement?.clientWidth,
               });
             }}

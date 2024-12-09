@@ -177,30 +177,72 @@ const ModalHeader = (props: {
   onClose: () => void;
 }) => {
   const gallery = useGallery();
-  const app = useAppContext();
-  const deleteImageAction = useAction(gallery.deleteImage);
   const generateTags = useAction(gallery.generateTags);
-  const [isHolding, setIsHolding] = createSignal(false);
-  const [progress, setProgress] = createSignal(0);
-  const [isExpanded, setIsExpanded] = createSignal(false);
-  let deleteTimeout: number;
-  let progressInterval: number;
 
   // Reference to the metadata bubble for click detection
   let metadataButtonRef: HTMLButtonElement | undefined;
+
+
+  return (
+    <div class="modal-header">
+      <h2>{props.imageInfo.name}</h2>
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="icon metadata-button"
+          ref={metadataButtonRef}
+          title="Show Metadata"
+          aria-label="Show Metadata"
+        >
+          {getIcon("info")}
+        </button>
+        <ExpandableMenu generateTags={generateTags} />
+        <button
+          type="button"
+          class="icon"
+          onClick={() => {
+            window.location.href = props.imageInfo.download_path;
+          }}
+          aria-label="Download image"
+          title="Download image"
+        >
+          {getIcon("download")}
+        </button>
+        <DeleteButton
+          imageInfo={props.imageInfo}
+        />
+        <button
+          type="button"
+          class="icon"
+          onClick={props.onClose}
+          aria-label="Close image viewer"
+          title="Close image viewer"
+        >
+          {getIcon("dismiss")}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// New DeleteButton component
+const DeleteButton = (props: {
+  imageInfo: ImageInfoType;
+}) => {
+  const gallery = useGallery();
+  const app = useAppContext();
+  const deleteImageAction = useAction(gallery.deleteImage);
+  const [isHolding, setIsHolding] = createSignal(false);
+  const [progress, setProgress] = createSignal(0);
+  let deleteTimeout: number;
+  let progressInterval: number;
 
   const deleteImage = async () => {
     const data = gallery.data();
     if (!data) return;
 
-    const currentIndex = data.items.findIndex(
-      (item) => item.type === "image" && item.file_name === props.imageInfo.name
-    );
-
-    if (currentIndex !== -1) {
-      await deleteImageAction(currentIndex);
-      gallery.clearImageCache();
-      props.onClose();
+    if (gallery.selectedImage !== null) {
+      await deleteImageAction(gallery.selected!);
     }
   };
 
@@ -227,90 +269,66 @@ const ModalHeader = (props: {
     clearInterval(progressInterval);
   };
 
+  return (
+    <button
+      type="button"
+      class="icon delete-button"
+      classList={{ holding: isHolding() }}
+      style={{ "--progress": `${progress()}%` }}
+      onMouseDown={startDelete}
+      onMouseUp={cancelDelete}
+      onMouseLeave={cancelDelete}
+      onTouchStart={startDelete}
+      onTouchEnd={cancelDelete}
+      onTouchCancel={cancelDelete}
+      aria-label="Hold to delete image"
+      title="Hold to delete image"
+    >
+      {getIcon("delete")}
+    </button>
+  );
+};
 
+// Updated ExpandableMenu component
+const ExpandableMenu = (props: {
+  generateTags: (type: string) => void;
+}) => {
+  const [isExpanded, setIsExpanded] = createSignal(false);
 
   return (
-    <div class="modal-header">
-      <h2>{props.imageInfo.name}</h2>
-      <div class="modal-actions">
-        <button
-          type="button"
-          class="icon metadata-button"
-          ref={metadataButtonRef}
-          title="Show Metadata"
-          aria-label="Show Metadata"
-        >
-          {getIcon("info")}
-        </button>
-        <button
-          type="button"
-          class="icon"
-          onClick={() => setIsExpanded((x: boolean) => !x)}
-          title="Generate Tags"
-          aria-label="Generate Tags"
-        >
-          {getIcon("sparkle")}
-        </button>
-        <button
-          type="button"
-          class="icon"
-          onClick={() => {
-            window.location.href = props.imageInfo.download_path;
-          }}
-          aria-label="Download image"
-          title="Download image"
-        >
-          {getIcon("download")}
-        </button>
-        <button
-          type="button"
-          class="icon delete-button"
-          classList={{ holding: isHolding() }}
-          style={{ "--progress": `${progress()}%` }}
-          onMouseDown={startDelete}
-          onMouseUp={cancelDelete}
-          onMouseLeave={cancelDelete}
-          onTouchStart={startDelete}
-          onTouchEnd={cancelDelete}
-          onTouchCancel={cancelDelete}
-          aria-label="Hold to delete image"
-          title="Hold to delete image"
-        >
-          {getIcon("delete")}
-        </button>
-        <button
-          type="button"
-          class="icon"
-          onClick={props.onClose}
-          aria-label="Close image viewer"
-          title="Close image viewer"
-        >
-          {getIcon("dismiss")}
-        </button>
-        <Show when={isExpanded()}>
-          <div class="generate-tags-dropdown card">
-            <button
-              type="button"
-              onClick={() => {
-                generateTags("jtp2");
-                setIsExpanded(false);
-              }}
-            >
-              Generate with JTP2
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                generateTags("wdv3");
-                setIsExpanded(false);
-              }}
-            >
-              Generate with WDv3
-            </button>
-          </div>
-        </Show>
-      </div>
-    </div>
+    <>
+      <button
+        type="button"
+        class="icon"
+        onClick={() => setIsExpanded(x => !x)}
+        title="Generate Tags"
+        aria-label="Generate Tags"
+      >
+        {getIcon("sparkle")}
+      </button>
+      <Show when={isExpanded()}>
+        <div class="generate-tags-dropdown card">
+          <button
+            type="button"
+            onClick={() => {
+              props.generateTags("jtp2");
+              setIsExpanded(false);
+            }}
+          >
+            Generate with JTP2
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              props.generateTags("wdv3");
+              setIsExpanded(false);
+            }}
+          >
+            Generate with WDv3
+          </button>
+        </div>
+      </Show>
+    </>
   );
 };
 

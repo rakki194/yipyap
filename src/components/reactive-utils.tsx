@@ -74,7 +74,9 @@ export const makeImage = (
     img,
     isLoaded,
     unload: () => {
-      console.log("unloading image", src);
+      if (import.meta.env.DEV) {  
+        console.debug("makeImage: unloading image", src);
+      }
       img.src = "";
       cleanup();
     },

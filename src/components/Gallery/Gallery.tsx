@@ -1,5 +1,5 @@
 // src/components/Gallery/Gallery.tsx
-import { Show, onMount, onCleanup, createSignal } from "solid-js";
+import { Show, onMount, onCleanup, createSignal, createMemo } from "solid-js";
 import { Controls } from "./Controls";
 import { ImageGrid } from "./ImageGrid";
 import { ImageModal } from "../ImageViewer/ImageModal";
@@ -15,6 +15,7 @@ export const Gallery = () => {
   const [showQuickJump, setShowQuickJump] = createSignal(false);
 
   const keyDownHandler = (event: KeyboardEvent) => {
+    // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
     if (!event) return;
 
     // Don't act if a input element is focused
@@ -43,14 +44,25 @@ export const Gallery = () => {
       if (!gallery.selectDown()) return;
     } else if (event.key === "ArrowUp") {
       if (!gallery.selectUp()) return;
-    } else if (event.key === "Enter" && gallery.selected !== null) {
-      const selected = data.items[gallery.selected];
-      if (selected.type === "directory") {
-        navigate(`/gallery/${data.path}/${selected.file_name}`);
+    } else if (event.key === "Enter") {
+      // Don't intercept if no selection and in root directory
+      if (gallery.selected === null && data.path === "") return;
+
+      const selImageItem =
+        gallery.selected !== null
+          ? data.items[gallery.selected]
+          : { type: "directory", file_name: ".." };
+      if (selImageItem.type === "directory") {
+        navigate(`/gallery/${data.path}/${selImageItem.file_name}`);
       } else {
         if (!gallery.toggleEdit()) return;
       }
     } else if (event.key === "Escape") {
+      if (gallery.mode === "view") {
+        if (gallery.selected === null) {
+          gallery.select(null);
+        } else return;
+      }
       if (!gallery.setMode("view")) return;
     } else if (event.key === "Backspace") {
       const segments = data.path.split("/");
@@ -75,24 +87,26 @@ export const Gallery = () => {
 
   return (
     <>
-      <Controls />
+      {/* <Controls /> */}
 
-      <div
-        id="gallery"
-        class={`gallery ${
-          gallery.state.viewMode === "list" ? "list-view" : ""
-        }`}
-      >
+      <div id="gallery" class={"gallery"}>
         <Show when={gallery.data()}>
-          {(data) => <ImageGrid data={data()} onImageClick={gallery.edit} />}
+          {(data) => (
+            <ImageGrid
+              data={data()}
+              items={data().items}
+              path={data().path}
+              onImageClick={gallery.edit}
+            />
+          )}
         </Show>
       </div>
 
-      <Show when={gallery.editedImage}>
+      <Show when={gallery.getEditedImage()}>
         {(image) => (
           /* FIXME: this is messy, we should just pass the imageInfo,
         but the captions might change more often */ <ImageModal
-            imageInfo={gallery.getEditedImage()!}
+            imageInfo={image()}
             captions={image().captions}
             onClose={() => gallery.setMode("view")}
           />

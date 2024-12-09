@@ -9,11 +9,11 @@ import "./Breadcrumb.css";
 import { useTranslation } from '~/hooks/useTranslation';
 
 export const Breadcrumb = () => {
-  const { params, data } = useGallery();
+  const { data } = useGallery();
   const { t } = useTranslation();
 
   const Crumbs = () => {
-    const segments = () => params.path.split("/").filter(Boolean) || [];
+    const segments = () => data()?.path.split("/").filter(Boolean) || [];
     const crumbs = () =>
       segments().reduce<{ children: string; href: string }[]>(
         (acc, segment) => {
