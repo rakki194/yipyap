@@ -1,17 +1,47 @@
+/**
+ * TagBubble Component Module
+ * 
+ * This module provides an interactive tag bubble component that supports editing,
+ * navigation, and theme-based styling. It's used for displaying and managing
+ * individual tags in the image viewer interface.
+ * 
+ * Features:
+ * - Interactive editing with keyboard navigation
+ * - Theme-aware styling using OKLCH color space
+ * - Keyboard shortcuts for tag navigation and removal
+ * - Animated hover effects and transitions
+ * - Accessibility support with ARIA attributes
+ */
+
 import { Component, createMemo, createSignal } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 
-// Create a simple focus directive
+/**
+ * Focus directive that programmatically focuses an HTML element
+ * @param element - The HTML element to focus
+ */
 const focus = (element: HTMLElement) => {
   element.focus();
 };
 
-// Add these variables outside the component to track last navigation
+// Navigation state variables
 let lastNavigationTime = 0;
 let lastNavigationDirection: "left" | "right" | null = null;
 const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
 
+/**
+ * TagBubble Component
+ * 
+ * A component that renders an individual tag with editing and navigation capabilities.
+ * 
+ * @component
+ * @param props.tag - The tag text to display
+ * @param props.index - The index of the tag in the list
+ * @param props.onRemove - Callback function when tag is removed
+ * @param props.onEdit - Callback function when tag is edited, receives new tag value
+ * @param props.onNavigate - Optional callback for keyboard navigation between tags
+ */
 export const TagBubble: Component<{
   tag: string;
   index: number;
@@ -26,22 +56,33 @@ export const TagBubble: Component<{
   let inputRef: HTMLInputElement | undefined;
   let contentRef: HTMLSpanElement | undefined;
 
+  /**
+   * Initiates the tag editing mode
+   * Sets up the input field with appropriate sizing and focus
+   */
   const startEditing = () => {
     if (contentRef) {
-      // Get the current width before switching to edit mode
       const width = contentRef.offsetWidth;
+      const currentFontSize = window.getComputedStyle(contentRef).fontSize;
       setIsEditing(true);
 
-      // Use requestAnimationFrame to ensure the input is rendered before focusing
       requestAnimationFrame(() => {
         if (inputRef) {
           inputRef.focus();
-          inputRef.style.width = `${width}px`;
+          inputRef.style.minWidth = `${width}px`;
+          inputRef.style.fontSize = `calc(${currentFontSize} * 1.1)`;
+          inputRef.style.padding = '2px 4px';
         }
       });
     }
   };
 
+  /**
+   * Computes the OKLCH color values for the tag based on the current theme
+   * Uses a hash of the tag text to generate consistent colors
+   * 
+   * @returns OKLCHColor object with lightness, chroma, and hue values
+   */
   const getTagLCH = createMemo((): OKLCHColor => {
     const currentTheme = app.theme;
     let hash = 0;
@@ -110,39 +151,48 @@ export const TagBubble: Component<{
     }
   });
 
-  // Add theme-specific hover effects
+  /**
+   * Generates theme-specific hover effect styles
+   * 
+   * @returns Object containing CSS properties for hover effects
+   */
   const getHoverStyles = () => {
     const currentTheme = document.documentElement.getAttribute("data-theme");
+    const baseScale = isEditing() ? 1.02 : 1.01;
 
     switch (currentTheme) {
       case "christmas":
         return {
-          transform: "scale(1.05)",
+          transform: `scale(${baseScale})`,
           boxShadow: "0 0 8px rgba(196, 30, 58, 0.5)",
         };
 
       case "halloween":
         return {
-          transform: "scale(1.05) rotate(-2deg)",
+          transform: `scale(${baseScale}) rotate(-2deg)`,
           boxShadow: "0 0 8px rgba(255, 102, 0, 0.5)",
         };
 
       case "strawberry":
         return {
-          transform: "scale(1.05)",
+          transform: `scale(${baseScale})`,
           boxShadow: "0 0 8px rgba(255, 51, 102, 0.5)",
           filter: "saturate(1.2)",
         };
 
       default:
         return {
-          transform: "scale(1.05)",
+          transform: `scale(${baseScale})`,
           boxShadow: "0 0 8px var(--shadow-color)",
         };
     }
   };
 
-  // Add CSS for theme-specific animations
+  /**
+   * Returns theme-specific animation class names
+   * 
+   * @returns CSS animation class name or 'none'
+   */
   const getTagBubbleAnimations = () => {
     const currentTheme = document.documentElement.getAttribute("data-theme");
 
@@ -161,6 +211,11 @@ export const TagBubble: Component<{
     }
   };
 
+  /**
+   * Handles the submission of edited tag text
+   * 
+   * @param value - The new tag value to submit
+   */
   const handleSubmit = (value: string) => {
     const newValue = value.trim();
     if (newValue && newValue !== props.tag) {
@@ -169,6 +224,12 @@ export const TagBubble: Component<{
     setIsEditing(false);
   };
 
+  /**
+   * Handles keyboard navigation and shortcuts
+   * Supports arrow key navigation and tag deletion
+   * 
+   * @param e - Keyboard event
+   */
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.shiftKey) {
       const now = Date.now();
@@ -222,6 +283,10 @@ export const TagBubble: Component<{
       style={{
         "background-color": formatOKLCH(getTagLCH()),
         color: getTagLCH().l < 50 ? "#ffffff" : "#000000",
+        "z-index": isEditing() ? "1" : "auto",
+        transition: "transform 0.2s ease",
+        margin: "0 0.5rem 0.5rem 0",
+        "font-weight": isEditing() ? "bold" : "normal",
         ...getHoverStyles(),
       }}
     >
@@ -234,6 +299,9 @@ export const TagBubble: Component<{
               color: "inherit",
               "background-color": "transparent",
               "border-color": "currentColor",
+              "min-width": "100%", // Allow growing but not shrinking
+              "box-sizing": "border-box",
+              transition: "all 0.2s ease", // Smooth transition for size changes
             }}
             onKeyDown={handleKeyDown}
             onKeyPress={(e) => {
@@ -265,12 +333,23 @@ export const TagBubble: Component<{
   );
 };
 
+/**
+ * Represents a color in the OKLCH color space
+ */
 type OKLCHColor = {
   l: number; // Lightness percentage (0-100)
   c: number; // Chroma (0-0.4 typically)
   h: number; // Hue (0-360)
 };
 
+/**
+ * Formats an OKLCH color object into a CSS color string
+ * 
+ * @param l - Lightness value
+ * @param c - Chroma value
+ * @param h - Hue value
+ * @returns CSS color string in OKLCH format
+ */
 const formatOKLCH = ({ l, c, h }: OKLCHColor): string => {
   return `oklch(${l}% ${c} ${h})`;
 };
