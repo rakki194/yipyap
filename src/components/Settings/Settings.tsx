@@ -326,6 +326,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   <option value="cs">Čeština</option>
                   <option value="el">Ελληνικά</option>
                   <option value="hu">Magyar</option>
+                  <option value="ro">Română</option>
                 </select>
                 <label>
                   <input
