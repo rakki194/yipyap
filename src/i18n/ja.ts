@@ -157,4 +157,9 @@ export default {
     imageInfo: "画像情報",
     dimensions: "寸法",
   },
+  tools: {
+    removeCommas: "カンマを削除",
+    replaceNewlinesWithCommas: "改行をカンマに置換",
+    replaceUnderscoresWithSpaces: "アンダースコアを空白に置換",
+  },
 };

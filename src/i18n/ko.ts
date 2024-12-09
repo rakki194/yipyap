@@ -157,4 +157,9 @@ export default {
     imageInfo: "이미지 정보",
     dimensions: "크기",
   },
+  tools: {
+    removeCommas: "쉼표 제거",
+    replaceNewlinesWithCommas: "줄바꿈을 쉼표로 바꾸기",
+    replaceUnderscoresWithSpaces: "밑줄을 공백으로 바꾸기",
+  },
 }; 

@@ -157,4 +157,9 @@ export default {
     imageInfo: "Afbeeldingsinformatie",
     dimensions: "Afmetingen",
   },
+  tools: {
+    removeCommas: "Komma's verwijderen",
+    replaceNewlinesWithCommas: "Regeleindes vervangen door komma's",
+    replaceUnderscoresWithSpaces: "Underscores vervangen door spaties",
+  },
 }; 

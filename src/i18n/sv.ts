@@ -157,4 +157,9 @@ export default {
     imageInfo: "Bildinformation",
     dimensions: "Dimensioner",
   },
+  tools: {
+    removeCommas: "Ta bort kommatecken",
+    replaceNewlinesWithCommas: "Ersätt radbrytningar med kommatecken",
+    replaceUnderscoresWithSpaces: "Ersätt understreck med mellanslag",
+  },
 };

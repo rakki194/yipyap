@@ -157,4 +157,9 @@ export default {
     imageInfo: "Görsel bilgisi",
     dimensions: "Boyutlar",
   },
+  tools: {
+    removeCommas: "Virülleri kaldır",
+    replaceNewlinesWithCommas: "Satır sonlarını virgülle değiştir",
+    replaceUnderscoresWithSpaces: "Alt çizgileri boşlukla değiştir",
+  },
 }; 

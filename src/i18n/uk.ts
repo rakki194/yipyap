@@ -157,4 +157,9 @@ export default {
     imageInfo: "Інформація про зображення",
     dimensions: "Розміри",
   },
+  tools: {
+    removeCommas: "Видалити коми",
+    replaceNewlinesWithCommas: "Замінити переноси рядків комами",
+    replaceUnderscoresWithSpaces: "Замінити підкреслення пробілами",
+  },
 }; 

@@ -150,4 +150,9 @@ export default {
     imageInfo: "Информация об изображении",
     dimensions: "Размеры",
   },
+  tools: {
+    removeCommas: "Удалить запятые",
+    replaceNewlinesWithCommas: "Заменить переносы строк запятыми",
+    replaceUnderscoresWithSpaces: "Заменить подчеркивания пробелами",
+  },
 };

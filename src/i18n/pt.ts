@@ -157,4 +157,9 @@ export default {
     imageInfo: "Informações da imagem",
     dimensions: "Dimensões",
   },
+  tools: {
+    removeCommas: "Remover vírgulas",
+    replaceNewlinesWithCommas: "Substituir quebras de linha por vírgulas",
+    replaceUnderscoresWithSpaces: "Substituir sublinhados por espaços",
+  },
 }; 

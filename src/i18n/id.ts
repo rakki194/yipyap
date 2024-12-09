@@ -128,5 +128,10 @@ export default {
     downloadImage: "Unduh Gambar",
     imageInfo: "Informasi Gambar",
     dimensions: "Dimensi",
-  }
+  },
+  tools: {
+    removeCommas: "Hapus koma",
+    replaceNewlinesWithCommas: "Ganti baris baru dengan koma",
+    replaceUnderscoresWithSpaces: "Ganti garis bawah dengan spasi",
+  },
 }; 

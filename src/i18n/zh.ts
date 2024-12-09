@@ -157,4 +157,9 @@ export default {
     imageInfo: "图片信息",
     dimensions: "尺寸",
   },
+  tools: {
+    removeCommas: "删除逗号",
+    replaceNewlinesWithCommas: "将换行替换为逗号",
+    replaceUnderscoresWithSpaces: "将下划线替换为空格",
+  },
 };

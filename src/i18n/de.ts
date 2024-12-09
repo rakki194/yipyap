@@ -157,4 +157,9 @@ export default {
     imageInfo: "Bildinformationen",
     dimensions: "Abmessungen",
   },
+  tools: {
+    removeCommas: "Kommas entfernen",
+    replaceNewlinesWithCommas: "Zeilenumbrüche durch Kommas ersetzen",
+    replaceUnderscoresWithSpaces: "Unterstriche durch Leerzeichen ersetzen",
+  },
 }; 

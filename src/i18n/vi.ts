@@ -157,4 +157,9 @@ export default {
     imageInfo: "Thông tin hình ảnh",
     dimensions: "Kích thước",
   },
+  tools: {
+    removeCommas: "Xóa dấu phẩy",
+    replaceNewlinesWithCommas: "Thay thế xuống dòng bằng dấu phẩy",
+    replaceUnderscoresWithSpaces: "Thay thế gạch dưới bằng khoảng trắng",
+  },
 }; 

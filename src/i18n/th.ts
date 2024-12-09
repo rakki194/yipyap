@@ -157,4 +157,9 @@ export default {
     imageInfo: "ข้อมูลรูปภาพ",
     dimensions: "ขนาด",
   },
+  tools: {
+    removeCommas: "ลบเครื่องหมายจุลภาค",
+    replaceNewlinesWithCommas: "แทนที่การขึ้นบรรทัดใหม่ด้วยเครื่องหมายจุลภาค",
+    replaceUnderscoresWithSpaces: "แทนที่ขีดล่างด้วยช่องว่าง",
+  },
 }; 

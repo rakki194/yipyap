@@ -128,5 +128,10 @@ export default {
     downloadImage: "Λήψη εικόνας",
     imageInfo: "Πληροφορίες εικόνας",
     dimensions: "Διαστάσεις",
-  }
+  },
+  tools: {
+    removeCommas: "Αφαίρεση κομμάτων",
+    replaceNewlinesWithCommas: "Αντικατάσταση αλλαγών γραμμής με κόμματα",
+    replaceUnderscoresWithSpaces: "Αντικατάσταση κάτω παύλων με κενά",
+  },
 }; 

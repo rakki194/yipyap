@@ -128,5 +128,10 @@ export default {
     downloadImage: "Kép letöltése",
     imageInfo: "Kép információ",
     dimensions: "Méretek",
-  }
+  },
+  tools: {
+    removeCommas: "Vesszők eltávolítása",
+    replaceNewlinesWithCommas: "Sortörések cseréje vesszőkre",
+    replaceUnderscoresWithSpaces: "Aláhúzások cseréje szóközökre",
+  },
 }; 

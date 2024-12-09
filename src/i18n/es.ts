@@ -157,4 +157,9 @@ export default {
     imageInfo: "Información de la imagen",
     dimensions: "Dimensiones",
   },
+  tools: {
+    removeCommas: "Eliminar comas",
+    replaceNewlinesWithCommas: "Reemplazar saltos de línea por comas",
+    replaceUnderscoresWithSpaces: "Reemplazar guiones bajos por espacios",
+  },
 }; 

@@ -157,4 +157,9 @@ export default {
     imageInfo: "Image information",
     dimensions: "Dimensions",
   },
+  tools: {
+    removeCommas: "Remove commas",
+    replaceNewlinesWithCommas: "Replace newlines with commas",
+    replaceUnderscoresWithSpaces: "Replace underscores with spaces",
+  },
 };

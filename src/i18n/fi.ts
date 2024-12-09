@@ -157,4 +157,9 @@ export default {
     imageInfo: "Kuvan tiedot",
     dimensions: "Mitat",
   },
+  tools: {
+    removeCommas: "Poista pilkut",
+    replaceNewlinesWithCommas: "Korvaa rivinvaihdot pilkuilla",
+    replaceUnderscoresWithSpaces: "Korvaa alaviivat välilyönneillä",
+  },
 }; 
