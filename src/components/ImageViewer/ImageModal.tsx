@@ -20,7 +20,6 @@ import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions } from "~/types";
 import { useAppContext } from "~/contexts/app";
 import { captionIconsMap } from "~/icons";
-import { useTranslation } from "~/hooks/useTranslation";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -358,7 +357,7 @@ const EmptyCaptionState = (props: {
   onCreateCaption: (type: string) => void;
 }) => {
   const [isExpanded, setIsExpanded] = createSignal(false);
-  const { t } = useTranslation();
+  const { t } = useAppContext();
 
   return (
     <div class="empty-captions-state">
