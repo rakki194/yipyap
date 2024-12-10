@@ -1,13 +1,52 @@
+/* src/i18n/index.ts
+ * 
+ * This file contains the language configuration and helper functions for the app's internationalization.
+ */
+
 import type { Translations } from "./types";
 
-export type Locale = "en" | "ja" | "fr" | "ru" | "zh" | "sv" | "pl" | "uk" | "fi" | "de" | "es" | "it" | 
-  "pt" | "pt-BR" | "ko" | "nl" | "tr" | "vi" | "th" | "ar" | "he" | "hi" | "id" | "cs" | "el" | "hu" | "ro" | "bg";
+// List of supported languages
+export const languages = [
+  { code: "en", name: "English" },
+  { code: "ja", name: "日本語" },
+  { code: "fr", name: "Français" },
+  { code: "ru", name: "Русский" },
+  { code: "zh", name: "简体中文" },
+  { code: "sv", name: "Svenska" },
+  { code: "pl", name: "Polski" },
+  { code: "uk", name: "Українська" },
+  { code: "fi", name: "Suomi" },
+  { code: "de", name: "Deutsch" },
+  { code: "es", name: "Español" },
+  { code: "it", name: "Italiano" },
+  { code: "pt", name: "Português" },
+  { code: "pt-BR", name: "Português (Brasil)" },
+  { code: "ko", name: "한국어" },
+  { code: "nl", name: "Nederlands" },
+  { code: "tr", name: "Türkçe" },
+  { code: "vi", name: "Tiếng Việt" },
+  { code: "th", name: "ไทย" },
+  { code: "ar", name: "العربية" },
+  { code: "he", name: "עברית" },
+  { code: "hi", name: "हिन्दी" },
+  { code: "id", name: "Bahasa Indonesia" },
+  { code: "cs", name: "Čeština" },
+  { code: "el", name: "Ελληνικά" },
+  { code: "hu", name: "Magyar" },
+  { code: "ro", name: "Română" },
+  { code: "bg", name: "Български" },
+] as const;
 
+export type LanguageCode = typeof languages[number]["code"];
+export type Locale = LanguageCode;
+
+// Helper function to get the path separator based on locale and platform
 export function getPathSeparator(locale: Locale) {
   if (locale === "ja") return "￥";
   return navigator.userAgent.toLowerCase().includes("win") ? " \\ " : " / ";
 }
 
+// Dynamic import of translation files
 export const translations: Record<string, () => Promise<Translations>> = Object.fromEntries(
   Object.entries(import.meta.glob<Translations>("./*.ts", { import: "default" }))
     .map(([key, value]) => [
