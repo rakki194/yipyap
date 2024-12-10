@@ -335,11 +335,9 @@ body:lang(fa) {
 }
 
 body:lang(ja) {
-  font-family: "Noto Sans JP", var(--font-family-base);
+  font-family: "Meiryo", "Arial Unicode MS", "Noto Sans JP", var(--font-family-base);
   line-height: 1.7;
-  /* Enable vertical text features when needed */
-  font-feature-settings: "vert";
-}
+} 
 
 body:lang(ko) {
   font-family: "Noto Sans KR", var(--font-family-base);
