@@ -47,6 +47,10 @@ export interface AppContext {
   readonly locale: Locale;
   setLocale: (locale: Locale) => void;
   t: (key: string) => string;
+  preserveLatents: boolean;
+  setPreserveLatents: (value: boolean) => void;
+  preserveTxt: boolean;
+  setPreserveTxt: (value: boolean) => void;
 }
 
 /**
@@ -189,6 +193,10 @@ const createAppContext = (): AppContext => {
     }
   );
 
+  // New settings: Preserve latents and Preserve .txt
+  const [preserveLatents, setPreserveLatents] = createSignal(false);
+  const [preserveTxt, setPreserveTxt] = createSignal(false);
+
   return {
     get prevRoute() {
       return store.prevRoute;
@@ -254,6 +262,10 @@ const createAppContext = (): AppContext => {
 
       return value || key;
     },
+    preserveLatents: preserveLatents(),
+    setPreserveLatents,
+    preserveTxt: preserveTxt(),
+    setPreserveTxt,
   };
 };
 

@@ -7,10 +7,12 @@ import { useGallery } from "~/contexts/GalleryContext";
 import { useAction, useNavigate } from "@solidjs/router";
 import "./Gallery.css";
 import { QuickJump } from "./QuickJump";
+import { useAppContext } from "~/contexts/app";
 
 export const Gallery = () => {
   const navigate = useNavigate();
   const gallery = useGallery();
+  const appContext = useAppContext();
   const deleteImageAction = useAction(gallery.deleteImage);
   const [showQuickJump, setShowQuickJump] = createSignal(false);
 
@@ -69,7 +71,12 @@ export const Gallery = () => {
       if (segments.length < 1) return;
       navigate(`/gallery/${segments.slice(0, -1).join("/")}`);
     } else if (event.key === "Delete" && gallery.selectedImage !== null) {
-      deleteImageAction(gallery.selected!);
+      const data = gallery.data();
+      if (!data) return;
+      const imagePath = data.path
+        ? `${data.path}/${gallery.selectedImage.name}`
+        : gallery.selectedImage.name;
+      deleteImage(imagePath);
     } else if (event.key === "q") {
       setShowQuickJump(true);
       event.preventDefault();
@@ -78,6 +85,33 @@ export const Gallery = () => {
       return;
     }
     event.preventDefault();
+  };
+
+  const deleteImage = async (imagePath: string) => {
+    const params = new URLSearchParams();
+    params.append("confirm", "true");
+
+    // Include new settings
+    if (appContext.preserveLatents) {
+      params.append("preserve_latents", "true");
+    }
+    if (appContext.preserveTxt) {
+      params.append("preserve_txt", "true");
+    }
+
+    try {
+      const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to delete image.");
+      }
+      // Refresh gallery or update UI as needed
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      // Handle error (e.g., show notification)
+    }
   };
 
   onMount(() => {

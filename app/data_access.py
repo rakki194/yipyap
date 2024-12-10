@@ -470,43 +470,32 @@ class CachedFileSystemDataSource(ImageDataSource):
             raise
 
     async def delete_image(
-        self, path: Path, confirm=False
+        self, path: Path, confirm: bool, preserve_latents: bool = False, preserve_txt: bool = False
     ) -> Tuple[List[str], List[str]]:
-        """
-        Soft-delete an image and its associated caption files. Update the cache accordingly.
-
-        Args:
-            path (Path): The path to the image to delete.
-            confirm (bool): Whether to actually perform the soft-delete.
-
-        Returns:
-            Tuple[List[str], List[str]]: A tuple containing lists of deleted caption extensions and other files.
-        """
-        captions, files = await super().delete_image(path, confirm)
-
-        if confirm:
-            # Soft-delete the image entry in the cache
-            conn = self._get_connection()
-            conn.execute(
-                """
-                UPDATE image_info 
-                SET deleted = 1 
-                WHERE directory = ? AND name = ?
-                """,
-                (
-                    str(path.parent),
-                    path.name,
-                ),
+        """Delete an image and associated files based on preservation settings."""
+        captions = []
+        files = []
+        preserved_files = []
+        for f in path.parent.glob(path.stem + "*"):
+            suffix = f.suffix.lower()
+            if suffix in CAPTION_EXTENSIONS:
+                if suffix == ".txt" and preserve_txt:
+                    preserved_files.append(f.name)
+                    continue
+                if suffix == ".npz" and preserve_latents:
+                    preserved_files.append(f.name)
+                    continue
+                captions.append(suffix)
+            else:
+                files.append(suffix)
+            if confirm:
+                f.unlink()
+        if confirm and path.exists():
+            logger.warning(
+                f"Deleting {path.name!r} in {path.parent!r}, it was still present among the captions {captions} and the files {files}"
             )
-            conn.commit()
-            logger.info(f"Soft-deleted {path.name} from cache.")
-
-            # Invalidate the directory cache since its contents have changed
-            if path.parent in self.directory_cache:
-                del self.directory_cache[path.parent]
-                logger.debug(f"Invalidated directory cache for {path.parent}")
-
-        return captions, files
+            path.unlink()
+        return captions, files, preserved_files
 
     async def delete_caption(self, path: Path, caption_type: str) -> None:
         """Delete a specific caption file and update cache"""

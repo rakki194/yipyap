@@ -48,7 +48,16 @@ export interface ThemeTranslations {
 export interface SettingsTranslations {
   title: string;
   appearance: string;
-  theme: ThemeTranslations;
+  theme: {
+    light: string;
+    gray: string;
+    dark: string;
+    banana: string;
+    strawberry: string;
+    peanut: string;
+    christmas: string;
+    halloween: string;
+  };
   disableAnimations: string;
   language: string;
   disableJapanese: string;
@@ -70,6 +79,10 @@ export interface SettingsTranslations {
   instantDelete: string;
   warning: string;
   gallery: string;
+  preserveLatents: string;
+  preserveLatentsTooltip: string;
+  preserveTxt: string;
+  preserveTxtTooltip: string;
 }
 
 export interface ToolsTranslations {

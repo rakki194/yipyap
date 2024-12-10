@@ -172,10 +172,34 @@ async def browse(
 
 # Used for deleting everything in a directory.
 @app.delete("/api/browse/{path:path}")
-async def delete_image(path: str, confirm: bool = Query(False)):
+async def delete_image(path: str, confirm: bool = Query(False), preserve_latents: bool = Query(False), preserve_txt: bool = Query(False)):
+    """
+    Delete an image and its associated files.
+    
+    Query Parameters:
+        confirm (bool): Whether to confirm the deletion.
+        preserve_latents (bool): Whether to preserve .npz files.
+        preserve_txt (bool): Whether to preserve .txt files.
+    """
     image_path = utils.resolve_path(path, ROOT_DIR)
-    deleted_suffixes = await data_source.delete_image(image_path, confirm)
-    return {"confirm": confirm, "deleted_suffixes": deleted_suffixes}
+    try:
+        captions, files, preserved = await data_source.delete_image(
+            image_path, 
+            confirm=confirm, 
+            preserve_latents=preserve_latents, 
+            preserve_txt=preserve_txt
+        )
+        return {
+            "confirm": confirm,
+            "deleted_captions": captions,
+            "deleted_files": files,
+            "preserved_files": preserved
+        }
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Error deleting image: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/thumbnail/{path:path}")

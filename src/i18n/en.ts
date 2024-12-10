@@ -69,6 +69,10 @@ const translations: Translations = {
     instantDelete: "Enable instant delete (skips confirmation)",
     warning: "Warning",
     gallery: "Gallery",
+    preserveLatents: "Preserve Latents",
+    preserveLatentsTooltip: "Keep .npz (latent) files when deleting images.",
+    preserveTxt: "Preserve .txt",
+    preserveTxtTooltip: "Keep .txt files when deleting images.",
   },
   frontPage: {
     subtitle: {
