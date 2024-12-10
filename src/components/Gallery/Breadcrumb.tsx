@@ -7,9 +7,11 @@ import { useGallery } from "~/contexts/GalleryContext";
 import { Settings } from "~/components/Settings/Settings";
 import "./Breadcrumb.css";
 
+
 export const Breadcrumb = () => {
   const { data } = useGallery();
-  const { t, theme } = useAppContext();
+  const app = useAppContext();
+  const t = app.t;
 
   const Crumbs = () => {
     const segments = () => data()?.path.split("/").filter(Boolean) || [];
@@ -44,7 +46,7 @@ export const Breadcrumb = () => {
 
   return (
     <>
-      <Show when={theme === "strawberry"}>
+      <Show when={app.theme === "strawberry"}>
         <div class="strawberry-decoration" />
       </Show>
       <nav class="breadcrumb">
