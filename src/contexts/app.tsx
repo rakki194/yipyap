@@ -189,12 +189,6 @@ const createAppContext = (): AppContext => {
     }
   );
 
-  const [theme, setTheme] = createSignal<"light" | "dark" | "strawberry" | string>("light");
-
-  createEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme());
-  });
-
   return {
     get prevRoute() {
       return store.prevRoute;
