@@ -10,6 +10,7 @@ import {
   createRenderEffect,
   createEffect,
   createResource,
+  createSignal,
 } from "solid-js";
 import { Location, useLocation } from "@solidjs/router";
 import { createStaticStore } from "@solid-primitives/static-store";
@@ -187,6 +188,12 @@ const createAppContext = (): AppContext => {
       return translations[locale]();
     }
   );
+
+  const [theme, setTheme] = createSignal<"light" | "dark" | "strawberry" | string>("light");
+
+  createEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme());
+  });
 
   return {
     get prevRoute() {
