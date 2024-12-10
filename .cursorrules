@@ -3,3 +3,4 @@ The backend is Python using FastAPI.
 Try to keep the same naming conventions as the original implementation when sensible and try to reuse as much code as possible, this applies to CSS too! Always take into account the base style rules in the src/styles.css file.
 Theme specific styles are in the src/themes.css file.
 There is no `App.tsx` file, do not create it, the root component is in the src/main.tsx file, src/contexts/app.tsx is the app context which is the global state of the app.
+Think step-by-step and write code that is easy to understand and maintain.
