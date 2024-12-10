@@ -68,6 +68,10 @@ export default {
     instantDelete: "Direct verwijderen inschakelen (zonder bevestiging)",
     warning: "Waarschuwing",
     gallery: "Galerij",
+    preserveLatents: "Behoud Latents",
+    preserveLatentsTooltip: "Behoud .npz (latent) bestanden bij het verwijderen van afbeeldingen.",
+    preserveTxt: "Behoud .txt",
+    preserveTxtTooltip: "Behoud .txt bestanden bij het verwijderen van afbeeldingen.",
   },
   frontPage: {
     subtitle: {

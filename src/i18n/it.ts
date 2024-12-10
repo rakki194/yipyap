@@ -68,6 +68,10 @@ export default {
     instantDelete: "Attiva eliminazione istantanea (senza conferma)",
     warning: "Avviso",
     gallery: "Galleria",
+    preserveLatents: "Preserva Latents",
+    preserveLatentsTooltip: "Mantieni i file .npz (latent) durante l'eliminazione delle immagini.",
+    preserveTxt: "Preserva .txt",
+    preserveTxtTooltip: "Mantieni i file .txt durante l'eliminazione delle immagini.",
   },
   frontPage: {
     subtitle: {

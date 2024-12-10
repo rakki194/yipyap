@@ -68,6 +68,10 @@ export default {
     instantDelete: "Activer la suppression instantanée",
     warning: "Avertissement",
     gallery: "Galerie",
+    preserveLatents: "Conserver les Latents",
+    preserveLatentsTooltip: "Conservez les fichiers .npz (latent) lors de la suppression des images.",
+    preserveTxt: "Conserver les .txt",
+    preserveTxtTooltip: "Conservez les fichiers .txt lors de la suppression des images.",
   },
   frontPage: {
     subtitle: {

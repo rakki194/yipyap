@@ -68,6 +68,10 @@ export default {
     instantDelete: "Anında silmeyi etkinleştir (onay olmadan)",
     warning: "Uyarı",
     gallery: "Galeri",
+    preserveLatents: "Latentleri Koruyun",
+    preserveLatentsTooltip: "Görüntüleri silerken .npz (latent) dosyalarını koruyun.",
+    preserveTxt: ".txt'yi Koruyun",
+    preserveTxtTooltip: "Görüntüleri silerken .txt dosyalarını koruyun.",
   },
   frontPage: {
     subtitle: {

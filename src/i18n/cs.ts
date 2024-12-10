@@ -69,6 +69,10 @@ const translations: Translations = {
     instantDelete: "Povolit okamžité mazání (bez potvrzení)",
     warning: "Varování",
     gallery: "Galerie",
+    preserveLatents: "Zachovat Latenty",
+    preserveLatentsTooltip: "Zachovejte soubory .npz (latent) při mazání obrázků.",
+    preserveTxt: "Zachovat .txt",
+    preserveTxtTooltip: "Zachovejte soubory .txt při mazání obrázků.",
   },
   frontPage: {
     subtitle: {

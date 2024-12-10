@@ -68,6 +68,10 @@ export default {
     instantDelete: "เปิดใช้งานการลบทันที (ข้ามการยืนยัน)",
     warning: "คำเตือน",
     gallery: "แกลเลอรี",
+    preserveLatents: "เก็บรักษา Latents",
+    preserveLatentsTooltip: "เก็บไฟล์ .npz (latent) เมื่อทำการลบรูปภาพ",
+    preserveTxt: "เก็บรักษา .txt",
+    preserveTxtTooltip: "เก็บไฟล์ .txt เมื่อทำการลบรูปภาพ",
   },
   frontPage: {
     subtitle: {

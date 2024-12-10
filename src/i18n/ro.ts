@@ -69,6 +69,10 @@ const translations: Translations = {
     downloadTags: "Descărcare etichete",
     viewMode: "Mod vizualizare",
     warning: "Avertisment",
+    preserveLatents: "Păstrează Latents",
+    preserveLatentsTooltip: "Păstrează fișierele .npz (latent) când ștergi imagini.",
+    preserveTxt: "Păstrează .txt",
+    preserveTxtTooltip: "Păstrează fișierele .txt când ștergi imagini.",
   },
   frontPage: {
     subtitle: {

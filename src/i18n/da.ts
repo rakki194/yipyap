@@ -69,6 +69,10 @@ const translations: Translations = {
     instantDelete: "Aktivér øjeblikkelig sletning (springer bekræftelse over)",
     warning: "Advarsel",
     gallery: "Galleri",
+    preserveLatents: "Bevar Latents",
+    preserveLatentsTooltip: "Bevar .npz (latent) filer ved sletning af billeder.",
+    preserveTxt: "Bevar .txt",
+    preserveTxtTooltip: "Bevar .txt-filer ved sletning af billeder.",
   },
   frontPage: {
     subtitle: {

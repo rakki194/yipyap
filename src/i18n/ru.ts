@@ -68,6 +68,10 @@ export default {
     instantDelete: "Мгновенное удаление (без подтверждения)",
     warning: "Предупреждение",
     gallery: "Галерея",
+    preserveLatents: "Сохранить латенты",
+    preserveLatentsTooltip: "Сохраняйте файлы .npz (latent) при удалении изображений.",
+    preserveTxt: "Сохранить .txt",
+    preserveTxtTooltip: "Сохраняйте файлы .txt при удалении изображений.",
   },
   frontPage: {
     subtitle: {

@@ -69,6 +69,10 @@ const translations: Translations = {
     instantDelete: "Azonnali törlés (megerősítés nélkül)",
     warning: "Figyelmeztetés",
     gallery: "Galéria",
+    preserveLatents: "Latentok Megtartása",
+    preserveLatentsTooltip: "Őrizze meg a .npz (latent) fájlokat képek törlésekor.",
+    preserveTxt: ".txt Megtartása",
+    preserveTxtTooltip: "Őrizze meg a .txt fájlokat képek törlésekor.",
   },
   frontPage: {
     subtitle: {

@@ -68,6 +68,10 @@ export default {
     instantDelete: "Ota välitön poisto käyttöön (ohita vahvistus)",
     warning: "Varoitus",
     gallery: "Galleria",
+    preserveLatents: "Säilytä Latents",
+    preserveLatentsTooltip: "Säilytä .npz (latent) tiedostot kuvia poistaessa.",
+    preserveTxt: "Säilytä .txt",
+    preserveTxtTooltip: "Säilytä .txt tiedostot kuvia poistaessa.",
   },
   frontPage: {
     subtitle: {

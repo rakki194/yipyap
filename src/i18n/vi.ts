@@ -68,6 +68,10 @@ export default {
     instantDelete: "Bật xóa ngay lập tức (không cần xác nhận)",
     warning: "Cảnh báo",
     gallery: "Thư viện",
+    preserveLatents: "Bảo Quản Latents",
+    preserveLatentsTooltip: "Giữ các tệp .npz (latent) khi xóa hình ảnh.",
+    preserveTxt: "Bảo Quản .txt",
+    preserveTxtTooltip: "Giữ các tệp .txt khi xóa hình ảnh.",
   },
   frontPage: {
     subtitle: {

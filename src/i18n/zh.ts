@@ -68,6 +68,10 @@ export default {
     instantDelete: "启用即时删除（跳过确认）",
     warning: "警告",
     gallery: "图库",
+    preserveLatents: "保留潜在",
+    preserveLatentsTooltip: "删除图像时保留 .npz（潜在）文件。",
+    preserveTxt: "保留 .txt",
+    preserveTxtTooltip: "删除图像时保留 .txt 文件。",
   },
   frontPage: {
     subtitle: {

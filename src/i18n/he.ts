@@ -69,6 +69,10 @@ const translations: Translations = {
     instantDelete: "מחיקה מיידית (ללא אישור)",
     warning: "אזהרה",
     gallery: "גלריה",
+    preserveLatents: "שמור את הלטנטים",
+    preserveLatentsTooltip: "שמור את הקבצים .npz (לטנט) כאשר מוחקים תמונות.",
+    preserveTxt: "שמור את .txt",
+    preserveTxtTooltip: "שמור את הקבצים .txt כאשר מוחקים תמונות.",
   },
   frontPage: {
     subtitle: {

@@ -68,6 +68,10 @@ export default {
     instantDelete: "Ativar exclusão instantânea (pula confirmação)",
     warning: "Aviso",
     gallery: "Galeria",
+    preserveLatents: "Preservar Latentes",
+    preserveLatentsTooltip: "Mantenha os arquivos .npz (latente) ao excluir imagens.",
+    preserveTxt: "Preservar .txt",
+    preserveTxtTooltip: "Mantenha os arquivos .txt ao excluir imagens.",
   },
   frontPage: {
     subtitle: {

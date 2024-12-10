@@ -69,9 +69,9 @@ export default {
     warning: "Advertencia",
     gallery: "Galería",
     preserveLatents: "Preservar Latentes",
-    preserveLatentsTooltip: "Mantener archivos .npz (latentes) al eliminar imágenes.",
+    preserveLatentsTooltip: "Mantén los archivos .npz (latente) al eliminar imágenes.",
     preserveTxt: "Preservar .txt",
-    preserveTxtTooltip: "Mantener archivos .txt al eliminar imágenes.",
+    preserveTxtTooltip: "Mantén los archivos .txt al eliminar imágenes.",
   },
   frontPage: {
     subtitle: {

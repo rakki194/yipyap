@@ -68,7 +68,11 @@ const translations: Translations = {
     downloadModel: "Λήψη μοντέλου (1.8GB)",
     downloadTags: "Λήψη ετικετών (195KB)",
     viewMode: "Τρόπος προβολής",
-    warning: "Προειδοποίηση"
+    warning: "Προειδοποίηση",
+    preserveLatents: "Διατήρηση Latents",
+    preserveLatentsTooltip: "Διατηρήστε τα αρχεία .npz (latent) κατά τη διαγραφή εικόνων.",
+    preserveTxt: "Διατήρηση .txt",
+    preserveTxtTooltip: "Διατηρήστε τα αρχεία .txt κατά τη διαγραφή εικόνων.",
   },
   frontPage: {
     subtitle: {
