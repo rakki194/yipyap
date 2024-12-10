@@ -148,7 +148,7 @@ const translations: Translations = {
     toggleMinimap: "मिनीमैप टॉगल करें",
     previousImage: "पिछली छवि",
     nextImage: "अगली छवि",
-    copyPath: "पाथ कॉपी करें",
+    copyPath: "पथ कॉपी करें",
     openInNewTab: "नए टैब में खोलें",
     fitToScreen: "स्क्रीन के अनुसार फिट करें",
     actualSize: "वास्तविक आकार",
