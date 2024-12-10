@@ -314,6 +314,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   <option value="es">Español</option>
                   <option value="it">Italiano</option>
                   <option value="pt">Português</option>
+                  <option value="pt-BR">Português (Brasil)</option>
                   <option value="ko">한국어</option>
                   <option value="nl">Nederlands</option>
                   <option value="tr">Türkçe</option>
