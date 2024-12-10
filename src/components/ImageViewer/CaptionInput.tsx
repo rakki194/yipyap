@@ -11,7 +11,7 @@ import {
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import getIcon, { captionIconsMap } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
-import { Tools } from "./Tools";
+import { CaptionTools } from "./CaptionTools";
 import { TagBubble } from "./TagBubble";
 import { preserveState } from "~/directives";
 import "./CaptionInput.css";
@@ -223,7 +223,7 @@ export const CaptionInput: Component<
           {getIcon(captionIconsMap[type() as keyof typeof captionIconsMap])}
         </span>
         <StatusIcon status={submission} type={type()} />
-        <Tools onInput={saveWithHistory} caption={caption()} />
+        <CaptionTools onInput={saveWithHistory} caption={caption()} />
         {captionHistory().length > 0 && (
           <button
             type="button"

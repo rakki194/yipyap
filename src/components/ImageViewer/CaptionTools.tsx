@@ -22,7 +22,7 @@ const CAPTION_TOOLS = [
 ] as const;
 
 
-export const Tools: Component<{
+export const CaptionTools: Component<{
   onInput: (value: string) => void;
   caption: string;
 }> = (props) => {
