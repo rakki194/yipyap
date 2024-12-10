@@ -72,8 +72,8 @@ const createAppContext = (): AppContext => {
     disableJapanese: localStorage.getItem("disableJapanese") === "true",
     jtp2ModelPath: localStorage.getItem("jtp2ModelPath") || "",
     jtp2TagsPath: localStorage.getItem("jtp2TagsPath") || "",
-    enableZoom: false,
-    enableMinimap: false,
+    enableZoom: localStorage.getItem("enableZoom") === "true",
+    enableMinimap: localStorage.getItem("enableMinimap") === "true",
     locale: (localStorage.getItem("locale") as Locale) || "en",
   });
 
