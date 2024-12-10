@@ -1,3 +1,5 @@
+import type { LanguageCode } from "./languages";
+
 export interface CommonTranslations {
   close: string;
   delete: string;
@@ -178,4 +180,6 @@ export interface Translations {
   gallery: GalleryTranslations;
   shortcuts: ShortcutsTranslations;
   imageViewer: ImageViewerTranslations;
-} 
+}
+
+export type { LanguageCode }; 

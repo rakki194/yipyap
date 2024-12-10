@@ -6,6 +6,7 @@ import { useAppContext } from "~/contexts/app";
 import { Theme, themeIconMap, themes } from "~/contexts/theme";
 import getIcon from "~/icons";
 import "./Settings.css";
+import { languages } from "~/i18n/languages";
 
 const SlideTransition = (props: { show: boolean; children: any }) => {
   let contentRef: HTMLDivElement | undefined;
@@ -301,34 +302,11 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   value={app.locale}
                   onChange={(e) => app.setLocale(e.currentTarget.value as any)}
                 >
-                  <option value="en">English</option>
-                  <option value="ja">日本語</option>
-                  <option value="fr">Français</option>
-                  <option value="ru">Русский</option>
-                  <option value="zh">简体中文</option>
-                  <option value="sv">Svenska</option>
-                  <option value="pl">Polski</option>
-                  <option value="uk">Українська</option>
-                  <option value="fi">Suomi</option>
-                  <option value="de">Deutsch</option>
-                  <option value="es">Español</option>
-                  <option value="it">Italiano</option>
-                  <option value="pt">Português</option>
-                  <option value="pt-BR">Português (Brasil)</option>
-                  <option value="ko">한국어</option>
-                  <option value="nl">Nederlands</option>
-                  <option value="tr">Türkçe</option>
-                  <option value="vi">Tiếng Việt</option>
-                  <option value="th">ไทย</option>
-                  <option value="ar">العربية</option>
-                  <option value="he">עברית</option>
-                  <option value="hi">हिन्दी</option>
-                  <option value="id">Bahasa Indonesia</option>
-                  <option value="cs">Čeština</option>
-                  <option value="el">Ελληνικά</option>
-                  <option value="hu">Magyar</option>
-                  <option value="ro">Română</option>
-                  <option value="bg">Български</option>
+                  <For each={languages}>
+                    {(lang) => (
+                      <option value={lang.code}>{lang.name}</option>
+                    )}
+                  </For>
                 </select>
                 <label>
                   <input
