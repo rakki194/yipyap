@@ -35,6 +35,8 @@ export const languages = [
   { code: "hu", name: "Magyar" },
   { code: "ro", name: "Română" },
   { code: "bg", name: "Български" },
+  { code: "da", name: "Dansk" },
+  { code: "nb", name: "Norsk" },
 ] as const;
 
 export type LanguageCode = typeof languages[number]["code"];
