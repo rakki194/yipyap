@@ -68,10 +68,10 @@ export default {
     instantDelete: "Sofortiges Löschen aktivieren (ohne Bestätigung)",
     warning: "Warnung",
     gallery: "Galerie",
-    preserveLatents: "Latenten behalten",
-    preserveLatentsTooltip: "Behalten Sie .npz (latent) Dateien beim Löschen von Bildern.",
+    preserveLatents: "Latenten beibehalten",
+    preserveLatentsTooltip: "Behalten Sie die .npz (latent) Dateien beim Löschen von Bildern.",
     preserveTxt: "Behalte .txt",
-    preserveTxtTooltip: "Behalte .txt Dateien beim Löschen von Bildern.",
+    preserveTxtTooltip: "Behalte die .txt Dateien beim Löschen von Bildern.",
   },
   frontPage: {
     subtitle: {

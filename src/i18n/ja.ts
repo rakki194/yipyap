@@ -68,6 +68,10 @@ export default {
     instantDelete: "即時削除を有効化（確認をスキップ）",
     warning: "警告",
     gallery: "ギャラリー",
+    preserveLatents: "Latentsを保持",
+    preserveLatentsTooltip: "画像を削除する際に.npz（latent）ファイルを保持します。",
+    preserveTxt: ".txtを保持",
+    preserveTxtTooltip: "画像を削除する際に.txtファイルを保持します。",
   },
   frontPage: {
     subtitle: {

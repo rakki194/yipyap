@@ -381,6 +381,30 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               />
               {t('settings.instantDelete')}
             </label>
+            
+            <div class="setting-item">
+              <label class="tooltip-container">
+                <input
+                  type="checkbox"
+                  checked={app.preserveLatents}
+                  onChange={(e) => app.setPreserveLatents(e.currentTarget.checked)}
+                />
+                {t('settings.preserveLatents')}
+                <span class="tooltip">{t('settings.preserveLatentsTooltip')}</span>
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <label class="tooltip-container">
+                <input
+                  type="checkbox"
+                  checked={app.preserveTxt}
+                  onChange={(e) => app.setPreserveTxt(e.currentTarget.checked)}
+                />
+                {t('settings.preserveTxt')}
+                <span class="tooltip">{t('settings.preserveTxtTooltip')}</span>
+              </label>
+            </div>
 
             <h4 class="experimental-header">{t('settings.experimentalFeatures')}</h4>
             <div class="experimental-options">
@@ -402,32 +426,6 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               </label>
             </div>
           </section>
-
-          {/* Preserve Latents Toggle */}
-          <div class="setting-item">
-            <label>
-              <input
-                type="checkbox"
-                checked={app.preserveLatents}
-                onChange={(e) => app.setPreserveLatents(e.currentTarget.checked)}
-              />
-              {t('settings.preserveLatents')}
-            </label>
-            <span class="tooltip">{t('settings.preserveLatentsTooltip')}</span>
-          </div>
-
-          {/* Preserve .txt Toggle */}
-          <div class="setting-item">
-            <label>
-              <input
-                type="checkbox"
-                checked={app.preserveTxt}
-                onChange={(e) => app.setPreserveTxt(e.currentTarget.checked)}
-              />
-              {t('settings.preserveTxt')}
-            </label>
-            <span class="tooltip">{t('settings.preserveTxtTooltip')}</span>
-          </div>
         </div>
       </Show>
     </div>

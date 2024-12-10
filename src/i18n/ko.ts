@@ -68,6 +68,10 @@ export default {
     instantDelete: "즉시 삭제 활성화 (확인 생략)",
     warning: "경고",
     gallery: "갤러리",
+    preserveLatents: "Latents 보존",
+    preserveLatentsTooltip: "이미지를 삭제할 때 .npz (latent) 파일을 보존합니다.",
+    preserveTxt: ".txt 보존",
+    preserveTxtTooltip: "이미지를 삭제할 때 .txt 파일을 보존합니다.",
   },
   frontPage: {
     subtitle: {

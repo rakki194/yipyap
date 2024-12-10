@@ -69,9 +69,9 @@ const translations: Translations = {
     sortByDate: "दिनांक के अनुसार क्रमबद्ध करें",
     sortBySize: "आकार के अनुसार क्रमबद्ध करें",
     warning: "चेतावनी",
-    preserveLatents: "लेटेंट सुरक्षित रखें",
-    preserveLatentsTooltip: "छवियां हटाते समय .npz (लेटेंट) फ़ाइलें रखें।",
-    preserveTxt: ".txt सुरक्षित रखें",
+    preserveLatents: "लेटेंट्स संरक्षित रखें",
+    preserveLatentsTooltip: "छवियां हटाते समय .npz (latent) फ़ाइलें रखें।",
+    preserveTxt: ".txt संरक्षित रखें",
     preserveTxtTooltip: "छवियां हटाते समय .txt फ़ाइलें रखें।",
   },
   frontPage: {

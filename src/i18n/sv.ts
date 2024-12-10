@@ -69,9 +69,9 @@ export default {
     warning: "Varning",
     gallery: "Galleri",
     preserveLatents: "Bevara Latents",
-    preserveLatentsTooltip: "Bevara .npz (latent) filer när du raderar bilder.",
+    preserveLatentsTooltip: "Bevara .npz (latent) filer när du tar bort bilder.",
     preserveTxt: "Bevara .txt",
-    preserveTxtTooltip: "Bevara .txt-filer när du raderar bilder.",
+    preserveTxtTooltip: "Bevara .txt-filer när du tar bort bilder.",
   },
   frontPage: {
     subtitle: {

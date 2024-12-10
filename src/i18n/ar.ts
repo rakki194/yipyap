@@ -70,9 +70,9 @@ const translations: Translations = {
     warning: "تحذير",
     gallery: "معرض",
     preserveLatents: "حفظ الـ Latents",
-    preserveLatentsTooltip: "حفظ ملفات .npz (latent) عند حذف الصور.",
+    preserveLatentsTooltip: "احتفظ بملفات .npz (latent) عند حذف الصور.",
     preserveTxt: "حفظ .txt",
-    preserveTxtTooltip: "حفظ ملفات .txt عند حذف الصور.",
+    preserveTxtTooltip: "احتفظ بملفات .txt عند حذف الصور.",
   },
   frontPage: {
     subtitle: {

@@ -71,7 +71,7 @@ export default {
     preserveLatents: "Säilytä Latents",
     preserveLatentsTooltip: "Säilytä .npz (latent) tiedostot kuvia poistaessa.",
     preserveTxt: "Säilytä .txt",
-    preserveTxtTooltip: "Säilytä .txt tiedostot kuvia poistaessa.",
+    preserveTxtTooltip: "Säilytä .txt-tiedostot kuvia poistaessa.",
   },
   frontPage: {
     subtitle: {

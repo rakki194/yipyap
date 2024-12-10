@@ -70,9 +70,9 @@ const translations: Translations = {
     viewMode: "Mod vizualizare",
     warning: "Avertisment",
     preserveLatents: "Păstrează Latents",
-    preserveLatentsTooltip: "Păstrează fișierele .npz (latent) când ștergi imagini.",
+    preserveLatentsTooltip: "Păstrează fișierele .npz (latent) atunci când ștergi imagini.",
     preserveTxt: "Păstrează .txt",
-    preserveTxtTooltip: "Păstrează fișierele .txt când ștergi imagini.",
+    preserveTxtTooltip: "Păstrează fișierele .txt atunci când ștergi imagini.",
   },
   frontPage: {
     subtitle: {

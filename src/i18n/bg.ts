@@ -69,9 +69,9 @@ const translations: Translations = {
     instantDelete: "Активирай моментално изтриване (без потвърждение)",
     warning: "Предупреждение",
     gallery: "Галерия",
-    preserveLatents: "Запазване на латентите",
+    preserveLatents: "Запази Latents",
     preserveLatentsTooltip: "Запазете .npz (latent) файловете при изтриване на изображения.",
-    preserveTxt: "Запазване на .txt",
+    preserveTxt: "Запази .txt",
     preserveTxtTooltip: "Запазете .txt файловете при изтриване на изображения.",
   },
   frontPage: {

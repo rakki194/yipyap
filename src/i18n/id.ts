@@ -69,10 +69,10 @@ const translations: Translations = {
     downloadModel: "Unduh Model (1.8GB)",
     downloadTags: "Unduh Tag (195KB)",
     viewMode: "Mode Tampilan",
-    preserveLatents: "Pelihara Latents",
-    preserveLatentsTooltip: "Pelihara file .npz (latent) saat menghapus gambar.",
-    preserveTxt: "Pelihara .txt",
-    preserveTxtTooltip: "Pelihara file .txt saat menghapus gambar.",
+    preserveLatents: "Pertahankan Latents",
+    preserveLatentsTooltip: "Pertahankan file .npz (latent) saat menghapus gambar.",
+    preserveTxt: "Pertahankan .txt",
+    preserveTxtTooltip: "Pertahankan file .txt saat menghapus gambar.",
   },
   frontPage: {
     subtitle: {
