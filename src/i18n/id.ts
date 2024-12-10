@@ -37,6 +37,7 @@ const translations: Translations = {
   },
   settings: {
     title: "Pengaturan",
+    warning: "Peringatan",
     appearance: "Tampilan",
     theme: {
       light: "Terang",
