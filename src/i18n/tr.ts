@@ -47,7 +47,6 @@ export default {
       christmas: "Noel",
       halloween: "Cadılar Bayramı",
     },
-    layoutOptions: "Düzen seçenekleri",
     disableAnimations: "Animasyonları devre dışı bırak",
     language: "Dil",
     disableJapanese: "Japonca metni devre dışı bırak",

@@ -48,7 +48,6 @@ const translations: Translations = {
       christmas: "Коледна",
       halloween: "Хелоуин",
     },
-    layoutOptions: "Опции за оформление",
     disableAnimations: "Изключи анимациите",
     language: "Език",
     disableJapanese: "Изключи японския текст",

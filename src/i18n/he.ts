@@ -48,7 +48,6 @@ const translations: Translations = {
       halloween: "ליל כל הקדושים",
       christmas: "חג המולד",
     },
-    layoutOptions: "אפשרויות פריסה",
     disableAnimations: "בטל אנימציות",
     language: "שפה",
     disableJapanese: "בטל טקסט ביפנית",

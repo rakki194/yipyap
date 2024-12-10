@@ -49,7 +49,6 @@ export interface SettingsTranslations {
   title: string;
   appearance: string;
   theme: ThemeTranslations;
-  layoutOptions: string;
   disableAnimations: string;
   language: string;
   disableJapanese: string;

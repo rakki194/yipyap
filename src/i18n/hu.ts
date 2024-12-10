@@ -48,7 +48,6 @@ const translations: Translations = {
       halloween: "Halloween",
       christmas: "Karácsony",
     },
-    layoutOptions: "Elrendezési beállítások",
     disableAnimations: "Animációk kikapcsolása",
     language: "Nyelv",
     disableJapanese: "Japán nyelv kikapcsolása",

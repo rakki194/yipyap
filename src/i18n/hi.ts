@@ -52,7 +52,6 @@ const translations: Translations = {
     disableJapanese: "जापानी बंद करें",
     enableZoom: "ज़ूम सक्षम करें",
     enableMinimap: "मिनीमैप सक्षम करें",
-    layoutOptions: "लेआउट विकल्प",
     modelSettings: "मॉडल सेटिंग्स",
     jtp2ModelPath: "JTP2 मॉडल पथ",
     gallery: "गैलरी",

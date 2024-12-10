@@ -47,7 +47,6 @@ export default {
       christmas: "Kerst",
       halloween: "Halloween",
     },
-    layoutOptions: "Layout-opties",
     disableAnimations: "Animaties uitschakelen",
     language: "Taal",
     disableJapanese: "Japanse tekst uitschakelen",

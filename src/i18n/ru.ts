@@ -47,7 +47,6 @@ export default {
       christmas: "Рождественская",
       halloween: "Хэллоуинская",
     },
-    layoutOptions: "Параметры макета",
     disableAnimations: "Отключить анимации",
     language: "Язык",
     disableJapanese: "Отключить японский текст",

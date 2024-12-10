@@ -42,7 +42,6 @@ const translations: Translations = {
     language: "Limbă",
     modelSettings: "Setări model",
     experimentalFeatures: "Funcții experimentale",
-    layoutOptions: "Opțiuni aspect",
     disableAnimations: "Dezactivare animații",
     disableJapanese: "Dezactivare japoneză",
     instantDelete: "Ștergere instantanee",

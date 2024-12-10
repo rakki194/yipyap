@@ -53,7 +53,6 @@ const translations: Translations = {
     language: "Bahasa",
     modelSettings: "Pengaturan Model",
     experimentalFeatures: "Fitur Eksperimental",
-    layoutOptions: "Opsi Tata Letak",
     disableAnimations: "Nonaktifkan Animasi",
     disableJapanese: "Nonaktifkan Bahasa Jepang",
     instantDelete: "Hapus Instan (tanpa konfirmasi)",

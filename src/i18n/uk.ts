@@ -47,7 +47,6 @@ export default {
       christmas: "Різдвяна",
       halloween: "Хеловінська",
     },
-    layoutOptions: "Параметри макету",
     disableAnimations: "Вимкнути анімації",
     language: "Мова",
     disableJapanese: "Вимкнути японський текст",

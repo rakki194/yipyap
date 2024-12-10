@@ -47,7 +47,6 @@ export default {
       christmas: "Jul",
       halloween: "Halloween",
     },
-    layoutOptions: "Layoutalternativ",
     disableAnimations: "Inaktivera animationer",
     language: "Språk",
     disableJapanese: "Inaktivera japansk text",

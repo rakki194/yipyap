@@ -47,7 +47,6 @@ export default {
       christmas: "Natal",
       halloween: "Halloween",
     },
-    layoutOptions: "Opções de layout",
     disableAnimations: "Desativar animações",
     language: "Idioma",
     disableJapanese: "Desativar texto japonês",

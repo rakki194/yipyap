@@ -48,7 +48,6 @@ const translations: Translations = {
       christmas: "Vánoční",
       halloween: "Halloween",
     },
-    layoutOptions: "Možnosti rozložení",
     disableAnimations: "Vypnout animace",
     language: "Jazyk",
     disableJapanese: "Vypnout japonský text",

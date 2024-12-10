@@ -48,7 +48,6 @@ const translations: Translations = {
       christmas: "Jul",
       halloween: "Halloween",
     },
-    layoutOptions: "Layoutalternativer",
     disableAnimations: "Deaktiver animasjoner",
     language: "Språk",
     disableJapanese: "Deaktiver japansk tekst",

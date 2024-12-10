@@ -278,7 +278,6 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               </div> */}
 
               <div class="setting-group">
-                <label>{t('settings.layoutOptions')}</label>
                 <div class="icon-buttons">
                   <label>
                     <input

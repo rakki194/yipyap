@@ -47,7 +47,6 @@ export default {
       christmas: "圣诞",
       halloween: "万圣节",
     },
-    layoutOptions: "布局选项",
     disableAnimations: "禁用动画",
     language: "语言",
     disableJapanese: "禁用日语文本",

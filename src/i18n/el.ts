@@ -42,7 +42,6 @@ const translations: Translations = {
     language: "Γλώσσα",
     modelSettings: "Ρυθμίσεις μοντέλου",
     experimentalFeatures: "Πειραματικές λειτουργίες",
-    layoutOptions: "Επιλογές διάταξης",
     disableAnimations: "Απενεργοποίηση κινήσεων",
     disableJapanese: "Απενεργοποίηση Ιαπωνικών",
     instantDelete: "Άμεση διαγραφή (χωρίς επιβεβαίωση)",

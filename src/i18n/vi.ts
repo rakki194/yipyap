@@ -47,7 +47,6 @@ export default {
       christmas: "Giáng sinh",
       halloween: "Halloween",
     },
-    layoutOptions: "Tùy chọn bố cục",
     disableAnimations: "Tắt hiệu ứng",
     language: "Ngôn ngữ",
     disableJapanese: "Tắt văn bản tiếng Nhật",
