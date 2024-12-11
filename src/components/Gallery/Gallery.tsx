@@ -196,13 +196,16 @@ export const Gallery = () => {
       // Show initial processing message
       setCurrentFile(appContext.t('gallery.processingFiles'));
       
-      // Process all dropped items
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i].webkitGetAsEntry();
-        if (item) {
-          await traverseFileTree(item, '', files);
+      // Process all dropped items in parallel
+      const filePromises = Array.from(items).map(item => {
+        const entry = item.webkitGetAsEntry();
+        if (entry) {
+          return traverseFileTree(entry, '', files);
         }
-      }
+        return Promise.resolve();
+      });
+
+      await Promise.all(filePromises);
 
       if (files.length === 0) {
         setCurrentFile(null);
@@ -210,22 +213,28 @@ export const Gallery = () => {
       }
 
       // Set initial progress
+      const totalSize = files.reduce((acc, file) => acc + file.size, 0);
       setUploadProgress({ 
         current: 0, 
-        total: files.reduce((acc, file) => acc + file.size, 0) 
+        total: totalSize
       });
 
       // Add all collected files to formData
-      for (const file of files) {
+      files.forEach(file => {
         const relativePath = file.webkitRelativePath || file.name;
         formData.append('files', file, relativePath);
-        setCurrentFile(relativePath);
-      }
+        if (import.meta.env.DEV) {
+          console.debug('Adding file to upload:', relativePath);
+        }
+      });
 
       const currentPath = gallery.data()?.path || '';
       const uploadUrl = currentPath 
         ? `/api/upload/${currentPath}`
         : '/api/upload';
+      
+      // Show total files being uploaded
+      setCurrentFile(appContext.t('gallery.uploadProgress').replace('{count}', files.length.toString()));
       
       await uploadFiles(formData, uploadUrl);
       
@@ -241,17 +250,12 @@ export const Gallery = () => {
       setUploadProgress(null);
       setCurrentFile(null);
       
-      // Show error message in a way that's compatible with the current context
       const errorMessage = error instanceof Error ? error.message : appContext.t('gallery.uploadError');
-      // You can either:
-      // 1. Use a toast/notification system if available in your app
-      // 2. Set an error state to display in the UI
-      // 3. Use the browser's built-in alert for now (temporary solution)
       alert(errorMessage);
     }
   };
 
-  // Helper function to traverse directory structure
+  // Update traverseFileTree to better handle directory entries
   const traverseFileTree = async (
     item: FileSystemEntry,
     path: string,
@@ -259,35 +263,51 @@ export const Gallery = () => {
   ): Promise<void> => {
     if (item.isFile) {
       const fileEntry = item as FileSystemFileEntry;
-      const file = await new Promise<File>((resolve) => {
-        fileEntry.file((file) => {
-          // Create a new File object with the full path
-          const newFile = new File([file], file.name, {
-            type: file.type,
-            lastModified: file.lastModified,
-          });
-          // Add the relative path information
-          Object.defineProperty(newFile, 'webkitRelativePath', {
-            value: path + file.name
-          });
-          resolve(newFile);
-        });
+      const file = await new Promise<File>((resolve, reject) => {
+        fileEntry.file(
+          (file) => {
+            // Create a new File object with the full path
+            const newFile = new File([file], file.name, {
+              type: file.type,
+              lastModified: file.lastModified,
+            });
+            // Add the relative path information
+            Object.defineProperty(newFile, 'webkitRelativePath', {
+              value: path + file.name
+            });
+            resolve(newFile);
+          },
+          reject
+        );
       });
       files.push(file);
+      if (import.meta.env.DEV) {
+        console.debug('Found file:', path + file.name);
+      }
     } else if (item.isDirectory) {
       const dirEntry = item as FileSystemDirectoryEntry;
       const dirReader = dirEntry.createReader();
-      const entries = await new Promise<FileSystemEntry[]>((resolve) => {
-        dirReader.readEntries((entries) => resolve(entries));
-      });
       
-      for (const entry of entries) {
-        await traverseFileTree(
-          entry,
-          path + item.name + '/',
-          files
-        );
-      }
+      // Read all entries in the directory
+      const entries: FileSystemEntry[] = [];
+      let readResults;
+      do {
+        readResults = await new Promise<FileSystemEntry[]>((resolve, reject) => {
+          dirReader.readEntries(resolve, reject);
+        });
+        entries.push(...readResults);
+      } while (readResults.length > 0);
+      
+      // Process all entries in parallel
+      await Promise.all(
+        entries.map(entry => 
+          traverseFileTree(
+            entry,
+            path + item.name + '/',
+            files
+          )
+        )
+      );
     }
   };
 
