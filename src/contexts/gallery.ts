@@ -237,14 +237,13 @@ export function makeGalleryState() {
       }
 
       // Update local state
-      const updatedImage = updateLocalCaptions(image, { type, caption }, database);
+      updateLocalCaptions(image, { type, caption }, database);
       
-      // Force a refetch of the current page to ensure we have the latest data
-      if (!image.captions.some(([t]) => t === type)) {
-        await refetch();
-      }
+      // Always force a refetch and clear cache for consistency
+      await refetch();
+      clearImageCache();
 
-      return { success: true, image: updatedImage };
+      return { success: true };
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to save caption", error);
       return new Error("Failed to save caption");
@@ -334,12 +333,20 @@ export function makeGalleryState() {
       image: selection.editedImage,
       database: backendData(),
     }));
-    if (!image) return new Error("No image to delete");
+    if (!image) return new Error("No image to delete caption from");
     if (!database) return new Error("No page fetched yet!");
 
     try {
       await deleteCaptionFromBackend(database.path, image.name, type);
-      updateLocalCaptions(image, { type, caption: undefined }, database);
+
+      // Update local state immediately
+      updateLocalCaptions(image, { type }, database);
+      
+      // Force a fresh fetch by clearing the cache first
+      clearImageCache();
+      await refetch({ force: true }); // Add force option to refetch
+      
+      return { success: true };
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to delete caption", error);
       return new Error("Failed to delete caption");
@@ -440,24 +447,20 @@ function updateLocalCaptions(
     );
 
     let newCaptions: Captions;
-    if (existingCaptionIndex === -1 && caption !== undefined) {
-      if (import.meta.env.DEV)
-        console.debug("updateLocalCaptions: Adding new caption type", { type, caption });
+    if (caption === undefined) {
+      // Handle deletion
+      newCaptions = image.captions.filter(([ty]) => ty !== type) as Captions;
+    } else if (existingCaptionIndex === -1) {
+      // Handle new caption
       newCaptions = [...image.captions, [type, caption]] as Captions;
-    }
-    else if (caption !== undefined) {
-      if (import.meta.env.DEV)
-        console.debug("updateLocalCaptions: Updating existing caption", { type, caption });
+    } else {
+      // Handle update
       newCaptions = image.captions.map(([ty, cap]) =>
         ty === type ? [ty, caption] : [ty, cap]
       ) as Captions;
-    } else {
-      if (import.meta.env.DEV)
-        console.debug("updateLocalCaptions: Removing caption type", { type });
-      newCaptions = image.captions.filter(([ty]) => ty !== type) as Captions;
     }
 
-    // Sort captions according to the order defined in the backend
+    // Sort captions
     newCaptions.sort((a, b) => {
       const orderA = CAPTION_TYPE_ORDER[`.${a[0]}`] ?? 999;
       const orderB = CAPTION_TYPE_ORDER[`.${b[0]}`] ?? 999;

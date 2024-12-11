@@ -277,31 +277,23 @@ async def delete_caption(path: str, caption_type: str = Query(...)):
         image_path = utils.resolve_path(path, ROOT_DIR)
         logger.info(f"Resolved path: {image_path}")
 
-        # Log the full path and check if file exists before deletion
         caption_path = image_path.with_suffix(f".{caption_type}")
         logger.info(f"Caption path to delete: {caption_path}")
-        logger.info(f"File exists before deletion: {caption_path.exists()}")
-
-        await data_source.delete_caption(image_path, caption_type)
-
-        # Verify deletion
-        exists_after = caption_path.exists()
-        logger.info(f"File exists after deletion attempt: {exists_after}")
-
-        if exists_after:
-            raise HTTPException(
-                status_code=500,
-                detail=f"File still exists after deletion attempt: {caption_path}",
-            )
-
-        return {
-            "success": True,
-            "message": f"Caption {caption_type} deleted successfully",
-            "path": str(caption_path),
-        }
-    except FileNotFoundError as e:
-        logger.error(f"File not found: {e}")
-        raise HTTPException(status_code=404, detail=str(e))
+        
+        try:
+            caption_path.unlink(missing_ok=True)
+            # Touch the parent directory to force cache invalidation
+            image_path.touch()
+            
+            return {
+                "success": True,
+                "message": f"Caption {caption_type} deleted successfully",
+                "path": str(caption_path),
+            }
+        except PermissionError as e:
+            logger.error(f"Permission error deleting file: {e}")
+            raise HTTPException(status_code=403, detail="Permission denied")
+            
     except Exception as e:
         logger.error(f"Error deleting caption: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -522,20 +514,13 @@ async def upload_files_root(files: List[UploadFile] = File(...)):
 async def save_caption(path: str, caption_type: str = Query(...), caption: str = ""):
     """Create or update a caption file"""
     try:
-        # Handle root directory case
-        if path.startswith("_/"):
-            path = path[2:]  # Remove "_/" prefix
-            
-        # Resolve the image path
         image_path = utils.resolve_path(path, ROOT_DIR)
         if not image_path.exists():
-            raise HTTPException(
-                status_code=404,
-                detail=f"Image not found: {image_path}"
-            )
+            raise HTTPException(status_code=404, detail=f"Image not found: {image_path}")
             
-        # Save the caption
-        await data_source.save_caption(image_path, caption, caption_type)
+        # Create the caption file even if empty
+        caption_path = image_path.with_suffix(f".{caption_type}")
+        caption_path.write_text(caption, encoding='utf-8')
         
         return {"success": True}
         

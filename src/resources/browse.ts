@@ -297,7 +297,7 @@ export async function deleteImage(
   return (await response.json()) as DeleteImageResponse;
 }
 
-export async function deleteCaption(path: string, name: string, type: string) {
+export async function deleteCaption(path: string, name: string, type: string): Promise<Response> {
   try {
     const response = await fetch(
       `${joinUrlParts("/api/caption", path, name)}?caption_type=${type}`,
@@ -305,13 +305,17 @@ export async function deleteCaption(path: string, name: string, type: string) {
         method: "DELETE",
       }
     );
-    if (!response.ok) {
-      throw new Error(`Failed to delete caption: ${response.statusText}`);
+    
+    // Consider both 404 and 200 as success
+    if (response.status === 404 || response.ok) {
+      return new Response(null, { status: 200 });
     }
-    // Handle successful deletion, e.g., update UI or state
+    
+    const errorText = await response.text();
+    throw new Error(`Failed to delete caption: ${errorText}`);
   } catch (error) {
-    console.error(error);
-    // Optionally, handle the error in the UI
+    console.error("Delete caption error:", error);
+    throw error;
   }
 }
 
