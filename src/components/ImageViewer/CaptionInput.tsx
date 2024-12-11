@@ -295,8 +295,8 @@ export const CaptionInput: Component<
   );
 };
 
-const StatusIcon = <T extends [{ type: string }], U>(props: {
-  status: Partial<Submission<T, U>>;
+const StatusIcon = (props: {
+  status: Partial<Submission<any, unknown>>;
   type: string;
 }) => {
   const getStatusIcon = () => {

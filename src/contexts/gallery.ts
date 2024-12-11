@@ -1,3 +1,5 @@
+import { makeImage, ReactiveImage } from "~/components/reactive-utils";
+
 import {
   on,
   createEffect,
@@ -26,7 +28,6 @@ import type {
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
 import { joinUrlParts, replaceExtension, cacheNavigation } from "~/utils";
-import { makeImage, ReactiveImage } from "~/components/reactive-utils";
 
 export interface GalleryState {
   viewMode: "grid" | "list";
@@ -226,11 +227,24 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     try {
-      await saveCaptionToBackend(database.path, image.name, {
+      const response = await saveCaptionToBackend(database.path, image.name, {
         type,
         caption,
       });
-      updateLocalCaptions(image, { type, caption }, database);
+
+      if (!response.ok) {
+        throw new Error(`Failed to save caption: ${response.statusText}`);
+      }
+
+      // Update local state
+      const updatedImage = updateLocalCaptions(image, { type, caption }, database);
+      
+      // Force a refetch of the current page to ensure we have the latest data
+      if (!image.captions.some(([t]) => t === type)) {
+        await refetch();
+      }
+
+      return { success: true, image: updatedImage };
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to save caption", error);
       return new Error("Failed to save caption");
@@ -426,16 +440,16 @@ function updateLocalCaptions(
     );
 
     let newCaptions: Captions;
-    if (existingCaptionIndex === -1 && caption) {
+    if (existingCaptionIndex === -1 && caption !== undefined) {
       if (import.meta.env.DEV)
         console.debug("updateLocalCaptions: Adding new caption type", { type, caption });
       newCaptions = [...image.captions, [type, caption]] as Captions;
     }
-    else if (caption) {
+    else if (caption !== undefined) {
       if (import.meta.env.DEV)
         console.debug("updateLocalCaptions: Updating existing caption", { type, caption });
-      newCaptions = image.captions.map(([ty, caption]) =>
-        ty === type ? [ty, caption] : [ty, caption]
+      newCaptions = image.captions.map(([ty, cap]) =>
+        ty === type ? [ty, caption] : [ty, cap]
       ) as Captions;
     } else {
       if (import.meta.env.DEV)
@@ -443,11 +457,22 @@ function updateLocalCaptions(
       newCaptions = image.captions.filter(([ty]) => ty !== type) as Captions;
     }
 
-    return setter({
+    // Sort captions according to the order defined in the backend
+    newCaptions.sort((a, b) => {
+      const orderA = CAPTION_TYPE_ORDER[`.${a[0]}`] ?? 999;
+      const orderB = CAPTION_TYPE_ORDER[`.${b[0]}`] ?? 999;
+      return orderA - orderB;
+    });
+
+    const updatedImage = {
       ...image,
       captions: newCaptions,
-    });
+    };
+
+    setter(updatedImage);
+    return updatedImage;
   }
+  return image;
 }
 
 function filterFunctions(obj: Record<string, any>) {
@@ -455,3 +480,11 @@ function filterFunctions(obj: Record<string, any>) {
     Object.entries(obj).filter(([_, v]) => typeof v !== "function")
   );
 }
+
+const CAPTION_TYPE_ORDER: Record<string, number> = {
+  '.e621': 0,
+  '.tags': 1,
+  '.wd': 2,
+  '.caption': 3,
+  '.txt': 4
+};

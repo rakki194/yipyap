@@ -141,13 +141,23 @@ const ModelBody = (props: {
 
   const saveCaption = useAction(gallery.saveCaption);
 
-  const handleCreateCaption = (type: string) => {
-    saveCaption({
-      type,
-      caption: "",
-    });
-    setFocused(true);
-    setFocusedType(type);
+  const handleCreateCaption = async (type: string) => {
+    try {
+      const result = await saveCaption({
+        type,
+        caption: "",
+      });
+
+      if (result instanceof Error) {
+        throw result;
+      }
+
+      // Set focus to the newly created caption
+      setFocused(true);
+      setFocusedType(type);
+    } catch (error) {
+      console.error("Error creating caption:", error);
+    }
   };
 
   return (
