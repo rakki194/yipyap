@@ -258,10 +258,20 @@ export function saveCaption(
   imageName: string,
   data: SaveCaption
 ): Promise<Response> {
-  return fetch(`/api/caption/${path}/${imageName}?caption_type=${data.type}`, {
+  return fetch(`/caption/${path}/${imageName}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ caption: data.caption }),
+    body: JSON.stringify({
+      type: data.type,
+      caption: data.caption || "" // Ensure empty string if caption is undefined/null
+    })
+  }).then(response => {
+    if (!response.ok) {
+      return response.text().then(text => {
+        throw new Error(`Failed to save caption: ${text}`);
+      });
+    }
+    return response;
   });
 }
 

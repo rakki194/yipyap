@@ -450,14 +450,17 @@ function updateLocalCaptions(
     if (caption === undefined) {
       // Handle deletion
       newCaptions = image.captions.filter(([ty]) => ty !== type) as Captions;
-    } else if (existingCaptionIndex === -1) {
-      // Handle new caption
-      newCaptions = [...image.captions, [type, caption]] as Captions;
     } else {
-      // Handle update
-      newCaptions = image.captions.map(([ty, cap]) =>
-        ty === type ? [ty, caption] : [ty, cap]
-      ) as Captions;
+      // Handle new caption or update
+      if (existingCaptionIndex === -1) {
+        // New caption
+        newCaptions = [...image.captions, [type, caption]] as Captions;
+      } else {
+        // Update existing
+        newCaptions = image.captions.map(([ty, cap]) =>
+          ty === type ? [ty, caption] : [ty, cap]
+        ) as Captions;
+      }
     }
 
     // Sort captions

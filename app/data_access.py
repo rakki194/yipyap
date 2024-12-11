@@ -403,14 +403,22 @@ class CachedFileSystemDataSource(ImageDataSource):
             # Construct caption file path by replacing image extension with .{caption_type}
             caption_path = path.with_suffix(f".{caption_type}")
 
+            # Ensure caption is a string
+            caption_text = str(caption) if caption is not None else ""
+
             # Save to file
-            async with aiofiles.open(caption_path, "w") as f:
-                await f.write(caption)
+            async with aiofiles.open(caption_path, "w", encoding='utf-8') as f:
+                await f.write(caption_text)
             logger.info(f"Saved caption to {caption_path}")
 
             # Update cache
             directory = path.parent
             name = path.name  # Original image name with extension
+            
+            # Clear directory cache to force rescan
+            if directory in self.directory_cache:
+                del self.directory_cache[directory]
+
             conn = self._get_connection()
             result = conn.execute(
                 "SELECT info FROM image_info WHERE directory = ? AND name = ?",
@@ -419,12 +427,9 @@ class CachedFileSystemDataSource(ImageDataSource):
 
             if result:
                 info = ImageModel.model_validate_json(result[0])
-                # Update the caption in the cached info
-                new_captions = [
-                    (t, c) if t != caption_type else (t, caption)
-                    for t, c in info.captions
-                ]
-                info.captions = new_captions
+                # Update or add the caption in the cached info
+                existing_captions = [c for c in info.captions if c[0] != caption_type]
+                info.captions = existing_captions + [(caption_type, caption_text)]
 
                 # Update cache
                 conn.execute(
@@ -441,6 +446,10 @@ class CachedFileSystemDataSource(ImageDataSource):
                     ),
                 )
                 conn.commit()
+
+                # Touch the file to force cache invalidation
+                path.touch()
+                path.parent.touch()  # Touch parent directory too
 
         except Exception as e:
             logger.error(f"Error saving caption for {path}: {e}")

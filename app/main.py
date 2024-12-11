@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from email.utils import parsedate_to_datetime, format_datetime
 from typing import List
 import shutil
+import aiofiles
 
 from .data_access import CachedFileSystemDataSource
 from . import utils
@@ -244,18 +245,35 @@ async def download_image(path: str):
 
 @app.put("/caption/{path:path}")
 async def update_caption(path: str, caption_data: dict):
-    """Update caption file content for an image"""
+    """Create or update a caption file"""
     try:
         image_path = utils.resolve_path(path, ROOT_DIR)
+        if not image_path.exists():
+            raise HTTPException(status_code=404, detail=f"Image not found: {image_path}")
+            
         caption_type = caption_data.get("type")
-        caption_text = caption_data.get("caption")
-
-        if not caption_type or not caption_text:
-            raise HTTPException(status_code=400, detail="Missing caption type or text")
-
-        await data_source.save_caption(image_path, caption_text, caption_type)
+        caption_text = caption_data.get("caption", "")
+        
+        if not caption_type:
+            raise HTTPException(status_code=400, detail="Missing caption type")
+            
+        # Create the caption file
+        caption_path = image_path.with_suffix(f".{caption_type}")
+        
+        # Write the caption text
+        async with aiofiles.open(caption_path, "w", encoding='utf-8') as f:
+            await f.write(str(caption_text))
+            
+        # Touch the parent directory to force cache invalidation
+        image_path.touch()
+        
+        # Update the cache through data_source
+        await data_source.save_caption(image_path, str(caption_text), caption_type)
+        
         return {"success": True}
+        
     except Exception as e:
+        logger.error(f"Error saving caption: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -508,22 +526,3 @@ async def upload_files(path: str, files: List[UploadFile] = File(...)):
 async def upload_files_root(files: List[UploadFile] = File(...)):
     """Upload files to root directory"""
     return await upload_files("", files)
-
-
-@app.put("/api/caption/{path:path}")
-async def save_caption(path: str, caption_type: str = Query(...), caption: str = ""):
-    """Create or update a caption file"""
-    try:
-        image_path = utils.resolve_path(path, ROOT_DIR)
-        if not image_path.exists():
-            raise HTTPException(status_code=404, detail=f"Image not found: {image_path}")
-            
-        # Create the caption file even if empty
-        caption_path = image_path.with_suffix(f".{caption_type}")
-        caption_path.write_text(caption, encoding='utf-8')
-        
-        return {"success": True}
-        
-    except Exception as e:
-        logger.error(f"Error saving caption: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
