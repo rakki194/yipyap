@@ -34,7 +34,7 @@ export interface AppContext {
   setInstantDelete: (value: boolean) => void;
   readonly disableAnimations: boolean;
   setDisableAnimations: (value: boolean) => void;
-  readonly disableNonsense: boolean; // Language preference
+  readonly disableNonsense: boolean;
   setdisableNonsense: (value: boolean) => void;
   readonly jtp2ModelPath: string;
   readonly jtp2TagsPath: string;
@@ -56,7 +56,6 @@ export interface AppContext {
     message: string;
     details?: string;
   }) => void;
-  disableNonsense: boolean;
   setDisableNonsense: (value: boolean) => void;
 }
 
@@ -282,7 +281,6 @@ const createAppContext = (): AppContext => {
     }) => {
       // Implement notification logic here
     },
-    disableNonsense: disableNonsense(),
     setDisableNonsense,
   };
 };
