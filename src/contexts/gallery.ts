@@ -388,7 +388,6 @@ export function makeGalleryState() {
       }
     },
     generateTags,
-    refetch,
   };
 
   if (import.meta.env.DEV) {

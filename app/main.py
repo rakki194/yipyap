@@ -3,13 +3,11 @@ from pathlib import Path
 import logging
 import os
 
-from fastapi import FastAPI, HTTPException, Query, Request, File, UploadFile
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from email.utils import parsedate_to_datetime, format_datetime
-from typing import List
-import shutil
 
 from .data_access import CachedFileSystemDataSource
 from . import utils
@@ -468,37 +466,3 @@ async def update_jtp2_config(config: dict):
             raise HTTPException(status_code=500, detail=str(e))
             
     return {"success": True}
-
-
-@app.post("/api/upload")
-async def upload_files(
-    files: List[UploadFile] = File(...),
-):
-    """
-    Endpoint to handle uploading of multiple files and folders.
-    Expects files with relative paths to reconstruct folder structures.
-    """
-    root_dir = Path(os.getenv("ROOT_DIR", Path.cwd())).resolve()
-    
-    try:
-        for upload in files:
-            # Extract the relative path
-            relative_path = upload.filename
-            if '/' in relative_path:
-                destination = root_dir / relative_path
-                destination.parent.mkdir(parents=True, exist_ok=True)
-            else:
-                destination = root_dir / relative_path
-
-            # Prevent directory traversal
-            if not destination.resolve().relative_to(root_dir):
-                raise HTTPException(status_code=400, detail="Invalid file path.")
-
-            # Save the file
-            with destination.open("wb") as buffer:
-                shutil.copyfileobj(upload.file, buffer)
-        
-        return {"detail": "Files uploaded successfully."}
-    except Exception as e:
-        logger.error(f"Error uploading files: {e}")
-        raise HTTPException(status_code=500, detail="Failed to upload files.")
