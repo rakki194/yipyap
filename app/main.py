@@ -516,3 +516,29 @@ async def upload_files(path: str, files: List[UploadFile] = File(...)):
 async def upload_files_root(files: List[UploadFile] = File(...)):
     """Upload files to root directory"""
     return await upload_files("", files)
+
+
+@app.put("/api/caption/{path:path}")
+async def save_caption(path: str, caption_type: str = Query(...), caption: str = ""):
+    """Create or update a caption file"""
+    try:
+        # Handle root directory case
+        if path.startswith("_/"):
+            path = path[2:]  # Remove "_/" prefix
+            
+        # Resolve the image path
+        image_path = utils.resolve_path(path, ROOT_DIR)
+        if not image_path.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"Image not found: {image_path}"
+            )
+            
+        # Save the caption
+        await data_source.save_caption(image_path, caption, caption_type)
+        
+        return {"success": True}
+        
+    except Exception as e:
+        logger.error(f"Error saving caption: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

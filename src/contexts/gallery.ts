@@ -217,7 +217,7 @@ export function makeGalleryState() {
     )
   );
 
-  const saveCaption = action(async (data: SaveCaption) => {
+  const saveCaption = action(async ({ type, caption = "" }: SaveCaption) => {
     const { image, database } = untrack(() => ({
       image: selection.editedImage,
       database: backendData(),
@@ -226,21 +226,11 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     try {
-      // Save caption to the backend
-      const response = await saveCaptionToBackend(
-        database.path,
-        image.name,
-        data
-      );
-
-      if (!response.ok) {
-        return new Error(`${response.status}: ${response.statusText}`);
-      }
-
-      // Update local state after successful save
-      const updatedImage = updateLocalCaptions(image, data, database);
-
-      return { success: true, image: updatedImage };
+      await saveCaptionToBackend(database.path, image.name, {
+        type,
+        caption,
+      });
+      updateLocalCaptions(image, { type, caption }, database);
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to save caption", error);
       return new Error("Failed to save caption");

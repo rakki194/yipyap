@@ -258,10 +258,10 @@ export function saveCaption(
   imageName: string,
   data: SaveCaption
 ): Promise<Response> {
-  return fetch(`/caption/${path}/${imageName}`, {
+  return fetch(`/api/caption/${path}/${imageName}?caption_type=${data.type}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ caption: data.caption, type: data.type }),
+    body: JSON.stringify({ caption: data.caption }),
   });
 }
 

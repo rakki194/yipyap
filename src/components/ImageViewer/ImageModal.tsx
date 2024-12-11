@@ -371,6 +371,15 @@ const EmptyCaptionState = (props: {
     return NO_CAPTION_IMAGES[randomIndex];
   });
 
+  const handleCreateCaption = async (type: string) => {
+    try {
+      await props.onCreateCaption(type);
+      setIsExpanded(false);
+    } catch (error) {
+      console.error("Error creating caption:", error);
+    }
+  };
+
   return (
     <div class="empty-captions-state">
       <div 
@@ -397,10 +406,7 @@ const EmptyCaptionState = (props: {
                 <button
                   type="button"
                   class="caption-type-option"
-                  onClick={() => {
-                    props.onCreateCaption(type);
-                    setIsExpanded(false);
-                  }}
+                  onClick={() => handleCreateCaption(type)}
                 >
                   <span class="icon">{getIcon(icon)}</span>
                   {t(`gallery.captionTypes.${type}`)}
