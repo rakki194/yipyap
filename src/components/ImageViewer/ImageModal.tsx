@@ -27,6 +27,12 @@ interface ImageModalProps {
   onClose: () => void;
 }
 
+// Add this near the top of the file, outside any components
+const NO_CAPTION_IMAGES = [
+  '/assets/nocap/cactus-4x.png',
+  '/assets/nocap/chimken-20x.png'
+] as const;
+
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
   const getLayout = createMemo(() =>
@@ -352,12 +358,18 @@ const ExpandableMenu = (props: {
   );
 };
 
-// Add this component for the empty state
+// Update the EmptyCaptionState component
 const EmptyCaptionState = (props: {
   onCreateCaption: (type: string) => void;
 }) => {
   const [isExpanded, setIsExpanded] = createSignal(false);
   const { t } = useAppContext();
+  
+  // Create a memo for the randomly selected image
+  const randomImage = createMemo(() => {
+    const randomIndex = Math.floor(Math.random() * NO_CAPTION_IMAGES.length);
+    return NO_CAPTION_IMAGES[randomIndex];
+  });
 
   return (
     <div class="empty-captions-state">
@@ -365,6 +377,9 @@ const EmptyCaptionState = (props: {
         class="empty-state-image"
         role="img"
         aria-label="No captions"
+        style={{
+          "background-image": `url(${randomImage()})`
+        }}
       />
       <p class="empty-state-message">{t('gallery.noCaptionFiles')}</p>
       <div class="caption-creation">

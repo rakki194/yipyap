@@ -482,8 +482,7 @@
 .empty-state-image {
   width: 256px;
   height: 256px;
-  background-image: url('/assets/chimken-20x.png');
-  background-size: 256px 256px;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   image-rendering: pixelated;
