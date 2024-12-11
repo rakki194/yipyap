@@ -470,35 +470,40 @@ async def update_jtp2_config(config: dict):
     return {"success": True}
 
 
-@app.post("/api/upload")
-async def upload_files(
-    files: List[UploadFile] = File(...),
-):
-    """
-    Endpoint to handle uploading of multiple files and folders.
-    Expects files with relative paths to reconstruct folder structures.
-    """
-    root_dir = Path(os.getenv("ROOT_DIR", Path.cwd())).resolve()
-    
+@app.post("/api/upload/{path:path}")
+async def upload_files(path: str, files: List[UploadFile] = File(...)):
+    """Upload files to specified directory"""
     try:
-        for upload in files:
-            # Extract the relative path
-            relative_path = upload.filename
-            if '/' in relative_path:
-                destination = root_dir / relative_path
-                destination.parent.mkdir(parents=True, exist_ok=True)
-            else:
-                destination = root_dir / relative_path
-
-            # Prevent directory traversal
-            if not destination.resolve().relative_to(root_dir):
-                raise HTTPException(status_code=400, detail="Invalid file path.")
-
-            # Save the file
-            with destination.open("wb") as buffer:
-                shutil.copyfileobj(upload.file, buffer)
+        # Resolve the target directory path using utils.resolve_path
+        target_dir = utils.resolve_path(path, ROOT_DIR) if path else ROOT_DIR
         
-        return {"detail": "Files uploaded successfully."}
+        if not target_dir.exists():
+            target_dir.mkdir(parents=True, exist_ok=True)
+            
+        for file in files:
+            # Get the relative path from the file name/path
+            relative_path = file.filename
+            if not relative_path:
+                continue
+                
+            # Create full target path
+            full_path = target_dir / relative_path
+            
+            # Ensure the parent directory exists
+            full_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Save the file
+            with full_path.open("wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+                
+        return {"message": "Files uploaded successfully"}
+        
     except Exception as e:
         logger.error(f"Error uploading files: {e}")
-        raise HTTPException(status_code=500, detail="Failed to upload files.")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Add a root upload endpoint as well
+@app.post("/api/upload")
+async def upload_files_root(files: List[UploadFile] = File(...)):
+    """Upload files to root directory"""
+    return await upload_files("", files)

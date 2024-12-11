@@ -201,12 +201,17 @@ export const Gallery = () => {
 
     // Add all collected files to formData
     for (const file of files) {
-      formData.append('files', file, file.webkitRelativePath || file.name);
+      // Ensure the path is relative to the current directory
+      const relativePath = file.webkitRelativePath || file.name;
+      formData.append('files', file, relativePath);
     }
 
     try {
       const currentPath = gallery.data()?.path || '';
-      const uploadUrl = `/api/upload${currentPath ? `/${currentPath}` : ''}`;
+      // Fix: Ensure proper URL construction for uploads to subfolders
+      const uploadUrl = currentPath 
+        ? `/api/upload/${currentPath}`
+        : '/api/upload';
       
       await uploadFiles(formData, uploadUrl);
       
