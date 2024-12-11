@@ -169,7 +169,8 @@ class JTP2Generator(CaptionGenerator):
         if torch.cuda.is_available() and not self.force_cpu:
             self._model.cuda()
             if torch.cuda.get_device_capability()[0] >= 7:
-                self._model.to(dtype=torch.float16, memory_format=torch.channels_last)
+                # Convert entire model to half precision
+                self._model = self._model.half()
         self._model.eval()
 
         # Load tags
@@ -191,7 +192,7 @@ class JTP2Generator(CaptionGenerator):
 
     def _generate_sync(self, image_path: Path) -> str:
         """Synchronous implementation of tag generation"""
-        # Process image
+        # Load and preprocess image
         image = Image.open(image_path)
         img = image.convert('RGBA')
         tensor = self._transform(img).unsqueeze(0)
@@ -199,7 +200,8 @@ class JTP2Generator(CaptionGenerator):
         if torch.cuda.is_available() and not self.force_cpu:
             tensor = tensor.cuda()
             if torch.cuda.get_device_capability()[0] >= 7:
-                tensor = tensor.to(dtype=torch.float16, memory_format=torch.channels_last)
+                # Convert input tensor to half precision
+                tensor = tensor.half()
 
         # Run inference
         with torch.no_grad():
