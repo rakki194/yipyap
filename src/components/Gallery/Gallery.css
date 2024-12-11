@@ -239,3 +239,13 @@
   font-size: 0.9em;
   color: var(--text-secondary);
 }
+
+.upload-current-file {
+  margin-bottom: var(--half-spacing);
+  font-size: 0.6em;
+  font-family: monospace;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

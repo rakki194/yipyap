@@ -19,6 +19,7 @@ export const Gallery = () => {
   const [dragOverPath, setDragOverPath] = createSignal<string | null>(null);
   let dragCounter = 0;
   const [uploadProgress, setUploadProgress] = createSignal<{current: number, total: number} | null>(null);
+  const [currentFile, setCurrentFile] = createSignal<string | null>(null);
 
   const keyDownHandler = (event: KeyboardEvent) => {
     // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
@@ -174,6 +175,9 @@ export const Gallery = () => {
 
       xhr.open('POST', url);
       xhr.send(formData);
+
+      // Return abort function for cleanup
+      return () => xhr.abort();
     });
   };
 
@@ -185,42 +189,65 @@ export const Gallery = () => {
     const items = e.dataTransfer?.items;
     if (!items) return;
 
-    const formData = new FormData();
-    const files: File[] = [];
-    
-    // Process all dropped items
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i].webkitGetAsEntry();
-      if (item) {
-        await traverseFileTree(item, '', files);
-      }
-    }
-
-    // Set initial progress
-    setUploadProgress({ current: 0, total: files.reduce((acc, file) => acc + file.size, 0) });
-
-    // Add all collected files to formData
-    for (const file of files) {
-      // Ensure the path is relative to the current directory
-      const relativePath = file.webkitRelativePath || file.name;
-      formData.append('files', file, relativePath);
-    }
-
     try {
+      const formData = new FormData();
+      const files: File[] = [];
+      
+      // Show initial processing message
+      setCurrentFile(appContext.t('gallery.processingFiles'));
+      
+      // Process all dropped items
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i].webkitGetAsEntry();
+        if (item) {
+          await traverseFileTree(item, '', files);
+        }
+      }
+
+      if (files.length === 0) {
+        setCurrentFile(null);
+        return;
+      }
+
+      // Set initial progress
+      setUploadProgress({ 
+        current: 0, 
+        total: files.reduce((acc, file) => acc + file.size, 0) 
+      });
+
+      // Add all collected files to formData
+      for (const file of files) {
+        const relativePath = file.webkitRelativePath || file.name;
+        formData.append('files', file, relativePath);
+        setCurrentFile(relativePath);
+      }
+
       const currentPath = gallery.data()?.path || '';
-      // Fix: Ensure proper URL construction for uploads to subfolders
       const uploadUrl = currentPath 
         ? `/api/upload/${currentPath}`
         : '/api/upload';
       
       await uploadFiles(formData, uploadUrl);
       
+      // Clear progress indicators
       setUploadProgress(null);
+      setCurrentFile(null);
+      
+      // Refresh gallery
       gallery.refetch();
+      
     } catch (error) {
       console.error('Error uploading files:', error);
       setUploadProgress(null);
-      // Handle error
+      setCurrentFile(null);
+      
+      // Show error message in a way that's compatible with the current context
+      const errorMessage = error instanceof Error ? error.message : appContext.t('gallery.uploadError');
+      // You can either:
+      // 1. Use a toast/notification system if available in your app
+      // 2. Set an error state to display in the UI
+      // 3. Use the browser's built-in alert for now (temporary solution)
+      alert(errorMessage);
     }
   };
 
@@ -292,6 +319,11 @@ export const Gallery = () => {
           {(progress) => (
             <div class="upload-progress-overlay">
               <div class="upload-progress-container">
+                <Show when={currentFile()}>
+                  <div class="upload-current-file">
+                    {currentFile()}
+                  </div>
+                </Show>
                 <div class="upload-progress-bar">
                   <div 
                     class="upload-progress-fill"

@@ -51,6 +51,11 @@ export interface AppContext {
   setPreserveLatents: (value: boolean) => void;
   preserveTxt: boolean;
   setPreserveTxt: (value: boolean) => void;
+  notify: (notification: {
+    type: 'error' | 'success' | 'info' | 'warning';
+    message: string;
+    details?: string;
+  }) => void;
 }
 
 /**
@@ -266,6 +271,13 @@ const createAppContext = (): AppContext => {
     setPreserveLatents,
     preserveTxt: preserveTxt(),
     setPreserveTxt,
+    notify: (notification: {
+      type: 'error' | 'success' | 'info' | 'warning';
+      message: string;
+      details?: string;
+    }) => {
+      // Implement notification logic here
+    },
   };
 };
 
