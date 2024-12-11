@@ -115,6 +115,8 @@ export default {
       wd: "Tạo tệp .wd mới"
     },
     noCaptionFiles: "Chưa có tệp chú thích!",
+    uploadError: "Tải lên thất bại",
+    dropOverlay: "Thả tệp hoặc thư mục vào đây",
   },
   shortcuts: {
     title: "Phím tắt",

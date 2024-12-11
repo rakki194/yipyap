@@ -116,6 +116,8 @@ const translations: Translations = {
       wd: "Create new .wd file"
     },
     noCaptionFiles: "No caption files yet!",
+    uploadError: "Upload failed",
+    dropOverlay: "Drop files or folders here",
   },
   shortcuts: {
     title: "Keyboard Shortcuts",

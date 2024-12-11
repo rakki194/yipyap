@@ -181,7 +181,7 @@ export const Gallery = () => {
       
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'Upload failed');
+        throw new Error(error.detail || appContext.t('gallery.uploadError'));
       }
       
       // Refresh gallery after successful upload
@@ -260,7 +260,7 @@ export const Gallery = () => {
           class="gallery-dropzone"
           classList={{ dragging: isDragging() }}
         >
-          {isDragging() && <div class="drop-overlay">Drop files or folders here</div>}
+          {isDragging() && <div class="drop-overlay">{appContext.t('gallery.dropOverlay')}</div>}
         </div>
       </div>
 

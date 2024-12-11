@@ -116,6 +116,8 @@ const translations: Translations = {
       wd: "إنشاء ملف .wd جديد"
     },
     noCaptionFiles: "لا توجد ملفات تعليقات حتى الآن!",
+    uploadError: "فشل التحميل",
+    dropOverlay: "اسحب الملفات أو المجلدات هنا",
   },
   shortcuts: {
     title: "اختصارات لوحة المفاتيح",

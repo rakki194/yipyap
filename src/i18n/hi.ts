@@ -116,6 +116,8 @@ const translations: Translations = {
       wd: "नई .wd फ़ाइल बनाएं",
     },
     noCaptionFiles: "अभी तक कोई कैप्शन फ़ाइल नहीं है!",
+    uploadError: "अपलोड विफल रहा",
+    dropOverlay: "फ़ाइलें या फ़ोल्डर यहां छोड़ें",
   },
   shortcuts: {
     title: "कीबोर्ड शॉर्टकट",

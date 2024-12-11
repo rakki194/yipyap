@@ -116,6 +116,8 @@ const translations: Translations = {
       wd: "Vytvořit nový .wd soubor",
     },
     noCaptionFiles: "Zatím žádné soubory s popisky!",
+    uploadError: "Nahrávání selhalo",
+    dropOverlay: "Přetáhněte soubory nebo složky sem",
   },
   shortcuts: {
     title: "Klávesové zkratky",

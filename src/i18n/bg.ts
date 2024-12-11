@@ -116,6 +116,8 @@ const translations: Translations = {
       wd: "Създай нов .wd файл"
     },
     noCaptionFiles: "Все още няма файлове с надписи!",
+    uploadError: "Качването се провали",
+    dropOverlay: "Пуснете файлове или папки тук",
   },
   shortcuts: {
     title: "Клавишни комбинации",

@@ -115,6 +115,8 @@ export default {
       wd: "Luo uusi .wd-tiedosto"
     },
     noCaptionFiles: "Ei vielä kuvatekstitiedostoja!",
+    uploadError: "Lataus epäonnistui",
+    dropOverlay: "Pudota tiedostot tai kansiot tähän",
   },
   shortcuts: {
     title: "Pikanäppäimet",

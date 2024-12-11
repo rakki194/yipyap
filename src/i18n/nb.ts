@@ -116,6 +116,8 @@ const translations: Translations = {
       wd: "Opprett ny .wd-fil"
     },
     noCaptionFiles: "Ingen bildetekstfiler ennå!",
+    uploadError: "Opplasting mislyktes",
+    dropOverlay: "Slipp filer eller mapper her",
   },
   shortcuts: {
     title: "Hurtigtaster",

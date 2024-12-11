@@ -116,6 +116,8 @@ const translations: Translations = {
       wd: "Új .wd fájl létrehozása"
     },
     noCaptionFiles: "Még nincsenek képaláírás fájlok!",
+    uploadError: "A feltöltés sikertelen",
+    dropOverlay: "Húzza ide a fájlokat vagy mappákat",
   },
   shortcuts: {
     title: "Billentyűparancsok",

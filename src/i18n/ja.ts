@@ -115,6 +115,8 @@ export default {
       wd: "新規.wdファイルを作成"
     },
     noCaptionFiles: "キャプションファイルがまだありません！",
+    uploadError: "アップロードに失敗しました",
+    dropOverlay: "ファイルやフォルダをここにドロップ",
   },
   shortcuts: {
     title: "キーボードショートカット",

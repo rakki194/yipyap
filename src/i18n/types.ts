@@ -136,6 +136,8 @@ export interface GalleryTranslations {
     wd: string;
   };
   noCaptionFiles: string;
+  uploadError: string;
+  dropOverlay: string;
 }
 
 export interface ShortcutsTranslations {
