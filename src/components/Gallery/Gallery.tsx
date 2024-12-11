@@ -124,12 +124,14 @@ export const Gallery = () => {
 
   const handleDragEnter = (e: DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     dragCounter++;
     setIsDragging(true);
   };
 
   const handleDragLeave = (e: DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     dragCounter--;
     if (dragCounter === 0) {
       setIsDragging(false);
@@ -138,7 +140,10 @@ export const Gallery = () => {
 
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
-    e.dataTransfer!.dropEffect = "copy";
+    e.stopPropagation();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'copy';
+    }
   };
 
   const handleDrop = async (e: DragEvent) => {
@@ -146,30 +151,84 @@ export const Gallery = () => {
     setIsDragging(false);
     dragCounter = 0;
 
-    const files = e.dataTransfer?.files;
-    if (!files || files.length === 0) return;
+    const items = e.dataTransfer?.items;
+    if (!items) return;
 
     const formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      // Use relative paths if available
-      const relativePath = (file as any).webkitRelativePath || file.name;
-      formData.append('files', file, relativePath);
+    const files: File[] = [];
+    
+    // Process all dropped items
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i].webkitGetAsEntry();
+      if (item) {
+        await traverseFileTree(item, '', files);
+      }
+    }
+
+    // Add all collected files to formData
+    for (const file of files) {
+      formData.append('files', file, file.webkitRelativePath || file.name);
     }
 
     try {
-      const response = await fetch(`/api/upload`, {
+      const currentPath = gallery.data()?.path || '';
+      const uploadUrl = `/api/upload${currentPath ? `/${currentPath}` : ''}`;
+      
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         body: formData,
       });
-      if (response.ok) {
-        // Refresh gallery after successful upload
-        gallery.refetch();
-      } else {
-        console.error('Upload failed');
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Upload failed');
       }
+      
+      // Refresh gallery after successful upload
+      gallery.refetch();
     } catch (error) {
       console.error('Error uploading files:', error);
+      // You might want to show an error notification here
+    }
+  };
+
+  // Helper function to traverse directory structure
+  const traverseFileTree = async (
+    item: FileSystemEntry,
+    path: string,
+    files: File[]
+  ): Promise<void> => {
+    if (item.isFile) {
+      const fileEntry = item as FileSystemFileEntry;
+      const file = await new Promise<File>((resolve) => {
+        fileEntry.file((file) => {
+          // Create a new File object with the full path
+          const newFile = new File([file], file.name, {
+            type: file.type,
+            lastModified: file.lastModified,
+          });
+          // Add the relative path information
+          Object.defineProperty(newFile, 'webkitRelativePath', {
+            value: path + file.name
+          });
+          resolve(newFile);
+        });
+      });
+      files.push(file);
+    } else if (item.isDirectory) {
+      const dirEntry = item as FileSystemDirectoryEntry;
+      const dirReader = dirEntry.createReader();
+      const entries = await new Promise<FileSystemEntry[]>((resolve) => {
+        dirReader.readEntries((entries) => resolve(entries));
+      });
+      
+      for (const entry of entries) {
+        await traverseFileTree(
+          entry,
+          path + item.name + '/',
+          files
+        );
+      }
     }
   };
 
