@@ -18,6 +18,7 @@ export const Gallery = () => {
   const [isDragging, setIsDragging] = createSignal(false);
   const [dragOverPath, setDragOverPath] = createSignal<string | null>(null);
   let dragCounter = 0;
+  const [uploadProgress, setUploadProgress] = createSignal<{current: number, total: number} | null>(null);
 
   const keyDownHandler = (event: KeyboardEvent) => {
     // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
@@ -146,6 +147,36 @@ export const Gallery = () => {
     }
   };
 
+  const uploadFiles = async (formData: FormData, url: string) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          setUploadProgress({
+            current: event.loaded,
+            total: event.total
+          });
+        }
+      });
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(xhr.response);
+        } else {
+          reject(new Error(xhr.statusText));
+        }
+      });
+
+      xhr.addEventListener('error', () => {
+        reject(new Error('Network error'));
+      });
+
+      xhr.open('POST', url);
+      xhr.send(formData);
+    });
+  };
+
   const handleDrop = async (e: DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -165,6 +196,9 @@ export const Gallery = () => {
       }
     }
 
+    // Set initial progress
+    setUploadProgress({ current: 0, total: files.reduce((acc, file) => acc + file.size, 0) });
+
     // Add all collected files to formData
     for (const file of files) {
       formData.append('files', file, file.webkitRelativePath || file.name);
@@ -174,21 +208,14 @@ export const Gallery = () => {
       const currentPath = gallery.data()?.path || '';
       const uploadUrl = `/api/upload${currentPath ? `/${currentPath}` : ''}`;
       
-      const response = await fetch(uploadUrl, {
-        method: 'POST',
-        body: formData,
-      });
+      await uploadFiles(formData, uploadUrl);
       
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || appContext.t('gallery.uploadError'));
-      }
-      
-      // Refresh gallery after successful upload
+      setUploadProgress(null);
       gallery.refetch();
     } catch (error) {
       console.error('Error uploading files:', error);
-      // You might want to show an error notification here
+      setUploadProgress(null);
+      // Handle error
     }
   };
 
@@ -252,6 +279,27 @@ export const Gallery = () => {
               path={data().path}
               onImageClick={gallery.edit}
             />
+          )}
+        </Show>
+
+        {/* Upload Progress Overlay */}
+        <Show when={uploadProgress()}>
+          {(progress) => (
+            <div class="upload-progress-overlay">
+              <div class="upload-progress-container">
+                <div class="upload-progress-bar">
+                  <div 
+                    class="upload-progress-fill"
+                    style={{
+                      width: `${(progress().current / progress().total) * 100}%`
+                    }}
+                  />
+                </div>
+                <div class="upload-progress-text">
+                  {`${Math.round((progress().current / progress().total) * 100)}%`}
+                </div>
+              </div>
+            </div>
           )}
         </Show>
 

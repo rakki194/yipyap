@@ -200,3 +200,43 @@
   border: 2px dashed white;
   border-radius: var(--border-radius);
 }
+
+.upload-progress-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.upload-progress-container {
+  background: var(--bg-color);
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow);
+}
+
+.upload-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: var(--half-spacing);
+}
+
+.upload-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.upload-progress-text {
+  text-align: center;
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
