@@ -15,6 +15,9 @@ export const Gallery = () => {
   const appContext = useAppContext();
   const deleteImageAction = useAction(gallery.deleteImage);
   const [showQuickJump, setShowQuickJump] = createSignal(false);
+  const [isDragging, setIsDragging] = createSignal(false);
+  const [dragOverPath, setDragOverPath] = createSignal<string | null>(null);
+  let dragCounter = 0;
 
   const keyDownHandler = (event: KeyboardEvent) => {
     // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
@@ -119,11 +122,69 @@ export const Gallery = () => {
     onCleanup(() => window.removeEventListener("keydown", keyDownHandler));
   });
 
+  const handleDragEnter = (e: DragEvent) => {
+    e.preventDefault();
+    dragCounter++;
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent) => {
+    e.preventDefault();
+    dragCounter--;
+    if (dragCounter === 0) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer!.dropEffect = "copy";
+  };
+
+  const handleDrop = async (e: DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    dragCounter = 0;
+
+    const files = e.dataTransfer?.files;
+    if (!files || files.length === 0) return;
+
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      // Use relative paths if available
+      const relativePath = (file as any).webkitRelativePath || file.name;
+      formData.append('files', file, relativePath);
+    }
+
+    try {
+      const response = await fetch(`/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (response.ok) {
+        // Refresh gallery after successful upload
+        gallery.refetch();
+      } else {
+        console.error('Upload failed');
+      }
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    }
+  };
+
   return (
     <>
       {/* <Controls /> */}
 
-      <div id="gallery" class={"gallery"}>
+      <div
+        id="gallery"
+        class="gallery"
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
         <Show when={gallery.data()}>
           {(data) => (
             <ImageGrid
@@ -134,6 +195,14 @@ export const Gallery = () => {
             />
           )}
         </Show>
+
+        {/* Dropzone Overlay */}
+        <div
+          class="gallery-dropzone"
+          classList={{ dragging: isDragging() }}
+        >
+          {isDragging() && <div class="drop-overlay">Drop files or folders here</div>}
+        </div>
       </div>
 
       <Show when={gallery.getEditedImage()}>
