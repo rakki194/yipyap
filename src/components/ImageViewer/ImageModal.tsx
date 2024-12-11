@@ -33,6 +33,9 @@ const NO_CAPTION_IMAGES = [
   '/assets/nocap/chimken-20x.png'
 ] as const;
 
+// Add this helper function near the top of the file
+const AVAILABLE_CAPTION_TYPES = ['txt', 'tags', 'caption', 'wd'] as const;
+
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
   const getLayout = createMemo(() =>
@@ -69,10 +72,12 @@ const ModelBody = (props: {
   children?: JSX.Element;
 }) => {
   const gallery = useGallery();
+  const { t } = useAppContext();
   let refImageInfo!: HTMLDivElement;
   const [focused, setFocused] = createSignal(false);
   const [focusedType, setFocusedType] = createSignal<string | null>(null);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
+  const [isExpanded, setIsExpanded] = createSignal(false);
 
   // Add these variables for tracking shift key presses
   let lastShiftPress = 0;
@@ -163,6 +168,12 @@ const ModelBody = (props: {
     }
   };
 
+  // Add this function to check for missing caption types
+  const hasMissingCaptionTypes = () => {
+    const existingTypes = new Set(props.captions.map(([type]) => type));
+    return AVAILABLE_CAPTION_TYPES.some(type => !existingTypes.has(type));
+  };
+
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
       <ImageView
@@ -188,21 +199,51 @@ const ModelBody = (props: {
               <EmptyCaptionState onCreateCaption={handleCreateCaption} />
             }
           >
-            <Index each={props.captions}>
-              {(caption, idx) => (
-                <CaptionInput
-                  caption={caption()}
-                  onClick={() => setFocusedType(caption()[0])}
-                  state={
-                    focusedType() === null || !focused()
-                      ? null
-                      : focusedType() === caption()[0]
-                      ? "expanded"
-                      : "collapsed"
-                  }
-                />
-              )}
-            </Index>
+            <>
+              <Index each={props.captions}>
+                {(caption, idx) => (
+                  <CaptionInput
+                    caption={caption()}
+                    onClick={() => setFocusedType(caption()[0])}
+                    state={
+                      focusedType() === null || !focused()
+                        ? null
+                        : focusedType() === caption()[0]
+                        ? "expanded"
+                        : "collapsed"
+                    }
+                  />
+                )}
+              </Index>
+              <Show when={hasMissingCaptionTypes()}>
+                <div class="caption-creation">
+                  <button
+                    type="button"
+                    onClick={() => setIsExpanded((x: boolean) => !x)}
+                  >
+                    {t('gallery.createCaption')}
+                  </button>
+                  <Show when={isExpanded()}>
+                    <div class="caption-type-dropdown card">
+                      <For each={Object.entries(captionIconsMap)}>
+                        {([type, icon]) => (
+                          <Show when={!props.captions.some(([t]) => t === type)}>
+                            <button
+                              type="button"
+                              class="caption-type-option"
+                              onClick={() => handleCreateCaption(type)}
+                            >
+                              <span class="icon">{getIcon(icon)}</span>
+                              {t(`gallery.captionTypes.${type}`)}
+                            </button>
+                          </Show>
+                        )}
+                      </For>
+                    </div>
+                  </Show>
+                </div>
+              </Show>
+            </>
           </Show>
         </div>
         {props.children}
@@ -375,7 +416,6 @@ const ExpandableMenu = (props: {
 const EmptyCaptionState = (props: {
   onCreateCaption: (type: string) => void;
 }) => {
-  const [isExpanded, setIsExpanded] = createSignal(false);
   const { t } = useAppContext();
   
   // Create a memo for the randomly selected image
@@ -383,15 +423,6 @@ const EmptyCaptionState = (props: {
     const randomIndex = Math.floor(Math.random() * NO_CAPTION_IMAGES.length);
     return NO_CAPTION_IMAGES[randomIndex];
   });
-
-  const handleCreateCaption = async (type: string) => {
-    try {
-      await props.onCreateCaption(type);
-      setIsExpanded(false);
-    } catch (error) {
-      console.error("Error creating caption:", error);
-    }
-  };
 
   return (
     <div class="empty-captions-state">
@@ -404,34 +435,55 @@ const EmptyCaptionState = (props: {
         }}
       />
       <p class="empty-state-message">{t('gallery.noCaptionFiles')}</p>
-      <div class="caption-creation">
-        <button
-          type="button"
-          class="primary-button"
-          onClick={() => setIsExpanded(x => !x)}
-        >
-          {t('gallery.createCaption')}
-        </button>
-        <Show when={isExpanded()}>
-          <div class="caption-type-dropdown card">
-            <For each={Object.entries(captionIconsMap)}>
-              {([type, icon]) => (
-                <button
-                  type="button"
-                  class="caption-type-option"
-                  onClick={() => handleCreateCaption(type)}
-                >
-                  <span class="icon">{getIcon(icon)}</span>
-                  {t(`gallery.captionTypes.${type}`)}
-                </button>
-              )}
-            </For>
-          </div>
-        </Show>
-      </div>
+      <CaptionCreationButton onCreateCaption={props.onCreateCaption} />
     </div>
   );
-};
+}
+
+// Create a new component for the caption creation button
+const CaptionCreationButton = (props: {
+  onCreateCaption: (type: string) => void;
+}) => {
+  const [isExpanded, setIsExpanded] = createSignal(false);
+  const { t } = useAppContext();
+
+  const handleCreateCaption = async (type: string) => {
+    try {
+      await props.onCreateCaption(type);
+      setIsExpanded(false);
+    } catch (error) {
+      console.error("Error creating caption:", error);
+    }
+  };
+
+  return (
+    <div class="caption-creation">
+      <button
+        type="button"
+        class="primary-button"
+        onClick={() => setIsExpanded(x => !x)}
+      >
+        {t('gallery.createCaption')}
+      </button>
+      <Show when={isExpanded()}>
+        <div class="caption-type-dropdown card">
+          <For each={Object.entries(captionIconsMap)}>
+            {([type, icon]) => (
+              <button
+                type="button"
+                class="caption-type-option"
+                onClick={() => handleCreateCaption(type)}
+              >
+                <span class="icon">{getIcon(icon)}</span>
+                {t(`gallery.captionTypes.${type}`)}
+              </button>
+            )}
+          </For>
+        </div>
+      </Show>
+    </div>
+  );
+}
 
 type Size = { width: number; height: number };
 type LayoutStr = "horizontal" | "vertical";
