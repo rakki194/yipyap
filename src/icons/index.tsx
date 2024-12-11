@@ -26,7 +26,7 @@ import DownloadIcon from "@fluentui/svg-icons/icons/arrow_download_24_regular.sv
 import DeleteIcon from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
 import DismissIcon from "@fluentui/svg-icons/icons/dismiss_24_regular.svg?raw";
 import SpinnerIcon from "@fluentui/svg-icons/icons/spinner_ios_20_regular.svg?raw";
-import BowTieIcon from "@fluentui/svg-icons/icons/bow_tie_24_regular.svg?raw";
+//import BowTieIcon from "@fluentui/svg-icons/icons/bow_tie_24_regular.svg?raw";
 import SparkleIcon from "@fluentui/svg-icons/icons/text_effects_sparkle_24_regular.svg?raw";
 import TextAlignIcon from "@fluentui/svg-icons/icons/text_align_distributed_vertical_24_regular.svg?raw";
 import TextAlignDistributedIcon from "@fluentui/svg-icons/icons/text_align_distributed_evenly_24_regular.svg?raw";
@@ -46,12 +46,13 @@ import PlusIcon from "@fluentui/svg-icons/icons/add_24_regular.svg?raw";
 import ChevronDownIcon from "@fluentui/svg-icons/icons/chevron_down_24_regular.svg?raw";
 import ChristmasTreeIcon from "@fluentui/svg-icons/icons/tree_evergreen_20_regular.svg?raw";
 import GhostIcon from "./ghost.svg?raw";
+import WdIcon from "./wd.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
   tags: "tag",
   caption: "subtitles",
-  wd: "bowtie",
+  wd: "wd",
 };
 
 export const statusIconsMap = {
@@ -101,7 +102,8 @@ const iconMap: Readonly<Record<string, string>> = {
   delete: DeleteIcon,
   dismiss: DismissIcon,
   spinner: SpinnerIcon,
-  bowtie: BowTieIcon,
+  //bowtie: BowTieIcon,
+  wd: WdIcon,
   sparkle: SparkleIcon,
   textAlign: TextAlignIcon,
   textAlignDistributed: TextAlignDistributedIcon,
