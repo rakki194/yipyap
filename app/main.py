@@ -384,13 +384,18 @@ if not is_dev:
         return FileResponse("dist/index.html")
 
 
-@app.post("/api/generate-caption/{directory}/{filename}")
+@app.post("/api/generate-caption/{path:path}")
 async def generate_caption(
-    directory: str,
-    filename: str,
+    path: str,
     generator: str = Query(...),
     force: bool = Query(False),
 ):
+    """Generate caption for an image.
+    
+    The path parameter can be either:
+    - "_/image.png" for root directory images
+    - "subdir/image.png" for subdirectory images
+    """
     try:
         if generator not in caption_generators:
             raise HTTPException(
@@ -405,8 +410,12 @@ async def generate_caption(
                 detail=f"Caption generator {generator} is not available. Reason: initialization failed"
             )
             
+        # Handle root directory case
+        if path.startswith("_/"):
+            path = path[2:]  # Remove "_/" prefix
+            
         # Construct full image path
-        image_path = utils.resolve_path(f"{directory}/{filename}", ROOT_DIR)
+        image_path = utils.resolve_path(path, ROOT_DIR)
         if not image_path.exists():
             raise HTTPException(
                 status_code=404,

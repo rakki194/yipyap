@@ -321,12 +321,13 @@ export async function generateCaption(
   generator: string,
   force: boolean = false
 ): Promise<Response> {
+  // Remove any leading or trailing slashes and handle root path
+  const cleanPath = path.replace(/^\/+|\/+$/g, '');
+  // For root directory, use "_" as path to match API expectation
+  const imagePath = cleanPath ? `${cleanPath}/${name}` : `_/${name}`;
+  
   return fetch(
-    `${joinUrlParts(
-      "/api/generate-caption",
-      path,
-      name
-    )}?generator=${generator}&force=${force}`,
+    `/api/generate-caption/${imagePath}?generator=${generator}&force=${false}`,
     {
       method: "POST",
     }
