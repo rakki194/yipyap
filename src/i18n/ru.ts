@@ -49,7 +49,7 @@ export default {
     },
     disableAnimations: "Отключить анимации",
     language: "Язык",
-    disableJapanese: "Отключить японский текст",
+    disableNonsense: "Отключить японский текст",
     modelSettings: "Настройки модели",
     jtp2ModelPath: "Путь к модели JTP2",
     jtp2TagsPath: "Путь к тегам JTP2",

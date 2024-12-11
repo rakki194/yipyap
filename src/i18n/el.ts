@@ -43,7 +43,7 @@ const translations: Translations = {
     modelSettings: "Ρυθμίσεις μοντέλου",
     experimentalFeatures: "Πειραματικές λειτουργίες",
     disableAnimations: "Απενεργοποίηση κινήσεων",
-    disableJapanese: "Απενεργοποίηση Ιαπωνικών",
+    disableNonsense: "Απενεργοποίηση Ιαπωνικών",
     instantDelete: "Άμεση διαγραφή (χωρίς επιβεβαίωση)",
     enableZoom: "Ενεργοποίηση μεγέθυνσης",
     enableMinimap: "Ενεργοποίηση μικρογραφίας",

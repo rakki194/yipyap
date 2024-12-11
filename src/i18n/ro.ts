@@ -43,7 +43,7 @@ const translations: Translations = {
     modelSettings: "Setări model",
     experimentalFeatures: "Funcții experimentale",
     disableAnimations: "Dezactivare animații",
-    disableJapanese: "Dezactivare japoneză",
+    disableNonsense: "Dezactivare japoneză",
     instantDelete: "Ștergere instantanee",
     enableZoom: "Activare zoom",
     enableMinimap: "Activare minimapă",

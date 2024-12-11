@@ -50,7 +50,7 @@ const translations: Translations = {
     },
     disableAnimations: "Deaktiver animationer",
     language: "Sprog",
-    disableJapanese: "Deaktiver japansk tekst",
+    disableNonsense: "Deaktiver japansk tekst",
     modelSettings: "Model indstillinger",
     jtp2ModelPath: "JTP2 model sti",
     jtp2TagsPath: "JTP2 tags sti",

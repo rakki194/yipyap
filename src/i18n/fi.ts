@@ -49,7 +49,7 @@ export default {
     },
     disableAnimations: "Poista animaatiot käytöstä",
     language: "Kieli",
-    disableJapanese: "Poista japaninkielinen teksti käytöstä",
+    disableNonsense: "Poista japaninkielinen teksti käytöstä",
     modelSettings: "Malliasetukset",
     jtp2ModelPath: "JTP2-mallin polku",
     jtp2TagsPath: "JTP2-tagien polku",

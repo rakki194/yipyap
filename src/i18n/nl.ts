@@ -49,7 +49,7 @@ export default {
     },
     disableAnimations: "Animaties uitschakelen",
     language: "Taal",
-    disableJapanese: "Japanse tekst uitschakelen",
+    disableNonsense: "Japanse tekst uitschakelen",
     modelSettings: "Modelinstellingen",
     jtp2ModelPath: "JTP2-modelpad",
     jtp2TagsPath: "JTP2-tagpad",

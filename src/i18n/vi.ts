@@ -49,7 +49,7 @@ export default {
     },
     disableAnimations: "Tắt hiệu ứng",
     language: "Ngôn ngữ",
-    disableJapanese: "Tắt văn bản tiếng Nhật",
+    disableNonsense: "Tắt văn bản tiếng Nhật",
     modelSettings: "Cài đặt mô hình",
     jtp2ModelPath: "Đường dẫn mô hình JTP2",
     jtp2TagsPath: "Đường dẫn thẻ JTP2",

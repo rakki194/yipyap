@@ -50,7 +50,7 @@ const translations: Translations = {
     },
     disableAnimations: "Vypnout animace",
     language: "Jazyk",
-    disableJapanese: "Vypnout japonský text",
+    disableNonsense: "Vypnout japonský text",
     modelSettings: "Nastavení modelu",
     jtp2ModelPath: "Cesta k JTP2 modelu",
     jtp2TagsPath: "Cesta k JTP2 tagům",

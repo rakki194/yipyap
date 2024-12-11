@@ -49,7 +49,7 @@ export default {
     },
     disableAnimations: "Desativar animações",
     language: "Idioma",
-    disableJapanese: "Desativar texto japonês",
+    disableNonsense: "Desativar texto japonês",
     modelSettings: "Configurações do modelo",
     jtp2ModelPath: "Caminho do modelo JTP2",
     jtp2TagsPath: "Caminho das tags JTP2",

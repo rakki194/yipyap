@@ -50,7 +50,7 @@ const translations: Translations = {
     },
     disableAnimations: "בטל אנימציות",
     language: "שפה",
-    disableJapanese: "בטל טקסט ביפנית",
+    disableNonsense: "בטל טקסט ביפנית",
     modelSettings: "הגדרות מודל",
     jtp2ModelPath: "נתיב מודל JTP2",
     jtp2TagsPath: "נתיב תגיות JTP2",

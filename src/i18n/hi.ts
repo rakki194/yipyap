@@ -49,7 +49,7 @@ const translations: Translations = {
     },
     instantDelete: "तुरंत हटाएं",
     disableAnimations: "एनिमेशन बंद करें",
-    disableJapanese: "जापानी बंद करें",
+    disableNonsense: "जापानी बंद करें",
     enableZoom: "ज़ूम सक्षम करें",
     enableMinimap: "मिनीमैप सक्षम करें",
     modelSettings: "मॉडल सेटिंग्स",

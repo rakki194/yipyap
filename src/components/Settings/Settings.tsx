@@ -307,14 +307,18 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                     )}
                   </For>
                 </select>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={app.disableJapanese}
-                    onChange={(e) => app.setDisableJapanese(e.currentTarget.checked)}
-                  />
-                  {t('settings.disableJapanese')}
-                </label>
+                <Show when={app.locale !== 'ja'}>
+                  <div class="setting-item">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={app.disableNonsense}
+                        onChange={(e) => app.setDisableNonsense(e.currentTarget.checked)}
+                      />
+                      {t('settings.disableNonsense')}
+                    </label>
+                  </div>
+                </Show>
               </div>
             </div>
 
@@ -364,7 +368,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
           </div>
 
           <section class="warning-section">
-            <Show when={!app.disableJapanese}>
+            <Show when={!app.disableNonsense}>
               <p class="warning-text">
                 <span>
                   {app.locale === 'pl' 

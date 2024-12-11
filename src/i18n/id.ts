@@ -54,7 +54,7 @@ const translations: Translations = {
     modelSettings: "Pengaturan Model",
     experimentalFeatures: "Fitur Eksperimental",
     disableAnimations: "Nonaktifkan Animasi",
-    disableJapanese: "Nonaktifkan Bahasa Jepang",
+    disableNonsense: "Nonaktifkan Bahasa Jepang",
     instantDelete: "Hapus Instan (tanpa konfirmasi)",
     enableZoom: "Aktifkan Zoom",
     enableMinimap: "Aktifkan Minimap",

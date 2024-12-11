@@ -50,7 +50,7 @@ const translations: Translations = {
     },
     disableAnimations: "Disable Animations",
     language: "Language",
-    disableJapanese: "Disable Japanese Text",
+    disableNonsense: "Disable Japanese Text",
     modelSettings: "Model Settings",
     jtp2ModelPath: "JTP2 Model Path",
     jtp2TagsPath: "JTP2 Tags Path",

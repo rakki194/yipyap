@@ -49,7 +49,7 @@ export default {
     },
     disableAnimations: "禁用动画",
     language: "语言",
-    disableJapanese: "禁用日语文本",
+    disableNonsense: "禁用日语文本",
     modelSettings: "模型设置",
     jtp2ModelPath: "JTP2模型路径",
     jtp2TagsPath: "JTP2标签路径",

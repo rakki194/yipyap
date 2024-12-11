@@ -22,7 +22,7 @@ const FrontPage: Component = () => {
   });
 
   const getRandomSubtitle = () => {
-    if (app.disableJapanese) {
+    if (app.disableNonsense || app.locale === 'ja') {
       return "";
     }
     

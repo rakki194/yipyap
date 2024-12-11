@@ -60,7 +60,7 @@ export interface SettingsTranslations {
   };
   disableAnimations: string;
   language: string;
-  disableJapanese: string;
+  disableNonsense: string;
   modelSettings: string;
   jtp2ModelPath: string;
   jtp2TagsPath: string;

@@ -50,7 +50,7 @@ const translations: Translations = {
     },
     disableAnimations: "Animációk kikapcsolása",
     language: "Nyelv",
-    disableJapanese: "Japán nyelv kikapcsolása",
+    disableNonsense: "Japán nyelv kikapcsolása",
     modelSettings: "Modell beállítások",
     jtp2ModelPath: "JTP2 modell útvonala",
     jtp2TagsPath: "JTP2 címkék útvonala",

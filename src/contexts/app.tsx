@@ -34,8 +34,8 @@ export interface AppContext {
   setInstantDelete: (value: boolean) => void;
   readonly disableAnimations: boolean;
   setDisableAnimations: (value: boolean) => void;
-  readonly disableJapanese: boolean; // Language preference
-  setDisableJapanese: (value: boolean) => void;
+  readonly disableNonsense: boolean; // Language preference
+  setdisableNonsense: (value: boolean) => void;
   readonly jtp2ModelPath: string;
   readonly jtp2TagsPath: string;
   setJtp2ModelPath: (value: string) => void;
@@ -56,6 +56,8 @@ export interface AppContext {
     message: string;
     details?: string;
   }) => void;
+  disableNonsense: boolean;
+  setDisableNonsense: (value: boolean) => void;
 }
 
 /**
@@ -69,7 +71,7 @@ const createAppContext = (): AppContext => {
     theme: Theme;
     instantDelete: boolean;
     disableAnimations: boolean;
-    disableJapanese: boolean;
+    disableNonsense: boolean;
     jtp2ModelPath: string;
     jtp2TagsPath: string;
     enableZoom: boolean;
@@ -79,7 +81,7 @@ const createAppContext = (): AppContext => {
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
     disableAnimations: localStorage.getItem("disableAnimations") === "true",
-    disableJapanese: localStorage.getItem("disableJapanese") === "true",
+    disableNonsense: localStorage.getItem("disableNonsense") === "true",
     jtp2ModelPath: localStorage.getItem("jtp2ModelPath") || "",
     jtp2TagsPath: localStorage.getItem("jtp2TagsPath") || "",
     enableZoom: localStorage.getItem("enableZoom") === "true",
@@ -119,7 +121,7 @@ const createAppContext = (): AppContext => {
     }
   });
   createRenderEffect(() =>
-    localStorage.setItem("disableJapanese", store.disableJapanese.toString())
+    localStorage.setItem("disableNonsense", store.disableNonsense.toString())
   );
   createRenderEffect(() =>
     localStorage.setItem("jtp2ModelPath", store.jtp2ModelPath)
@@ -202,6 +204,8 @@ const createAppContext = (): AppContext => {
   const [preserveLatents, setPreserveLatents] = createSignal(false);
   const [preserveTxt, setPreserveTxt] = createSignal(false);
 
+  const [disableNonsense, setDisableNonsense] = createSignal(false);
+
   return {
     get prevRoute() {
       return store.prevRoute;
@@ -224,11 +228,11 @@ const createAppContext = (): AppContext => {
     },
     setDisableAnimations: (value: boolean) =>
       setStore("disableAnimations", value),
-    get disableJapanese() {
-      return store.disableJapanese;
+    get disableNonsense() {
+      return store.disableNonsense;
     },
-    setDisableJapanese(value: boolean) {
-      setStore("disableJapanese", value);
+    setdisableNonsense(value: boolean) {
+      setStore("disableNonsense", value);
     },
     get jtp2ModelPath() {
       return store.jtp2ModelPath;
@@ -278,6 +282,8 @@ const createAppContext = (): AppContext => {
     }) => {
       // Implement notification logic here
     },
+    disableNonsense: disableNonsense(),
+    setDisableNonsense,
   };
 };
 

@@ -49,7 +49,7 @@ export default {
     },
     disableAnimations: "Animasyonları devre dışı bırak",
     language: "Dil",
-    disableJapanese: "Japonca metni devre dışı bırak",
+    disableNonsense: "Japonca metni devre dışı bırak",
     modelSettings: "Model ayarları",
     jtp2ModelPath: "JTP2 model yolu",
     jtp2TagsPath: "JTP2 etiket yolu",
