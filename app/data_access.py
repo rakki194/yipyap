@@ -53,11 +53,40 @@ class ImageDataSource:
         raise NotImplementedError
 
     def is_image_file(self, path: Path) -> bool:
-        """Check if file is an allowed image type"""
+        """
+        Check if file has an allowed image extension.
+        
+        Args:
+            path (Path): Path to check
+            
+        Returns:
+            bool: True if file has an allowed extension
+            
+        Notes:
+            - Checks against ALLOWED_EXTENSIONS set
+            - Case-insensitive comparison
+        """
         return path.suffix.lower() in self.ALLOWED_EXTENSIONS
 
     async def get_basic_info(self, path: Path) -> Dict:
-        """Get basic file info without loading the image"""
+        """
+        Get basic file information without loading the image.
+        
+        Args:
+            path (Path): Path to file
+            
+        Returns:
+            Dict: Basic file information
+                - type: "image" or "directory"
+                - name: File name
+                - path: Relative path from root
+                - modified: Modification timestamp
+                - size: File size in bytes
+                
+        Notes:
+            - Fast operation - only uses file system stats
+            - Does not read file contents
+        """
         stat = path.stat()
         return {
             "type": "image" if self.is_image_file(path) else "directory",
@@ -156,6 +185,17 @@ class CachedFileSystemDataSource(ImageDataSource):
         conn.commit()
 
     def _get_connection(self):
+        """
+        Get a thread-local SQLite connection.
+        
+        Returns:
+            sqlite3.Connection: Database connection for current thread
+            
+        Notes:
+            - Creates new connection if none exists for thread
+            - Sets busy timeout to handle concurrent access
+            - Caches connection in thread-local storage
+        """
         thread_id = threading.get_ident()
         conn = self.db_connnections.get(thread_id)
         if conn is None:
@@ -164,7 +204,19 @@ class CachedFileSystemDataSource(ImageDataSource):
         return conn
 
     def _compute_md5(self, path: Path) -> str:
-        """Compute MD5 hash of file"""
+        """
+        Compute MD5 hash of file contents.
+        
+        Args:
+            path (Path): Path to file
+            
+        Returns:
+            str: Hex string of MD5 hash
+            
+        Notes:
+            - Reads file in chunks to handle large files
+            - Used for cache invalidation
+        """
         md5 = hashlib.md5()
         with open(path, "rb") as f:
             while chunk := f.read(8192):
@@ -172,7 +224,20 @@ class CachedFileSystemDataSource(ImageDataSource):
         return md5.hexdigest()
 
     async def get_thumbnail(self, path: str) -> Optional[bytes]:
-        """Get thumbnail webp data from cache"""
+        """
+        Get cached thumbnail WebP data.
+        
+        Args:
+            path (str): Path to original image
+            
+        Returns:
+            Optional[bytes]: WebP thumbnail data or None if not cached
+            
+        Notes:
+            - Checks SQLite cache for thumbnail
+            - Returns None if not found
+            - Handles .webp extension in path
+        """
         conn = self._get_connection()
         result = conn.execute(
             "SELECT thumbnail_webp FROM image_info WHERE directory = ? AND name LIKE ?",
@@ -258,6 +323,21 @@ class CachedFileSystemDataSource(ImageDataSource):
         self,
         directory: Path,
     ) -> List[DirectoryModel | Dict]:
+        """
+        Scan directory for images and subdirectories.
+        
+        Args:
+            directory (Path): Directory to scan
+            
+        Returns:
+            List[DirectoryModel | Dict]: List of directory and image entries
+            
+        Notes:
+            - Skips hidden files
+            - Groups related files (image + captions)
+            - Sorts entries naturally
+            - Handles various image and caption formats
+        """
         dir_entries = list()
         img_entries = list()
         mtimes = dict()
