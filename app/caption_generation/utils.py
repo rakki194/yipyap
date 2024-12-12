@@ -2,7 +2,14 @@
 Utility functions for caption generation.
 
 This module provides helper functions used by caption generators, particularly
-for handling CPU-bound operations in an asynchronous context.
+for handling CPU-bound operations in an asynchronous context. It ensures that
+heavy computations don't block the event loop by running them in a thread pool.
+
+Key Features:
+- Asynchronous execution of CPU-bound tasks
+- Thread pool management
+- Error propagation
+- Type safety
 """
 
 import asyncio
@@ -25,9 +32,18 @@ async def run_in_executor(func: Callable, *args, **kwargs) -> Any:
     Returns:
         Any: The result of the function call
         
+    Raises:
+        Exception: Any exception raised by the function
+        
+    Example:
+        >>> async def process_image(path):
+        ...     return await run_in_executor(heavy_computation, path)
+        
     Notes:
         - Uses the default executor (typically ThreadPoolExecutor)
         - Wraps the function call in partial to handle arguments
+        - Preserves exception traceback
+        - Suitable for CPU-bound operations
     """
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(
