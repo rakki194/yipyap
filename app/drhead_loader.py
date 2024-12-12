@@ -1,3 +1,24 @@
+"""
+Image loading and color space management utilities.
+
+This module provides robust image loading capabilities with proper color space handling,
+particularly for high-bit-depth and wide-gamut images. It ensures consistent color
+reproduction by converting images to sRGB color space with appropriate rendering intents.
+
+Key Features:
+- Proper ICC profile handling
+- Color space conversion with fallbacks
+- Support for high-bit-depth formats
+- Transparent handling of alpha channels
+- Fallback to ImageMagick for problematic files
+
+The module implements a sophisticated color management system that:
+1. Detects and validates ICC profiles
+2. Handles various color spaces (RGB, CMYK, LAB, etc.)
+3. Provides configurable rendering intents
+4. Manages alpha channels during conversion
+"""
+
 import logging
 import subprocess
 import tempfile
@@ -10,10 +31,9 @@ from PIL.ImageCms import Intent
 
 logger = logging.getLogger("uvicorn.error")
 
-# Suppress the warning for large images
+# Configure Pillow for large images
 Image.MAX_IMAGE_PIXELS = None
 PngImagePlugin.MAX_TEXT_CHUNK = 100 * (1024**2)
-# Try harder on truncated images
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 # Color management profiles and intent flags
@@ -28,6 +48,7 @@ _INTENT_FLAGS_INITIAL: IntentFlags = {
     Intent.SATURATION: ImageCms.Flags.HIGHRESPRECALC,
     Intent.ABSOLUTE_COLORIMETRIC: ImageCms.Flags.HIGHRESPRECALC,
 }
+
 _INTENT_FLAGS_FALLBACK: IntentFlags = {
     Intent.PERCEPTUAL: ImageCms.Flags.HIGHRESPRECALC,
     Intent.RELATIVE_COLORIMETRIC: ImageCms.Flags.HIGHRESPRECALC
@@ -43,6 +64,7 @@ _MODE_CONVERSIONS = {
     ("I;16", "RGB "): "RGB",
     ("RGB", "CMYK"): "CMYK",
 }
+
 _VALID_MODES = [
     ("RGBA", "RGB "),
     ("RGB", "RGB "),
@@ -54,6 +76,18 @@ _VALID_MODES = [
 
 
 def _coalesce_intent(intent: Intent | int) -> Intent:
+    """
+    Convert integer intent to ImageCms.Intent enum.
+    
+    Args:
+        intent (Intent | int): Intent value to coalesce
+        
+    Returns:
+        Intent: Corresponding Intent enum value
+        
+    Raises:
+        ValueError: If intent value is invalid
+    """
     if isinstance(intent, Intent):
         return intent
 
@@ -80,6 +114,26 @@ def open_srgb(
     formats: list[str] | tuple[str, ...] | None = None,
     force_load: bool = True,
 ):
+    """
+    Open an image and convert it to sRGB color space.
+    
+    Args:
+        file_descriptor_or_path: File path or descriptor to open
+        file_descriptor: Alternative file descriptor
+        intent: Color rendering intent
+        intent_flags: Custom intent flags
+        intent_fallback: Whether to try fallback intents
+        formats: List of allowed formats
+        force_load: Whether to force immediate loading
+        
+    Returns:
+        Image: PIL Image in sRGB color space
+        
+    Notes:
+        - Handles various color spaces and profiles
+        - Preserves alpha channels during conversion
+        - Uses high-quality conversion settings
+    """
     img = Image.open(file_descriptor or file_descriptor_or_path, formats=formats)
     if force_load:
         img.load()
@@ -100,6 +154,24 @@ def ensure_srgb(
     intent_fallback: bool = True,
     fp: str = "<unknown>",
 ) -> Image.Image:
+    """
+    Convert an image to sRGB color space if needed.
+    
+    Args:
+        img: PIL Image to convert
+        intent: Color rendering intent
+        intent_flags: Custom intent flags
+        intent_fallback: Whether to try fallback intents
+        fp: File path for logging
+        
+    Returns:
+        Image: Converted image in sRGB color space
+        
+    Notes:
+        - Handles alpha channel preservation
+        - Supports various input color spaces
+        - Uses high-quality conversion settings
+    """
     if img.mode == "P" and img.info.get("transparency"):
         img = img.convert("PA")
 
@@ -146,6 +218,25 @@ def convert_profile(
     intent_fallback: bool = True,
     fp: str = "<unknown>",
 ):
+    """
+    Convert image using ICC profile.
+    
+    Args:
+        img: PIL Image to convert
+        mode: Target color mode
+        intent: Color rendering intent
+        intent_flags: Custom intent flags
+        intent_fallback: Whether to try fallback intents
+        fp: File path for logging
+        
+    Returns:
+        Image: Converted image
+        
+    Notes:
+        - Handles ICC profile validation
+        - Supports various color spaces
+        - Provides detailed logging
+    """
     icc_raw = img.info.get("icc_profile")
 
     if icc_raw is not None:
@@ -225,7 +316,20 @@ def convert_profile(
 
 
 def run_magick_convert(input_path: Path):
-    """Fix an image using imagemagick, write to a tempfile."""
+    """
+    Fix an image using ImageMagick.
+    
+    Args:
+        input_path (Path): Path to input image
+        
+    Returns:
+        Path: Path to converted temporary file
+        
+    Notes:
+        - Creates temporary file for output
+        - Uses ImageMagick's convert command
+        - Caller must clean up temp file
+    """
     output_path = Path(tempfile.mktemp(suffix=input_path.suffix))
     cmd = ["magick", str(input_path), str(output_path)]
     subprocess.check_call(cmd)
@@ -233,7 +337,22 @@ def run_magick_convert(input_path: Path):
 
 
 def open_image_magick_fallback(input_path: Path, force_load=True):
-    """Open an image using Pillow, then retry after converting with magick."""
+    """
+    Open an image with Pillow, falling back to ImageMagick if needed.
+    
+    Args:
+        input_path (Path): Path to input image
+        force_load (bool): Whether to force immediate loading
+        
+    Returns:
+        Image: Opened PIL Image
+        
+    Notes:
+        - Attempts Pillow first
+        - Falls back to ImageMagick on failure
+        - Cleans up temporary files
+        - Logs conversion attempts
+    """
     try:
         img = open_srgb(input_path, force_load=force_load)
     except BaseException:

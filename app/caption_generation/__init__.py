@@ -13,6 +13,13 @@ The module checks for required dependencies:
 
 Each caption generator is only initialized if its dependencies are available,
 with appropriate warning messages logged for missing dependencies.
+
+Available Generators:
+- JTP2Generator: Japanese Tag Predictor v2
+- WDv3Generator: WD-1.4 Tagger v3
+
+The module uses lazy imports to avoid loading unnecessary dependencies and provides
+clear error messages when optional features are unavailable.
 """
 
 import importlib.util

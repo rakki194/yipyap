@@ -1,20 +1,22 @@
 """
-JTP2 (Japanese Tag Predictor 2) caption generator implementation.
+Japanese Tag Predictor v2 (JTP2) caption generator implementation.
 
 This module implements a caption generator using the JTP2 model, which is specifically
 designed for anime/manga-style images. It uses a Vision Transformer (ViT) architecture
 with SigLIP embeddings and provides high-quality Japanese and English tags.
 
-The generator loads a local model file and tags dictionary, supporting both CPU and
-GPU inference with automatic device selection. It includes special handling for
-confidence thresholds and tag filtering.
-
 Key Features:
 - Multi-language tag support (Japanese/English)
 - Configurable confidence threshold
 - Efficient batch processing
-- Custom tag filtering
 - Memory-efficient model loading
+- GPU acceleration when available
+
+The generator uses:
+- ViT-SO400M backbone with SigLIP embeddings
+- Gated prediction head for improved accuracy
+- Safetensors for efficient model loading
+- Dynamic device placement (CPU/CUDA)
 """
 
 import json
@@ -35,13 +37,26 @@ from .utils import run_in_executor
 logger = logging.getLogger("uvicorn.error")
 
 class Fit(Enum):
-    """Image fitting modes for preprocessing."""
+    """
+    Image fitting modes for preprocessing.
+    
+    Modes:
+        CONTAIN: Fit image within bounds maintaining aspect ratio
+        COVER: Fill bounds maintaining aspect ratio with cropping
+        FILL: Stretch image to fill bounds
+    """
     CONTAIN = auto()
     COVER = auto()
     FILL = auto()
 
 class CompositeAlpha(Enum):
-    """Alpha compositing modes for RGBA images."""
+    """
+    Alpha compositing modes for RGBA images.
+    
+    Modes:
+        WHITE: Composite over white background
+        BLACK: Composite over black background
+    """
     WHITE = auto()
     BLACK = auto()
 
@@ -50,16 +65,21 @@ class GatedHead(torch.nn.Module):
     Gated prediction head for the JTP2 model.
     
     Implements a gated mechanism for tag prediction, using separate paths for
-    feature transformation and gating.
+    feature transformation and gating. This improves prediction quality by
+    allowing the model to learn which features are relevant for each tag.
     
-    Attributes:
+    Args:
         in_features (int): Input feature dimension
         out_features (int): Output feature dimension
         hidden_features (int): Hidden layer dimension
+        
+    Notes:
+        - Uses sigmoid gating mechanism
+        - Includes feature transformation path
+        - Optimized for tag prediction
     """
     
     def __init__(self, in_features: int, out_features: int, hidden_features: int):
-        """Initialize the gated head."""
         super().__init__()
         self.fc1 = torch.nn.Linear(in_features, hidden_features)
         self.gate = torch.nn.Linear(in_features, hidden_features)
@@ -80,19 +100,17 @@ class JTP2Generator(CaptionGenerator):
     It supports both Japanese and English tags and provides configurable
     confidence thresholds.
     
-    Attributes:
+    Args:
         model_path (Path): Path to the model file
         tags_path (Path): Path to the tags dictionary
         threshold (float): Confidence threshold for tag selection
-        device (torch.device): Device for model inference
-        model (torch.nn.Module): Loaded PyTorch model
-        tags (Dict): Dictionary of tag information
+        force_cpu (bool): Whether to force CPU inference
         
-    Methods:
-        generate: Generate tags for an image
-        is_available: Check if model and dependencies are available
-        name: Get generator name
-        caption_type: Get caption file type
+    Notes:
+        - Lazy initialization of model
+        - GPU acceleration when available
+        - Memory-efficient model loading
+        - Configurable confidence threshold
     """
     
     def __init__(
@@ -193,7 +211,17 @@ class JTP2Generator(CaptionGenerator):
         return Fit, CompositeAlpha, GatedHead
 
     def is_available(self) -> bool:
-        """Check if all required dependencies and resources are available"""
+        """
+        Check if all required dependencies and resources are available.
+        
+        Returns:
+            bool: True if generator can be initialized
+            
+        Notes:
+            - Checks for torch, timm, safetensors
+            - Verifies model and tag files exist
+            - Checks GPU availability if not forced to CPU
+        """
         global torch, timm, safetensors, transforms, InterpolationMode, TF
         try:
             # These will raise ImportError if not available
@@ -213,6 +241,18 @@ class JTP2Generator(CaptionGenerator):
             return False
 
     def _initialize(self):
+        """
+        Initialize the model and preprocessing pipeline.
+        
+        Raises:
+            RuntimeError: If initialization fails
+            
+        Notes:
+            - Creates transformation pipeline
+            - Loads model weights
+            - Sets up CUDA if available
+            - Loads tag dictionary
+        """
         if not self.is_available():
             raise RuntimeError("JTP2 caption generation is not available")
             
@@ -256,7 +296,25 @@ class JTP2Generator(CaptionGenerator):
         self._tags = [tag.replace("_", " ") for tag in tags.keys()]
 
     async def generate(self, image_path: Path, **kwargs) -> str:
-        """Generate tags for an image using JTP2"""
+        """
+        Generate tags for an image using JTP2.
+        
+        Args:
+            image_path (Path): Path to input image
+            **kwargs: Additional parameters
+            
+        Returns:
+            str: Comma-separated list of tags
+            
+        Raises:
+            RuntimeError: If initialization fails
+            Exception: If generation fails
+            
+        Notes:
+            - Handles initialization on first use
+            - Uses executor for CPU-bound operations
+            - Provides detailed error logging
+        """
         try:
             self._initialize()
             return await run_in_executor(self._generate_sync, image_path)
@@ -268,7 +326,21 @@ class JTP2Generator(CaptionGenerator):
             raise
 
     def _generate_sync(self, image_path: Path) -> str:
-        """Synchronous implementation of tag generation"""
+        """
+        Synchronous implementation of tag generation.
+        
+        Args:
+            image_path (Path): Path to input image
+            
+        Returns:
+            str: Comma-separated list of tags
+            
+        Notes:
+            - Handles image preprocessing
+            - Runs model inference
+            - Processes results with threshold
+            - Formats output tags
+        """
         # Load and preprocess image
         image = Image.open(image_path)
         img = image.convert('RGBA')
