@@ -6,7 +6,7 @@ import { useAppContext } from "~/contexts/app";
 import { Theme, themeIconMap, themes } from "~/contexts/theme";
 import getIcon from "~/icons";
 import "./Settings.css";
-import { languages } from "~/i18n/languages";
+import { languages } from "~/i18n";
 
 const SlideTransition = (props: { show: boolean; children: any }) => {
   let contentRef: HTMLDivElement | undefined;

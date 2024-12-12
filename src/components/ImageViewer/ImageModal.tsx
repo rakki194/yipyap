@@ -27,10 +27,10 @@ interface ImageModalProps {
   onClose: () => void;
 }
 
-// Add this near the top of the file, outside any components
 const NO_CAPTION_IMAGES = [
-  '/assets/nocap/cactus-4x.png',
-  '/assets/nocap/chimken-20x.png'
+  '/assets/pixelings/cactus.png',
+  '/assets/pixelings/chimken.png',
+  '/assets/pixelings/fonx.png',
 ] as const;
 
 // Add this helper function near the top of the file

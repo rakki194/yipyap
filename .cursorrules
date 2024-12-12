@@ -1,8 +1,25 @@
-The frontend is a solidjs application, not a react one! Use solidjs syntax and features.
+# yipyap
+
+The frontend of yipyap is built with SolidJS, a reactive JavaScript framework that emphasizes fine-grained reactivity and performance. The application follows a component-based architecture with a central app context managing global state. The main entry point is `/src/main.tsx`, which sets up routing and the app context, while the core application logic resides in `/src/contexts/app.tsx`.
+
+The gallery system is the heart of the application, featuring a sophisticated image viewer with support for captions, tags, and metadata. The `ImageViewer` component provides advanced features like smooth zooming, panning, and a minimap for navigation. The tagging system uses the OKLCH color space for generating visually pleasing, theme-aware tag colors, with support for keyboard navigation and batch operations.
+
+The application implements a robust theming system with multiple built-in themes (light, dark, strawberry, etc.) that affect not just colors but also animations and visual effects. File operations are handled through a drag-and-drop interface with progress tracking and support for recursive directory uploads.
+
 The backend is Python using FastAPI.
-Try to keep the same naming conventions as the original implementation when sensible and try to reuse as much code as possible, this applies to CSS too! Always take into account the base style rules in the src/styles.css file.
-Theme specific styles are in the src/themes.css file.
-There is no `App.tsx` file, do not create it, the root component is in the src/main.tsx file, src/contexts/app.tsx is the app context which is the global state of the app.
+
+Maintain consistency with existing code by following established naming conventions and reusing components and styles where appropriate. When writing CSS, ensure compatibility with the global styles defined in `/src/styles.css`.
+
+Theme specific styles are in the `/src/themes.css` file.
+
+There is no `App.tsx` file, do not create it, the root component is in the `/src/main.tsx` file, `/src/contexts/app.tsx` is the app context which is the global state of the app.
+
 Think step-by-step and write code that is easy to understand and maintain.
-The translations are in the src/i18n folder, all language files must follow the type definitions in src/i18n/types.ts. The list of supported languages and locale types are defined in src/i18n/index.ts. New languages must be added to both the languages array and the Locale type.
-If you are refactoring the code, make sure to update the documentation and comments to reflect the changes and also update the .cursorrules accordingly.
+
+The translations are in the `/src/i18n` folder, with each language having its own file (e.g., `en.ts`, `ja.ts`, etc.). All language files must follow the type definitions in `/src/i18n/types.ts`, which defines interfaces for different sections of the application (common, settings, frontPage, gallery, tools, etc.). 
+
+The list of supported languages is defined in `/src/i18n/index.ts` in the `languages` array, which includes language codes and their display names. Each new language must be added to this array. The file also provides helper functions like `getPathSeparator` for platform-specific path separators and `getTranslationValue` for type-safe access to nested translation values.
+
+Translation files are dynamically imported using Vite's glob imports, allowing for code-splitting and lazy loading of language files. Each translation file exports a default object that implements the `Translations` interface, ensuring type safety across all language implementations.
+
+If you are refactoring the code, make sure to update the documentation and comments to reflect the changes and also update the `/.cursorrules` file and `/README.md` file accordingly.

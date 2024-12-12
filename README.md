@@ -8,14 +8,44 @@
 
 ## Features
 
-- Directory browsing with breadcrumb navigation
-- Image thumbnails with lazy loading
-- Grid and list view modes
-- Sorting by name, date, or size
-- Real-time search filtering
-- Image captions with auto-save
-- Responsive design
-- Security features (path traversal protection, rate limiting)
+### Core Features
+- Browse directories with breadcrumbs
+- View images with thumbnails and captions
+- Search and sort files easily
+- Switch between grid and list views
+- Secure file access and rate limiting
+
+### Image Viewing
+- Zoom and pan smoothly
+- Navigate with minimap
+- Support for multiple caption formats
+- View and edit image metadata
+- Keyboard shortcuts
+
+### File Management
+- Drag and drop files to upload
+- Upload entire folders at once
+- Track upload progress
+- Perform batch operations
+- Quick folder navigation
+
+### Captions & Tags
+- Add captions and tags
+- Beautiful tag colors that match your theme
+- Generate captions automatically
+- Auto-save your changes
+- Edit multiple files at once
+
+### Customization
+- Choose from multiple themes
+- Customize animations and layout
+- Set your own keyboard shortcuts
+- Save your preferences
+
+### Languages
+- Available in multiple languages
+- Right-to-left support
+- Locale-aware formatting
 
 ## Installation
 

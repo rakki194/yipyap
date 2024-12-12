@@ -1,3 +1,4 @@
+# Core dependencies
 fastapi
 python-magic
 python-multipart
@@ -5,3 +6,21 @@ pillow
 aiofiles
 uvicorn[standard]
 watchfiles
+
+# Image processing
+pillow-jxl-plugin  # Used in drhead_loader.py and caption generators
+natsort  # Used in data_access.py for natural sorting
+
+# Machine learning and model dependencies
+torch  # Used by caption generators
+timm  # Used by caption generators
+safetensors  # Used by JTP2Generator
+huggingface_hub  # Used by WDv3Generator
+pandas  # Used by WDv3Generator
+numpy  # Used by WDv3Generator
+
+# Data validation
+pydantic  # Used in models.py
+
+# Type hints
+typing-extensions  # Commonly needed for advanced type hints
