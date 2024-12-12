@@ -1,7 +1,32 @@
+"""
+JTP2 (Japanese Tag Predictor 2) caption generator implementation.
+
+This module implements a caption generator using the JTP2 model, which is specifically
+designed for anime/manga-style images. It uses a Vision Transformer (ViT) architecture
+with SigLIP embeddings and provides high-quality Japanese and English tags.
+
+The generator loads a local model file and tags dictionary, supporting both CPU and
+GPU inference with automatic device selection. It includes special handling for
+confidence thresholds and tag filtering.
+
+Key Features:
+- Multi-language tag support (Japanese/English)
+- Configurable confidence threshold
+- Efficient batch processing
+- Custom tag filtering
+- Memory-efficient model loading
+"""
+
 import json
 import logging
+from enum import Enum, auto
 from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import numpy as np
+import torch
 from PIL import Image
+from safetensors.torch import load_file
 import pillow_jxl # type: ignore
 
 from .base import CaptionGenerator
@@ -9,15 +34,67 @@ from .utils import run_in_executor
 
 logger = logging.getLogger("uvicorn.error")
 
-# Initialize optional dependencies as None
-torch = None
-timm = None
-safetensors = None
-transforms = None
-InterpolationMode = None
-TF = None
+class Fit(Enum):
+    """Image fitting modes for preprocessing."""
+    CONTAIN = auto()
+    COVER = auto()
+    FILL = auto()
+
+class CompositeAlpha(Enum):
+    """Alpha compositing modes for RGBA images."""
+    WHITE = auto()
+    BLACK = auto()
+
+class GatedHead(torch.nn.Module):
+    """
+    Gated prediction head for the JTP2 model.
+    
+    Implements a gated mechanism for tag prediction, using separate paths for
+    feature transformation and gating.
+    
+    Attributes:
+        in_features (int): Input feature dimension
+        out_features (int): Output feature dimension
+        hidden_features (int): Hidden layer dimension
+    """
+    
+    def __init__(self, in_features: int, out_features: int, hidden_features: int):
+        """Initialize the gated head."""
+        super().__init__()
+        self.fc1 = torch.nn.Linear(in_features, hidden_features)
+        self.gate = torch.nn.Linear(in_features, hidden_features)
+        self.fc2 = torch.nn.Linear(hidden_features, out_features)
+        
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass through the gated head."""
+        h = self.fc1(x)
+        g = self.gate(x).sigmoid()
+        h = h * g
+        return self.fc2(h)
 
 class JTP2Generator(CaptionGenerator):
+    """
+    JTP2 model-based caption generator.
+    
+    This generator uses the JTP2 model to generate tags for anime-style images.
+    It supports both Japanese and English tags and provides configurable
+    confidence thresholds.
+    
+    Attributes:
+        model_path (Path): Path to the model file
+        tags_path (Path): Path to the tags dictionary
+        threshold (float): Confidence threshold for tag selection
+        device (torch.device): Device for model inference
+        model (torch.nn.Module): Loaded PyTorch model
+        tags (Dict): Dictionary of tag information
+        
+    Methods:
+        generate: Generate tags for an image
+        is_available: Check if model and dependencies are available
+        name: Get generator name
+        caption_type: Get caption file type
+    """
+    
     def __init__(
         self,
         model_path: Path,

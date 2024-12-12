@@ -1,3 +1,20 @@
+"""
+Caption generation system initialization and dependency management.
+
+This module handles the dynamic loading of caption generators based on available
+dependencies. It implements graceful fallback behavior when optional dependencies
+are missing, ensuring the application can still function without all caption
+generation features.
+
+The module checks for required dependencies:
+- torch and timm: Core ML dependencies
+- safetensors: Required for JTP2
+- huggingface_hub: Required for WDv3
+
+Each caption generator is only initialized if its dependencies are available,
+with appropriate warning messages logged for missing dependencies.
+"""
+
 import importlib.util
 import logging
 from .base import CaptionGenerator

@@ -1,3 +1,31 @@
+"""
+FastAPI backend for yipyap image browser and caption management system.
+
+This module provides the core HTTP endpoints for browsing, viewing, and managing images
+and their associated captions. It handles file operations, image processing, caption
+generation, and serves both the API endpoints and static files.
+
+Key features:
+- Directory browsing with pagination and caching
+- Image thumbnail and preview generation
+- Caption management (create, update, delete)
+- Multiple caption generator support (JTP2, WDv3)
+- File upload and deletion
+- Development/Production mode handling
+- Static file serving
+- SPA (Single Page Application) support
+
+Environment Variables:
+    ENVIRONMENT (str): "development" or "production" (default: "development")
+    DEV_PORT (int): Development server port (default: 1984)
+    ROOT_DIR (Path): Root directory for file operations (default: current working directory)
+    JTP2_MODEL_PATH (Path): Path to JTP2 model file
+    JTP2_TAGS_PATH (Path): Path to JTP2 tags file
+    WDV3_MODEL_NAME (str): WDv3 model name (default: "vit")
+    WDV3_GEN_THRESHOLD (float): General threshold for WDv3 (default: 0.35)
+    WDV3_CHAR_THRESHOLD (float): Character threshold for WDv3 (default: 0.75)
+"""
+
 import asyncio
 from pathlib import Path
 import logging
@@ -112,6 +140,26 @@ async def browse(
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1),
 ):
+    """
+    Browse directory contents with pagination and caching support.
+
+    Args:
+        request (Request): FastAPI request object for header access
+        path (str): Relative path to browse from ROOT_DIR
+        page (int): Page number for pagination (>= 1)
+        page_size (int): Number of items per page (>= 1)
+
+    Returns:
+        StreamingResponse: NDJSON stream of directory contents
+            First line: BrowseHeader with directory metadata
+            Subsequent lines: DirectoryModel or ImageModel objects
+
+    Supports:
+        - HTTP HEAD requests
+        - If-Modified-Since caching
+        - Caption sorting
+        - Async directory scanning
+    """
     target_path = utils.resolve_path(path, ROOT_DIR)
 
     # Parse If-Modified-Since header if present
@@ -175,14 +223,30 @@ async def browse(
 
 # Used for deleting everything in a directory.
 @app.delete("/api/browse/{path:path}")
-async def delete_image(path: str, confirm: bool = Query(False), preserve_latents: bool = Query(False), preserve_txt: bool = Query(False)):
+async def delete_image(
+    path: str, 
+    confirm: bool = Query(False), 
+    preserve_latents: bool = Query(False), 
+    preserve_txt: bool = Query(False)
+):
     """
     Delete an image and its associated files.
     
-    Query Parameters:
-        confirm (bool): Whether to confirm the deletion.
-        preserve_latents (bool): Whether to preserve .npz files.
-        preserve_txt (bool): Whether to preserve .txt files.
+    Args:
+        path (str): Path to the image file to delete
+        confirm (bool): Whether to confirm the deletion
+        preserve_latents (bool): Whether to preserve .npz files
+        preserve_txt (bool): Whether to preserve .txt files
+        
+    Returns:
+        dict: Information about deleted and preserved files
+            - confirm (bool): Confirmation status
+            - deleted_captions (list): List of deleted caption files
+            - deleted_files (list): List of deleted image files
+            - preserved_files (list): List of preserved files
+            
+    Raises:
+        HTTPException: If deletion fails or is not confirmed
     """
     image_path = utils.resolve_path(path, ROOT_DIR)
     try:
@@ -207,6 +271,20 @@ async def delete_image(path: str, confirm: bool = Query(False), preserve_latents
 
 @app.get("/thumbnail/{path:path}")
 async def get_thumbnail(path: str):
+    """
+    Get a cached thumbnail for an image.
+    
+    Args:
+        path (str): Path to the original image
+        
+    Returns:
+        Response: WebP thumbnail image with caching headers
+        
+    Notes:
+        - Thumbnails are 300x300 max size
+        - Uses SQLite cache for storing thumbnails
+        - Cache-Control header set for 1 year
+    """
     image_path = utils.resolve_path(path, ROOT_DIR)
 
     thumbnail_data = await data_source.get_thumbnail(image_path)
@@ -219,6 +297,20 @@ async def get_thumbnail(path: str):
 
 @app.get("/preview/{path:path}")
 async def get_preview(path: str):
+    """
+    Get a preview-sized version of an image.
+    
+    Args:
+        path (str): Path to the original image
+        
+    Returns:
+        Response: WebP preview image with caching headers
+        
+    Notes:
+        - Previews are 1024x1024 max size
+        - Uses SQLite cache for storing previews
+        - Cache-Control header set for 1 year
+    """
     image_path = utils.resolve_path(path, ROOT_DIR)
 
     preview_data = await data_source.get_preview(image_path)
@@ -231,6 +323,18 @@ async def get_preview(path: str):
 
 @app.get("/download/{path:path}")
 async def download_image(path: str):
+    """
+    Download the original image file.
+    
+    Args:
+        path (str): Path to the image file
+        
+    Returns:
+        FileResponse: Original image file as attachment
+        
+    Raises:
+        HTTPException: If file not found or access denied
+    """
     try:
         image_path = utils.resolve_path(path, ROOT_DIR)
 
@@ -245,7 +349,26 @@ async def download_image(path: str):
 
 @app.put("/caption/{path:path}")
 async def update_caption(path: str, caption_data: dict):
-    """Create or update a caption file"""
+    """
+    Create or update a caption file for an image.
+    
+    Args:
+        path (str): Path to the image file
+        caption_data (dict): Caption information
+            - type (str): Caption file type (e.g., "caption", "tags")
+            - caption (str): Caption text content
+            
+    Returns:
+        dict: Success status
+        
+    Raises:
+        HTTPException: If image not found or caption update fails
+        
+    Notes:
+        - Creates caption file with same name as image but different extension
+        - Updates cache through data_source
+        - Touches parent directory to force cache invalidation
+    """
     try:
         image_path = utils.resolve_path(path, ROOT_DIR)
         if not image_path.exists():
@@ -279,7 +402,14 @@ async def update_caption(path: str, caption_data: dict):
 
 @app.get("/config")
 async def get_config():
-    """Endpoint to get the configured preview and thumbnail sizes."""
+    """
+    Get application configuration settings.
+    
+    Returns:
+        dict: Configuration settings
+            - thumbnail_size (tuple): Max width/height for thumbnails
+            - preview_size (tuple): Max width/height for previews
+    """
     return {
         "thumbnail_size": data_source.thumbnail_size,
         "preview_size": data_source.preview_size,
@@ -465,7 +595,24 @@ async def generate_caption(
 # Add new endpoint to update model path
 @app.put("/api/config/jtp2")
 async def update_jtp2_config(config: dict):
-    """Update JTP2 model configuration"""
+    """
+    Update JTP2 model configuration.
+    
+    Args:
+        config (dict): New configuration settings
+            - model_path (str, optional): Path to model file
+            - tags_path (str, optional): Path to tags file
+            
+    Returns:
+        dict: Success status
+        
+    Raises:
+        HTTPException: If reinitialization fails
+        
+    Notes:
+        - Updates global JTP2 paths
+        - Reinitializes caption generator with new settings
+    """
     global JTP2_MODEL_PATH, JTP2_TAGS_PATH
     
     if "model_path" in config:
@@ -491,7 +638,24 @@ async def update_jtp2_config(config: dict):
 
 @app.post("/api/upload/{path:path}")
 async def upload_files(path: str, files: List[UploadFile] = File(...)):
-    """Upload files to specified directory"""
+    """
+    Upload files to a specified directory.
+    
+    Args:
+        path (str): Target directory path
+        files (List[UploadFile]): List of files to upload
+        
+    Returns:
+        dict: Upload status message
+        
+    Raises:
+        HTTPException: If upload fails
+        
+    Notes:
+        - Creates target directory if it doesn't exist
+        - Preserves relative paths in uploaded files
+        - Skips hidden files
+    """
     try:
         # Resolve the target directory path using utils.resolve_path
         target_dir = utils.resolve_path(path, ROOT_DIR) if path else ROOT_DIR
@@ -524,5 +688,16 @@ async def upload_files(path: str, files: List[UploadFile] = File(...)):
 # Add a root upload endpoint as well
 @app.post("/api/upload")
 async def upload_files_root(files: List[UploadFile] = File(...)):
-    """Upload files to root directory"""
+    """
+    Upload files to the root directory.
+    
+    Args:
+        files (List[UploadFile]): List of files to upload
+        
+    Returns:
+        dict: Upload status message
+        
+    Notes:
+        - Wrapper around upload_files with empty path
+    """
     return await upload_files("", files)

@@ -6,7 +6,9 @@ The gallery system is the heart of the application, featuring a sophisticated im
 
 The application implements a robust theming system with multiple built-in themes (light, dark, strawberry, etc.) that affect not just colors but also animations and visual effects. File operations are handled through a drag-and-drop interface with progress tracking and support for recursive directory uploads.
 
-The backend is Python using FastAPI.
+The backend is built with FastAPI and follows a modular architecture focused on performance and extensibility. The core functionality is divided into distinct layers: HTTP endpoints (main.py), data access (data_access.py), caption generation (caption_generation/), and utilities (utils.py). The system uses SQLite for caching metadata and thumbnails, with careful attention to cache invalidation and concurrent access patterns.
+
+The caption generation system is particularly noteworthy, implementing a plugin-like architecture where different ML models can be easily integrated. Each caption generator must implement the CaptionGenerator abstract base class, providing a consistent interface while allowing for model-specific optimizations. The system currently supports JTP2 and WDv3 models, with graceful fallback handling if models or dependencies are unavailable.
 
 Maintain consistency with existing code by following established naming conventions and reusing components and styles where appropriate. When writing CSS, ensure compatibility with the global styles defined in `/src/styles.css`.
 

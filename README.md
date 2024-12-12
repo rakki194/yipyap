@@ -292,3 +292,65 @@ This project is licensed under the MIT License. See the `LICENSE.md` file for de
 ## Getting Help
 
 If you encounter any issues or have questions, feel free to open an issue on the GitHub repository.
+
+## Backend Architecture
+
+The backend is built with FastAPI and provides a comprehensive API for image management and caption generation. It uses a layered architecture with the following components:
+
+### Core Components
+
+1. **FastAPI Application** (`app/main.py`)
+   - HTTP endpoint definitions
+   - Request/response handling
+   - Development/Production mode configuration
+   - Static file serving
+   - SPA support
+
+2. **Data Access Layer** (`app/data_access.py`)
+   - SQLite-based caching system
+   - File system operations
+   - Image processing and thumbnail generation
+   - Caption file management
+
+3. **Caption Generation** (`app/caption_generation/`)
+   - Modular caption generator system
+   - Support for multiple ML models
+   - Async generation with error handling
+   - Model configuration management
+
+4. **Utility Layer** (`app/utils.py`)
+   - Path resolution and validation
+   - Security checks
+   - Helper functions
+
+### Key Features
+
+1. **Efficient Directory Browsing**
+   - Pagination support
+   - Cache-aware responses
+   - If-Modified-Since handling
+   - Async directory scanning
+
+2. **Image Processing**
+   - Thumbnail generation (300x300)
+   - Preview generation (1024x1024)
+   - WebP format optimization
+   - Color space management
+
+3. **Caption Management**
+   - Multiple caption formats (.caption, .txt, .tags)
+   - Automatic caption generation
+   - Caption priority ordering
+   - Batch operations
+
+4. **Security**
+   - Path traversal protection
+   - Development/Production mode isolation
+   - Error handling and logging
+   - Permission validation
+
+5. **Caching System**
+   - SQLite-based metadata cache
+   - Thumbnail caching
+   - Directory listing cache
+   - Cache invalidation handling
