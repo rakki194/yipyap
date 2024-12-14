@@ -134,13 +134,68 @@ const MultiSelectActions = () => {
   const handleDelete = async () => {
     if (!hasSelection()) return;
     
-    const message = app.t('gallery.confirmMultiDelete').replace('{{count}}', selectedCount().toString());
-    if (confirm(message)) {
-      const selected = Array.from(selection.multiSelected);
-      for (const idx of selected) {
-        await gallery.deleteImage(idx);
+    try {
+      const message = app.t('gallery.confirmMultiDelete').replace('{{count}}', selectedCount().toString());
+      if (confirm(message)) {
+        const data = gallery.data();
+        if (!data) return;
+        
+        const selected = Array.from(selection.multiSelected);
+        const results = await Promise.allSettled(
+          selected.map(async (idx) => {
+            try {
+              const item = data.items[idx];
+              if (item?.type !== 'image') return;
+              
+              const imagePath = data.path
+                ? `${data.path}/${item.file_name}`
+                : item.file_name;
+                
+              const params = new URLSearchParams();
+              params.append("confirm", "true");
+              
+              if (app.preserveLatents) {
+                params.append("preserve_latents", "true");
+              }
+              if (app.preserveTxt) {
+                params.append("preserve_txt", "true");
+              }
+
+              const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
+                method: "DELETE",
+              });
+              
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Failed to delete image.");
+              }
+              
+              return response;
+            } catch (error) {
+              console.error(`Error deleting image at index ${idx}:`, error);
+              throw error;
+            }
+          })
+        );
+        
+        // Log results and handle errors
+        const failedCount = results.filter(r => r.status === 'rejected').length;
+        if (failedCount > 0) {
+          results.forEach((result, index) => {
+            if (result.status === 'rejected') {
+              console.error(`Failed to delete image at index ${selected[index]}:`, result.reason);
+            }
+          });
+          alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedCount.toString()));
+        }
+        
+        // Clear selection and refresh gallery data
+        selection.clearMultiSelect();
+        gallery.refetch();
       }
-      selection.clearMultiSelect();
+    } catch (error) {
+      console.error('Error in bulk delete operation:', error);
+      alert(app.t('gallery.deleteError'));
     }
   };
 
