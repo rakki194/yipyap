@@ -31,6 +31,11 @@ from PIL import Image
 from safetensors.torch import load_file
 import pillow_jxl # type: ignore
 
+try:
+    import pillow_avif
+except ImportError:
+    pass
+
 from .base import CaptionGenerator
 from .utils import run_in_executor
 

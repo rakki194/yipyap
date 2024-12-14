@@ -8,6 +8,7 @@ uvicorn[standard]
 watchfiles
 
 # Image processing
+pillow-avif-plugin # Used in caption generators and the image loader
 pillow-jxl-plugin  # Used in drhead_loader.py and caption generators
 natsort  # Used in data_access.py for natural sorting
 

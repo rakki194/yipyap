@@ -16,16 +16,19 @@ import magic
 
 import pillow_jxl
 
-
 from .drhead_loader import open_srgb
 from .models import ImageModel, DirectoryModel, BrowseHeader
 
-
 logger = logging.getLogger("uvicorn.error")
 
-IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl"}
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl", ".avif"}
 CAPTION_EXTENSIONS = {".caption", ".txt", ".tags"}
 
+try:
+    import pillow_avif
+    IMAGE_EXTENSIONS.add(".avif")
+except ImportError:
+    pass
 
 class ImageDataSource:
     """Abstract interface for image data access"""
