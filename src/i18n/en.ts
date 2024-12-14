@@ -118,6 +118,10 @@ const translations: Translations = {
     noCaptionFiles: "No caption files yet!",
     uploadError: "Upload failed",
     dropOverlay: "Drop files or folders here",
+    selectAll: "Select all images",
+    deselectAll: "Deselect all",
+    deleteSelected: "Delete {{count}} selected items",
+    confirmMultiDelete: "Are you sure you want to delete {{count}} items?",
   },
   shortcuts: {
     title: "Keyboard Shortcuts",

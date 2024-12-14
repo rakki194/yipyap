@@ -15,10 +15,12 @@ export type Selection = ReturnType<typeof useSelection>;
 export function useSelection(backendData: Resource<BrowsePagesCached>) {
   const [state, setState] = createStaticStore<{
     selected: number | null;
+    multiSelected: Set<number>;
     mode: "view" | "edit";
     columns: number | null;
   }>({
     selected: null,
+    multiSelected: new Set(),
     mode: "view",
     columns: null,
   });
@@ -174,6 +176,49 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
      */
     setColumns: (columns: number | null) => {
       setState("columns", columns);
+    },
+    /**
+     * Gets the set of multi-selected indices
+     */
+    get multiSelected() {
+      return state.multiSelected;
+    },
+    /**
+     * Toggles selection for a specific index
+     */
+    toggleMultiSelect: (idx: number) => {
+      setState(prev => {
+        const newSet = new Set(prev.multiSelected);
+        if (newSet.has(idx)) {
+          newSet.delete(idx);
+        } else {
+          newSet.add(idx);
+        }
+        return { ...prev, multiSelected: newSet };
+      });
+    },
+    /**
+     * Selects all images in the current view
+     */
+    selectAll: () => {
+      const data = backendData();
+      if (!data?.items.length) return;
+      
+      setState(prev => {
+        const newSet = new Set<number>();
+        data.items.forEach((item, idx) => {
+          if (item.type === "image") {
+            newSet.add(idx);
+          }
+        });
+        return { ...prev, multiSelected: newSet };
+      });
+    },
+    /**
+     * Clears all multi-selections
+     */
+    clearMultiSelect: () => {
+      setState(prev => ({ ...prev, multiSelected: new Set() }));
     },
   };
 

@@ -51,6 +51,7 @@ export const ImageGrid = (props: {
             <ImageItem
               ref={ref as HTMLDivElement}
               item={item}
+              idx={getIdx()}
               path={props.path}
               selected={isActive(ref, getIdx())}
               onClick={() => {
@@ -104,19 +105,33 @@ function makeIntersectionObserver<T>(
 export const ImageItem = (props: {
   ref: HTMLDivElement;
   item: ImageItemType;
+  idx: number;
   path: string;
   onClick: () => void;
   selected: boolean;
 }) => {
-  const { getThumbnailSize } = useGallery();
+  const gallery = useGallery();
+  const { getThumbnailSize } = gallery;
   const [isLoading, setIsLoading] = createSignal(true);
+  const isMultiSelected = () => gallery.selection.multiSelected.has(props.idx);
+
+  const handleClick = (e: MouseEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      gallery.selection.toggleMultiSelect(props.idx);
+    } else {
+      props.onClick();
+    }
+  };
 
   return (
     <div
       ref={props.ref}
       class="item image"
-      classList={{ selected: props.selected }}
-      onClick={props.onClick}
+      classList={{ 
+        selected: props.selected,
+        "multi-selected": isMultiSelected()
+      }}
+      onClick={handleClick}
       role="link"
     >
       <Show when={props.item()} keyed>
@@ -177,6 +192,11 @@ export const ImageItem = (props: {
           )}
         </Show>
       </div>
+      <Show when={isMultiSelected()}>
+        <div class="multi-select-indicator">
+          <span class="icon">{getIcon("check")}</span>
+        </div>
+      </Show>
     </div>
   );
 };

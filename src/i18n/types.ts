@@ -1,4 +1,4 @@
-import type { LanguageCode } from "./languages";
+import type { LanguageCode } from ".";
 
 export interface CommonTranslations {
   close: string;
@@ -138,6 +138,10 @@ export interface GalleryTranslations {
   noCaptionFiles: string;
   uploadError: string;
   dropOverlay: string;
+  selectAll: string;
+  deselectAll: string;
+  deleteSelected: string;
+  confirmMultiDelete: string;
 }
 
 export interface ShortcutsTranslations {

@@ -1,0 +1,28 @@
+.item.image.multi-selected {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+.multi-select-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--accent);
+  color: var(--bg-color);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.multi-select-actions {
+  display: flex;
+  gap: var(--spacing);
+}
+
+.multi-select-actions .delete-button {
+  color: var(--error);
+} 

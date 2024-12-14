@@ -79,6 +79,7 @@ export const Breadcrumb = () => {
             </Suspense>
           </small>
           <div class="breadcrumb-actions">
+            <MultiSelectActions />
             <ThemeToggle />
             <button
               type="button"
@@ -122,3 +123,55 @@ function ThemeToggle() {
     </button>
   );
 }
+
+const MultiSelectActions = () => {
+  const gallery = useGallery();
+  const app = useAppContext();
+  const selection = gallery.selection;
+  const selectedCount = () => selection.multiSelected.size;
+  const hasSelection = () => selectedCount() > 0;
+  
+  const handleDelete = async () => {
+    if (!hasSelection()) return;
+    
+    const message = app.t('gallery.confirmMultiDelete').replace('{{count}}', selectedCount().toString());
+    if (confirm(message)) {
+      const selected = Array.from(selection.multiSelected);
+      for (const idx of selected) {
+        await gallery.deleteImage(idx);
+      }
+      selection.clearMultiSelect();
+    }
+  };
+
+  return (
+    <Show when={hasSelection() || gallery.data()?.items.some(item => item.type === "image")}>
+      <div class="multi-select-actions">
+        <button
+          type="button"
+          class="icon"
+          onClick={() => {
+            if (hasSelection()) {
+              selection.clearMultiSelect();
+            } else {
+              selection.selectAll();
+            }
+          }}
+          title={hasSelection() ? app.t('gallery.deselectAll') : app.t('gallery.selectAll')}
+        >
+          {getIcon(hasSelection() ? "dismiss" : "checkAll")}
+        </button>
+        <Show when={hasSelection()}>
+          <button
+            type="button"
+            class="icon delete-button"
+            onClick={handleDelete}
+            title={app.t('gallery.deleteSelected').replace('{{count}}', selectedCount().toString())}
+          >
+            {getIcon("delete")}
+          </button>
+        </Show>
+      </div>
+    </Show>
+  );
+};
