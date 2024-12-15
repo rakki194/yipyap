@@ -227,27 +227,60 @@ class CachedFileSystemDataSource(ImageDataSource):
                 md5.update(chunk)
         return md5.hexdigest()
 
-    async def get_thumbnail(self, path: str) -> Optional[bytes]:
-        """
-        Get cached thumbnail WebP data.
-        
-        Args:
-            path (str): Path to original image
+    async def get_thumbnail(self, path: Path) -> Optional[bytes]:
+        """Get cached thumbnail WebP data."""
+        try:
+            conn = self._get_connection()
+            directory = str(path.parent)
+            filename = path.name
             
-        Returns:
-            Optional[bytes]: WebP thumbnail data or None if not cached
+            # Get the exact matching thumbnail
+            result = conn.execute(
+                """
+                SELECT thumbnail_webp 
+                FROM image_info 
+                WHERE directory = ? 
+                AND name = ? 
+                AND deleted = 0
+                """,
+                (directory, filename),
+            ).fetchone()
             
-        Notes:
-            - Checks SQLite cache for thumbnail
-            - Returns None if not found
-            - Handles .webp extension in path
-        """
-        conn = self._get_connection()
-        result = conn.execute(
-            "SELECT thumbnail_webp FROM image_info WHERE directory = ? AND name LIKE ?",
-            (str(path.parent), path.name.replace(".webp", "%")),
-        ).fetchone()
-        return result[0] if result else None
+            if result and result[0]:
+                return result[0]
+            
+            # If not found or null, generate it
+            if not path.exists():
+                logger.error(f"Image file not found: {path}")
+                raise FileNotFoundError(f"Image file not found: {path}")
+            
+            with open_srgb(path) as img:
+                img.thumbnail(self.thumbnail_size)
+                output = BytesIO()
+                img.save(output, format="WebP", quality=80)
+                thumbnail_data = output.getvalue()
+                
+                # Cache the thumbnail with the original filename
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO image_info 
+                    (directory, name, info, cache_time, thumbnail_webp, deleted)
+                    VALUES (?, ?, ?, ?, ?, 0)
+                    """,
+                    (
+                        directory,
+                        filename,
+                        "{}",  # Empty info for now
+                        int(datetime.now(timezone.utc).timestamp()),
+                        thumbnail_data,
+                    ),
+                )
+                conn.commit()
+                
+                return thumbnail_data
+        except Exception as e:
+            logger.exception(f"Error generating thumbnail for {path}: {e}")
+            raise
 
     def get_image_info(self, directory: Path, item: Dict) -> ImageModel:
         """Get image info with caching"""
@@ -255,6 +288,7 @@ class CachedFileSystemDataSource(ImageDataSource):
         logger.debug(f"Getting image info with caching for {path}")
 
         conn = self._get_connection()
+        # Use exact filename match
         result = conn.execute(
             r"""
             SELECT info, cache_time, deleted FROM image_info 
@@ -546,24 +580,18 @@ class CachedFileSystemDataSource(ImageDataSource):
             raise
 
     async def get_preview(self, path: Path) -> bytes:
-        """Generate preview image (larger than thumbnail, smaller than original)"""
-        directory = path.parent
-        _, _, items = self.scan_directory(directory)
-        stem = path.stem
-        for item in items:
-            if item["stem"] == stem:
-                path = directory / item["name"]
-                break
-        else:
-            return None
+        """Generate preview image."""
         try:
+            if not path.exists():
+                logger.error(f"Image file not found: {path}")
+                raise FileNotFoundError(f"Image file not found: {path}")
+            
             with open_srgb(path) as img:
                 img.thumbnail(self.preview_size)
                 output = BytesIO()
                 img.save(output, format="WebP", quality=70, method=6)
                 output.seek(0)
-
-            return output.getvalue()
+                return output.getvalue()
         except Exception as e:
             logger.exception(f"Error generating preview for {path}: {e}")
             raise

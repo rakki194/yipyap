@@ -68,10 +68,9 @@ const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
 
   const { name, width, height, size, mime, mtime } = image;
   const resolvedPath = pathParam || "/";
-  const webpName = replaceExtension(name, ".webp");
 
-  const thumbnail_path = joinUrlParts("/thumbnail", resolvedPath, webpName);
-  const preview_path = joinUrlParts("/preview", resolvedPath, webpName);
+  const thumbnail_path = joinUrlParts("/thumbnail", resolvedPath, name);
+  const preview_path = joinUrlParts("/preview", resolvedPath, name);
   const download_path = joinUrlParts("/download", resolvedPath, name);
   const aspect_ratio = `${width}/${height}`;
 

@@ -138,7 +138,7 @@ export const ImageItem = (props: {
     >
       <Show when={props.item()} keyed>
         {(item) => {
-          const thumbnailName = item.name.replace(/\.[^/.]+$/, ".webp");
+          const thumbnailPath = joinUrlParts("/thumbnail", props.path, item.name);
           const aspectRatio = item.width / item.height;
           const { width, height } = getThumbnailSize(item);
 
@@ -153,7 +153,7 @@ export const ImageItem = (props: {
             <>
               <img
                 ref={imgRef!}
-                src={joinUrlParts("/thumbnail", props.path, thumbnailName)}
+                src={thumbnailPath}
                 width={width}
                 height={height}
                 style={{
