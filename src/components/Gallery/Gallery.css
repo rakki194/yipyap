@@ -283,7 +283,3 @@
 .multi-select-actions .delete-button {
   color: var(--error);
 }
-
-.upload-progress-fill.delete {
-  background: var(--error);
-}
