@@ -137,6 +137,7 @@ export function makeGalleryState() {
     createGalleryResourceCached(() => ({
       path: state.path,
       page: state.page,
+      page_size: 32,
     }));
 
   const selection = useSelection(backendData);
@@ -190,14 +191,20 @@ export function makeGalleryState() {
     }
   );
 
-  // Effect: Reset page and selected image when the path changes
+  // Effect: Reset page when the path changes, but only if there are images
   createEffect(
     on(
       () => params.path,
       (path, prevPath) => {
         if (path !== prevPath) {
           batch(() => {
-            setState({ page: 1, path: path });
+            // Only reset page if there are images in the current view
+            const currentData = backendData();
+            if (!currentData || currentData.total_images > 0) {
+              setState({ page: 1, path: path });
+            } else {
+              setState({ path: path }); // Just update path for folder-only views
+            }
             selection.select(null);
             clearImageCache();
           });
@@ -206,12 +213,13 @@ export function makeGalleryState() {
     )
   );
 
-  // Effect: Load the next page when the selected image changes
+  // Effect: Load the next page when the selected image changes, but only if there are images
   createEffect(
     on(
       () => selection.selectedImage,
       (image) => {
-        if (image?.next_page !== undefined) {
+        const currentData = backendData();
+        if (currentData && 'total_images' in currentData && currentData.total_images > 0 && image?.next_page !== undefined) {
           setPage(image.next_page);
         }
       }

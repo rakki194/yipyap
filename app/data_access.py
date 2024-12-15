@@ -427,6 +427,11 @@ class CachedFileSystemDataSource(ImageDataSource):
         total_folders = len(dir_items)
         total_images = len(img_items)
 
+        # If only folders exist, skip pagination
+        if total_images == 0:
+            page_size = max(total_folders, 1)  # Prevent division by zero
+            page = 1
+
         # Apply pagination
         start = (page - 1) * page_size
         end = start + page_size
@@ -448,14 +453,15 @@ class CachedFileSystemDataSource(ImageDataSource):
         dir_items = dir_items[dir_start:dir_end]
         img_items = img_items[img_start:img_end]
 
+        # Calculate total pages, ensuring page_size is at least 1
+        total_pages = (total_folders + total_images + max(page_size, 1) - 1) // max(page_size, 1)
+
         # Extract names and update mtime
         folder_names = [f.name for f in dir_items]
         image_names = []
         for item in img_items:
             mtime_dt = max(mtime_dt, item["mtime"])
             image_names.append(item["name"])
-
-        total_pages = (total_folders + total_images + page_size - 1) // page_size
 
         browser_header = BrowseHeader(
             mtime=mtime_dt,
