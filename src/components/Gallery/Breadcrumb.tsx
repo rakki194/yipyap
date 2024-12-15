@@ -128,8 +128,10 @@ const MultiSelectActions = () => {
   const gallery = useGallery();
   const app = useAppContext();
   const selection = gallery.selection;
-  const selectedCount = () => selection.multiSelected.size;
+  const [deleteProgress, setDeleteProgress] = createSignal<{ current: number, total: number } | null>(null);
+  const selectedCount = () => selection.multiSelected.size + selection.multiFolderSelected.size;
   const hasSelection = () => selectedCount() > 0;
+  const hasFolderSelection = () => selection.multiFolderSelected.size > 0;
   
   const handleDelete = async () => {
     if (!hasSelection()) return;
@@ -140,67 +142,116 @@ const MultiSelectActions = () => {
         const data = gallery.data();
         if (!data) return;
         
-        const selected = Array.from(selection.multiSelected);
-        const results = await Promise.allSettled(
-          selected.map(async (idx) => {
-            try {
-              const item = data.items[idx];
-              if (item?.type !== 'image') return;
-              
-              const imagePath = data.path
-                ? `${data.path}/${item.file_name}`
-                : item.file_name;
+        // Handle folder deletions
+        const selectedFolders = Array.from(selection.multiFolderSelected);
+        if (selectedFolders.length > 0) {
+          setDeleteProgress({ current: 0, total: selectedFolders.length });
+          let completed = 0;
+          
+          const folderResults = await Promise.allSettled(
+            selectedFolders.map(async (idx) => {
+              try {
+                const item = data.items[idx];
+                if (item?.type !== 'directory') return;
                 
-              const params = new URLSearchParams();
-              params.append("confirm", "true");
-              
-              if (app.preserveLatents) {
-                params.append("preserve_latents", "true");
+                const folderPath = data.path
+                  ? `${data.path}/${item.file_name}`
+                  : item.file_name;
+                  
+                const response = await fetch(`/api/browse/${folderPath}`, {
+                  method: 'DELETE',
+                });
+                
+                completed++;
+                setDeleteProgress(prev => prev ? { 
+                  ...prev, 
+                  current: completed
+                } : null);
+                
+                return response;
+              } catch (error) {
+                console.error(`Error deleting folder at index ${idx}:`, error);
+                throw error;
               }
-              if (app.preserveTxt) {
-                params.append("preserve_txt", "true");
-              }
+            })
+          );
 
-              const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
-                method: "DELETE",
-              });
-              
-              if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || "Failed to delete image.");
+          // Handle folder deletion errors
+          const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
+          if (failedFolders > 0) {
+            alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedFolders.toString()));
+          }
+        }
+
+        // Handle image deletions only if no folders are selected
+        if (!hasFolderSelection()) {
+          const selectedImages = Array.from(selection.multiSelected);
+          setDeleteProgress({ current: 0, total: selectedImages.length });
+          let completed = 0;
+          
+          const results = await Promise.allSettled(
+            selectedImages.map(async (idx) => {
+              try {
+                const item = data.items[idx];
+                if (item?.type !== 'image') return;
+                
+                const imagePath = data.path
+                  ? `${data.path}/${item.file_name}`
+                  : item.file_name;
+                  
+                const params = new URLSearchParams();
+                params.append("confirm", "true");
+                
+                if (app.preserveLatents) {
+                  params.append("preserve_latents", "true");
+                }
+                if (app.preserveTxt) {
+                  params.append("preserve_txt", "true");
+                }
+
+                const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
+                  method: "DELETE",
+                });
+                
+                completed++;
+                setDeleteProgress(prev => prev ? { 
+                  ...prev, 
+                  current: completed
+                } : null);
+                
+                return response;
+              } catch (error) {
+                console.error(`Error deleting image at index ${idx}:`, error);
+                throw error;
               }
-              
-              return response;
-            } catch (error) {
-              console.error(`Error deleting image at index ${idx}:`, error);
-              throw error;
-            }
-          })
-        );
-        
-        // Log results and handle errors
-        const failedCount = results.filter(r => r.status === 'rejected').length;
-        if (failedCount > 0) {
-          results.forEach((result, index) => {
-            if (result.status === 'rejected') {
-              console.error(`Failed to delete image at index ${selected[index]}:`, result.reason);
-            }
-          });
-          alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedCount.toString()));
+            })
+          );
+          
+          // Handle image deletion errors
+          const failedCount = results.filter(r => r.status === 'rejected').length;
+          if (failedCount > 0) {
+            alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedCount.toString()));
+          }
         }
         
-        // Clear selection and refresh gallery data
+        // Clear progress and selection after all operations
+        setDeleteProgress(null);
         selection.clearMultiSelect();
-        gallery.refetch();
+        
+        // Force a refetch by invalidating the current data
+        gallery.invalidate();
+        await gallery.refetch();
       }
     } catch (error) {
       console.error('Error in bulk delete operation:', error);
       alert(app.t('gallery.deleteError'));
+    } finally {
+      setDeleteProgress(null);
     }
   };
 
   return (
-    <Show when={hasSelection() || gallery.data()?.items.some(item => item.type === "image")}>
+    <Show when={hasSelection() || gallery.data()?.items.some(item => item.type === "image" || item.type === "directory")}>
       <div class="multi-select-actions">
         <button
           type="button"
@@ -217,14 +268,26 @@ const MultiSelectActions = () => {
           {getIcon(hasSelection() ? "dismiss" : "checkAll")}
         </button>
         <Show when={hasSelection()}>
-          <button
-            type="button"
-            class="icon delete-button"
-            onClick={handleDelete}
-            title={app.t('gallery.deleteSelected').replace('{{count}}', selectedCount().toString())}
-          >
-            {getIcon("delete")}
-          </button>
+          <div class="delete-button-container">
+            <button
+              type="button"
+              class="icon delete-button"
+              onClick={handleDelete}
+              title={app.t('gallery.deleteSelected').replace('{{count}}', selectedCount().toString())}
+            >
+              {getIcon("delete")}
+            </button>
+            <Show when={deleteProgress()}>
+              <div class="delete-progress-bar">
+                <div 
+                  class="delete-progress-fill" 
+                  style={{ 
+                    width: `${(deleteProgress()!.current / deleteProgress()!.total) * 100}%` 
+                  }}
+                />
+              </div>
+            </Show>
+          </div>
         </Show>
       </div>
     </Show>

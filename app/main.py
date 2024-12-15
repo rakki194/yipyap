@@ -225,33 +225,24 @@ async def browse(
 @app.delete("/api/browse/{path:path}")
 async def delete_image(
     path: str, 
-    confirm: bool = Query(False), 
+    confirm: bool = Query(True),
     preserve_latents: bool = Query(False), 
     preserve_txt: bool = Query(False)
 ):
     """
-    Delete an image and its associated files.
+    Delete an image/directory and its associated files.
     
     Args:
-        path (str): Path to the image file to delete
-        confirm (bool): Whether to confirm the deletion
+        path (str): Path to the image/directory to delete
+        confirm (bool): Whether to actually perform the deletion (default: True)
         preserve_latents (bool): Whether to preserve .npz files
         preserve_txt (bool): Whether to preserve .txt files
-        
-    Returns:
-        dict: Information about deleted and preserved files
-            - confirm (bool): Confirmation status
-            - deleted_captions (list): List of deleted caption files
-            - deleted_files (list): List of deleted image files
-            - preserved_files (list): List of preserved files
-            
-    Raises:
-        HTTPException: If deletion fails or is not confirmed
     """
-    image_path = utils.resolve_path(path, ROOT_DIR)
+    target_path = utils.resolve_path(path, ROOT_DIR)
     try:
+        logger.info(f"Deleting {target_path} (confirm={confirm})")
         captions, files, preserved = await data_source.delete_image(
-            image_path, 
+            target_path, 
             confirm=confirm, 
             preserve_latents=preserve_latents, 
             preserve_txt=preserve_txt
@@ -262,10 +253,8 @@ async def delete_image(
             "deleted_files": files,
             "preserved_files": preserved
         }
-    except HTTPException as e:
-        raise e
     except Exception as e:
-        logger.error(f"Error deleting image: {e}", exc_info=True)
+        logger.error(f"Error deleting {target_path}: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 

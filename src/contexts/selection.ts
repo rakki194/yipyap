@@ -16,11 +16,13 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
   const [state, setState] = createStaticStore<{
     selected: number | null;
     multiSelected: Set<number>;
+    multiFolderSelected: Set<number>;
     mode: "view" | "edit";
     columns: number | null;
   }>({
     selected: null,
     multiSelected: new Set(),
+    multiFolderSelected: new Set(),
     mode: "view",
     columns: null,
   });
@@ -198,27 +200,88 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
       });
     },
     /**
-     * Selects all images in the current view
+     * Selects all items of specified type in the current view
      */
     selectAll: () => {
+      const data = backendData();
+      if (!data?.items.length) return;
+      
+      // Check if there are only directories
+      const onlyDirectories = data.items.every(item => item.type === "directory");
+      
+      setState(prev => {
+        const newImageSet = new Set<number>();
+        const newFolderSet = new Set<number>();
+        
+        data.items.forEach((item, idx) => {
+          if (onlyDirectories && item.type === "directory") {
+            newFolderSet.add(idx);
+          } else if (!onlyDirectories && item.type === "image") {
+            newImageSet.add(idx);
+          }
+        });
+        
+        return { 
+          ...prev, 
+          multiSelected: newImageSet,
+          multiFolderSelected: newFolderSet
+        };
+      });
+    },
+    /**
+     * Clears all multi-selections (both images and folders)
+     */
+    clearMultiSelect: () => {
+      setState(prev => ({ 
+        ...prev, 
+        multiSelected: new Set(),
+        multiFolderSelected: new Set() 
+      }));
+    },
+    /**
+     * Gets the set of multi-selected folder indices
+     */
+    get multiFolderSelected() {
+      return state.multiFolderSelected;
+    },
+    /**
+     * Toggles selection for a specific folder index
+     */
+    toggleFolderMultiSelect: (idx: number) => {
+      setState(prev => {
+        const newSet = new Set(prev.multiFolderSelected);
+        if (newSet.has(idx)) {
+          newSet.delete(idx);
+        } else {
+          // Clear image selection when selecting folders
+          setState("multiSelected", new Set());
+          newSet.add(idx);
+        }
+        return { ...prev, multiFolderSelected: newSet };
+      });
+    },
+    /**
+     * Selects all folders in the current view
+     */
+    selectAllFolders: () => {
       const data = backendData();
       if (!data?.items.length) return;
       
       setState(prev => {
         const newSet = new Set<number>();
         data.items.forEach((item, idx) => {
-          if (item.type === "image") {
+          if (item.type === "directory") {
             newSet.add(idx);
           }
         });
-        return { ...prev, multiSelected: newSet };
+        return { ...prev, multiFolderSelected: newSet, multiSelected: new Set() };
       });
     },
     /**
-     * Clears all multi-selections
+     * Clears all folder multi-selections
      */
-    clearMultiSelect: () => {
-      setState(prev => ({ ...prev, multiSelected: new Set() }));
+    clearFolderMultiSelect: () => {
+      setState(prev => ({ ...prev, multiFolderSelected: new Set() }));
     },
   };
 

@@ -355,6 +355,11 @@ export function makeGalleryState() {
 
   const windowSize = createWindowSize();
 
+  const invalidate = () => {
+    // Clear the current data to force a fresh fetch
+    setData(undefined);
+  };
+
   // Gallery actions and getters
   const gallery = {
     setViewMode: (mode: "grid" | "list") => {
@@ -400,6 +405,7 @@ export function makeGalleryState() {
     },
     generateTags,
     refetch,
+    invalidate,
   };
 
   if (import.meta.env.DEV) {

@@ -75,3 +75,27 @@
   position: relative;
   z-index: 2;
 }
+
+.delete-button-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.delete-progress-bar {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--border-color);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.delete-progress-fill {
+  height: 100%;
+  background: var(--error);
+  transition: width 0.2s ease-out;
+}

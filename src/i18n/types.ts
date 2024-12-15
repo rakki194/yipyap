@@ -142,6 +142,12 @@ export interface GalleryTranslations {
   deselectAll: string;
   deleteSelected: string;
   confirmMultiDelete: string;
+  confirmFolderDelete: string;
+  someFolderDeletesFailed: string;
+  folderDeleteError: string;
+  deletingFile: string;
+  fileDeleteSuccess: string;
+  fileDeleteError: string;
 }
 
 export interface ShortcutsTranslations {

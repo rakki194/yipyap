@@ -20,6 +20,12 @@ export const Gallery = () => {
   let dragCounter = 0;
   const [uploadProgress, setUploadProgress] = createSignal<{current: number, total: number} | null>(null);
   const [currentFile, setCurrentFile] = createSignal<string | null>(null);
+  const [progressInfo, setProgressInfo] = createSignal<{
+    current: number;
+    total: number;
+    type: 'upload' | 'delete';
+    message: string;
+  } | null>(null);
 
   const keyDownHandler = (event: KeyboardEvent) => {
     // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
@@ -96,7 +102,6 @@ export const Gallery = () => {
     const params = new URLSearchParams();
     params.append("confirm", "true");
 
-    // Include new settings
     if (appContext.preserveLatents) {
       params.append("preserve_latents", "true");
     }
@@ -105,17 +110,40 @@ export const Gallery = () => {
     }
 
     try {
+      setProgressInfo({
+        current: 0,
+        total: 1,
+        type: 'delete',
+        message: appContext.t('gallery.deletingFile')
+      });
+
       const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
         method: "DELETE",
       });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Failed to delete image.");
       }
-      // Refresh gallery or update UI as needed
+
+      setProgressInfo({
+        current: 1,
+        total: 1,
+        type: 'delete',
+        message: appContext.t('gallery.fileDeleteSuccess')
+      });
+
+      // Clear the progress after a short delay
+      setTimeout(() => setProgressInfo(null), 2000);
     } catch (error) {
       console.error("Error deleting image:", error);
-      // Handle error (e.g., show notification)
+      setProgressInfo({
+        current: 1,
+        total: 1,
+        type: 'delete',
+        message: appContext.t('gallery.fileDeleteError')
+      });
+      setTimeout(() => setProgressInfo(null), 3000);
     }
   };
 
@@ -212,11 +240,13 @@ export const Gallery = () => {
         return;
       }
 
-      // Set initial progress
+      // Update initial progress
       const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-      setUploadProgress({ 
-        current: 0, 
-        total: totalSize
+      setProgressInfo({
+        current: 0,
+        total: totalSize,
+        type: 'upload',
+        message: appContext.t('gallery.uploadProgress').replace('{count}', files.length.toString())
       });
 
       // Add all collected files to formData
@@ -238,8 +268,8 @@ export const Gallery = () => {
       
       await uploadFiles(formData, uploadUrl);
       
-      // Clear progress indicators
-      setUploadProgress(null);
+      // Clear progress on success
+      setProgressInfo(null);
       setCurrentFile(null);
       
       // Refresh gallery
@@ -247,11 +277,13 @@ export const Gallery = () => {
       
     } catch (error) {
       console.error('Error uploading files:', error);
-      setUploadProgress(null);
-      setCurrentFile(null);
-      
-      const errorMessage = error instanceof Error ? error.message : appContext.t('gallery.uploadError');
-      alert(errorMessage);
+      setProgressInfo({
+        current: 0,
+        total: 1,
+        type: 'upload',
+        message: appContext.t('gallery.uploadError')
+      });
+      setTimeout(() => setProgressInfo(null), 3000);
     }
   };
 
@@ -334,19 +366,20 @@ export const Gallery = () => {
           )}
         </Show>
 
-        {/* Upload Progress Overlay */}
-        <Show when={uploadProgress()}>
+        {/* Update progress overlay */}
+        <Show when={progressInfo()}>
           {(progress) => (
             <div class="upload-progress-overlay">
               <div class="upload-progress-container">
-                <Show when={currentFile()}>
-                  <div class="upload-current-file">
-                    {currentFile()}
-                  </div>
-                </Show>
+                <div class="upload-current-file">
+                  {progress().message}
+                </div>
                 <div class="upload-progress-bar">
                   <div 
                     class="upload-progress-fill"
+                    classList={{
+                      'delete': progress().type === 'delete'
+                    }}
                     style={{
                       width: `${(progress().current / progress().total) * 100}%`
                     }}

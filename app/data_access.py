@@ -13,6 +13,7 @@ import asyncio
 import aiofiles
 from natsort import os_sort_keygen as natsort_keygen
 import magic
+import shutil
 
 import pillow_jxl
 
@@ -563,8 +564,49 @@ class CachedFileSystemDataSource(ImageDataSource):
 
     async def delete_image(
         self, path: Path, confirm: bool, preserve_latents: bool = False, preserve_txt: bool = False
-    ) -> Tuple[List[str], List[str]]:
-        """Delete an image and associated files based on preservation settings."""
+    ) -> Tuple[List[str], List[str], List[str]]:
+        """Delete an image/directory and associated files based on preservation settings."""
+        
+        # If it's a directory, recursively delete its contents
+        if path.is_dir():
+            if not confirm:
+                # Just return empty lists for dry run
+                return [], [], []
+            
+            try:
+                # Clear cache for this directory and all subdirectories before deletion
+                for cached_dir in list(self.directory_cache.keys()):
+                    if str(cached_dir).startswith(str(path)):
+                        del self.directory_cache[cached_dir]
+                
+                # Clear database entries for all files in this directory and subdirectories
+                conn = self._get_connection()
+                conn.execute(
+                    """
+                    DELETE FROM image_info 
+                    WHERE directory LIKE ?
+                    """,
+                    (str(path) + "%",)
+                )
+                conn.commit()
+                
+                # Recursively delete directory and all contents
+                shutil.rmtree(path)
+                
+                # Touch parent directory to force cache update
+                path.parent.touch()
+                
+                # Clear parent directory cache to force rescan
+                if path.parent in self.directory_cache:
+                    del self.directory_cache[path.parent]
+                
+                return [], [str(path)], []
+                
+            except Exception as e:
+                logger.error(f"Error deleting directory {path}: {e}")
+                raise
+        
+        # Original file deletion logic for single files
         captions = []
         files = []
         preserved_files = []

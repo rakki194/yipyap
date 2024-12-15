@@ -38,6 +38,7 @@ export const ImageGrid = (props: {
           name=".."
           path={props.path}
           selected={gallery.selected === null}
+          idx={-1}
         />
       </Show>
       <For each={props.items}>
@@ -65,6 +66,7 @@ export const ImageGrid = (props: {
               name={item.file_name}
               path={props.path}
               selected={isActive(ref, getIdx())}
+              idx={getIdx()}
             />
           );
         }}
@@ -206,14 +208,34 @@ export const DirectoryItem = (props: {
   path: string;
   name: string;
   selected: boolean;
+  idx: number;
 }) => {
+  const gallery = useGallery();
+  const isMultiSelected = () => gallery.selection.multiFolderSelected.has(props.idx);
+
+  const handleClick = (e: MouseEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      gallery.selection.toggleFolderMultiSelect(props.idx);
+    }
+  };
+
   return (
     <A
       ref={props.ref}
       class="item directory"
-      classList={{ selected: props.selected }}
+      classList={{ 
+        selected: props.selected,
+        "multi-selected": isMultiSelected()
+      }}
+      onClick={handleClick}
       href={joinUrlParts("/gallery", props.path, props.name)}
     >
+      <Show when={isMultiSelected()}>
+        <div class="multi-select-indicator">
+          <span class="icon">{getIcon("check")}</span>
+        </div>
+      </Show>
       <span class="icon">
         {getIcon(props.name === ".." ? "folderArrowUp" : "folder")}
       </span>

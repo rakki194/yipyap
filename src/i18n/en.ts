@@ -122,6 +122,12 @@ const translations: Translations = {
     deselectAll: "Deselect all",
     deleteSelected: "Delete {{count}} selected items",
     confirmMultiDelete: "Are you sure you want to delete {{count}} items?",
+    confirmFolderDelete: "Are you sure you want to delete {{count}} folders? This will delete all contents!",
+    someFolderDeletesFailed: "Failed to delete {{count}} folders",
+    folderDeleteError: "Error deleting folders",
+    deletingFile: "Deleting file...",
+    fileDeleteSuccess: "File deleted successfully",
+    fileDeleteError: "Error deleting file",
   },
   shortcuts: {
     title: "Keyboard Shortcuts",
