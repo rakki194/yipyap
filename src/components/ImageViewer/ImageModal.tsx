@@ -148,6 +148,10 @@ const ModelBody = (props: {
 
   const handleCreateCaption = async (type: string) => {
     try {
+      // Set focus immediately
+      setFocused(true);
+      setFocusedType(type);
+
       const result = await saveCaption({
         type,
         caption: ""
@@ -156,12 +160,11 @@ const ModelBody = (props: {
       if (result instanceof Error) {
         throw result;
       }
-
-      // Set focus to the newly created caption
-      setFocused(true);
-      setFocusedType(type);
     } catch (error) {
       console.error("Error creating caption:", error);
+      // On error, revert focus state
+      setFocused(false);
+      setFocusedType(null);
     }
   };
 

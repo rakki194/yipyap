@@ -234,6 +234,13 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     try {
+      // Update local state immediately for better UX
+      updateLocalCaptions(image, {
+        type,
+        caption
+      }, database);
+
+      // Then make the API call
       const response = await fetch(`/caption/${database.path}/${image.name}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -241,14 +248,12 @@ export function makeGalleryState() {
       });
 
       if (!response.ok) {
+        // Revert local state on error
+        const originalCaptions = image.captions;
+        const originalCaption = originalCaptions.find(([t]) => t === type)?.[1];
+        updateLocalCaptions(image, { type, caption: originalCaption }, database);
         throw new Error(`Failed to save caption: ${await response.text()}`);
       }
-
-      // Update local state without refetching
-      updateLocalCaptions(image, {
-        type,
-        caption
-      }, database);
 
       return response;
     } catch (error) {
