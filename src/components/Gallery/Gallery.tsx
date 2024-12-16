@@ -231,7 +231,7 @@ export const Gallery = () => {
     }
   };
 
-  const keyDownHandler = (event: KeyboardEvent) => {
+  const keyDownHandler = async (event: KeyboardEvent) => {
     // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
     if (!event) return;
 
@@ -361,14 +361,92 @@ export const Gallery = () => {
       const segments = data.path.split("/");
       if (segments.length < 1) return;
       navigate(`/gallery/${segments.slice(0, -1).join("/")}`);
-    } else if (event.key === "Delete" && gallery.selectedImage !== null) {
+    } else if (event.key === "Delete") {
       const data = gallery.data();
       if (!data) return;
-      
-      const selectedItem = data.items[gallery.selected!];
-      if (!selectedItem || selectedItem.type !== 'image') return;
-      
-      deleteImageAction(gallery.selected!);
+
+      // Handle multi-selection delete
+      if (gallery.selection.multiSelected.size > 0 || gallery.selection.multiFolderSelected.size > 0) {
+        const selectedCount = gallery.selection.multiSelected.size + gallery.selection.multiFolderSelected.size;
+        const message = appContext.t('gallery.confirmMultiDelete').replace('{{count}}', selectedCount.toString());
+        
+        if (confirm(message)) {
+          // Handle folder deletions first
+          const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
+          if (selectedFolders.length > 0) {
+            const folderResults = await Promise.allSettled(
+              selectedFolders.map(async (idx) => {
+                const item = data.items[idx];
+                if (item?.type !== 'directory') return;
+                
+                const folderPath = data.path
+                  ? `${data.path}/${item.file_name}`
+                  : item.file_name;
+                  
+                const params = new URLSearchParams();
+                params.append("confirm", "true");
+                
+                return await fetch(`/api/browse/${folderPath}?${params.toString()}`, {
+                  method: 'DELETE',
+                });
+              })
+            );
+
+            const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
+            if (failedFolders > 0) {
+              alert(appContext.t('gallery.folderDeleteError'));
+            }
+          }
+
+          // Handle image deletions
+          const selectedImages = Array.from(gallery.selection.multiSelected);
+          if (selectedImages.length > 0) {
+            const results = await Promise.allSettled(
+              selectedImages.map(async (idx) => {
+                const item = data.items[idx];
+                if (item?.type !== 'image') return;
+                
+                const imagePath = data.path
+                  ? `${data.path}/${item.file_name}`
+                  : item.file_name;
+                  
+                const params = new URLSearchParams();
+                params.append("confirm", "true");
+                
+                if (appContext.preserveLatents) {
+                  params.append("preserve_latents", "true");
+                }
+                if (appContext.preserveTxt) {
+                  params.append("preserve_txt", "true");
+                }
+
+                return await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
+                  method: "DELETE",
+                });
+              })
+            );
+
+            const failedCount = results.filter(r => r.status === 'rejected').length;
+            if (failedCount > 0) {
+              alert(appContext.t('gallery.fileDeleteError'));
+            }
+          }
+
+          // Clear selection after all operations
+          gallery.selection.clearMultiSelect();
+          gallery.selection.clearFolderMultiSelect();
+          
+          // Force a refetch
+          gallery.invalidate();
+          await gallery.refetch();
+        }
+      } else if (gallery.selectedImage !== null) {
+        // Handle single image delete
+        const selectedItem = data.items[gallery.selected!];
+        if (selectedItem?.type === 'image') {
+          await deleteImageAction(gallery.selected!);
+        }
+      }
     } else if (event.key === "q") {
       setShowQuickJump(true);
       event.preventDefault();

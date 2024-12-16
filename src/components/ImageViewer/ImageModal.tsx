@@ -334,50 +334,80 @@ const DeleteButton = (props: {
       // Handle multi-delete
       const message = app.t('gallery.confirmMultiDelete').replace('{{count}}', getSelectedCount().toString());
       if (confirm(message)) {
-        // Handle folder deletions first
+        // Handle folder deletions first if any folders are selected
         const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
         if (selectedFolders.length > 0) {
-          const folderResults = await Promise.allSettled(
-            selectedFolders.map(async (idx) => {
-              const item = data.items[idx];
-              if (item?.type !== 'directory') return;
-              
-              const folderPath = data.path
-                ? `${data.path}/${item.file_name}`
-                : item.file_name;
+          const folderMessage = app.t('gallery.confirmFolderDelete').replace('{{count}}', selectedFolders.length.toString());
+          if (confirm(folderMessage)) {
+            const folderResults = await Promise.allSettled(
+              selectedFolders.map(async (idx) => {
+                const item = data.items[idx];
+                if (item?.type !== 'directory') return;
                 
-              return await fetch(`/api/browse/${folderPath}`, {
-                method: 'DELETE',
-              });
-            })
-          );
+                const folderPath = data.path
+                  ? `${data.path}/${item.file_name}`
+                  : item.file_name;
+                
+                const params = new URLSearchParams();
+                params.append("confirm", "true");
+                
+                return await fetch(`/api/browse/${folderPath}?${params.toString()}`, {
+                  method: 'DELETE',
+                });
+              })
+            );
 
-          // Handle folder deletion errors
-          const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
-          if (failedFolders > 0) {
-            alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedFolders.toString()));
+            const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
+            if (failedFolders > 0) {
+              alert(app.t('gallery.folderDeleteError'));
+            }
           }
         }
 
         // Handle image deletions
         const selectedImages = Array.from(gallery.selection.multiSelected);
-        const results = await Promise.allSettled(
-          selectedImages.map(async (idx) => {
-            const item = data.items[idx];
-            if (item?.type !== 'image') return;
-            
-            return await deleteImageAction(idx);
-          })
-        );
+        if (selectedImages.length > 0) {
+          const results = await Promise.allSettled(
+            selectedImages.map(async (idx) => {
+              try {
+                const item = data.items[idx];
+                if (item?.type !== 'image') return;
+                
+                const imagePath = data.path
+                  ? `${data.path}/${item.file_name}`
+                  : item.file_name;
+                
+                const params = new URLSearchParams();
+                params.append("confirm", "true");
+                
+                if (app.preserveLatents) {
+                  params.append("preserve_latents", "true");
+                }
+                if (app.preserveTxt) {
+                  params.append("preserve_txt", "true");
+                }
 
-        // Handle image deletion errors
-        const failedCount = results.filter(r => r.status === 'rejected').length;
-        if (failedCount > 0) {
-          alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedCount.toString()));
+                const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
+                  method: "DELETE",
+                });
+                
+                return response;
+              } catch (error) {
+                console.error(`Error deleting image at index ${idx}:`, error);
+                throw error;
+              }
+            })
+          );
+
+          const failedCount = results.filter(r => r.status === 'rejected').length;
+          if (failedCount > 0) {
+            alert(app.t('gallery.fileDeleteError'));
+          }
         }
 
         // Clear selection after all operations
         gallery.selection.clearMultiSelect();
+        gallery.selection.clearFolderMultiSelect();
         
         // Force a refetch
         gallery.invalidate();
