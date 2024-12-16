@@ -34,7 +34,7 @@
   aspect-ratio: 1;
   overflow: hidden;
   box-shadow: var(--shadow-default);
-  transition-property: transform, box-shadow, background-color, color, border, opacity;
+  transition-property: transform, box-shadow, background-color, color, border, opacity, backdrop-filter;
   transition-duration: var(--transition-duration);
   transition-timing-function: var(--transition-timing);
   opacity: 0;
@@ -43,8 +43,14 @@
 
   &:hover,
   &.selected {
-    box-shadow: var(--shadow-hover);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     transform: var(--hover-transform);
+  }
+
+  &.selected {
+    background-color: color-mix(in srgb, var(--card-bg) 95%, black);
+    backdrop-filter: blur(2px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   }
 
   &:hover {
