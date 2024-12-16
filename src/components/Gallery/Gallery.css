@@ -113,7 +113,14 @@
     }
 
     > .spin-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       font-size: 2rem;
+      color: var(--text-primary);
+      animation: spin 1s linear infinite;
+      transform-origin: center;
     }
   }
 
@@ -282,4 +289,13 @@
 
 .multi-select-actions .delete-button {
   color: var(--error);
+}
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }

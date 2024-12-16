@@ -193,7 +193,7 @@ export const ImageItem = (props: {
           return (
             <>
               <img
-                ref={imgRef!}
+                ref={imgRef}
                 src={thumbnailPath}
                 width={width}
                 height={height}
@@ -201,12 +201,12 @@ export const ImageItem = (props: {
                   "object-position": aspectRatio > 1 ? "center" : "top",
                 }}
                 classList={{ loaded: !isLoading() }}
-                onLoad={(e) => {
-                  setIsLoading(false);
-                }}
+                onLoad={() => setIsLoading(false)}
               />
               <Show when={isLoading()}>
-                <span class="spin-icon icon">{getIcon("spinner")}</span>
+                <div class="spin-icon">
+                  <span class="icon">{getIcon("spinner")}</span>
+                </div>
               </Show>
             </>
           );

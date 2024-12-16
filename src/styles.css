@@ -240,6 +240,7 @@ td {
   & > svg {
     fill: var(--accent);
     animation: spin-animation 1s infinite linear;
+    transform-origin: center;
   }
 }
 
