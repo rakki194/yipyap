@@ -63,98 +63,107 @@ type OKLCHColor = {
 function createTagColorGenerator() {
   const colorCache = new Map<string, OKLCHColor>();
   
-  return function getTagColor(theme: string, tag: string): OKLCHColor {
-    const cacheKey = `${theme}:${tag}`;
-    
-    // Return cached color if available
-    const cachedColor = colorCache.get(cacheKey);
-    if (cachedColor) {
-      return cachedColor;
-    }
-
-    /**
-     * Generate a deterministic hash from the tag string
-     * This ensures the same tag always gets the same color
-     * The hash is used to vary hue, lightness, and chroma values
-     */
-    let hash = 0;
-    for (let i = 0; i < tag.length; i++) {
-      hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const hue = hash % 360;
-
-    // Theme-specific color generation
-    const color = (() => {
-      switch (theme) {
-        case "dark":
-          // Dark theme: Low lightness for dark background, subtle color variations
-          return { l: 25, c: 0.1, h: hue };
-
-        case "light":
-          // Light theme: High lightness for light background, subtle color variations
-          return { l: 85, c: 0.1, h: hue };
-
-        case "gray":
-          // Gray theme: Variable lightness, no chroma for pure grayscale
-          return { l: 40 + (hash % 40), c: 0.0, h: hue };
-
-        case "banana":
-          // Banana theme: Warm yellows and creams
-          return {
-            l: 75 + (hash % 15),  // High lightness range: 75-90%
-            c: 0.15 + (hash % 10) / 100,  // Subtle chroma variations
-            h: 40 + (hash % 40),  // Hue range: 40-80 (yellow to orange)
-          };
-
-        case "strawberry": {
-          // Strawberry theme: Red/pink with green accents
-          const strawberryHues = [350, 335, 15, 120, 150]; // Red, pink, coral, green hues
-          const selectedStrawberryHue = strawberryHues[hash % strawberryHues.length];
-          const isGreen = selectedStrawberryHue >= 120;
-
-          return isGreen
-            ? {
-                l: 30 + (hash % 15),  // Darker for greens
-                c: 0.15 + (hash % 10) / 100,
-                h: selectedStrawberryHue,
-              }
-            : {
-                l: 70 + (hash % 20),  // Lighter for reds/pinks
-                c: 0.2 + (hash % 10) / 100,
-                h: selectedStrawberryHue,
-              };
-        }
-
-        case "peanut":
-          // Peanut theme: Warm browns and tans
-          return {
-            l: 35 + (hash % 15),  // Mid-range lightness
-            c: 0.15 + (hash % 10) / 100,  // Moderate chroma
-            h: 20 + (hash % 30),  // Brown hue range
-          };
-
-        case "christmas":
-          // Christmas theme: Alternating red and green
-          return hash % 2 === 0
-            ? { l: 35, c: 0.2, h: 350 } // Red
-            : { l: 25, c: 0.2, h: 120 }; // Green
-
-        case "halloween": {
-          // Halloween theme: Orange, purple, and green
-          const halloweenHues = [25, 280, 150]; // Orange, purple, green
-          const selectedHue = halloweenHues[hash % halloweenHues.length];
-          return { l: 45, c: 0.2, h: selectedHue };
-        }
-
-        default:
-          // Default theme: Soft, neutral colors
-          return { l: 80, c: 0.12, h: hue };
+  return {
+    getTagColor(theme: string, tag: string): OKLCHColor {
+      // Normalize the tag by replacing spaces with underscores for consistent hashing
+      const normalizedTag = tag.replace(/\s+/g, '_');
+      const cacheKey = `${theme}:${normalizedTag}`;
+      
+      // Return cached color if available
+      const cachedColor = colorCache.get(cacheKey);
+      if (cachedColor) {
+        return cachedColor;
       }
-    })();
 
-    // Cache and return the computed color
-    colorCache.set(cacheKey, color);
-    return color;
+      /**
+       * Generate a deterministic hash from the normalized tag string
+       * This ensures the same tag always gets the same color
+       * The hash is used to vary hue, lightness, and chroma values
+       */
+      let hash = 0;
+      for (let i = 0; i < normalizedTag.length; i++) {
+        hash = normalizedTag.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const hue = hash % 360;
+
+      // Theme-specific color generation
+      const color = (() => {
+        switch (theme) {
+          case "dark":
+            // Dark theme: Low lightness for dark background, subtle color variations
+            return { l: 25, c: 0.1, h: hue };
+
+          case "light":
+            // Light theme: High lightness for light background, subtle color variations
+            return { l: 85, c: 0.1, h: hue };
+
+          case "gray":
+            // Gray theme: Variable lightness, no chroma for pure grayscale
+            return { l: 40 + (hash % 40), c: 0.0, h: hue };
+
+          case "banana":
+            // Banana theme: Warm yellows and creams
+            return {
+              l: 75 + (hash % 15),  // High lightness range: 75-90%
+              c: 0.15 + (hash % 10) / 100,  // Subtle chroma variations
+              h: 40 + (hash % 40),  // Hue range: 40-80 (yellow to orange)
+            };
+
+          case "strawberry": {
+            // Strawberry theme: Red/pink with green accents
+            const strawberryHues = [350, 335, 15, 120, 150]; // Red, pink, coral, green hues
+            const selectedStrawberryHue = strawberryHues[hash % strawberryHues.length];
+            const isGreen = selectedStrawberryHue >= 120;
+
+            return isGreen
+              ? {
+                  l: 30 + (hash % 15),  // Darker for greens
+                  c: 0.15 + (hash % 10) / 100,
+                  h: selectedStrawberryHue,
+                }
+              : {
+                  l: 70 + (hash % 20),  // Lighter for reds/pinks
+                  c: 0.2 + (hash % 10) / 100,
+                  h: selectedStrawberryHue,
+                };
+          }
+
+          case "peanut":
+            // Peanut theme: Warm browns and tans
+            return {
+              l: 35 + (hash % 15),  // Mid-range lightness
+              c: 0.15 + (hash % 10) / 100,  // Moderate chroma
+              h: 20 + (hash % 30),  // Brown hue range
+            };
+
+          case "christmas":
+            // Christmas theme: Alternating red and green
+            return hash % 2 === 0
+              ? { l: 35, c: 0.2, h: 350 } // Red
+              : { l: 25, c: 0.2, h: 120 }; // Green
+
+          case "halloween": {
+            // Halloween theme: Orange, purple, and green
+            const halloweenHues = [25, 280, 150]; // Orange, purple, green
+            const selectedHue = halloweenHues[hash % halloweenHues.length];
+            return { l: 45, c: 0.2, h: selectedHue };
+          }
+
+          default:
+            // Default theme: Soft, neutral colors
+            return { l: 80, c: 0.12, h: hue };
+        }
+      })();
+
+      // Cache and return the computed color
+      colorCache.set(cacheKey, color);
+      return color;
+    },
+    
+    // Add method to clear the cache
+    clearCache() {
+      colorCache.clear();
+    }
   };
 }
 
@@ -184,7 +193,7 @@ export const TagBubble: Component<{
   const [isEditing, setIsEditing] = createSignal(false);
   let inputRef: HTMLInputElement | undefined;
   let contentRef: HTMLDivElement | undefined;
-  const getTagColor = createTagColorGenerator();
+  const tagColorGenerator = createTagColorGenerator();
 
   /**
    * Initiates the tag editing mode
@@ -214,7 +223,7 @@ export const TagBubble: Component<{
    * @returns OKLCHColor object with lightness, chroma, and hue values
    */
   const getTagLCH = createMemo(() => 
-    getTagColor(app.theme, props.tag)
+    tagColorGenerator.getTagColor(app.theme, props.tag)
   );
 
   /**
@@ -285,6 +294,7 @@ export const TagBubble: Component<{
   const handleSubmit = (value: string) => {
     const newValue = value.trim();
     if (newValue && newValue !== props.tag) {
+      tagColorGenerator.clearCache(); // Clear the cache before editing
       props.onEdit(newValue);
     }
     setIsEditing(false);
