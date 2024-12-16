@@ -9,6 +9,18 @@ import "./Gallery.css";
 import { QuickJump } from "./QuickJump";
 import { useAppContext } from "~/contexts/app";
 
+/**
+ * Main Gallery component that handles:
+ * - Image grid display and navigation
+ * - Keyboard shortcuts for navigation and actions
+ * - Drag and drop file upload functionality
+ * - Progress indicators for uploads and deletions
+ * - Quick jump navigation
+ * 
+ * @component
+ * @example
+ * <Gallery />
+ */
 export const Gallery = () => {
   const navigate = useNavigate();
   const gallery = useGallery();
@@ -99,6 +111,11 @@ export const Gallery = () => {
     event.preventDefault();
   };
 
+  /**
+   * Handles deletion of an image with optional preservation of latents and txt files
+   * 
+   * @param imagePath - Path to the image to be deleted
+   */
   const deleteImage = async (imagePath: string) => {
     const params = new URLSearchParams();
     params.append("confirm", "true");
@@ -177,6 +194,13 @@ export const Gallery = () => {
     }
   };
 
+  /**
+   * Uploads files to the server with progress tracking
+   * 
+   * @param formData - FormData containing files to upload
+   * @param url - Target URL for upload
+   * @returns Promise that resolves when upload is complete
+   */
   const uploadFiles = async (formData: FormData, url: string) => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -288,7 +312,14 @@ export const Gallery = () => {
     }
   };
 
-  // Update traverseFileTree to better handle directory entries
+  /**
+   * Recursively traverses a file system entry (file or directory)
+   * and collects all files for upload
+   * 
+   * @param item - FileSystem entry to traverse
+   * @param path - Current path in the traversal
+   * @param files - Array to collect found files
+   */
   const traverseFileTree = async (
     item: FileSystemEntry,
     path: string,

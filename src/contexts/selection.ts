@@ -2,13 +2,26 @@ import { Resource } from "solid-js";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { BrowsePagesCached } from "~/resources/browse";
 
+/**
+ * Selection state type representing either view or edit mode
+ */
 export type Mode = "view" | "edit";
+
+/**
+ * Type alias for the return value of useSelection hook
+ */
 export type Selection = ReturnType<typeof useSelection>;
 
 /**
  * Creates a selection manager for browsing and editing images in a grid layout.
  * This hook manages the current selection state, edit/view mode, and grid navigation.
- *
+ * 
+ * Features:
+ * - Single and multi-selection support for images and folders
+ * - Grid-based navigation (up/down/left/right)
+ * - View/Edit mode switching
+ * - Column-aware grid navigation
+ * 
  * @param backendData - Resource containing the cached browse pages data
  * @returns An object containing selection state and methods to manipulate it
  */

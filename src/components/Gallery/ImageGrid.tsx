@@ -13,6 +13,22 @@ import type {
   BrowsePagesCached,
 } from "~/resources/browse";
 
+/**
+ * Grid component that displays images and directories in a responsive layout
+ * 
+ * Features:
+ * - Responsive grid layout with dynamic column count
+ * - Intersection observer for infinite scrolling
+ * - Directory navigation
+ * - Selection highlighting
+ * - Thumbnail loading states
+ * 
+ * @component
+ * @param props.data - Browse data containing items and metadata
+ * @param props.items - Array of items (images/directories) to display
+ * @param props.path - Current directory path
+ * @param props.onImageClick - Callback for image selection
+ */
 export const ImageGrid = (props: {
   data: BrowsePagesCached;
   items: AnyItem[];
@@ -75,6 +91,13 @@ export const ImageGrid = (props: {
   );
 };
 
+/**
+ * Creates an intersection observer for infinite scrolling functionality
+ * 
+ * @param callback - Function to call when element becomes visible
+ * @param options - IntersectionObserver configuration options
+ * @returns Function to add elements to observation
+ */
 function makeIntersectionObserver<T>(
   callback: (assoc_value: T) => void,
   options: IntersectionObserverInit = {
@@ -104,6 +127,24 @@ function makeIntersectionObserver<T>(
   return addObserved;
 }
 
+/**
+ * Individual image item component displaying thumbnail and metadata
+ * 
+ * Features:
+ * - Thumbnail loading states
+ * - Metadata overlay (dimensions, size, captions)
+ * - Selection highlighting
+ * - Multi-selection support
+ * - Caption icons
+ * 
+ * @component
+ * @param props.ref - Reference to the DOM element
+ * @param props.item - Image item data
+ * @param props.idx - Index in the grid
+ * @param props.path - Current directory path
+ * @param props.onClick - Click handler
+ * @param props.selected - Whether item is currently selected
+ */
 export const ImageItem = (props: {
   ref: HTMLDivElement;
   item: ImageItemType;

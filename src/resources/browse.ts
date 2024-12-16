@@ -1,3 +1,16 @@
+/**
+ * Browse API Resource Module
+ * 
+ * This module provides the core API interaction layer for browsing and managing
+ * image files and their associated captions. It handles:
+ * - Caption CRUD operations
+ * - Image caption generation
+ * - File system interactions
+ * - Error handling and response processing
+ * 
+ * @module resources/browse
+ */
+
 import type {} from "../models";
 import { fetchStreamingJson } from "../utils/streaming_json";
 import {
@@ -9,39 +22,70 @@ import {
 } from "solid-js";
 import { joinUrlParts } from "~/utils";
 
+/**
+ * Represents the header information for a folder listing response.
+ * Contains pagination details and folder/image contents summary.
+ * 
+ * @interface FolderHeader
+ */
 interface FolderHeader {
-  file_name: string;
-  mtime: string; // ISO format date string
-  page: number;
-  pages: number;
-  folders: string[]; // Array of folder names
-  images: string[]; // Array of image names
-  total_folders: number;
-  total_images: number;
+  file_name: string;      // Name of the current folder
+  mtime: string;          // Last modification time in ISO format
+  page: number;           // Current page number
+  pages: number;          // Total number of pages
+  folders: string[];      // List of subfolder names in current page
+  images: string[];       // List of image names in current page
+  total_folders: number;  // Total number of subfolders
+  total_images: number;   // Total number of images
 }
 
+/**
+ * Base interface for both directory and image items.
+ * Provides common properties for filesystem entries.
+ * 
+ * @interface BaseData
+ */
 interface BaseData {
   type: "directory" | "image";
   name: string;
   mtime: string;
 }
 
+/**
+ * Represents a directory entry in the gallery.
+ * Extends BaseData with directory-specific properties.
+ * 
+ * @interface DirectoryData
+ * @extends BaseData
+ */
 export interface DirectoryData extends BaseData {
   type: "directory";
 }
 
+/**
+ * Represents an image entry in the gallery with its metadata.
+ * Extends BaseData with image-specific properties.
+ * 
+ * @interface ImageData
+ * @extends BaseData
+ */
 export interface ImageData extends BaseData {
   type: "image";
-  size: number; // Size of the image
-  mime: string; // MIME type of the image
-  md5sum: string; // MD5 checksum of the image
-  width: number; // Width of the image
-  height: number; // Height of the image
-  captions: Captions; // Array of tuples for captions
+  size: number;     // File size in bytes
+  mime: string;     // MIME type of the image
+  md5sum: string;   // MD5 checksum for caching/verification
+  width: number;    // Image width in pixels
+  height: number;   // Image height in pixels
+  captions: Captions; // Associated captions
 }
 
-// Captions is an array of tuples of strings
-// The first string is the suffix of the caption, the second is the caption text.
+/**
+ * Represents a caption entry as a tuple of [suffix, text].
+ * suffix: identifies the caption type (e.g., 'txt', 'tags')
+ * text: the actual caption content
+ * 
+ * @type Captions
+ */
 export type Captions = [string, string][];
 
 type AnyData = DirectoryData | ImageData;
@@ -71,6 +115,18 @@ export type AnyItem = DirectoryItem | ImageItem;
 //     ? BaseItem & { loaded: false, (): ReturnType<T> }
 //     : never;
 
+/**
+ * Fetches a page of items from the server and processes them through callbacks.
+ * 
+ * @param path - Directory path to fetch
+ * @param page - Page number to fetch
+ * @param onHeader - Callback for processing the folder header
+ * @param onItem - Callback for processing each item
+ * @param onError - Callback for handling errors
+ * @returns Promise that resolves when all items are processed
+ * 
+ * @internal
+ */
 function fetchPage(
   path: string,
   page: number,
@@ -90,24 +146,63 @@ function fetchPage(
   ).catch(onError);
 }
 
+/**
+ * Represents the result of a browse page request.
+ * Contains page metadata and item signals for reactive updates.
+ * 
+ * @interface BrowsePageResult
+ */
 export type BrowsePageResult = {
-  path: string;
-  page: number;
-  total_pages: number;
-  total_folders: number;
-  total_images: number;
-  mtime: string;
-  items: Map<string, AnyItem>;
-  setters: Record<string, Setter<AnyData | undefined>>;
+  path: string;                // Current directory path
+  page: number;               // Current page number
+  total_pages: number;        // Total available pages
+  total_folders: number;      // Total folders in directory
+  total_images: number;       // Total images in directory
+  mtime: string;             // Last modification time
+  items: Map<string, AnyItem>; // Map of item names to their signals
+  setters: Record<string, Setter<AnyData | undefined>>; // Signal setters for items
 };
 
 /**
- * Fetches a single page of gallery items from the server using streaming JSON.
- * @param path - The directory path to browse
- * @param page - The page number to fetch (1-based)
- * @returns A Promise containing the page results with signals for each item
+ * Represents the navigation state for browsing.
+ * Tracks current path and page number.
+ * 
+ * @interface NavState
  */
-export function fetchPageItemsAsSignals(
+type NavState = { 
+  path: string;  // Current directory path
+  page: number;  // Current page number 
+};
+
+/**
+ * Represents a cached browse result with all fetched pages.
+ * Maintains cache of items and their signals across pages.
+ * 
+ * @interface BrowsePagesCached
+ */
+export type BrowsePagesCached = {
+  path: string;              // Current directory path
+  mtime: string;            // Last modification time
+  total_pages: number;      // Total available pages
+  total_folders: number;    // Total folders count
+  total_images: number;     // Total images count
+  pages: PageToItems;       // Cache of fetched pages
+  items: AnyItem[];        // Flattened list of all items
+  setters: Record<string, Setter<AnyData | undefined>>; // Signal setters
+};
+
+// Add these type definitions after AnyItem type
+type NameToItem = Map<string, AnyItem>;
+type PageToItems = Record<number, NameToItem>;
+
+/**
+ * Fetches a single page of gallery items from the server using streaming JSON.
+ * 
+ * @param path - Directory path to browse
+ * @param page - Page number to fetch (1-based)
+ * @returns Promise containing page results with signals for each item
+ */
+export async function fetchPageItemsAsSignals(
   path: string,
   page: number
 ): Promise<BrowsePageResult> {
@@ -146,7 +241,7 @@ export function fetchPageItemsAsSignals(
           path,
           page,
           total_pages: folderHeader.pages,
-          total_folders: folderHeader.total_folders, // Keep original count
+          total_folders: folderHeader.total_folders,
           total_images: folderHeader.total_images,
           mtime: folderHeader.mtime,
           items,
@@ -161,21 +256,6 @@ export function fetchPageItemsAsSignals(
     );
   });
 }
-
-type NavState = { path: string; page: number };
-type NameToItem = Map<string, AnyItem>;
-type PageToItems = Record<number, NameToItem>;
-
-export type BrowsePagesCached = {
-  path: string;
-  mtime: string;
-  total_pages: number;
-  total_folders: number;
-  total_images: number;
-  pages: PageToItems;
-  items: AnyItem[];
-  setters: Record<string, Setter<AnyData | undefined>>;
-};
 
 /**
  * Creates a SolidJS resource that manages browsing a gallery directory with caching.
@@ -208,11 +288,10 @@ export function createGalleryResourceCached(
 
       if (prev_value !== undefined && path === prev_value?.path) {
         if (prev_value.pages[page] !== undefined && !refetching) {
-          // console.log("skipping fetch", { path, page });
           return prev_value;
         } else {
           pages = { ...prev_value.pages };
-          setters = { ...prev_value.setters }; // Keep previous setters
+          setters = { ...prev_value.setters };
         }
       }
 
@@ -222,10 +301,12 @@ export function createGalleryResourceCached(
       const result = await fetchPageItemsAsSignals(path, page);
 
       pages[page] = result.items;
-      const items = Object.values(pages).reduce((acc, pageItems) => {
-        acc.push(...pageItems.values());
+      const items = Object.values(pages).reduce<AnyItem[]>((acc, pageItems) => {
+        if (pageItems instanceof Map) {
+          acc.push(...Array.from(pageItems.values()));
+        }
         return acc;
-      }, [] as AnyItem[]);
+      }, []);
 
       const value: BrowsePagesCached = {
         path,
@@ -235,7 +316,7 @@ export function createGalleryResourceCached(
         mtime: result.mtime,
         pages,
         items,
-        setters: { ...setters, ...result.setters }, // Use merged setters
+        setters: { ...setters, ...result.setters },
       };
 
       if (import.meta.env.DEV) {
@@ -247,9 +328,15 @@ export function createGalleryResourceCached(
   );
 }
 
+/**
+ * Interface for caption save requests.
+ * Defines the structure for saving caption data.
+ * 
+ * @interface SaveCaption
+ */
 export interface SaveCaption {
-  caption: string;
-  type: string;
+  caption: string;  // Caption text content
+  type: string;    // Caption type identifier
 }
 
 // Function to save caption to the backend
@@ -275,9 +362,15 @@ export function saveCaption(
   });
 }
 
+/**
+ * Interface for image deletion response.
+ * Contains confirmation status and affected files.
+ * 
+ * @interface DeleteImageResponse
+ */
 export interface DeleteImageResponse {
-  confirm: boolean;
-  deleted_suffixes: string[];
+  confirm: boolean;         // Whether confirmation is required
+  deleted_suffixes: string[]; // List of deleted file suffixes
 }
 
 export async function deleteImage(
@@ -307,7 +400,25 @@ export async function deleteImage(
   return (await response.json()) as DeleteImageResponse;
 }
 
-export async function deleteCaption(path: string, name: string, type: string): Promise<Response> {
+/**
+ * Deletes a caption file associated with an image.
+ * 
+ * @param path - The directory path containing the image
+ * @param name - The image filename
+ * @param type - The caption file type (e.g. 'txt', 'tags')
+ * @returns Promise resolving to the API Response
+ * 
+ * @throws Error if deletion fails
+ * 
+ * @remarks
+ * - Returns success (200) for both successful deletion and if file doesn't exist (404)
+ * - Logs errors to console before throwing
+ */
+export async function deleteCaption(
+  path: string,
+  name: string,
+  type: string
+): Promise<Response> {
   try {
     const response = await fetch(
       `${joinUrlParts("/api/caption", path, name)}?caption_type=${type}`,
@@ -329,6 +440,19 @@ export async function deleteCaption(path: string, name: string, type: string): P
   }
 }
 
+/**
+ * Generates a new caption for an image using the specified generator.
+ * 
+ * @param path - The directory path containing the image
+ * @param name - The image filename 
+ * @param generator - The caption generator to use (e.g. 'jtp2', 'wdv3')
+ * @param force - Whether to force regeneration if caption exists
+ * @returns Promise resolving to the API Response
+ * 
+ * @remarks
+ * - Handles path normalization for root directory
+ * - Uses POST request to trigger generation
+ */
 export async function generateCaption(
   path: string,
   name: string,
