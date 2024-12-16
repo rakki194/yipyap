@@ -19,7 +19,7 @@
  */
 
 import { debounce } from "@solid-primitives/scheduled";
-import { onMount, Accessor, createRenderEffect } from "solid-js";
+import { onMount, Accessor, createRenderEffect, onCleanup } from "solid-js";
 
 /**
  * Measures and tracks the number of columns in a CSS Grid layout.
@@ -99,17 +99,20 @@ export function preserveState(
   delay = 100
 ) {
   const [value, setValue] = accessor();
+  let isUserInput = false;
 
   // Create effect to handle external updates
   createRenderEffect(() => {
     const v = value();
-    if (textarea.value === v) return;
+    // Skip if this is a user input or values are already equal
+    if (isUserInput || textarea.value === v) return;
 
     const state = {
       start: textarea.selectionStart,
       end: textarea.selectionEnd,
       scrollTop: textarea.scrollTop,
     };
+
     if (import.meta.env.DEV) {
       console.debug("preserving input state", {
         signal: v,
@@ -120,26 +123,35 @@ export function preserveState(
 
     textarea.value = v;
 
-    queueMicrotask(() => {
-      if (
-        state.start !== textarea.selectionStart ||
-        state.end !== textarea.selectionEnd
-      ) {
-        textarea.setSelectionRange(state.start, state.end);
-      }
-      if (state.scrollTop !== textarea.scrollTop) {
-        textarea.scrollTop = state.scrollTop;
+    // Use requestAnimationFrame instead of queueMicrotask for smoother updates
+    requestAnimationFrame(() => {
+      if (document.activeElement === textarea) {
+        if (
+          state.start !== textarea.selectionStart ||
+          state.end !== textarea.selectionEnd
+        ) {
+          textarea.setSelectionRange(state.start, state.end);
+        }
+        if (state.scrollTop !== textarea.scrollTop) {
+          textarea.scrollTop = state.scrollTop;
+        }
       }
     });
   });
 
   // Handle input with cursor preservation
-  textarea.addEventListener(
-    "input",
-    debounce((e) => {
-      setValue((e.target as HTMLTextAreaElement).value);
-    }, delay)
-  );
+  const handleInput = debounce((e: Event) => {
+    isUserInput = true;
+    setValue((e.target as HTMLTextAreaElement).value);
+    isUserInput = false;
+  }, delay);
+
+  textarea.addEventListener("input", handleInput);
+
+  // Cleanup
+  onCleanup(() => {
+    textarea.removeEventListener("input", handleInput);
+  });
 }
 
 /**

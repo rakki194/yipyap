@@ -344,18 +344,24 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     try {
-      await deleteCaptionFromBackend(database.path, image.name, type);
-
-      // Update local state immediately
+      // Update local state immediately for smoother UX
       updateLocalCaptions(image, { type }, database);
+
+      // Make the API call
+      await deleteCaptionFromBackend(database.path, image.name, type);
       
-      // Force a fresh fetch by clearing the cache first
+      // Only clear the image cache, don't force a full refetch
       clearImageCache();
-      await refetch({ force: true }); // Add force option to refetch
       
       return { success: true };
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to delete caption", error);
+      
+      // Revert local state on error
+      const originalCaptions = image.captions;
+      const originalCaption = originalCaptions.find(([t]) => t === type)?.[1];
+      updateLocalCaptions(image, { type, caption: originalCaption }, database);
+      
       return new Error("Failed to delete caption");
     }
   });
