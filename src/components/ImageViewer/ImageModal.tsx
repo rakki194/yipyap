@@ -306,7 +306,7 @@ const ModalHeader = (props: {
   );
 };
 
-// New DeleteButton component
+// Update DeleteButton component
 const DeleteButton = (props: {
   imageInfo: ImageInfoType;
 }) => {
@@ -318,11 +318,73 @@ const DeleteButton = (props: {
   let deleteTimeout: number;
   let progressInterval: number;
 
+  const hasMultiSelection = () => {
+    return gallery.selection.multiSelected.size > 0 || gallery.selection.multiFolderSelected.size > 0;
+  };
+
+  const getSelectedCount = () => {
+    return gallery.selection.multiSelected.size + gallery.selection.multiFolderSelected.size;
+  };
+
   const deleteImage = async () => {
     const data = gallery.data();
     if (!data) return;
 
-    if (gallery.selectedImage !== null) {
+    if (hasMultiSelection()) {
+      // Handle multi-delete
+      const message = app.t('gallery.confirmMultiDelete').replace('{{count}}', getSelectedCount().toString());
+      if (confirm(message)) {
+        // Handle folder deletions first
+        const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
+        if (selectedFolders.length > 0) {
+          const folderResults = await Promise.allSettled(
+            selectedFolders.map(async (idx) => {
+              const item = data.items[idx];
+              if (item?.type !== 'directory') return;
+              
+              const folderPath = data.path
+                ? `${data.path}/${item.file_name}`
+                : item.file_name;
+                
+              return await fetch(`/api/browse/${folderPath}`, {
+                method: 'DELETE',
+              });
+            })
+          );
+
+          // Handle folder deletion errors
+          const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
+          if (failedFolders > 0) {
+            alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedFolders.toString()));
+          }
+        }
+
+        // Handle image deletions
+        const selectedImages = Array.from(gallery.selection.multiSelected);
+        const results = await Promise.allSettled(
+          selectedImages.map(async (idx) => {
+            const item = data.items[idx];
+            if (item?.type !== 'image') return;
+            
+            return await deleteImageAction(idx);
+          })
+        );
+
+        // Handle image deletion errors
+        const failedCount = results.filter(r => r.status === 'rejected').length;
+        if (failedCount > 0) {
+          alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedCount.toString()));
+        }
+
+        // Clear selection after all operations
+        gallery.selection.clearMultiSelect();
+        
+        // Force a refetch
+        gallery.invalidate();
+        await gallery.refetch();
+      }
+    } else if (gallery.selectedImage !== null) {
+      // Handle single image delete
       const selectedItem = data.items[gallery.selected!];
       if (selectedItem?.type === 'image') {
         await deleteImageAction(gallery.selected!);
@@ -331,7 +393,7 @@ const DeleteButton = (props: {
   };
 
   const startDelete = () => {
-    if (app.instantDelete) {
+    if (app.instantDelete || hasMultiSelection()) {
       deleteImage();
       return;
     }
@@ -365,8 +427,14 @@ const DeleteButton = (props: {
       onTouchStart={startDelete}
       onTouchEnd={cancelDelete}
       onTouchCancel={cancelDelete}
-      aria-label="Hold to delete image"
-      title="Hold to delete image"
+      aria-label={hasMultiSelection() 
+        ? app.t('gallery.deleteSelected').replace('{{count}}', getSelectedCount().toString())
+        : "Hold to delete image"
+      }
+      title={hasMultiSelection()
+        ? app.t('gallery.deleteSelected').replace('{{count}}', getSelectedCount().toString())
+        : "Hold to delete image"
+      }
     >
       {getIcon("delete")}
     </button>
