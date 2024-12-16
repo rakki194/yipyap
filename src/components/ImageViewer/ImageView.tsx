@@ -206,37 +206,45 @@ export const ImageView = (props: ImageViewProps) => {
       onDblClick={handleDoubleClick}
       style={{
         cursor: scale() > 1 ? (isDragging() ? 'grabbing' : 'grab') : 'default',
-        "touch-action": "none" // Add this to prevent default touch behaviors
+        "touch-action": "none"
       }}
       data-zoom={scale() > 1 ? `${Math.round(scale() * 100)}%` : undefined}
     >
+      <img
+        class="thumbnail"
+        src={localProps.imageInfo.thumbnail_img.img.src}
+        alt={localProps.imageInfo.thumbnail_img.img.alt}
+        style={{
+          opacity: localProps.imageInfo.preview_img.isLoaded() ? 0 : 1
+        }}
+      />
       <div 
         style={{
           transform: `scale(${scale()}) translate(${position().x / scale()}px, ${position().y / scale()}px)`,
           "transform-origin": "center",
-          // Adjust transition timing for smoother zoom
           transition: isDragging() ? 'none' : 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
           height: '100%',
           width: '100%',
           display: 'flex',
           "justify-content": 'center',
           "align-items": 'center',
-          "will-change": "transform" // Add this for better performance
+          "will-change": "transform"
         }}
       >
-        {localProps.imageInfo.preview_img.isLoaded() ? (
+        <Show when={localProps.imageInfo.preview_img.img}>
           <img 
             ref={imageRef}
             src={localProps.imageInfo.preview_img.img.src}
             alt={localProps.imageInfo.preview_img.img.alt}
+            class="preview"
+            classList={{
+              loaded: localProps.imageInfo.preview_img.isLoaded()
+            }}
             style={{ width: '100%', height: '100%', "object-fit": 'contain' }}
           />
-        ) : (
-          fallback()
-        )}
+        </Show>
       </div>
       
-      {/* Update minimap conditional rendering */}
       <Show when={scale() > 1 && app.enableZoom && app.enableMinimap}>
         <div class="minimap" onClick={handleMinimapClick}>
           <img 
@@ -263,7 +271,6 @@ export const ImageView = (props: ImageViewProps) => {
         </div>
       </Show>
       
-      {/* Zoom indicator */}
       <div class="zoom-indicator">
         {Math.round(scale() * 100)}%
       </div>
