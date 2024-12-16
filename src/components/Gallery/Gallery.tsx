@@ -208,7 +208,6 @@ export const Gallery = () => {
       return;
     }
     
-    e.preventDefault();
     const galleryElement = document.getElementById('gallery');
     if (!galleryElement) return;
 
@@ -217,6 +216,7 @@ export const Gallery = () => {
       : gallery.selection.selectPageUp();
 
     if (success) {
+      e.preventDefault();
       scrollToSelected(true);
     } else {
       const bounds = scrollManager.getScrollBounds();
@@ -224,10 +224,12 @@ export const Gallery = () => {
       
       if ((e.deltaY > 0 && currentScroll < bounds.max) || 
           (e.deltaY < 0 && currentScroll > bounds.min)) {
+        e.preventDefault();
         const scrollAmount = galleryElement.clientHeight * 0.5;
         const targetY = currentScroll + (Math.sign(e.deltaY) * scrollAmount);
         smoothScroll(targetY, true);
       }
+      // If we're at the bounds and no selection change occurred, allow native scroll
     }
   };
 
