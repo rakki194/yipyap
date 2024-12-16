@@ -231,7 +231,7 @@ export const ImageView = (props: ImageViewProps) => {
           "will-change": "transform"
         }}
       >
-        <Show when={localProps.imageInfo.preview_img.img}>
+        {localProps.imageInfo.preview_img.isLoaded() ? (
           <img 
             ref={imageRef}
             src={localProps.imageInfo.preview_img.img.src}
@@ -242,7 +242,9 @@ export const ImageView = (props: ImageViewProps) => {
             }}
             style={{ width: '100%', height: '100%', "object-fit": 'contain' }}
           />
-        </Show>
+        ) : (
+          fallback()
+        )}
       </div>
       
       <Show when={scale() > 1 && app.enableZoom && app.enableMinimap}>
