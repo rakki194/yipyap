@@ -221,6 +221,7 @@ const ModelBody = (props: {
                     type="button"
                     onClick={() => setIsExpanded((x: boolean) => !x)}
                   >
+                    <span class="icon">{getIcon("plus")}</span>
                     {t('gallery.createCaption')}
                   </button>
                   <Show when={isExpanded()}>
@@ -463,6 +464,7 @@ const CaptionCreationButton = (props: {
         class="primary-button"
         onClick={() => setIsExpanded(x => !x)}
       >
+        <span class="icon">{getIcon("plus")}</span>
         {t('gallery.createCaption')}
       </button>
       <Show when={isExpanded()}>

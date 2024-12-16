@@ -506,7 +506,9 @@
 }
 
 .caption-creation {
+  width: 50%;
   position: relative;
+  margin: 0 auto;
 }
 
 .caption-type-dropdown {
@@ -581,7 +583,8 @@
   cursor: pointer;
   width: 100%;
   transition-property: background-color, border-color, color;
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .caption-creation button:hover {
@@ -597,4 +600,10 @@
 
 .caption-creation button:hover .icon {
   opacity: 1;
+}
+
+/* Make the textarea take full height and remove scroll bars on focus */
+.image-info .caption-editor .caption-input-wrapper > textarea:focus {
+  height: 100%;
+  flex-grow: 1;
 }
