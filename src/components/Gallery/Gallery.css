@@ -119,8 +119,20 @@
       transform: translate(-50%, -50%);
       font-size: 2rem;
       color: var(--text-primary);
-      animation: spin 1s linear infinite;
-      transform-origin: center;
+      width: 2em;
+      height: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      & > .icon {
+        width: 1em;
+        height: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: rotate 1s linear infinite;
+      }
     }
   }
 
@@ -291,11 +303,11 @@
   color: var(--error);
 }
 
-@keyframes spin {
+@keyframes rotate {
   from {
-    transform: translate(-50%, -50%) rotate(0deg);
+    transform: rotate(0deg);
   }
   to {
-    transform: translate(-50%, -50%) rotate(360deg);
+    transform: rotate(360deg);
   }
 }
