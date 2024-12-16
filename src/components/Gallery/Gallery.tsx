@@ -300,7 +300,17 @@ export const Gallery = () => {
           }
         }
         
-        scrollToSelected();
+        // Scroll to the current cursor position instead of the selection start
+        const currentElement = document.querySelector(
+          `#gallery .responsive-grid .item:nth-child(${gallery.selected + 1})`
+        );
+        if (currentElement) {
+          currentElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "nearest"
+          });
+        }
       }
       return;
     }
