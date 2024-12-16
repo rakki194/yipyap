@@ -69,7 +69,6 @@
   background: var(--preview-bg);
   backdrop-filter: saturate(50%) brightness(0.5) blur(10px);
 
-
   /* Image Container Styles */
   & > .image-container {
     position: relative;
@@ -78,46 +77,35 @@
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
+    width: 100%;
+    height: 100%;
 
     /* Base Image Styles */
-    & > div > img {
-      object-fit: contain;
-      width: 100%;
-      height: 100%;
-      transition-property: opacity;
-      transition-duration: 0.3s;
-      image-rendering: high-quality;
-      pointer-events: none;
-      transform-origin: 0 0;
-    }
-
-    /* Thumbnail Image */
-    & > img.thumbnail {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      opacity: 1;
-      transition: opacity 0.3s;
-    }
-
-    /* Preview Image */
-    & > div > img.preview {
+    & > div {
       position: relative;
-      z-index: 1;
-      opacity: 0;
-      transform-origin: 0 0;
+      width: 100%;
+      height: 100%;
 
-      &.loaded {
-        opacity: 1;
+      & img {
+        object-fit: contain;
+        width: 100%;
+        height: 100%;
+        image-rendering: high-quality;
+        pointer-events: none;
       }
 
-      @starting-style {
+      & img.preview {
+        opacity: 0;
+        z-index: 1;
+
         &.loaded {
-          opacity: 0;
+          opacity: 1;
         }
+      }
+
+      & img.thumbnail {
+        opacity: 1;
+        z-index: 0;
       }
     }
   }
@@ -125,19 +113,25 @@
 
 /* Image Info Panel */
 .image-info {
-  flex-grow: 1;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
   z-index: 2;
-  transition-property: transform;
   padding: var(--spacing);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   overflow: hidden scroll;
-  max-width: 40rem;
-  min-width: 40rem;
-  max-height: 100vh;
+  width: 40rem;
   background: var(--preview-bg);
   backdrop-filter: saturate(50%) brightness(0.5) blur(10px);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+
+  &.focused {
+    transform: translateX(0);
+  }
 
   [data-theme="light"] & {
     background: rgb(239 241 245 / 85%);

@@ -272,22 +272,25 @@ export const Gallery = () => {
       }
 
       if (success && gallery.selected !== null && shiftSelectionStart() !== null) {
-        // Select all images between the shift start point and current position
+        // Select all items between the shift start point and current position
         const start = Math.min(shiftSelectionStart()!, gallery.selected);
         const end = Math.max(shiftSelectionStart()!, gallery.selected);
         
         // Clear existing selection
         gallery.selection.clearMultiSelect();
+        gallery.selection.clearFolderMultiSelect();
         
-        // Add all images in range to multiselect
+        // Add all items in range to multiselect
         for (let i = start; i <= end; i++) {
           const item = data.items[i];
           if (item?.type === 'image') {
             gallery.selection.toggleMultiSelect(i);
+          } else if (item?.type === 'directory') {
+            gallery.selection.toggleFolderMultiSelect(i);
           }
         }
         
-        // Scroll to the current cursor position instead of the selection start
+        // Scroll to the current cursor position
         const currentElement = document.querySelector(
           `#gallery .responsive-grid .item:nth-child(${gallery.selected + 1})`
         );

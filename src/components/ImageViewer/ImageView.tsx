@@ -32,35 +32,36 @@ export const ImageView = (props: ImageViewProps) => {
 
   const fallback = createMemo(
     on(
-      // ImageInfo contains all the updates for now
       () => localProps.imageInfo,
       (img, prev_img) => {
         if (prev_img && prev_img.download_path !== img.download_path) {
           prev_img.preview_img.setPriority("low");
           prev_img.thumbnail_img.setPriority("low");
         }
-        if (img.preview_img.isLoaded()) {
+
+        // Always show thumbnail if available, regardless of preview state
+        if (img.thumbnail_img.isLoaded()) {
           if (import.meta.env.DEV)
-            console.debug("fallback: preview loaded");
-          return null;
-        } else {
-          img.preview_img.setPriority("high");
-          if (img.thumbnail_img.isLoaded()) {
-            if (import.meta.env.DEV)
-              console.debug("fallback: thumbnail loaded");
-            return img.thumbnail_img.img;
-          } else {
-            if (import.meta.env.DEV)
-              console.debug("fallback: spin");
-            img.thumbnail_img.setPriority("high");
-            return (
-              <span
-                class="icon spin-icon"
-                style={{ width: "100%", height: "100%", position: "absolute" }}
-              />
-            );
-          }
+            console.debug("fallback: showing thumbnail");
+          return (
+            <img
+              src={img.thumbnail_img.img.src}
+              alt={img.thumbnail_img.img.alt}
+              style={{ width: '100%', height: '100%', "object-fit": 'contain' }}
+            />
+          );
         }
+
+        // Show loading spinner if neither image is loaded
+        if (import.meta.env.DEV)
+          console.debug("fallback: showing spinner");
+        img.thumbnail_img.setPriority("high");
+        return (
+          <span
+            class="icon spin-icon"
+            style={{ width: "100%", height: "100%", position: "absolute" }}
+          />
+        );
       }
     )
   );
@@ -210,14 +211,6 @@ export const ImageView = (props: ImageViewProps) => {
       }}
       data-zoom={scale() > 1 ? `${Math.round(scale() * 100)}%` : undefined}
     >
-      <img
-        class="thumbnail"
-        src={localProps.imageInfo.thumbnail_img.img.src}
-        alt={localProps.imageInfo.thumbnail_img.img.alt}
-        style={{
-          opacity: localProps.imageInfo.preview_img.isLoaded() ? 0 : 1
-        }}
-      />
       <div 
         style={{
           transform: `scale(${scale()}) translate(${position().x / scale()}px, ${position().y / scale()}px)`,
@@ -228,10 +221,27 @@ export const ImageView = (props: ImageViewProps) => {
           display: 'flex',
           "justify-content": 'center',
           "align-items": 'center',
-          "will-change": "transform"
+          "will-change": "transform",
+          position: 'relative'
         }}
       >
-        {localProps.imageInfo.preview_img.isLoaded() ? (
+        {/* Always show thumbnail first */}
+        <img
+          class="thumbnail"
+          src={localProps.imageInfo.thumbnail_img.img.src}
+          alt={localProps.imageInfo.thumbnail_img.img.alt}
+          style={{ 
+            width: '100%',
+            height: '100%',
+            "object-fit": 'contain',
+            position: 'absolute',
+            inset: 0,
+            opacity: localProps.imageInfo.preview_img.isLoaded() ? 0 : 1,
+            transition: 'opacity 0.3s ease'
+          }}
+        />
+        {/* Show preview image on top */}
+        <Show when={localProps.imageInfo.preview_img.img}>
           <img 
             ref={imageRef}
             src={localProps.imageInfo.preview_img.img.src}
@@ -240,11 +250,15 @@ export const ImageView = (props: ImageViewProps) => {
             classList={{
               loaded: localProps.imageInfo.preview_img.isLoaded()
             }}
-            style={{ width: '100%', height: '100%', "object-fit": 'contain' }}
+            style={{ 
+              width: '100%',
+              height: '100%',
+              "object-fit": 'contain',
+              position: 'absolute',
+              inset: 0
+            }}
           />
-        ) : (
-          fallback()
-        )}
+        </Show>
       </div>
       
       <Show when={scale() > 1 && app.enableZoom && app.enableMinimap}>

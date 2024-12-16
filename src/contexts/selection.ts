@@ -243,15 +243,31 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
      * Toggles selection for a specific index
      */
     toggleMultiSelect: (idx: number) => {
-      setState(prev => {
-        const newSet = new Set(prev.multiSelected);
-        if (newSet.has(idx)) {
-          newSet.delete(idx);
-        } else {
-          newSet.add(idx);
-        }
-        return { ...prev, multiSelected: newSet };
-      });
+      const data = backendData();
+      if (!data?.items[idx]) return;
+      
+      const item = data.items[idx];
+      if (item.type === "image") {
+        setState(prev => {
+          const newSet = new Set(prev.multiSelected);
+          if (newSet.has(idx)) {
+            newSet.delete(idx);
+          } else {
+            newSet.add(idx);
+          }
+          return { ...prev, multiSelected: newSet };
+        });
+      } else if (item.type === "directory" && item.file_name !== "..") {
+        setState(prev => {
+          const newSet = new Set(prev.multiFolderSelected);
+          if (newSet.has(idx)) {
+            newSet.delete(idx);
+          } else {
+            newSet.add(idx);
+          }
+          return { ...prev, multiFolderSelected: newSet };
+        });
+      }
     },
     /**
      * Selects all items of specified type in the current view
@@ -260,17 +276,14 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
       const data = backendData();
       if (!data?.items.length) return;
       
-      // Check if there are only directories
-      const onlyDirectories = data.items.every(item => item.type === "directory");
-      
       setState(prev => {
         const newImageSet = new Set<number>();
         const newFolderSet = new Set<number>();
         
         data.items.forEach((item, idx) => {
-          if (onlyDirectories && item.type === "directory") {
+          if (item.type === "directory" && item.file_name !== "..") {
             newFolderSet.add(idx);
-          } else if (!onlyDirectories && item.type === "image") {
+          } else if (item.type === "image") {
             newImageSet.add(idx);
           }
         });

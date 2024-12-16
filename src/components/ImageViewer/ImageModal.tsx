@@ -182,6 +182,7 @@ const ModelBody = (props: {
       />
       <div
         class="image-info"
+        classList={{ focused: focused() }}
         ref={refImageInfo}
         style={getStyle()}
         onClick={(e) => {
