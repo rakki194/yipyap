@@ -36,7 +36,8 @@ export const Gallery = () => {
     if (
       activeElement &&
       (activeElement.isContentEditable ||
-        ["INPUT", "TEXTAREA"].includes(activeElement.tagName))
+        ["INPUT", "TEXTAREA"].includes(activeElement.tagName) ||
+        activeElement.closest(".caption-input-wrapper, .image-modal, .modal"))
     ) {
       return;
     }
