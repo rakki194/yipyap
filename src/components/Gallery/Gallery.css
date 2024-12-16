@@ -342,3 +342,40 @@
     transform: scale(1);
   }
 }
+
+/* Add blur and darken effect for multiselected items */
+.item.multi-selected {
+  position: relative;
+}
+
+.item.multi-selected::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px) saturate(220%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Ensure the check icon stays above the blur overlay */
+.item.multi-selected .multi-select-indicator {
+  z-index: 2;
+}
+
+/* Adjust directory-specific multiselect styling */
+.item.directory.multi-selected {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px) saturate(220%);
+}
+
+.item.directory.multi-selected:hover {
+  background: color-mix(in srgb, var(--accent) 85%, transparent);
+}
+
+/* Ensure text and icons remain visible in multiselected directories */
+.item.directory.multi-selected > span,
+.item.directory.multi-selected > .icon {
+  position: relative;
+  z-index: 2;
+}
