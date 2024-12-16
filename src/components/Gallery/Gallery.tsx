@@ -9,6 +9,85 @@ import "./Gallery.css";
 import { QuickJump } from "./QuickJump";
 import { useAppContext } from "~/contexts/app";
 
+// Add new ScrollManager class to handle scroll logic
+class ScrollManager {
+  private element: HTMLElement | null = null;
+  private isScrolling = false;
+  private lastScrollTime = 0;
+  private animationFrame: number | null = null;
+  
+  constructor(
+    private readonly scrollTimeout: number,
+    private readonly scrollDebounceTimeout: number
+  ) {}
+
+  init(element: HTMLElement) {
+    this.element = element;
+  }
+
+  getScrollBounds() {
+    if (!this.element) return { min: 0, max: 0 };
+    return {
+      min: 0,
+      max: this.element.scrollHeight - this.element.clientHeight
+    };
+  }
+
+  smoothScrollTo(targetY: number, force = false) {
+    if (!this.element) return;
+    if (!force && (this.isScrolling || Date.now() - this.lastScrollTime < this.scrollDebounceTimeout)) {
+      return;
+    }
+
+    // Cancel any existing animation
+    if (this.animationFrame) {
+      cancelAnimationFrame(this.animationFrame);
+    }
+
+    this.lastScrollTime = Date.now();
+    const bounds = this.getScrollBounds();
+    targetY = Math.max(bounds.min, Math.min(bounds.max, targetY));
+
+    const startY = this.element.scrollTop;
+    const startTime = performance.now();
+    this.isScrolling = true;
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / this.scrollTimeout, 1);
+      
+      // Use easeInOutQuad easing
+      const easeProgress = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      this.element!.scrollTop = startY + ((targetY - startY) * easeProgress);
+      
+      if (progress < 1) {
+        this.animationFrame = requestAnimationFrame(animate);
+      } else {
+        this.element!.scrollTop = targetY;
+        this.isScrolling = false;
+        this.animationFrame = null;
+      }
+    };
+
+    this.animationFrame = requestAnimationFrame(animate);
+  }
+
+  cleanup() {
+    if (this.animationFrame) {
+      cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = null;
+    }
+    this.isScrolling = false;
+  }
+
+  get isActive() {
+    return this.isScrolling;
+  }
+}
+
 /**
  * Main Gallery component that handles:
  * - Image grid display and navigation
@@ -51,95 +130,21 @@ export const Gallery = () => {
     startTime: number | null;
     cleanup?: () => void;
   } | null>(null);
+  const scrollManager = new ScrollManager(
+    scrollTimeout(),
+    scrollDebounceTimeout()
+  );
 
-  // Add this helper function to calculate valid scroll bounds
-  const getScrollBounds = (element: HTMLElement) => {
-    return {
-      min: 0,
-      max: element.scrollHeight - element.clientHeight
-    };
-  };
-
-  // Update the smoothScroll function
+  // Replace smoothScroll function
   const smoothScroll = (targetY: number, forceScroll = false) => {
-    const now = Date.now();
-    if (!forceScroll && isScrolling()) return;
-    if (!forceScroll && now - lastScrollTime < scrollDebounceTimeout()) return;
-    
-    lastScrollTime = now;
-    const galleryElement = document.getElementById('gallery');
-    if (!galleryElement) return;
-
-    // Clamp target scroll position within valid bounds
-    const bounds = getScrollBounds(galleryElement);
-    targetY = Math.max(bounds.min, Math.min(bounds.max, targetY));
-
-    // If there's already an animation running, update its target
-    const currentAnimation = scrollAnimationState();
-    if (currentAnimation?.active) {
-      setScrollAnimationState({
-        ...currentAnimation,
-        targetY,
-        // Don't reset start time to maintain smooth transition
-        startTime: currentAnimation.startTime
-      });
-      return;
-    }
-
-    setIsScrolling(true);
-    
-    const startY = galleryElement.scrollTop;
-    const startTime = performance.now();
-    
-    setScrollAnimationState({
-      active: true,
-      targetY,
-      startTime
-    });
-
-    let frameId: number;
-    const animate = (currentTime: number) => {
-      const animState = scrollAnimationState();
-      if (!animState?.active) return;
-
-      const elapsed = currentTime - animState.startTime!;
-      const progress = Math.min(elapsed / scrollTimeout(), 1);
-      
-      // Use easeInOutQuad easing function for smooth animation
-      const easeProgress = progress < 0.5
-        ? 2 * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-      
-      galleryElement.scrollTop = startY + ((animState.targetY! - startY) * easeProgress);
-      
-      if (progress < 1) {
-        frameId = requestAnimationFrame(animate);
-      } else {
-        // Ensure final position is exactly at target
-        galleryElement.scrollTop = animState.targetY!;
-        setIsScrolling(false);
-        setScrollAnimationState(null);
-      }
-    };
-    
-    frameId = requestAnimationFrame(animate);
-    
-    // Add cleanup function to animation state
-    setScrollAnimationState(prev => prev ? {
-      ...prev,
-      cleanup: () => {
-        cancelAnimationFrame(frameId);
-        setScrollAnimationState(null);
-        setIsScrolling(false);
-      }
-    } : null);
+    scrollManager.smoothScrollTo(targetY, forceScroll);
   };
 
-  // Update the scrollToSelected function to use bounds checking
+  // Update scrollToSelected function
   const scrollToSelected = (forceScroll = false) => {
     const selectedIdx = gallery.selected;
     if (selectedIdx === null || (checkingPosition() && !forceScroll)) return;
-    if (!forceScroll && scrollAnimationState()?.active) return;
+    if (!forceScroll && scrollManager.isActive) return;
 
     const galleryElement = document.getElementById('gallery');
     const selectedElement = document.querySelector(`#gallery .responsive-grid .item:nth-child(${selectedIdx + 1})`);
@@ -147,13 +152,11 @@ export const Gallery = () => {
 
     const galleryRect = galleryElement.getBoundingClientRect();
     const selectedRect = selectedElement.getBoundingClientRect();
-    const bounds = getScrollBounds(galleryElement);
 
-    // Calculate the visible area boundaries with smaller margins for better control
+    // Calculate visible area with margins
     const visibleTop = galleryRect.top + (galleryRect.height * 0.15);
     const visibleBottom = galleryRect.bottom - (galleryRect.height * 0.15);
 
-    // Check if the selected element is outside the visible area or force scroll is requested
     const needsScroll = forceScroll || 
       selectedRect.top < visibleTop || 
       selectedRect.bottom > visibleBottom ||
@@ -161,78 +164,66 @@ export const Gallery = () => {
       selectedRect.bottom < visibleTop;
 
     if (needsScroll) {
-      // Calculate the target scroll position to center the selected element
-      let targetY = galleryElement.scrollTop + 
+      const targetY = galleryElement.scrollTop + 
         (selectedRect.top - galleryRect.top) - 
         (galleryRect.height / 2) + 
         (selectedRect.height / 2);
-
-      // Clamp target position within valid bounds
-      targetY = Math.max(bounds.min, Math.min(bounds.max, targetY));
 
       setAutoScrolling(true);
       const initialSelectedIdx = selectedIdx;
       
       smoothScroll(targetY, true);
 
-      // Clear autoScrolling after animation completes and verify selection
-      const clearAutoScroll = () => {
+      setTimeout(() => {
         setAutoScrolling(false);
         
-        // Verify the selection hasn't changed during scroll
+        // Verify selection and position after scroll
         if (gallery.selected === initialSelectedIdx) {
-          // Verify position after scroll and adjust if needed
-          const newSelectedElement = document.querySelector(`#gallery .responsive-grid .item:nth-child(${initialSelectedIdx + 1})`);
+          const newSelectedElement = document.querySelector(
+            `#gallery .responsive-grid .item:nth-child(${initialSelectedIdx + 1})`
+          );
           if (newSelectedElement) {
-            const newSelectedRect = newSelectedElement.getBoundingClientRect();
+            const newRect = newSelectedElement.getBoundingClientRect();
             const newGalleryRect = galleryElement.getBoundingClientRect();
             
-            if (newSelectedRect.top < newGalleryRect.top || 
-                newSelectedRect.bottom > newGalleryRect.bottom) {
+            if (newRect.top < newGalleryRect.top || 
+                newRect.bottom > newGalleryRect.bottom) {
               requestAnimationFrame(() => scrollToSelected(true));
             }
           }
         } else {
-          // If selection changed during scroll, scroll to new selection
           requestAnimationFrame(() => scrollToSelected(true));
         }
-      };
-
-      setTimeout(clearAutoScroll, scrollTimeout() + 50);
+      }, scrollTimeout() + 50);
     }
   };
 
-  // Update the handleWheel function to be more responsive
+  // Update handleWheel function
   const handleWheel = (e: WheelEvent) => {
-    if (scrollAnimationState()?.active) {
+    if (scrollManager.isActive) {
       e.preventDefault();
       return;
     }
     
     e.preventDefault();
-    
     const galleryElement = document.getElementById('gallery');
     if (!galleryElement) return;
 
-    // First update selection
     const success = e.deltaY > 0 
       ? gallery.selection.selectPageDown()
       : gallery.selection.selectPageUp();
 
     if (success) {
-      // If selection changed successfully, scroll to it immediately
       scrollToSelected(true);
     } else {
-      // Check if we're at the scroll bounds
-      const bounds = getScrollBounds(galleryElement);
+      const bounds = scrollManager.getScrollBounds();
       const currentScroll = galleryElement.scrollTop;
       
-      // Only scroll if we're not at the bounds
       if ((e.deltaY > 0 && currentScroll < bounds.max) || 
           (e.deltaY < 0 && currentScroll > bounds.min)) {
-        const scrollAmount = galleryElement.clientHeight * 0.5; // Reduce from 0.75 to 0.5 for more controlled scrolling
+        const scrollAmount = galleryElement.clientHeight * 0.5;
         const targetY = currentScroll + (Math.sign(e.deltaY) * scrollAmount);
-        smoothScroll(targetY, true); // Force scroll for wheel events
+        smoothScroll(targetY, true);
       }
     }
   };
@@ -361,6 +352,7 @@ export const Gallery = () => {
     window.addEventListener("keydown", keyDownHandler);
     const gallery = document.getElementById('gallery');
     if (gallery) {
+      scrollManager.init(gallery);
       gallery.addEventListener('wheel', handleWheel, { passive: false });
     }
     
@@ -378,10 +370,7 @@ export const Gallery = () => {
         positionCheckInterval = null;
       }
       
-      const currentAnim = scrollAnimationState();
-      if (currentAnim?.active && currentAnim.cleanup) {
-        currentAnim.cleanup();
-      }
+      scrollManager.cleanup();
     });
   });
 
