@@ -39,8 +39,8 @@ export const Gallery = () => {
     message: string;
   } | null>(null);
   const [isScrolling, setIsScrolling] = createSignal(false);
-  const scrollTimeout = createMemo(() => 300); // Scroll animation duration
-  const scrollDebounceTimeout = createMemo(() => 50); // Debounce duration
+  const scrollTimeout = createMemo(() => 200); // Reduce from 300 to 200ms for faster animation
+  const scrollDebounceTimeout = createMemo(() => 16); // Reduce from 50 to 16ms (~1 frame) for more responsive input
   let lastScrollTime = 0;
   const [autoScrolling, setAutoScrolling] = createSignal(false);
   const [checkingPosition, setCheckingPosition] = createSignal(false);
@@ -202,7 +202,7 @@ export const Gallery = () => {
     }
   };
 
-  // Update the handleWheel function to respect active animations
+  // Update the handleWheel function to be more responsive
   const handleWheel = (e: WheelEvent) => {
     if (scrollAnimationState()?.active) {
       e.preventDefault();
@@ -220,7 +220,7 @@ export const Gallery = () => {
       : gallery.selection.selectPageUp();
 
     if (success) {
-      // If selection changed successfully, scroll to it
+      // If selection changed successfully, scroll to it immediately
       scrollToSelected(true);
     } else {
       // Check if we're at the scroll bounds
@@ -230,9 +230,9 @@ export const Gallery = () => {
       // Only scroll if we're not at the bounds
       if ((e.deltaY > 0 && currentScroll < bounds.max) || 
           (e.deltaY < 0 && currentScroll > bounds.min)) {
-        const scrollAmount = galleryElement.clientHeight * 0.75;
+        const scrollAmount = galleryElement.clientHeight * 0.5; // Reduce from 0.75 to 0.5 for more controlled scrolling
         const targetY = currentScroll + (Math.sign(e.deltaY) * scrollAmount);
-        smoothScroll(targetY);
+        smoothScroll(targetY, true); // Force scroll for wheel events
       }
     }
   };
