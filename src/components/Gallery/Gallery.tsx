@@ -49,6 +49,7 @@ export const Gallery = () => {
     active: boolean;
     targetY: number | null;
     startTime: number | null;
+    cleanup?: () => void;
   } | null>(null);
 
   // Add this helper function to calculate valid scroll bounds
@@ -78,7 +79,9 @@ export const Gallery = () => {
     if (currentAnimation?.active) {
       setScrollAnimationState({
         ...currentAnimation,
-        targetY
+        targetY,
+        // Don't reset start time to maintain smooth transition
+        startTime: currentAnimation.startTime
       });
       return;
     }
@@ -94,6 +97,7 @@ export const Gallery = () => {
       startTime
     });
 
+    let frameId: number;
     const animate = (currentTime: number) => {
       const animState = scrollAnimationState();
       if (!animState?.active) return;
@@ -109,7 +113,7 @@ export const Gallery = () => {
       galleryElement.scrollTop = startY + ((animState.targetY! - startY) * easeProgress);
       
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        frameId = requestAnimationFrame(animate);
       } else {
         // Ensure final position is exactly at target
         galleryElement.scrollTop = animState.targetY!;
@@ -118,7 +122,17 @@ export const Gallery = () => {
       }
     };
     
-    requestAnimationFrame(animate);
+    frameId = requestAnimationFrame(animate);
+    
+    // Add cleanup function to animation state
+    setScrollAnimationState(prev => prev ? {
+      ...prev,
+      cleanup: () => {
+        cancelAnimationFrame(frameId);
+        setScrollAnimationState(null);
+        setIsScrolling(false);
+      }
+    } : null);
   };
 
   // Update the scrollToSelected function to use bounds checking
@@ -207,9 +221,7 @@ export const Gallery = () => {
 
     if (success) {
       // If selection changed successfully, scroll to it
-      requestAnimationFrame(() => {
-        scrollToSelected(true);
-      });
+      scrollToSelected(true);
     } else {
       // Check if we're at the scroll bounds
       const bounds = getScrollBounds(galleryElement);
@@ -366,9 +378,9 @@ export const Gallery = () => {
         positionCheckInterval = null;
       }
       
-      if (scrollAnimationState()?.active) {
-        cancelAnimationFrame(scrollAnimationState()!.startTime!);
-        setScrollAnimationState(null);
+      const currentAnim = scrollAnimationState();
+      if (currentAnim?.active && currentAnim.cleanup) {
+        currentAnim.cleanup();
       }
     });
   });
