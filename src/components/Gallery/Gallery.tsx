@@ -97,72 +97,25 @@ export const Gallery = () => {
     } else if (event.key === "Delete" && gallery.selectedImage !== null) {
       const data = gallery.data();
       if (!data) return;
-      const imagePath = data.path
-        ? `${data.path}/${gallery.selectedImage.name}`
-        : gallery.selectedImage.name;
-      deleteImage(imagePath);
+      
+      const selectedItem = data.items[gallery.selected!];
+      if (!selectedItem || selectedItem.type !== 'image') return;
+      
+      deleteImageAction(gallery.selected!);
     } else if (event.key === "q") {
       setShowQuickJump(true);
       event.preventDefault();
       return;
+    } else if (event.key === "PageUp") {
+      event.preventDefault();
+      gallery.selection.selectPageUp();
+    } else if (event.key === "PageDown") {
+      event.preventDefault();
+      gallery.selection.selectPageDown();
     } else {
       return;
     }
     event.preventDefault();
-  };
-
-  /**
-   * Handles deletion of an image with optional preservation of latents and txt files
-   * 
-   * @param imagePath - Path to the image to be deleted
-   */
-  const deleteImage = async (imagePath: string) => {
-    const params = new URLSearchParams();
-    params.append("confirm", "true");
-
-    if (appContext.preserveLatents) {
-      params.append("preserve_latents", "true");
-    }
-    if (appContext.preserveTxt) {
-      params.append("preserve_txt", "true");
-    }
-
-    try {
-      setProgressInfo({
-        current: 0,
-        total: 1,
-        type: 'delete',
-        message: appContext.t('gallery.deletingFile')
-      });
-
-      const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to delete image.");
-      }
-
-      setProgressInfo({
-        current: 1,
-        total: 1,
-        type: 'delete',
-        message: appContext.t('gallery.fileDeleteSuccess')
-      });
-
-      // Clear the progress after a short delay
-      setTimeout(() => setProgressInfo(null), 2000);
-    } catch (error) {
-      console.error("Error deleting image:", error);
-      setProgressInfo({
-        current: 1,
-        total: 1,
-        type: 'delete',
-        message: appContext.t('gallery.fileDeleteError')
-      });
-      setTimeout(() => setProgressInfo(null), 3000);
-    }
   };
 
   onMount(() => {

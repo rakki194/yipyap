@@ -41,7 +41,11 @@ export const ImageGrid = (props: {
 
   const isActive = (ref: HTMLElement, idx: number) => {
     if (gallery.mode === "view" && gallery.selected === idx) {
-      ref.scrollIntoView({ behavior: "instant", block: "nearest" });
+      ref.scrollIntoView({ 
+        behavior: "smooth", 
+        block: "center", 
+        inline: "nearest"
+      });
       return true;
     }
     return false;

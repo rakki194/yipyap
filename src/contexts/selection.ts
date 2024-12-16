@@ -40,6 +40,47 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
     columns: null,
   });
 
+  /**
+   * Scrolls to the selected item smoothly
+   */
+  const scrollToSelected = (idx: number) => {
+    const item = document.querySelector(`#gallery .responsive-grid .item:nth-child(${idx + 1})`);
+    if (item) {
+      item.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest"
+      });
+    }
+  };
+
+  /**
+   * Selects items by page (PageUp/PageDown)
+   */
+  const selectPage = (direction: "up" | "down") => {
+    const data = backendData();
+    if (!data) return false;
+    
+    const viewportHeight = window.innerHeight;
+    const itemHeight = 250; // Approximate height of each grid item
+    const itemsPerPage = Math.floor(viewportHeight / itemHeight) * (state.columns || 1);
+    
+    const currentIdx = selection.selected ?? 0;
+    let newIdx: number;
+    
+    if (direction === "up") {
+      newIdx = Math.max(0, currentIdx - itemsPerPage);
+    } else {
+      newIdx = Math.min(data.items.length - 1, currentIdx + itemsPerPage);
+    }
+    
+    const success = selection.select(newIdx);
+    if (success) {
+      scrollToSelected(newIdx);
+    }
+    return success;
+  };
+
   const selection = {
     /**
      * Selects an image by index
@@ -295,6 +336,20 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
      */
     clearFolderMultiSelect: () => {
       setState(prev => ({ ...prev, multiFolderSelected: new Set() }));
+    },
+    /**
+     * Selects the previous page of items
+     * @returns true if selection was successful
+     */
+    selectPageUp: () => {
+      return selectPage("up");
+    },
+    /**
+     * Selects the next page of items
+     * @returns true if selection was successful
+     */
+    selectPageDown: () => {
+      return selectPage("down");
     },
   };
 

@@ -1,6 +1,12 @@
+:root {
+  --transition-duration: 0.2s;
+  --transition-timing: ease-out;
+}
+
 #gallery {
   & > * {
     padding: var(--spacing);
+    scroll-behavior: smooth;
   }
 
   & > .responsive-grid {
@@ -9,6 +15,8 @@
     gap: var(--spacing);
     width: 100%;
     container-type: inline-size;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
   &.crop > .responsive-grid > .item > img {
@@ -25,7 +33,12 @@
   aspect-ratio: 1;
   overflow: hidden;
   box-shadow: var(--shadow-default);
-  transition-property: transform, box-shadow, background-color, color, border;
+  transition-property: transform, box-shadow, background-color, color, border, opacity;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: var(--transition-timing);
+  opacity: 0;
+  transform: scale(0.98);
+  animation: fadeIn 0.3s ease-out forwards;
 
   &:hover,
   &.selected {
@@ -309,5 +322,16 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

@@ -323,7 +323,10 @@ const DeleteButton = (props: {
     if (!data) return;
 
     if (gallery.selectedImage !== null) {
-      await deleteImageAction(gallery.selected!);
+      const selectedItem = data.items[gallery.selected!];
+      if (selectedItem?.type === 'image') {
+        await deleteImageAction(gallery.selected!);
+      }
     }
   };
 

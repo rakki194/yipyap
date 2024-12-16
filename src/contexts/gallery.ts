@@ -301,43 +301,47 @@ export function makeGalleryState() {
   const deleteImage = action(async (idx: number) => {
     const database = untrack(backendData);
     if (!database) return new Error("No page fetched yet!");
-    const image = database.items[idx];
-    if (import.meta.env.DEV)
-      console.debug("Deleting image", idx, { ...image }, { ...image() });
-    if (!image || image.type !== "image")
+    
+    const item = database.items[idx];
+    if (!item || item.type !== "image") {
       return new Error("No image to delete");
+    }
 
     try {
-      const confirm = true; // FIXME: ask the user for confirmation
-      const response = await deleteImageFromBackend(
+      const confirm = true;
+      await deleteImageFromBackend(
         database.path,
-        image.file_name,
+        item.file_name,
         confirm
       );
-      if (import.meta.env.DEV)
-        console.debug("Delete image response", { idx, response });
+
+      if (import.meta.env.DEV) {
+        console.debug("Delete image response", { idx, fileName: item.file_name });
+      }
+
+      // Delete the idx'th image from the database using slice and spread
+      const items = [
+        ...database.items.slice(0, idx),
+        ...database.items.slice(idx + 1),
+      ];
+
+      const data = {
+        ...database,
+        items,
+        total_folders: database.total_folders,
+        total_images: database.total_images - 1,
+      };
+      
+      batch(() => {
+        setData(data);
+        clearImageCache();
+      });
+      
+      return items;
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to delete image", error);
       return new Error("Failed to delete image");
     }
-
-    // Delete the idx'th image from the database using slice and spread for better readability
-    const items = [
-      ...database.items.slice(0, idx),
-      ...database.items.slice(idx + 1),
-    ];
-
-    const data = {
-      ...database,
-      items,
-      total_folders: database.total_folders,
-      total_images: database.total_images,
-    };
-    batch(() => {
-      setData(data);
-      clearImageCache();
-    });
-    return items;
   });
 
   const deleteCaption = action(async (type: string) => {
