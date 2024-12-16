@@ -243,13 +243,22 @@ export const Gallery = () => {
       return;
     }
 
-    // Don't act if a modifier key is pressed
-    if (event.shiftKey || event.altKey || event.ctrlKey) {
+    const data = gallery.data();
+    if (!data) return;
+
+    // Add handling for shift+space
+    if (event.key === " " && event.shiftKey) {
+      event.preventDefault();
+      if (gallery.selected !== null) {
+        gallery.selection.toggleMultiSelect(gallery.selected);
+      }
       return;
     }
 
-    const data = gallery.data();
-    if (!data) return;
+    // Don't act if other modifier keys are pressed (except shift which we now handle)
+    if (event.altKey || event.ctrlKey) {
+      return;
+    }
 
     if (event.key === "ArrowRight") {
       if (!gallery.selectNext()) return;
