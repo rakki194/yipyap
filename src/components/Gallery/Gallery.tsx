@@ -39,17 +39,22 @@ export const Gallery = () => {
     message: string;
   } | null>(null);
   const [isScrolling, setIsScrolling] = createSignal(false);
-  const scrollTimeout = createMemo(() => 300); // Adjust scroll animation duration as needed
+  const scrollTimeout = createMemo(() => 300); // Scroll animation duration
+  const scrollDebounceTimeout = createMemo(() => 50); // Debounce duration
+  let lastScrollTime = 0;
 
-  const smoothScroll = (targetY: number) => {
-    if (isScrolling()) return;
+  const smoothScroll = (targetY: number, forceScroll = false) => {
+    const now = Date.now();
+    if (!forceScroll && isScrolling()) return;
+    if (!forceScroll && now - lastScrollTime < scrollDebounceTimeout()) return;
     
-    const gallery = document.getElementById('gallery');
-    if (!gallery) return;
+    lastScrollTime = now;
+    const galleryElement = document.getElementById('gallery');
+    if (!galleryElement) return;
 
     setIsScrolling(true);
     
-    const startY = gallery.scrollTop;
+    const startY = galleryElement.scrollTop;
     const distance = targetY - startY;
     const startTime = performance.now();
     
@@ -62,7 +67,7 @@ export const Gallery = () => {
         ? 2 * progress * progress
         : 1 - Math.pow(-2 * progress + 2, 2) / 2;
       
-      gallery.scrollTop = startY + (distance * easeProgress);
+      galleryElement.scrollTop = startY + (distance * easeProgress);
       
       if (progress < 1) {
         requestAnimationFrame(animate);
@@ -75,15 +80,12 @@ export const Gallery = () => {
   };
 
   const handleWheel = (e: WheelEvent) => {
-    if (isScrolling()) {
-      e.preventDefault();
-      return;
-    }
-
+    e.preventDefault();
+    
     const galleryElement = document.getElementById('gallery');
     if (!galleryElement) return;
 
-    const scrollAmount = galleryElement.clientHeight * 0.75; // Adjust scroll amount as needed
+    const scrollAmount = galleryElement.clientHeight * 0.75;
     const targetY = galleryElement.scrollTop + (Math.sign(e.deltaY) * scrollAmount);
     
     smoothScroll(targetY);
@@ -94,8 +96,6 @@ export const Gallery = () => {
     } else {
       gallery.selection.selectPageUp();
     }
-    
-    e.preventDefault();
   };
 
   const keyDownHandler = (event: KeyboardEvent) => {
