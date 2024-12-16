@@ -150,7 +150,7 @@ const ModelBody = (props: {
     try {
       const result = await saveCaption({
         type,
-        caption: "",
+        caption: ""
       });
 
       if (result instanceof Error) {
@@ -160,9 +160,6 @@ const ModelBody = (props: {
       // Set focus to the newly created caption
       setFocused(true);
       setFocusedType(type);
-      
-      // Force a refresh of the gallery data
-      gallery.refetch();
     } catch (error) {
       console.error("Error creating caption:", error);
     }

@@ -234,25 +234,25 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     try {
-      const response = await saveCaptionToBackend(database.path, image.name, {
-        type,
-        caption,
+      const response = await fetch(`/caption/${database.path}/${image.name}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, caption })
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to save caption: ${response.statusText}`);
+        throw new Error(`Failed to save caption: ${await response.text()}`);
       }
 
-      // Update local state
-      updateLocalCaptions(image, { type, caption }, database);
-      
-      // Always force a refetch and clear cache for consistency
-      await refetch();
-      clearImageCache();
+      // Update local state without refetching
+      updateLocalCaptions(image, {
+        type,
+        caption
+      }, database);
 
-      return { success: true };
+      return response;
     } catch (error) {
-      if (import.meta.env.DEV) console.error("Failed to save caption", error);
+      console.error("Failed to save caption:", error);
       return new Error("Failed to save caption");
     }
   });
