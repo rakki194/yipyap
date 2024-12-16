@@ -15,7 +15,8 @@
     gap: var(--spacing);
     width: 100%;
     container-type: inline-size;
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 

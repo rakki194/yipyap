@@ -38,6 +38,65 @@ export const Gallery = () => {
     type: 'upload' | 'delete';
     message: string;
   } | null>(null);
+  const [isScrolling, setIsScrolling] = createSignal(false);
+  const scrollTimeout = createMemo(() => 300); // Adjust scroll animation duration as needed
+
+  const smoothScroll = (targetY: number) => {
+    if (isScrolling()) return;
+    
+    const gallery = document.getElementById('gallery');
+    if (!gallery) return;
+
+    setIsScrolling(true);
+    
+    const startY = gallery.scrollTop;
+    const distance = targetY - startY;
+    const startTime = performance.now();
+    
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / scrollTimeout(), 1);
+      
+      // Use easeInOutQuad easing function for smooth animation
+      const easeProgress = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      gallery.scrollTop = startY + (distance * easeProgress);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setIsScrolling(false);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  };
+
+  const handleWheel = (e: WheelEvent) => {
+    if (isScrolling()) {
+      e.preventDefault();
+      return;
+    }
+
+    const galleryElement = document.getElementById('gallery');
+    if (!galleryElement) return;
+
+    const scrollAmount = galleryElement.clientHeight * 0.75; // Adjust scroll amount as needed
+    const targetY = galleryElement.scrollTop + (Math.sign(e.deltaY) * scrollAmount);
+    
+    smoothScroll(targetY);
+    
+    // Update selection based on scroll direction
+    if (e.deltaY > 0) {
+      gallery.selection.selectPageDown();
+    } else {
+      gallery.selection.selectPageUp();
+    }
+    
+    e.preventDefault();
+  };
 
   const keyDownHandler = (event: KeyboardEvent) => {
     // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
@@ -108,9 +167,17 @@ export const Gallery = () => {
       return;
     } else if (event.key === "PageUp") {
       event.preventDefault();
+      const galleryElement = document.getElementById('gallery');
+      if (!galleryElement) return;
+      const targetY = galleryElement.scrollTop - (galleryElement.clientHeight * 0.75);
+      smoothScroll(targetY);
       gallery.selection.selectPageUp();
     } else if (event.key === "PageDown") {
       event.preventDefault();
+      const galleryElement = document.getElementById('gallery');
+      if (!galleryElement) return;
+      const targetY = galleryElement.scrollTop + (galleryElement.clientHeight * 0.75);
+      smoothScroll(targetY);
       gallery.selection.selectPageDown();
     } else {
       return;
@@ -120,7 +187,18 @@ export const Gallery = () => {
 
   onMount(() => {
     window.addEventListener("keydown", keyDownHandler);
-    onCleanup(() => window.removeEventListener("keydown", keyDownHandler));
+    const gallery = document.getElementById('gallery');
+    if (gallery) {
+      gallery.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    
+    onCleanup(() => {
+      window.removeEventListener("keydown", keyDownHandler);
+      const gallery = document.getElementById('gallery');
+      if (gallery) {
+        gallery.removeEventListener('wheel', handleWheel);
+      }
+    });
   });
 
   const handleDragEnter = (e: DragEvent) => {
