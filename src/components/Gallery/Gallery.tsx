@@ -12,14 +12,10 @@ import { useAppContext } from "~/contexts/app";
 // Add new ScrollManager class to handle scroll logic
 class ScrollManager {
   private element: HTMLElement | null = null;
-  private isScrolling = false;
-  private lastScrollTime = 0;
   private animationFrame: number | null = null;
+  private isAnimating = false;
   
-  constructor(
-    private readonly scrollTimeout: number,
-    private readonly scrollDebounceTimeout: number
-  ) {}
+  constructor(private readonly scrollTimeout: number) {}
 
   init(element: HTMLElement) {
     this.element = element;
@@ -34,23 +30,17 @@ class ScrollManager {
   }
 
   smoothScrollTo(targetY: number, force = false) {
-    if (!this.element) return;
-    if (!force && (this.isScrolling || Date.now() - this.lastScrollTime < this.scrollDebounceTimeout)) {
-      return;
-    }
+    if (!this.element || (!force && this.isAnimating)) return;
 
     // Cancel any existing animation
-    if (this.animationFrame) {
-      cancelAnimationFrame(this.animationFrame);
-    }
+    this.cleanup();
 
-    this.lastScrollTime = Date.now();
     const bounds = this.getScrollBounds();
     targetY = Math.max(bounds.min, Math.min(bounds.max, targetY));
 
     const startY = this.element.scrollTop;
     const startTime = performance.now();
-    this.isScrolling = true;
+    this.isAnimating = true;
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
@@ -63,12 +53,11 @@ class ScrollManager {
       
       this.element!.scrollTop = startY + ((targetY - startY) * easeProgress);
       
-      if (progress < 1) {
+      if (progress < 1 && this.isAnimating) {
         this.animationFrame = requestAnimationFrame(animate);
       } else {
         this.element!.scrollTop = targetY;
-        this.isScrolling = false;
-        this.animationFrame = null;
+        this.cleanup();
       }
     };
 
@@ -80,11 +69,11 @@ class ScrollManager {
       cancelAnimationFrame(this.animationFrame);
       this.animationFrame = null;
     }
-    this.isScrolling = false;
+    this.isAnimating = false;
   }
 
   get isActive() {
-    return this.isScrolling;
+    return this.isAnimating;
   }
 }
 
@@ -131,8 +120,7 @@ export const Gallery = () => {
     cleanup?: () => void;
   } | null>(null);
   const scrollManager = new ScrollManager(
-    scrollTimeout(),
-    scrollDebounceTimeout()
+    scrollTimeout()
   );
 
   // Add state to track shift selection start point
@@ -203,13 +191,14 @@ export const Gallery = () => {
 
   // Update handleWheel function
   const handleWheel = (e: WheelEvent) => {
-    if (scrollManager.isActive) {
-      e.preventDefault();
-      return;
-    }
-    
     const galleryElement = document.getElementById('gallery');
     if (!galleryElement) return;
+
+    // Only prevent default if we're going to handle the scroll
+    const bounds = scrollManager.getScrollBounds();
+    const currentScroll = galleryElement.scrollTop;
+    const canScrollUp = currentScroll > bounds.min;
+    const canScrollDown = currentScroll < bounds.max;
 
     const success = e.deltaY > 0 
       ? gallery.selection.selectPageDown()
@@ -218,19 +207,15 @@ export const Gallery = () => {
     if (success) {
       e.preventDefault();
       scrollToSelected(true);
-    } else {
-      const bounds = scrollManager.getScrollBounds();
-      const currentScroll = galleryElement.scrollTop;
-      
-      if ((e.deltaY > 0 && currentScroll < bounds.max) || 
-          (e.deltaY < 0 && currentScroll > bounds.min)) {
-        e.preventDefault();
+    } else if ((e.deltaY > 0 && canScrollDown) || (e.deltaY < 0 && canScrollUp)) {
+      e.preventDefault();
+      if (!scrollManager.isActive) {
         const scrollAmount = galleryElement.clientHeight * 0.5;
         const targetY = currentScroll + (Math.sign(e.deltaY) * scrollAmount);
         smoothScroll(targetY, true);
       }
-      // If we're at the bounds and no selection change occurred, allow native scroll
     }
+    // Allow native scroll behavior if we can't handle it
   };
 
   const keyDownHandler = async (event: KeyboardEvent) => {
