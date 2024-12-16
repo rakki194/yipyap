@@ -135,6 +135,9 @@ export const Gallery = () => {
     scrollDebounceTimeout()
   );
 
+  // Add state to track shift selection start point
+  const [shiftSelectionStart, setShiftSelectionStart] = createSignal<number | null>(null);
+
   // Replace smoothScroll function
   const smoothScroll = (targetY: number, forceScroll = false) => {
     scrollManager.smoothScrollTo(targetY, forceScroll);
@@ -246,7 +249,7 @@ export const Gallery = () => {
     const data = gallery.data();
     if (!data) return;
 
-    // Add handling for shift+space
+    // Handle shift+space for toggling multiselect
     if (event.key === " " && event.shiftKey) {
       event.preventDefault();
       if (gallery.selected !== null) {
@@ -255,7 +258,59 @@ export const Gallery = () => {
       return;
     }
 
-    // Don't act if other modifier keys are pressed (except shift which we now handle)
+    // Handle shift+arrow keys for multiple selection
+    if (event.shiftKey && ["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(event.key)) {
+      event.preventDefault();
+      let success = false;
+      
+      // Initialize shift selection start point if not set
+      if (shiftSelectionStart() === null && gallery.selected !== null) {
+        setShiftSelectionStart(gallery.selected);
+      }
+
+      // Move selection
+      switch (event.key) {
+        case "ArrowRight":
+          success = gallery.selectNext();
+          break;
+        case "ArrowLeft":
+          success = gallery.selectPrev();
+          break;
+        case "ArrowDown":
+          success = gallery.selectDown();
+          break;
+        case "ArrowUp":
+          success = gallery.selectUp();
+          break;
+      }
+
+      if (success && gallery.selected !== null && shiftSelectionStart() !== null) {
+        // Select all images between the shift start point and current position
+        const start = Math.min(shiftSelectionStart()!, gallery.selected);
+        const end = Math.max(shiftSelectionStart()!, gallery.selected);
+        
+        // Clear existing selection
+        gallery.selection.clearMultiSelect();
+        
+        // Add all images in range to multiselect
+        for (let i = start; i <= end; i++) {
+          const item = data.items[i];
+          if (item?.type === 'image') {
+            gallery.selection.toggleMultiSelect(i);
+          }
+        }
+        
+        scrollToSelected();
+      }
+      return;
+    }
+
+    // Reset shift selection start point when shift is not pressed
+    if (!event.shiftKey) {
+      setShiftSelectionStart(null);
+    }
+
+    // Don't act if other modifier keys are pressed
     if (event.altKey || event.ctrlKey) {
       return;
     }
@@ -328,6 +383,13 @@ export const Gallery = () => {
     event.preventDefault();
   };
 
+  // Add keyup handler to reset shift selection when shift is released
+  const keyUpHandler = (event: KeyboardEvent) => {
+    if (event.key === "Shift") {
+      setShiftSelectionStart(null);
+    }
+  };
+
   const startPositionChecking = () => {
     if (positionCheckInterval) return;
     
@@ -359,6 +421,7 @@ export const Gallery = () => {
 
   onMount(() => {
     window.addEventListener("keydown", keyDownHandler);
+    window.addEventListener("keyup", keyUpHandler);
     const gallery = document.getElementById('gallery');
     if (gallery) {
       scrollManager.init(gallery);
@@ -369,6 +432,7 @@ export const Gallery = () => {
     
     onCleanup(() => {
       window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyup", keyUpHandler);
       const gallery = document.getElementById('gallery');
       if (gallery) {
         gallery.removeEventListener('wheel', handleWheel);
