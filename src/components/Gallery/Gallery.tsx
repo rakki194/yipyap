@@ -45,7 +45,11 @@ export const Gallery = () => {
   const [autoScrolling, setAutoScrolling] = createSignal(false);
   const [checkingPosition, setCheckingPosition] = createSignal(false);
   let positionCheckInterval: number | null = null;
-  const [activeScrollAnimation, setActiveScrollAnimation] = createSignal<number | null>(null);
+  const [scrollAnimationState, setScrollAnimationState] = createSignal<{
+    active: boolean;
+    targetY: number | null;
+    startTime: number | null;
+  } | null>(null);
 
   // Add this helper function to calculate valid scroll bounds
   const getScrollBounds = (element: HTMLElement) => {
@@ -61,11 +65,6 @@ export const Gallery = () => {
     if (!forceScroll && isScrolling()) return;
     if (!forceScroll && now - lastScrollTime < scrollDebounceTimeout()) return;
     
-    // Cancel any existing animation
-    if (activeScrollAnimation()) {
-      cancelAnimationFrame(activeScrollAnimation()!);
-    }
-    
     lastScrollTime = now;
     const galleryElement = document.getElementById('gallery');
     if (!galleryElement) return;
@@ -74,14 +73,32 @@ export const Gallery = () => {
     const bounds = getScrollBounds(galleryElement);
     targetY = Math.max(bounds.min, Math.min(bounds.max, targetY));
 
+    // If there's already an animation running, update its target
+    const currentAnimation = scrollAnimationState();
+    if (currentAnimation?.active) {
+      setScrollAnimationState({
+        ...currentAnimation,
+        targetY
+      });
+      return;
+    }
+
     setIsScrolling(true);
     
     const startY = galleryElement.scrollTop;
-    const distance = targetY - startY;
     const startTime = performance.now();
     
+    setScrollAnimationState({
+      active: true,
+      targetY,
+      startTime
+    });
+
     const animate = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
+      const animState = scrollAnimationState();
+      if (!animState?.active) return;
+
+      const elapsed = currentTime - animState.startTime!;
       const progress = Math.min(elapsed / scrollTimeout(), 1);
       
       // Use easeInOutQuad easing function for smooth animation
@@ -89,28 +106,26 @@ export const Gallery = () => {
         ? 2 * progress * progress
         : 1 - Math.pow(-2 * progress + 2, 2) / 2;
       
-      galleryElement.scrollTop = startY + (distance * easeProgress);
+      galleryElement.scrollTop = startY + ((animState.targetY! - startY) * easeProgress);
       
       if (progress < 1) {
-        const frameId = requestAnimationFrame(animate);
-        setActiveScrollAnimation(frameId);
+        requestAnimationFrame(animate);
       } else {
         // Ensure final position is exactly at target
-        galleryElement.scrollTop = targetY;
+        galleryElement.scrollTop = animState.targetY!;
         setIsScrolling(false);
-        setActiveScrollAnimation(null);
+        setScrollAnimationState(null);
       }
     };
     
-    const frameId = requestAnimationFrame(animate);
-    setActiveScrollAnimation(frameId);
+    requestAnimationFrame(animate);
   };
 
   // Update the scrollToSelected function to use bounds checking
   const scrollToSelected = (forceScroll = false) => {
     const selectedIdx = gallery.selected;
     if (selectedIdx === null || (checkingPosition() && !forceScroll)) return;
-    if (!forceScroll && activeScrollAnimation()) return;
+    if (!forceScroll && scrollAnimationState()?.active) return;
 
     const galleryElement = document.getElementById('gallery');
     const selectedElement = document.querySelector(`#gallery .responsive-grid .item:nth-child(${selectedIdx + 1})`);
@@ -175,7 +190,7 @@ export const Gallery = () => {
 
   // Update the handleWheel function to respect active animations
   const handleWheel = (e: WheelEvent) => {
-    if (autoScrolling() || activeScrollAnimation()) {
+    if (scrollAnimationState()?.active) {
       e.preventDefault();
       return;
     }
@@ -351,9 +366,9 @@ export const Gallery = () => {
         positionCheckInterval = null;
       }
       
-      if (activeScrollAnimation()) {
-        cancelAnimationFrame(activeScrollAnimation()!);
-        setActiveScrollAnimation(null);
+      if (scrollAnimationState()?.active) {
+        cancelAnimationFrame(scrollAnimationState()!.startTime!);
+        setScrollAnimationState(null);
       }
     });
   });
