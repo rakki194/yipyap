@@ -200,9 +200,10 @@ export const Gallery = () => {
     const canScrollUp = currentScroll > bounds.min;
     const canScrollDown = currentScroll < bounds.max;
 
+    // Use existing selection methods without arguments
     const success = e.deltaY > 0 
-      ? gallery.selection.selectPageDown()
-      : gallery.selection.selectPageUp();
+      ? gallery.selection.selectDown()
+      : gallery.selection.selectUp();
 
     if (success) {
       e.preventDefault();
@@ -210,7 +211,7 @@ export const Gallery = () => {
     } else if ((e.deltaY > 0 && canScrollDown) || (e.deltaY < 0 && canScrollUp)) {
       e.preventDefault();
       if (!scrollManager.isActive) {
-        const scrollAmount = galleryElement.clientHeight * 0.5;
+        const scrollAmount = galleryElement.clientHeight * 0.25;
         const targetY = currentScroll + (Math.sign(e.deltaY) * scrollAmount);
         smoothScroll(targetY, true);
       }
@@ -445,16 +446,16 @@ export const Gallery = () => {
       event.preventDefault();
       const galleryElement = document.getElementById('gallery');
       if (!galleryElement) return;
-      const targetY = galleryElement.scrollTop - (galleryElement.clientHeight * 0.75);
+      const targetY = galleryElement.scrollTop - (galleryElement.clientHeight * 0.25);
       smoothScroll(targetY);
-      gallery.selection.selectPageUp();
+      gallery.selection.selectUp();
     } else if (event.key === "PageDown") {
       event.preventDefault();
       const galleryElement = document.getElementById('gallery');
       if (!galleryElement) return;
-      const targetY = galleryElement.scrollTop + (galleryElement.clientHeight * 0.75);
+      const targetY = galleryElement.scrollTop + (galleryElement.clientHeight * 0.25);
       smoothScroll(targetY);
-      gallery.selection.selectPageDown();
+      gallery.selection.selectDown();
     } else {
       return;
     }
