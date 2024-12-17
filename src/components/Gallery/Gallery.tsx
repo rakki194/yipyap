@@ -744,6 +744,20 @@ export const Gallery = () => {
     }
   });
 
+  const { data } = useGallery();
+  const app = useAppContext();
+
+  createEffect(() => {
+    const currentData = data();
+    if (currentData) {
+      const path = currentData.path.split("/").filter(Boolean);
+      const title = path.length > 0 
+        ? `${path.join(" / ")} - ~yipyap` 
+        : "Gallery - ~yipyap";
+      document.title = title;
+    }
+  });
+
   return (
     <>
       {/* <Controls /> */}

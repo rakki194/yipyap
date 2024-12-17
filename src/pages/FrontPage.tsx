@@ -16,6 +16,9 @@ const FrontPage: Component = () => {
 
   onMount(() => {
     document.body.classList.add('on-front-page');
+    const title = getAppTitle();
+    document.title = title;
+    
     onCleanup(() => {
       document.body.classList.remove('on-front-page');
     });
@@ -41,35 +44,49 @@ const FrontPage: Component = () => {
     }, 300); // Duration should match the CSS transition duration
   };
 
+  const getAppTitle = () => {
+    if (app.disableNonsense || app.locale === 'ja') {
+      return "~yipyap";
+    }
+    
+    const random = Math.random();
+    if (random < 0.001) { // 0.1% chance
+      return Math.random() < 0.5 ? "yipyap, only in Ohio!" : "skibidi yipyap";
+    }
+    return "~yipyap";
+  };
+
   return (
-    <div class={`front-page fade-in ${isVisible() ? "visible" : "hidden"}`}>
-      <h1 class="title">
-        <span class="icon" title="app logo">
-          {getIcon("yipyap")}
-        </span>
-        <br /> ~yipyap
-        <br />{" "}
-        <span class="subtitle">{getRandomSubtitle()}</span>
-      </h1>
-      <div class="selection-buttons">
-        <button
-          type="button"
-          class="icon"
-          onClick={() => handleSelection("image")}
-          aria-label={t('frontPage.imageWork')}
-        >
-          {getIcon("dimensions")}
-        </button>
-        <button
-          type="button"
-          class="icon"
-          onClick={() => handleSelection("audio")}
-          aria-label={t('frontPage.audioWork')}
-        >
-          {getIcon("speaker")}
-        </button>
+    <>
+      <div class={`front-page fade-in ${isVisible() ? "visible" : "hidden"}`}>
+        <h1 class="title">
+          <span class="icon" title="app logo">
+            {getIcon("yipyap")}
+          </span>
+          <br /> {getAppTitle()}
+          <br />{" "}
+          <span class="subtitle">{getRandomSubtitle()}</span>
+        </h1>
+        <div class="selection-buttons">
+          <button
+            type="button"
+            class="icon"
+            onClick={() => handleSelection("image")}
+            aria-label={t('frontPage.imageWork')}
+          >
+            {getIcon("dimensions")}
+          </button>
+          <button
+            type="button"
+            class="icon"
+            onClick={() => handleSelection("audio")}
+            aria-label={t('frontPage.audioWork')}
+          >
+            {getIcon("speaker")}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
