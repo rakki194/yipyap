@@ -633,9 +633,6 @@ export const Gallery = () => {
       files.forEach(file => {
         const relativePath = file.webkitRelativePath || file.name;
         formData.append('files', file, relativePath);
-        if (import.meta.env.DEV) {
-          console.debug('Adding file to upload:', relativePath);
-        }
       });
 
       const currentPath = gallery.data()?.path || '';
@@ -652,8 +649,14 @@ export const Gallery = () => {
       setProgressInfo(null);
       setCurrentFile(null);
       
-      // Refresh gallery
-      gallery.refetch();
+      // Clear any existing selection to avoid index mismatches
+      gallery.selection.clearMultiSelect();
+      gallery.selection.clearFolderMultiSelect();
+      gallery.select(null);
+      
+      // Force a complete refresh of the gallery data
+      gallery.invalidate();
+      await gallery.refetch();
       
     } catch (error) {
       console.error('Error uploading files:', error);
