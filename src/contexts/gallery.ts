@@ -205,6 +205,7 @@ export function makeGalleryState() {
               setState({ path: path }); // Just update path for folder-only views
             }
             selection.select(null);
+            selection.clearMultiSelect(); // Clear multiselections when path changes
             clearImageCache();
           });
         }
