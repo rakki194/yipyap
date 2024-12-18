@@ -142,6 +142,7 @@ export default {
     closePreview: "Stäng förhandsvisning/modal",
     deleteImage: "Radera bild",
     toggleImagePreview: "Växla bildförhandsvisning",
+    copyToClipboard: "Kopiuj obraz do schowka",
   },
   imageViewer: {
     zoomIn: "Zooma in",
@@ -159,5 +160,9 @@ export default {
     downloadImage: "Ladda ner bild",
     imageInfo: "Bildinformation",
     dimensions: "Dimensioner",
+  },
+  notifications: {
+    imageCopied: "Obraz skopiowany do schowka",
+    imageCopyFailed: "Nie udało się skopiować obrazu do schowka",
   },
 };

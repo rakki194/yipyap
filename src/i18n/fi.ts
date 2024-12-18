@@ -144,6 +144,7 @@ export default {
     closePreview: "Sulje esikatselu/ikkuna",
     deleteImage: "Poista kuva",
     toggleImagePreview: "Vaihda kuvan esikatselu",
+    copyToClipboard: "Kopioi kuva leikepöydälle",
   },
   imageViewer: {
     zoomIn: "Lähennä",
@@ -166,5 +167,9 @@ export default {
     removeCommas: "Poista pilkut",
     replaceNewlinesWithCommas: "Korvaa rivinvaihdot pilkuilla",
     replaceUnderscoresWithSpaces: "Korvaa alaviivat välilyönneillä",
+  },
+  notifications: {
+    imageCopied: "Kuva kopioitu leikepöydälle",
+    imageCopyFailed: "Kuvan kopiointi leikepöydälle epäonnistui",
   },
 }; 

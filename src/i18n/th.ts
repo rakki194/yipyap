@@ -142,6 +142,7 @@ export default {
     closePreview: "ปิดการแสดงตัวอย่าง/หน้าต่าง",
     deleteImage: "ลบรูปภาพ",
     toggleImagePreview: "สลับการแสดงตัวอย่างรูปภาพ",
+    copyToClipboard: "คัดลอกรูปภาพไปยังคลิปบอร์ด",
   },
   imageViewer: {
     zoomIn: "ขยายเข้า",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "ลบเครื่องหมายจุลภาค",
     replaceNewlinesWithCommas: "แทนที่การขึ้นบรรทัดใหม่ด้วยเครื่องหมายจุลภาค",
     replaceUnderscoresWithSpaces: "แทนที่ขีดล่างด้วยช่องว่าง",
+  },
+  notifications: {
+    imageCopied: "คัดลอกรูปภาพไปยังคลิปบอร์ดแล้ว",
+    imageCopyFailed: "ไม่สามารถคัดลอกรูปภาพไปยังคลิปบอร์ด",
   },
 }; 

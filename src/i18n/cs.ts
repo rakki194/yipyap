@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "Uchovejte soubory .npz (latent) při mazání obrázků.",
     preserveTxt: "Uchovat .txt",
     preserveTxtTooltip: "Uchovejte soubory .txt při mazání obrázků.",
+    thumbnailSize: "Velikost náhledů",
+    thumbnailSizeDescription: "Velikost náhledů v pixelech (např. 250)",
+    thumbnailSizeUpdateError: "Nepodařilo se aktualizovat velikost náhledů",
   },
   frontPage: {
     subtitle: {
@@ -118,6 +121,16 @@ const translations: Translations = {
     noCaptionFiles: "Zatím žádné soubory s popisky!",
     uploadError: "Nahrávání selhalo",
     dropOverlay: "Přetáhněte soubory nebo složky sem",
+    selectAll: "Vybrat vše",
+    deselectAll: "Zrušit výběr",
+    deleteSelected: "Smazat vybrané",
+    confirmMultiDelete: "Opravdu chcete smazat {count} obrázků?",
+    confirmFolderDelete: "Opravdu chcete smazat složku {name}?",
+    someFolderDeletesFailed: "Některé složky se nepodařilo smazat",
+    folderDeleteError: "Chyba při mazání složky",
+    deletingFile: "Mazání souboru...",
+    fileDeleteSuccess: "Soubor byl úspěšně smazán",
+    fileDeleteError: "Chyba při mazání souboru",
   },
   shortcuts: {
     title: "Klávesové zkratky",
@@ -145,6 +158,7 @@ const translations: Translations = {
     closePreview: "Zavřít náhled/modální okno",
     deleteImage: "Smazat obrázek",
     toggleImagePreview: "Přepnout náhled obrázku",
+    copyToClipboard: "Kopírovat obrázek do schránky",
   },
   imageViewer: {
     zoomIn: "Přiblížit",
@@ -167,6 +181,10 @@ const translations: Translations = {
     removeCommas: "Odstranit čárky",
     replaceNewlinesWithCommas: "Nahradit nové řádky čárkami",
     replaceUnderscoresWithSpaces: "Nahradit podtržítka mezerami",
+  },
+  notifications: {
+    imageCopied: "Obrázek byl zkopírován do schránky",
+    imageCopyFailed: "Nepodařilo se zkopírovat obrázek do schránky",
   },
 };
 

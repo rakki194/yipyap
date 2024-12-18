@@ -158,6 +158,7 @@ const translations: Translations = {
     closePreview: "Close preview/modal",
     deleteImage: "Delete image",
     toggleImagePreview: "Toggle image preview",
+    copyToClipboard: "Copy image to clipboard",
   },
   imageViewer: {
     zoomIn: "Zoom in",
@@ -180,6 +181,10 @@ const translations: Translations = {
     removeCommas: "Remove commas",
     replaceNewlinesWithCommas: "Replace newlines with commas",
     replaceUnderscoresWithSpaces: "Replace underscores with spaces",
+  },
+  notifications: {
+    imageCopied: "Image copied to clipboard",
+    imageCopyFailed: "Failed to copy image to clipboard",
   },
 };
 

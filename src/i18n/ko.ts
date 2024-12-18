@@ -142,6 +142,7 @@ export default {
     closePreview: "미리보기/모달 닫기",
     deleteImage: "이미지 삭제",
     toggleImagePreview: "이미지 미리보기 전환",
+    copyToClipboard: "이미지를 클립보드에 복사",
   },
   imageViewer: {
     zoomIn: "확대",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "쉼표 제거",
     replaceNewlinesWithCommas: "줄바꿈을 쉼표로 바꾸기",
     replaceUnderscoresWithSpaces: "밑줄을 공백으로 바꾸기",
+  },
+  notifications: {
+    imageCopied: "이미지가 클립보드에 복사되었습니다",
+    imageCopyFailed: "이미지를 클립보드에 복사하지 못했습니다",
   },
 }; 

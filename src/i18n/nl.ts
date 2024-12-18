@@ -142,6 +142,7 @@ export default {
     closePreview: "Voorvertoning/modal sluiten",
     deleteImage: "Afbeelding verwijderen",
     toggleImagePreview: "Afbeeldingsvoorvertoning wisselen",
+    copyToClipboard: "Kopieer afbeelding naar klembord",
   },
   imageViewer: {
     zoomIn: "Inzoomen",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "Komma's verwijderen",
     replaceNewlinesWithCommas: "Regeleindes vervangen door komma's",
     replaceUnderscoresWithSpaces: "Underscores vervangen door spaties",
+  },
+  notifications: {
+    imageCopied: "Afbeelding gekopieerd naar klembord",
+    imageCopyFailed: "Kon afbeelding niet naar klembord kopiëren",
   },
 }; 

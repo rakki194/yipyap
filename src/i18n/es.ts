@@ -142,6 +142,7 @@ export default {
     closePreview: "Cerrar vista previa/modal",
     deleteImage: "Eliminar imagen",
     toggleImagePreview: "Alternar vista previa de imagen",
+    copyToClipboard: "Copiar imagen al portapapeles",
   },
   imageViewer: {
     zoomIn: "Acercar",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "Eliminar comas",
     replaceNewlinesWithCommas: "Reemplazar saltos de línea por comas",
     replaceUnderscoresWithSpaces: "Reemplazar guiones bajos por espacios",
+  },
+  notifications: {
+    imageCopied: "Imagen copiada al portapapeles",
+    imageCopyFailed: "Error al copiar la imagen al portapapeles",
   },
 }; 

@@ -456,6 +456,39 @@ export const Gallery = () => {
       const targetY = galleryElement.scrollTop + (galleryElement.clientHeight * 0.25);
       smoothScroll(targetY);
       gallery.selection.selectDown();
+    } else if (event.key.toLowerCase() === "x" && event.shiftKey) {
+      event.preventDefault();
+      const data = gallery.data();
+      if (!data || gallery.selected === null) return;
+
+      const selectedItem = data.items[gallery.selected];
+      if (selectedItem?.type !== 'image') return;
+
+      try {
+        const imagePath = data.path
+          ? `${data.path}/${selectedItem.file_name}`
+          : selectedItem.file_name;
+        
+        const response = await fetch(`/api/browse/${imagePath}`);
+        const blob = await response.blob();
+        
+        // Create a ClipboardItem and write to clipboard
+        const item = new ClipboardItem({ "image/png": blob });
+        await navigator.clipboard.write([item]);
+        
+        // Use the existing notification system
+        appContext.createNotification({
+          message: appContext.t('notifications.imageCopied'),
+          type: "success"
+        });
+      } catch (error) {
+        console.error("Failed to copy image to clipboard:", error);
+        appContext.createNotification({
+          message: appContext.t('notifications.imageCopyFailed'),
+          type: "error"
+        });
+      }
+      return;
     } else {
       return;
     }

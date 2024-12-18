@@ -142,6 +142,7 @@ export default {
     closePreview: "关闭预览/模态框",
     deleteImage: "删除图片",
     toggleImagePreview: "切换图片预览",
+    copyToClipboard: "复制图片到剪贴板",
   },
   imageViewer: {
     zoomIn: "放大",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "删除逗号",
     replaceNewlinesWithCommas: "将换行替换为逗号",
     replaceUnderscoresWithSpaces: "将下划线替换为空格",
+  },
+  notifications: {
+    imageCopied: "图片已复制到剪贴板",
+    imageCopyFailed: "复制图片到剪贴板失败",
   },
 };

@@ -142,6 +142,7 @@ export default {
     closePreview: "Önizleme/modalı kapat",
     deleteImage: "Görseli sil",
     toggleImagePreview: "Görsel önizlemeyi aç/kapat",
+    copyToClipboard: "Resmi panoya kopyala",
   },
   imageViewer: {
     zoomIn: "Yakınlaştır",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "Virülleri kaldır",
     replaceNewlinesWithCommas: "Satır sonlarını virgülle değiştir",
     replaceUnderscoresWithSpaces: "Alt çizgileri boşlukla değiştir",
+  },
+  notifications: {
+    imageCopied: "Resim panoya kopyalandı",
+    imageCopyFailed: "Resim panoya kopyalanamadı",
   },
 }; 

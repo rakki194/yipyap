@@ -142,6 +142,7 @@ export default {
     closePreview: "Vorschau/Modal schließen",
     deleteImage: "Bild löschen",
     toggleImagePreview: "Bildvorschau umschalten",
+    copyToClipboard: "Bild in Zwischenablage kopieren",
   },
   imageViewer: {
     zoomIn: "Vergrößern",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "Kommas entfernen",
     replaceNewlinesWithCommas: "Zeilenumbrüche durch Kommas ersetzen",
     replaceUnderscoresWithSpaces: "Unterstriche durch Leerzeichen ersetzen",
+  },
+  notifications: {
+    imageCopied: "Bild in Zwischenablage kopiert",
+    imageCopyFailed: "Fehler beim Kopieren des Bildes in die Zwischenablage",
   },
 }; 

@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "Bevar .npz (latent) filer ved sletting av bilder.",
     preserveTxt: "Bevar .txt",
     preserveTxtTooltip: "Bevar .txt-filer ved sletting av bilder.",
+    thumbnailSize: "Miniatyrstørrelse",
+    thumbnailSizeDescription: "Størrelse på miniatyrbilder i piksler (f.eks. 250)",
+    thumbnailSizeUpdateError: "Kunne ikke oppdatere miniatyrstørrelse",
   },
   frontPage: {
     subtitle: {
@@ -118,6 +121,16 @@ const translations: Translations = {
     noCaptionFiles: "Ingen bildetekstfiler ennå!",
     uploadError: "Opplasting mislyktes",
     dropOverlay: "Slipp filer eller mapper her",
+    selectAll: "Velg alle",
+    deselectAll: "Velg ingen",
+    deleteSelected: "Slett valgte",
+    confirmMultiDelete: "Er du sikker på at du vil slette {count} bilder?",
+    confirmFolderDelete: "Er du sikker på at du vil slette mappen {name}?",
+    someFolderDeletesFailed: "Noen mapper kunne ikke slettes",
+    folderDeleteError: "Feil ved sletting av mappe",
+    deletingFile: "Sletter fil...",
+    fileDeleteSuccess: "Fil slettet",
+    fileDeleteError: "Feil ved sletting av fil",
   },
   shortcuts: {
     title: "Hurtigtaster",
@@ -145,6 +158,7 @@ const translations: Translations = {
     closePreview: "Lukk forhåndsvisning/modal",
     deleteImage: "Slett bilde",
     toggleImagePreview: "Vis/skjul bildeforhåndsvisning",
+    copyToClipboard: "Kopier bilde til utklippstavle",
   },
   imageViewer: {
     zoomIn: "Zoom inn",
@@ -167,6 +181,10 @@ const translations: Translations = {
     removeCommas: "Fjern komma",
     replaceNewlinesWithCommas: "Erstatt linjeskift med komma",
     replaceUnderscoresWithSpaces: "Erstatt understrek med mellomrom",
+  },
+  notifications: {
+    imageCopied: "Bilde kopiert til utklippstavle",
+    imageCopyFailed: "Kunne ikke kopiere bilde til utklippstavle",
   },
 };
 

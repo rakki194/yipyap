@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "Pertahankan file .npz (latent) saat menghapus gambar.",
     preserveTxt: "Pertahankan .txt",
     preserveTxtTooltip: "Pertahankan file .txt saat menghapus gambar.",
+    thumbnailSize: "Ukuran thumbnail",
+    thumbnailSizeDescription: "Ukuran thumbnail dalam piksel (mis. 250)",
+    thumbnailSizeUpdateError: "Gagal memperbarui ukuran thumbnail",
   },
   frontPage: {
     subtitle: {
@@ -116,6 +119,18 @@ const translations: Translations = {
       wd: "Buat file .wd baru"
     },
     noCaptionFiles: "Belum ada file keterangan!",
+    uploadError: "Gagal mengunggah",
+    dropOverlay: "Jatuhkan file atau folder di sini",
+    selectAll: "Pilih Semua",
+    deselectAll: "Batalkan Pilihan",
+    deleteSelected: "Hapus yang Dipilih",
+    confirmMultiDelete: "Anda yakin ingin menghapus {count} gambar?",
+    confirmFolderDelete: "Anda yakin ingin menghapus folder {name}?",
+    someFolderDeletesFailed: "Beberapa folder gagal dihapus",
+    folderDeleteError: "Gagal menghapus folder",
+    deletingFile: "Menghapus file...",
+    fileDeleteSuccess: "File berhasil dihapus",
+    fileDeleteError: "Gagal menghapus file",
   },
   shortcuts: {
     title: "Pintasan Keyboard",
@@ -143,6 +158,7 @@ const translations: Translations = {
     closePreview: "Tutup Pratinjau/Modal",
     deleteImage: "Hapus Gambar",
     toggleImagePreview: "Alihkan Pratinjau Gambar",
+    copyToClipboard: "Salin gambar ke clipboard",
   },
   imageViewer: {
     zoomIn: "Perbesar",
@@ -165,6 +181,10 @@ const translations: Translations = {
     removeCommas: "Hapus koma",
     replaceNewlinesWithCommas: "Ganti baris baru dengan koma",
     replaceUnderscoresWithSpaces: "Ganti garis bawah dengan spasi",
+  },
+  notifications: {
+    imageCopied: "Gambar disalin ke clipboard",
+    imageCopyFailed: "Gagal menyalin gambar ke clipboard",
   },
 };
 

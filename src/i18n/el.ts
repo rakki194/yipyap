@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "Διατηρήστε τα αρχεία .npz (latent) κατά τη διαγραφή εικόνων.",
     preserveTxt: "Διατήρηση .txt",
     preserveTxtTooltip: "Διατηρήστε τα αρχεία .txt κατά τη διαγραφή εικόνων.",
+    thumbnailSize: "Μέγεθος μικρογραφιών",
+    thumbnailSizeDescription: "Μέγεθος μικρογραφιών σε pixels (π.χ. 250)",
+    thumbnailSizeUpdateError: "Αποτυχία ενημέρωσης μεγέθους μικρογραφιών",
   },
   frontPage: {
     subtitle: {
@@ -116,6 +119,18 @@ const translations: Translations = {
       wd: "Δημιουργία νέου αρχείου .wd"
     },
     noCaptionFiles: "Δεν υπάρχουν ακόμη αρχεία λεζάντας!",
+    selectAll: "Επιλογή όλων",
+    deselectAll: "Αποεπιλογή όλων",
+    deleteSelected: "Διαγραφή επιλεγμένων",
+    confirmMultiDelete: "Είστε βέβαιοι ότι θέλετε να διαγράψετε {count} εικόνες;",
+    confirmFolderDelete: "Είστε βέβαιοι ότι θέλετε να διαγράψετε τον φάκελο {name};",
+    someFolderDeletesFailed: "Ορισμένοι φάκελοι δεν μπόρεσαν να διαγραφούν",
+    folderDeleteError: "Σφάλμα κατά τη διαγραφή του φακέλου",
+    deletingFile: "Διαγραφή αρχείου...",
+    fileDeleteSuccess: "Το αρχείο διαγράφηκε με επιτυχία",
+    fileDeleteError: "Σφάλμα κατά τη διαγραφή του αρχείου",
+    uploadError: "Η μεταφόρτωση απέτυχε",
+    dropOverlay: "Αποθέστε αρχεία ή φακέλους εδώ",
   },
   shortcuts: {
     title: "Συντομεύσεις πληκτρολογίου",
@@ -143,6 +158,7 @@ const translations: Translations = {
     closePreview: "Κλείσιμο προεπισκόπησης/παραθύρου",
     deleteImage: "Διαγραφή εικόνας",
     toggleImagePreview: "Εναλλαγή προεπισκόπησης εικόνας",
+    copyToClipboard: "Αντιγραφή εικόνας στο πρόχειρο",
   },
   imageViewer: {
     zoomIn: "Μεγέθυνση",
@@ -165,5 +181,9 @@ const translations: Translations = {
     removeCommas: "Αφαίρεση κομμάτων",
     replaceNewlinesWithCommas: "Αντικατάσταση αλλαγών γραμμής με κόμματα",
     replaceUnderscoresWithSpaces: "Αντικατάσταση κάτω παύλων με κενά",
+  },
+  notifications: {
+    imageCopied: "Η εικόνα αντιγράφηκε στο πρόχειρο",
+    imageCopyFailed: "Αποτυχία αντιγραφής εικόνας στο πρόχειρο",
   },
 }; 

@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "احتفظ بملفات .npz (latent) عند حذف الصور.",
     preserveTxt: "حفظ .txt",
     preserveTxtTooltip: "احتفظ بملفات .txt عند حذف الصور.",
+    thumbnailSize: "حجم الصورة المصغرة",
+    thumbnailSizeDescription: "حجم الصور المصغرة في بكسل (مثال: 250)",
+    thumbnailSizeUpdateError: "فشل تحديث حجم الصورة المصغرة",
   },
   frontPage: {
     subtitle: {
@@ -118,6 +121,16 @@ const translations: Translations = {
     noCaptionFiles: "لا توجد ملفات تعليقات حتى الآن!",
     uploadError: "فشل التحميل",
     dropOverlay: "اسحب الملفات أو المجلدات هنا",
+    selectAll: "تحديد الكل",
+    deselectAll: "إلغاء تحديد الكل",
+    deleteSelected: "حذف المحدد",
+    confirmMultiDelete: "هل أنت متأكد من حذف {count} صورة؟",
+    confirmFolderDelete: "هل أنت متأكد من حذف المجلد {name}؟",
+    someFolderDeletesFailed: "فشل حذف بعض المجلدات",
+    folderDeleteError: "خطأ في حذف المجلد",
+    deletingFile: "جاري حذف الملف...",
+    fileDeleteSuccess: "تم حذف الملف بنجاح",
+    fileDeleteError: "خطأ في حذف الملف",
   },
   shortcuts: {
     title: "اختصارات لوحة المفاتيح",
@@ -145,6 +158,7 @@ const translations: Translations = {
     closePreview: "إغلاق المعاينة/الوضع Modal",
     deleteImage: "حذف الصورة",
     toggleImagePreview: "تبديل معاينة الصورة",
+    copyToClipboard: "نسخ الصورة إلى الحافظة",
   },
   imageViewer: {
     zoomIn: "تكبير",
@@ -167,6 +181,10 @@ const translations: Translations = {
     removeCommas: "إزالة الفواصل",
     replaceNewlinesWithCommas: "استبدال الأسطر الجديدة بالفواصل",
     replaceUnderscoresWithSpaces: "استبدال الشرطات السفلية بالمسافات",
+  },
+  notifications: {
+    imageCopied: "تم نسخ الصورة إلى الحافظة",
+    imageCopyFailed: "فشل نسخ الصورة إلى الحافظة",
   },
 };
 

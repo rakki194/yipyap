@@ -144,6 +144,7 @@ export default {
     closePreview: "Đóng xem trước/cửa sổ",
     deleteImage: "Xóa hình ảnh",
     toggleImagePreview: "Bật/tắt xem trước hình ảnh",
+    copyToClipboard: "Sao chép ảnh vào clipboard",
   },
   imageViewer: {
     zoomIn: "Phóng to",
@@ -166,5 +167,9 @@ export default {
     removeCommas: "Xóa dấu phẩy",
     replaceNewlinesWithCommas: "Thay thế xuống dòng bằng dấu phẩy",
     replaceUnderscoresWithSpaces: "Thay thế gạch dưới bằng khoảng trắng",
+  },
+  notifications: {
+    imageCopied: "Đã sao chép ảnh vào clipboard",
+    imageCopyFailed: "Không thể sao chép ảnh vào clipboard",
   },
 }; 

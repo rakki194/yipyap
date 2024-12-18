@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "Păstrează fișierele .npz (latent) atunci când ștergi imagini.",
     preserveTxt: "Păstrează .txt",
     preserveTxtTooltip: "Păstrează fișierele .txt atunci când ștergi imagini.",
+    thumbnailSize: "Dimensiune miniaturi",
+    thumbnailSizeDescription: "Dimensiunea miniaturilor în pixeli (ex. 250)",
+    thumbnailSizeUpdateError: "Nu s-a putut actualiza dimensiunea miniaturilor",
   },
   frontPage: {
     subtitle: {
@@ -116,6 +119,18 @@ const translations: Translations = {
       wd: "Creare fișier .wd nou"
     },
     noCaptionFiles: "Nu există încă fișiere de descriere!",
+    uploadError: "Încărcare eșuată",
+    dropOverlay: "Trageți fișiere sau foldere aici",
+    selectAll: "Selectează tot",
+    deselectAll: "Deselectează tot",
+    deleteSelected: "Șterge selectate",
+    confirmMultiDelete: "Sigur doriți să ștergeți {count} imagini?",
+    confirmFolderDelete: "Sigur doriți să ștergeți folderul {name}?",
+    someFolderDeletesFailed: "Unele foldere nu au putut fi șterse",
+    folderDeleteError: "Eroare la ștergerea folderului",
+    deletingFile: "Se șterge fișierul...",
+    fileDeleteSuccess: "Fișier șters cu succes",
+    fileDeleteError: "Eroare la ștergerea fișierului",
   },
   shortcuts: {
     title: "Scurtături tastatură",
@@ -143,6 +158,7 @@ const translations: Translations = {
     closePreview: "Închidere previzualizare/modal",
     deleteImage: "Ștergere imagine",
     toggleImagePreview: "Comutare previzualizare imagine",
+    copyToClipboard: "Copiază imaginea în clipboard",
   },
   imageViewer: {
     zoomIn: "Mărire",
@@ -165,6 +181,10 @@ const translations: Translations = {
     removeCommas: "Eliminare virgule",
     replaceNewlinesWithCommas: "Înlocuire linii noi cu virgule",
     replaceUnderscoresWithSpaces: "Înlocuire underscore cu spații",
+  },
+  notifications: {
+    imageCopied: "Imaginea a fost copiată în clipboard",
+    imageCopyFailed: "Nu s-a putut copia imaginea în clipboard",
   },
 };
 

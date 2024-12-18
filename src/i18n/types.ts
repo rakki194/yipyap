@@ -1,5 +1,11 @@
 import type { LanguageCode } from ".";
 
+// Add support for function-based translations
+type TranslationValue = string | ((params: { 
+  name?: string;
+  count?: number;
+}) => string);
+
 export interface CommonTranslations {
   close: string;
   delete: string;
@@ -61,7 +67,7 @@ export interface SettingsTranslations {
   disableAnimations: string;
   language: string;
   disableNonsense: string;
-  modelSettings: string;
+  modelSettings: TranslationValue;
   jtp2ModelPath: string;
   jtp2TagsPath: string;
   downloadModel: string;
@@ -118,16 +124,16 @@ export interface GalleryTranslations {
   loadingFolders: string;
   noResults: string;
   folderCount: string;
-  deleteConfirm: string;
+  deleteConfirm: TranslationValue;
   deleteSuccess: string;
-  deleteError: string;
-  savingCaption: string;
+  deleteError: TranslationValue;
+  savingCaption: TranslationValue;
   savedCaption: string;
-  errorSavingCaption: string;
+  errorSavingCaption: TranslationValue;
   emptyFolder: string;
   dropToUpload: string;
-  uploadProgress: string;
-  processingImage: string;
+  uploadProgress: TranslationValue;
+  processingImage: TranslationValue;
   generateTags: string;
   generatingTags: string;
   removeTags: string;
@@ -145,7 +151,7 @@ export interface GalleryTranslations {
   deselectAll: string;
   deleteSelected: string;
   confirmMultiDelete: string;
-  confirmFolderDelete: string;
+  confirmFolderDelete: TranslationValue;
   someFolderDeletesFailed: string;
   folderDeleteError: string;
   deletingFile: string;
@@ -179,6 +185,7 @@ export interface ShortcutsTranslations {
   closePreview: string;
   deleteImage: string;
   toggleImagePreview: string;
+  copyToClipboard: string;
 }
 
 export interface ImageViewerTranslations {
@@ -199,6 +206,11 @@ export interface ImageViewerTranslations {
   dimensions: string;
 }
 
+export interface NotificationsTranslations {
+  imageCopied: string;
+  imageCopyFailed: string;
+}
+
 export interface Translations {
   common: CommonTranslations;
   settings: SettingsTranslations;
@@ -207,6 +219,7 @@ export interface Translations {
   gallery: GalleryTranslations;
   shortcuts: ShortcutsTranslations;
   imageViewer: ImageViewerTranslations;
+  notifications: NotificationsTranslations;
 }
 
 export type { LanguageCode }; 

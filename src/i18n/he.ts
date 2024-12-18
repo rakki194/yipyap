@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "שמור את קבצי .npz (latent) בעת מחיקת תמונות.",
     preserveTxt: "שמור את .txt",
     preserveTxtTooltip: "שמור את קבצי .txt בעת מחיקת תמונות.",
+    thumbnailSize: "גודל תמונות ממוזערות",
+    thumbnailSizeDescription: "גודל תמונות ממוזערות בפיקסלים (למשל 250)",
+    thumbnailSizeUpdateError: "נכשל בעדכון גודל תמונות ממוזערות",
   },
   frontPage: {
     subtitle: {
@@ -116,6 +119,18 @@ const translations: Translations = {
       wd: "צור קובץ .wd חדש",
     },
     noCaptionFiles: "אין עדיין קבצי כיתוב!",
+    selectAll: "בחר הכל",
+    deselectAll: "בטל בחירת הכל",
+    deleteSelected: "מחק נבחרים",
+    confirmMultiDelete: "האם אתה בטוח שברצונך למחוק {count} תמונות?",
+    confirmFolderDelete: "האם אתה בטוח שברצונך למחוק את התיקייה {name}?",
+    someFolderDeletesFailed: "חלק מהתיקיות לא נמחקו",
+    folderDeleteError: "שגיאה במחיקת תיקייה",
+    deletingFile: "מוחק קובץ...",
+    fileDeleteSuccess: "הקובץ נמחק בהצלחה",
+    fileDeleteError: "שגיאה במחיקת קובץ",
+    uploadError: "ההעלאה נכשלה",
+    dropOverlay: "שחרר קבצים או תיקיות כאן",
   },
   shortcuts: {
     title: "קיצורי מקלדת",
@@ -143,6 +158,7 @@ const translations: Translations = {
     closePreview: "סגור תצוגה מקדימה/חלון",
     deleteImage: "מחק תמונה",
     toggleImagePreview: "הצג/הסתר תצוגה מקדימה של תמונה",
+    copyToClipboard: "העתק תמונה ללוח",
   },
   imageViewer: {
     zoomIn: "הגדל",
@@ -165,6 +181,10 @@ const translations: Translations = {
     removeCommas: "הסר פסיקים",
     replaceNewlinesWithCommas: "החלף ירידות שורה בפסיקים",
     replaceUnderscoresWithSpaces: "החלף קווים תחתונים ברווחים",
+  },
+  notifications: {
+    imageCopied: "התמונה הועתקה ללוח",
+    imageCopyFailed: "נכשל להעתיק את התמונה ללוח",
   },
 };
 

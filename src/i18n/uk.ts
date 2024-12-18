@@ -142,6 +142,7 @@ export default {
     closePreview: "Закрити перегляд/вікно",
     deleteImage: "Видалити зображення",
     toggleImagePreview: "Перемкнути перегляд",
+    copyToClipboard: "Копіювати зображення в буфер обміну",
   },
   imageViewer: {
     zoomIn: "Наблизити",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "Видалити коми",
     replaceNewlinesWithCommas: "Замінити переноси рядків комами",
     replaceUnderscoresWithSpaces: "Замінити підкреслення пробілами",
+  },
+  notifications: {
+    imageCopied: "Зображення скопійовано в буфер обміну",
+    imageCopyFailed: "Не вдалося скопіювати зображення в буфер обміну",
   },
 }; 

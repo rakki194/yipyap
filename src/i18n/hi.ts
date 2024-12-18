@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "छवियां हटाते समय .npz (latent) फ़ाइलें रखें।",
     preserveTxt: ".txt संरक्षित रखें",
     preserveTxtTooltip: "छवियां हटाते समय .txt फ़ाइलें रखें।",
+    thumbnailSize: "थंबनेल आकार",
+    thumbnailSizeDescription: "पिक्सेल में थंबनेल का आकार (उदाहरण: 250)",
+    thumbnailSizeUpdateError: "थंबनेल आकार अपडेट करने में विफल",
   },
   frontPage: {
     subtitle: {
@@ -118,6 +121,16 @@ const translations: Translations = {
     noCaptionFiles: "अभी तक कोई कैप्शन फ़ाइल नहीं है!",
     uploadError: "अपलोड विफल रहा",
     dropOverlay: "फ़ाइलें या फ़ोल्डर यहां छोड़ें",
+    selectAll: "सभी चुनें",
+    deselectAll: "सभी अचयनित करें",
+    deleteSelected: "चयनित हटाएं",
+    confirmMultiDelete: "क्या आप वाकई {count} छवियों को हटाना चाहते हैं?",
+    confirmFolderDelete: "क्या आप वाकई फ़ोल्डर {name} को हटाना चाहते हैं?",
+    someFolderDeletesFailed: "कुछ फ़ोल्डर हटाए नहीं जा सके",
+    folderDeleteError: "फ़ोल्डर हटाने में त्रुटि",
+    deletingFile: "फ़ाइल हटा रहा है...",
+    fileDeleteSuccess: "फ़ाइल सफलतापूर्वक हटा दी गई",
+    fileDeleteError: "फ़ाइल हटाने में त्रुटि",
   },
   shortcuts: {
     title: "कीबोर्ड शॉर्टकट",
@@ -145,6 +158,7 @@ const translations: Translations = {
     closePreview: "प्रीव्यू/मोडल बंद करें",
     deleteImage: "छवि हटाएं",
     toggleImagePreview: "छवि प्रीव्यू टॉगल करें",
+    copyToClipboard: "छवि को क्लिपबोर्ड में कॉपी करें",
   },
   imageViewer: {
     zoomIn: "ज़ूम इन",
@@ -167,6 +181,10 @@ const translations: Translations = {
     removeCommas: "कॉमा हटाएं",
     replaceNewlinesWithCommas: "नई लाइनों को कॉमा से बदलें",
     replaceUnderscoresWithSpaces: "अंडरस्कोर को स्पेस से बदलें",
+  },
+  notifications: {
+    imageCopied: "छवि क्लिपबोर्ड में कॉपी की गई",
+    imageCopyFailed: "छवि को क्लिपबोर्ड में कॉपी करने में विफल",
   },
 };
 

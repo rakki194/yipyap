@@ -142,6 +142,7 @@ export default {
     closePreview: "Fechar pré-visualização/modal",
     deleteImage: "Excluir imagem",
     toggleImagePreview: "Alternar pré-visualização da imagem",
+    copyToClipboard: "Copiar imagem para área de transferência",
   },
   imageViewer: {
     zoomIn: "Aumentar zoom",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "Remover vírgulas",
     replaceNewlinesWithCommas: "Substituir quebras de linha por vírgulas",
     replaceUnderscoresWithSpaces: "Substituir sublinhados por espaços",
+  },
+  notifications: {
+    imageCopied: "Imagem copiada para área de transferência",
+    imageCopyFailed: "Falha ao copiar imagem para área de transferência",
   },
 }; 

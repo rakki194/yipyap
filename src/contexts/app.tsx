@@ -59,6 +59,10 @@ export interface AppContext {
   setDisableNonsense: (value: boolean) => void;
   thumbnailSize: number; // Size in pixels (e.g., 250)
   setThumbnailSize: (size: number) => void;
+  createNotification: (notification: {
+    message: string;
+    type: 'success' | 'error';
+  }) => void;
 }
 
 /**
@@ -318,6 +322,12 @@ const createAppContext = (): AppContext => {
     },
     setThumbnailSize: (size: number) => {
       setStore("thumbnailSize", size);
+    },
+    createNotification: (notification: {
+      message: string;
+      type: 'success' | 'error';
+    }) => {
+      // Implement notification logic here
     },
   };
 

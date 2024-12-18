@@ -142,6 +142,7 @@ export default {
     closePreview: "Fermer l'aperçu/modal",
     deleteImage: "Supprimer l'image",
     toggleImagePreview: "Basculer l'aperçu",
+    copyToClipboard: "Copier l'image dans le presse-papiers",
   },
   imageViewer: {
     zoomIn: "Zoom avant",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "Supprimer les virgules",
     replaceNewlinesWithCommas: "Remplacer les sauts de ligne par des virgules",
     replaceUnderscoresWithSpaces: "Remplacer les tirets bas par des espaces",
+  },
+  notifications: {
+    imageCopied: "Image copiée dans le presse-papiers",
+    imageCopyFailed: "Échec de la copie de l'image dans le presse-papiers",
   },
 };

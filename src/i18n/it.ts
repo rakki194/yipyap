@@ -142,6 +142,7 @@ export default {
     closePreview: "Chiudi anteprima/modale",
     deleteImage: "Elimina immagine",
     toggleImagePreview: "Attiva/disattiva anteprima immagine",
+    copyToClipboard: "Copia immagine negli appunti",
   },
   imageViewer: {
     zoomIn: "Ingrandisci",
@@ -159,5 +160,9 @@ export default {
     downloadImage: "Scarica immagine",
     imageInfo: "Informazioni immagine",
     dimensions: "Dimensioni",
+  },
+  notifications: {
+    imageCopied: "Immagine copiata negli appunti",
+    imageCopyFailed: "Impossibile copiare l'immagine negli appunti",
   },
 }; 

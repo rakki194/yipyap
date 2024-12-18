@@ -142,6 +142,7 @@ export default {
     closePreview: "Stäng förhandsvisning/modal",
     deleteImage: "Radera bild",
     toggleImagePreview: "Växla bildförhandsvisning",
+    copyToClipboard: "Kopiera bild till urklipp",
   },
   imageViewer: {
     zoomIn: "Zooma in",
@@ -164,5 +165,9 @@ export default {
     removeCommas: "Ta bort kommatecken",
     replaceNewlinesWithCommas: "Ersätt radbrytningar med kommatecken",
     replaceUnderscoresWithSpaces: "Ersätt understreck med mellanslag",
+  },
+  notifications: {
+    imageCopied: "Bild kopierad till urklipp",
+    imageCopyFailed: "Kunde inte kopiera bild till urklipp",
   },
 };

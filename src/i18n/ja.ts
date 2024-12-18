@@ -134,6 +134,7 @@ export default {
     closePreview: "プレビュー/モーダルを閉じる",
     deleteImage: "画像を削除",
     toggleImagePreview: "プレビューの切り替え",
+    copyToClipboard: "画像をクリップボードにコピー",
   },
   imageViewer: {
     zoomIn: "拡大",
@@ -156,5 +157,9 @@ export default {
     removeCommas: "カンマを削除",
     replaceNewlinesWithCommas: "改行をカンマに置換",
     replaceUnderscoresWithSpaces: "アンダースコアを空白に置換",
+  },
+  notifications: {
+    imageCopied: "画像をクリップボードにコピーしました",
+    imageCopyFailed: "画像のクリップボードへのコピーに失敗しました",
   },
 };

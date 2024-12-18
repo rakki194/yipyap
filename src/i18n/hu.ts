@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
+import { getHungarianArticle } from "./utils";
 
 const translations: Translations = {
   common: {
@@ -51,7 +52,8 @@ const translations: Translations = {
     disableAnimations: "Animációk kikapcsolása",
     language: "Nyelv",
     disableNonsense: "Japán nyelv kikapcsolása",
-    modelSettings: "Modell beállítások",
+    modelSettings: ({ name = "ismeretlen" }) => 
+      `${getHungarianArticle(name)} ${name} modell beállításai`,
     jtp2ModelPath: "JTP2 modell útvonala",
     jtp2TagsPath: "JTP2 címkék útvonala",
     downloadModel: "Modell letöltése (1.8GB)",
@@ -73,6 +75,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "Őrizze meg a .npz (latent) fájlokat képek törlésekor.",
     preserveTxt: "Megőrizze .txt",
     preserveTxtTooltip: "Őrizze meg a .txt fájlokat képek törlésekor.",
+    thumbnailSize: "Bélyegkép mérete",
+    thumbnailSizeDescription: "Bélyegképek mérete pixelben (pl. 250)",
+    thumbnailSizeUpdateError: "Nem sikerült frissíteni a bélyegkép méretét",
   },
   frontPage: {
     subtitle: {
@@ -95,16 +100,22 @@ const translations: Translations = {
     loadingFolders: "Mappák betöltése...",
     noResults: "Nincs találat",
     folderCount: "{count} mappa",
-    deleteConfirm: "Biztosan törölni szeretné ezt a képet?",
+    deleteConfirm: ({ name = "kiválasztott" }) => 
+      `Biztosan törölni szeretné ${getHungarianArticle(name)} ${name} képet?`,
     deleteSuccess: "A kép sikeresen törölve",
-    deleteError: "Hiba történt a kép törlése közben",
-    savingCaption: "Képaláírás mentése...",
+    deleteError: ({ name = "kiválasztott" }) => 
+      `Hiba történt ${getHungarianArticle(name)} ${name} kép törlése közben`,
+    savingCaption: ({ name = "kiválasztott" }) => 
+      `${getHungarianArticle(name)} ${name} képaláírás mentése...`,
     savedCaption: "Képaláírás mentve",
-    errorSavingCaption: "Hiba történt a képaláírás mentése közben",
+    errorSavingCaption: ({ name = "kiválasztott" }) => 
+      `Hiba történt ${getHungarianArticle(name)} ${name} képaláírás mentése közben`,
     emptyFolder: "Ez a mappa üres",
     dropToUpload: "Húzza ide a fájlokat a feltöltéshez",
-    uploadProgress: "{count} fájl feltöltése...",
-    processingImage: "Kép feldolgozása...",
+    uploadProgress: ({ count = 0 }) => 
+      `${getHungarianArticle(count.toString())} ${count} fájl feltöltése...`,
+    processingImage: ({ name = "kiválasztott" }) => 
+      `${getHungarianArticle(name)} ${name} kép feldolgozása...`,
     generateTags: "Címkék generálása",
     generatingTags: "Címkék generálása...",
     removeTags: "Címkék eltávolítása",
@@ -118,6 +129,17 @@ const translations: Translations = {
     noCaptionFiles: "Még nincsenek képaláírás fájlok!",
     uploadError: "A feltöltés sikertelen",
     dropOverlay: "Húzza ide a fájlokat vagy mappákat",
+    selectAll: "Összes kijelölése",
+    deselectAll: "Kijelölés megszüntetése",
+    deleteSelected: "Kijelöltek törlése",
+    confirmMultiDelete: "Biztosan törölni szeretne {count} képet?",
+    confirmFolderDelete: ({ name = "kiválasztott" }) => 
+      `Biztosan törölni szeretné ${getHungarianArticle(name)} ${name} mappát?`,
+    someFolderDeletesFailed: "Néhány mappát nem sikerült törölni",
+    folderDeleteError: "Hiba a mappa törlésekor",
+    deletingFile: "Fájl törlése...",
+    fileDeleteSuccess: "Fájl sikeresen törölve",
+    fileDeleteError: "Hiba a fájl törlésekor",
   },
   shortcuts: {
     title: "Billentyűparancsok",
@@ -145,6 +167,7 @@ const translations: Translations = {
     closePreview: "Előnézet/ablak bezárása",
     deleteImage: "Kép törlése",
     toggleImagePreview: "Kép előnézet kapcsolása",
+    copyToClipboard: "Kép másolása a vágólapra",
   },
   imageViewer: {
     zoomIn: "Nagyítás",
@@ -167,6 +190,10 @@ const translations: Translations = {
     removeCommas: "Vesszők eltávolítása",
     replaceNewlinesWithCommas: "Sortörések cseréje vesszőkre",
     replaceUnderscoresWithSpaces: "Aláhúzások cseréje szóközökre",
+  },
+  notifications: {
+    imageCopied: "Kép másolva a vágólapra",
+    imageCopyFailed: "Nem sikerült a képet a vágólapra másolni",
   },
 };
 

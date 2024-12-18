@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "Bevar .npz (latent) filer ved sletning af billeder.",
     preserveTxt: "Bevar .txt",
     preserveTxtTooltip: "Bevar .txt-filer ved sletning af billeder.",
+    thumbnailSize: "Miniaturestørrelse",
+    thumbnailSizeDescription: "Størrelse af miniaturer i pixels (f.eks. 250)",
+    thumbnailSizeUpdateError: "Kunne ikke opdatere miniaturestørrelse",
   },
   frontPage: {
     subtitle: {
@@ -116,6 +119,18 @@ const translations: Translations = {
       wd: "Opret ny .wd fil"
     },
     noCaptionFiles: "Ingen billedtekstfiler endnu!",
+    selectAll: "Vælg alle",
+    deselectAll: "Fravælg alle",
+    deleteSelected: "Slet valgte",
+    confirmMultiDelete: "Er du sikker på, at du vil slette {count} billeder?",
+    confirmFolderDelete: "Er du sikker på, at du vil slette mappen {name}?",
+    someFolderDeletesFailed: "Nogle mapper kunne ikke slettes",
+    folderDeleteError: "Fejl ved sletning af mappe",
+    deletingFile: "Sletter fil...",
+    fileDeleteSuccess: "Fil slettet",
+    fileDeleteError: "Fejl ved sletning af fil",
+    uploadError: "Upload fejlede",
+    dropOverlay: "Slip filer eller mapper her",
   },
   shortcuts: {
     title: "Tastaturgenveje",
@@ -143,6 +158,7 @@ const translations: Translations = {
     closePreview: "Luk forhåndsvisning/modal",
     deleteImage: "Slet billede",
     toggleImagePreview: "Skift billedforhåndsvisning",
+    copyToClipboard: "Kopiér billede til udklipsholder",
   },
   imageViewer: {
     zoomIn: "Zoom ind",
@@ -165,6 +181,10 @@ const translations: Translations = {
     removeCommas: "Fjern kommaer",
     replaceNewlinesWithCommas: "Erstat linjeskift med kommaer",
     replaceUnderscoresWithSpaces: "Erstat understreger med mellemrum",
+  },
+  notifications: {
+    imageCopied: "Billede kopieret til udklipsholder",
+    imageCopyFailed: "Kunne ikke kopiere billede til udklipsholder",
   },
 };
 
