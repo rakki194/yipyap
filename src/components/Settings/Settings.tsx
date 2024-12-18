@@ -430,6 +430,24 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               </label>
             </div>
           </section>
+
+          <div class="setting-group">
+            <label>{t('settings.thumbnailSize')}</label>
+            <div class="thumbnail-size-controls">
+              <input
+                type="range"
+                min="100"
+                max="500"
+                step="50"
+                value={app.thumbnailSize}
+                onChange={(e) => app.setThumbnailSize(parseInt(e.currentTarget.value))}
+              />
+              <span class="thumbnail-size-value">{app.thumbnailSize}px</span>
+            </div>
+            <small class="setting-description">
+              {t('settings.thumbnailSizeDescription')}
+            </small>
+          </div>
         </div>
       </Show>
     </div>

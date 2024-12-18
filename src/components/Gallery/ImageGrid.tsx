@@ -1,5 +1,5 @@
 // src/components/Gallery/ImageGrid.tsx
-import { For, onCleanup, onMount, Show, createSignal } from "solid-js";
+import { For, onCleanup, onMount, Show, createSignal, createMemo } from "solid-js";
 import { A } from "@solidjs/router";
 
 import { useGallery } from "~/contexts/GalleryContext";
@@ -12,6 +12,7 @@ import type {
   ImageItem as ImageItemType,
   BrowsePagesCached,
 } from "~/resources/browse";
+import { useAppContext } from "~/contexts/app";
 
 /**
  * Grid component that displays images and directories in a responsive layout
@@ -38,6 +39,7 @@ export const ImageGrid = (props: {
   const gallery = useGallery();
   const setColumns = gallery.selection.setColumns;
   const addObserved = makeIntersectionObserver(gallery.setPage);
+  const app = useAppContext();
 
   const isActive = (ref: HTMLElement, idx: number) => {
     if (gallery.mode === "view" && gallery.selected === idx) {
@@ -51,8 +53,12 @@ export const ImageGrid = (props: {
     return false;
   };
 
+  const gridStyle = createMemo(() => ({
+    "grid-template-columns": `repeat(auto-fill, minmax(${app.thumbnailSize}px, 1fr))`,
+  }));
+
   return (
-    <div class="responsive-grid" use:measure_columns={setColumns}>
+    <div class="responsive-grid" style={gridStyle()} use:measure_columns={setColumns}>
       <Show when={props.path}>
         <DirectoryItem
           name=".."

@@ -758,6 +758,18 @@ export const Gallery = () => {
     }
   });
 
+  createEffect(() => {
+    const handleThumbnailSizeChange = () => {
+      gallery.invalidate();
+      gallery.refetch();
+    };
+    
+    window.addEventListener('thumbnailSizeChanged', handleThumbnailSizeChange);
+    onCleanup(() => {
+      window.removeEventListener('thumbnailSizeChanged', handleThumbnailSizeChange);
+    });
+  });
+
   return (
     <>
       {/* <Controls /> */}

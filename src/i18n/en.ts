@@ -73,6 +73,9 @@ const translations: Translations = {
     preserveLatentsTooltip: "Keep .npz (latent) files when deleting images.",
     preserveTxt: "Preserve .txt",
     preserveTxtTooltip: "Keep .txt files when deleting images.",
+    thumbnailSize: "Thumbnail Size",
+    thumbnailSizeDescription: "Adjust the size of image thumbnails in the gallery view",
+    thumbnailSizeUpdateError: "Failed to update thumbnail size",
   },
   frontPage: {
     subtitle: {

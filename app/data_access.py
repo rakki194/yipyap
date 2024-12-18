@@ -716,3 +716,13 @@ class CachedFileSystemDataSource(ImageDataSource):
         except Exception as e:
             logger.error(f"Error deleting caption for {path}: {e}")
             raise
+
+    def set_thumbnail_size(self, size: tuple[int, int]):
+        """Update thumbnail size and invalidate cache."""
+        self.thumbnail_size = size
+        
+    def clear_thumbnail_cache(self):
+        """Clear thumbnail cache to force regeneration."""
+        conn = self._get_connection()
+        conn.execute("UPDATE image_info SET thumbnail_webp = NULL")
+        conn.commit()

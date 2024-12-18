@@ -83,6 +83,9 @@ export interface SettingsTranslations {
   preserveLatentsTooltip: string;
   preserveTxt: string;
   preserveTxtTooltip: string;
+  thumbnailSize: string;
+  thumbnailSizeDescription: string;
+  thumbnailSizeUpdateError: string;
 }
 
 export interface ToolsTranslations {

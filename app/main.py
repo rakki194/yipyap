@@ -405,6 +405,21 @@ async def get_config():
     }
 
 
+@app.put("/config/thumbnail_size")
+async def update_thumbnail_size(size: int):
+    """Update thumbnail size configuration."""
+    if size < 100 or size > 500:
+        raise HTTPException(status_code=400, detail="Invalid thumbnail size")
+        
+    # Update the thumbnail size
+    data_source.set_thumbnail_size((size, size))
+    
+    # Clear thumbnail cache to regenerate with new size
+    data_source.clear_thumbnail_cache()
+    
+    return {"success": True}
+
+
 # Used for deleting a single caption file.
 @app.delete("/api/caption/{path:path}")
 async def delete_caption(path: str, caption_type: str = Query(...)):

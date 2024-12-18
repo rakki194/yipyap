@@ -57,6 +57,8 @@ export interface AppContext {
     details?: string;
   }) => void;
   setDisableNonsense: (value: boolean) => void;
+  thumbnailSize: number; // Size in pixels (e.g., 250)
+  setThumbnailSize: (size: number) => void;
 }
 
 /**
@@ -76,6 +78,7 @@ const createAppContext = (): AppContext => {
     enableZoom: boolean;
     enableMinimap: boolean;
     locale: Locale;
+    thumbnailSize: number;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
@@ -86,6 +89,7 @@ const createAppContext = (): AppContext => {
     enableZoom: localStorage.getItem("enableZoom") === "true",
     enableMinimap: localStorage.getItem("enableMinimap") === "true",
     locale: (localStorage.getItem("locale") as Locale) || "en",
+    thumbnailSize: parseInt(localStorage.getItem("thumbnailSize") || "250"),
   });
 
   // Previous Location tracking
@@ -139,6 +143,9 @@ const createAppContext = (): AppContext => {
     document.documentElement.lang = store.locale;
     document.documentElement.dir = ["ar", "he", "fa"].includes(store.locale) ? "rtl" : "ltr";
   });
+  createRenderEffect(() =>
+    localStorage.setItem("thumbnailSize", store.thumbnailSize.toString())
+  );
 
   const setJtp2ModelPath = (value: string) => {
     setStore("jtp2ModelPath", value);
@@ -205,7 +212,31 @@ const createAppContext = (): AppContext => {
 
   const [disableNonsense, setDisableNonsense] = createSignal(false);
 
-  return {
+  const setThumbnailSize = async (size: number) => {
+    try {
+      const response = await fetch('/api/config/thumbnail_size', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ size })
+      });
+      
+      if (!response.ok) throw new Error('Failed to update thumbnail size');
+      
+      setStore("thumbnailSize", size);
+      
+      // Instead of directly calling gallery methods, dispatch a custom event
+      window.dispatchEvent(new CustomEvent('thumbnailSizeChanged'));
+      
+    } catch (error) {
+      console.error('Error updating thumbnail size:', error);
+      appContext.notify({
+        type: 'error',
+        message: getTranslationValue(translation(), 'settings.thumbnailSizeUpdateError') || 'Failed to update thumbnail size',
+      });
+    }
+  };
+
+  const appContext = {
     get prevRoute() {
       return store.prevRoute;
     },
@@ -282,7 +313,15 @@ const createAppContext = (): AppContext => {
       // Implement notification logic here
     },
     setDisableNonsense,
+    get thumbnailSize() {
+      return store.thumbnailSize;
+    },
+    setThumbnailSize: (size: number) => {
+      setStore("thumbnailSize", size);
+    },
   };
+
+  return appContext;
 };
 
 /**

@@ -458,3 +458,25 @@ kbd {
   position: relative;
   display: inline-block;
 }
+
+.thumbnail-size-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+}
+
+.thumbnail-size-controls input[type="range"] {
+  flex: 1;
+}
+
+.thumbnail-size-value {
+  min-width: 4em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.setting-description {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  margin-top: var(--half-spacing);
+}
