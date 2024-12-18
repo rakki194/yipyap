@@ -1,5 +1,5 @@
 import { getHungarianArticle } from './utils';
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 describe('getHungarianArticle', () => {
   // Test basic vowel cases
