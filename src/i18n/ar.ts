@@ -2,7 +2,7 @@ import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 import { getArabicPlural } from "./utils";
 
-const translations: Translations = {
+export default {
   common: {
     close: "إغلاق",
     delete: "حذف",
@@ -93,6 +93,8 @@ const translations: Translations = {
     },
     imageWork: "العمل مع الصور",
     audioWork: "العمل مع الصوت",
+    deselectAll: "إلغاء تحديد الكل",
+    deleteSelected: "حذف المحدد",
   },
   gallery: {
     addTag: "إضافة وسم...",
@@ -132,7 +134,14 @@ const translations: Translations = {
     selectAll: "تحديد الكل",
     deselectAll: "إلغاء تحديد الكل",
     deleteSelected: "حذف المحدد",
-    confirmMultiDelete: ({ count }) => `هل أنت متأكد من حذف ${count} صورة؟`,
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders > 0 && images > 0) {
+        return `هل أنت متأكد من حذف ${folders} مجلد و ${images} صورة؟`;
+      } else if (folders > 0) {
+        return `هل أنت متأكد من حذف ${folders} مجلد؟`;
+      }
+      return `هل أنت متأكد من حذف ${images} صورة؟`;
+    },
     confirmFolderDelete: "هل أنت متأكد من حذف المجلد {name}؟",
     someFolderDeletesFailed: "فشل حذف بعض المجلدات",
     folderDeleteError: "خطأ في حذف المجلد",
@@ -159,6 +168,12 @@ const translations: Translations = {
       plural: "صور",
       pluralLarge: "صورةً"
     }),
+    folderLocation: ({ name }: { name: string }) => 
+      `في ${name}`,
+    moveToFolder: ({ name }: { name: string }) => 
+      `نقل إلى ${name}`,
+    workWithFolder: ({ name }: { name: string }) => 
+      `العمل مع ${name}`,
   },
   shortcuts: {
     title: "اختصارات لوحة المفاتيح",
@@ -216,6 +231,4 @@ const translations: Translations = {
     folderCreated: "تم إنشاء المجلد",
     folderCreateError: "فشل إنشاء المجلد",
   },
-};
-
-export default translations;
+} as const satisfies Translations;

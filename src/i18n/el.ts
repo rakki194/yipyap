@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Κλείσιμο",
     delete: "Διαγραφή",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "Επιστροφή στην αρχική σελίδα",
     home: "Αρχική",
     openSettings: "Άνοιγμα ρυθμίσεων",
+    create: "Δημιουργία",
+    creating: "Δημιουργία...",
   },
   settings: {
     title: "Ρυθμίσεις",
@@ -79,17 +81,19 @@ const translations: Translations = {
   },
   frontPage: {
     subtitle: {
-      1: "Τα μεγάλα γλωσσικά μοντέλα εξαπατούν, ψεύδονται και παραισθάνονται. Όπως κι εγώ!",
-      2: "Βρήκαμε έναν διαφορετικό τρόπο προσευχής",
-      3: "Το άπειρο σύμπαν αντανακλάται σε άδεια μάτια",
-      4: "Σκουριασμένη καρδιά, νέος βλαστός",
-      5: "Μαγικό μέρος όπου το όνειρο και η πραγματικότητα διασταυρώνονται",
-      6: "Άγνωστη περιοχή, άπειρες δυνατότητες",
-      7: "Αιώνια αγάπη που υπερβαίνει τη ροή του χρόνου",
-      8: "Αυτό θα σας διώξει!",
+      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+      2: "私たちは別の祈り方を見つけました",
+      3: "虚ろな瞳に映る、無限の宇宙",
+      4: "錆びた心、新たな芽吹き",
+      5: "夢と現実が交錯する、不思議な境地",
+      6: "未知の領域、無限の可能性",
+      7: "時の流れを超えた、永遠の愛",
+      8: "これで追い出されますよ！",
     },
     imageWork: "Εργασία με εικόνες",
     audioWork: "Εργασία με ήχο",
+    deselectAll: "Αποεπιλογή όλων",
+    deleteSelected: "Διαγραφή επιλεγμένων",
   },
   gallery: {
     addTag: "Προσθήκη ετικέτας...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "Μετάβαση σε φάκελο...",
     loadingFolders: "Φόρτωση φακέλων...",
     noResults: "Δεν βρέθηκαν αποτελέσματα",
-    folderCount: "{count} φάκελοι",
+    folderCount: ({ count }: { count: number }) => `${count} φάκελοι`,
     deleteConfirm: "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν την εικόνα;",
     deleteSuccess: "Η εικόνα διαγράφηκε με επιτυχία",
     deleteError: "Σφάλμα κατά τη διαγραφή της εικόνας",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "Σφάλμα κατά την αποθήκευση της λεζάντας",
     emptyFolder: "Αυτός ο φάκελος είναι κενός",
     dropToUpload: "Σύρετε αρχεία εδώ για μεταφόρτωση",
-    uploadProgress: "Μεταφόρτωση {count} αρχείων...",
+    uploadProgress: ({ count }: { count: number }) => `Μεταφόρτωση ${count} αρχείων...`,
     processingImage: "Επεξεργασία εικόνας...",
     generateTags: "Δημιουργία ετικετών",
     generatingTags: "Δημιουργία ετικετών...",
@@ -122,7 +126,14 @@ const translations: Translations = {
     selectAll: "Επιλογή όλων",
     deselectAll: "Αποεπιλογή όλων",
     deleteSelected: "Διαγραφή επιλεγμένων",
-    confirmMultiDelete: "Είστε βέβαιοι ότι θέλετε να διαγράψετε {count} εικόνες;",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders > 0 && images > 0) {
+        return `Είστε βέβαιοι ότι θέλετε να διαγράψετε ${folders} φακέλους και ${images} εικόνες;`;
+      } else if (folders > 0) {
+        return `Είστε βέβαιοι ότι θέλετε να διαγράψετε ${folders} φακέλους;`;
+      }
+      return `Είστε βέβαιοι ότι θέλετε να διαγράψετε ${images} εικόνες;`;
+    },
     confirmFolderDelete: "Είστε βέβαιοι ότι θέλετε να διαγράψετε τον φάκελο {name};",
     someFolderDeletesFailed: "Ορισμένοι φάκελοι δεν μπόρεσαν να διαγραφούν",
     folderDeleteError: "Σφάλμα κατά τη διαγραφή του φακέλου",
@@ -131,6 +142,19 @@ const translations: Translations = {
     fileDeleteError: "Σφάλμα κατά τη διαγραφή του αρχείου",
     uploadError: "Η μεταφόρτωση απέτυχε",
     dropOverlay: "Αποθέστε αρχεία ή φακέλους εδώ",
+    fileCount: ({ count }: { count: number }) => `${count} αρχεία`,
+    imageCount: ({ count }: { count: number }) => `${count} εικόνες`,
+    foundFolders: ({ count }: { count: number }) => `Βρέθηκαν ${count} φάκελοι`,
+    foundImages: ({ count }: { count: number }) => `Βρέθηκαν ${count} εικόνες`,
+    deletedCount: ({ count }: { count: number }) => `Διαγράφηκαν ${count} στοιχεία`,
+    selectedCount: ({ count }: { count: number }) => `${count} επιλεγμένα`,
+    processingImages: ({ count }: { count: number }) => `Επεξεργασία ${count} εικόνων...`,
+    folderLocation: ({ name }: { name: string }) => `στο ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Μετακίνηση στο ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Εργασία με ${name}`,
+    createFolder: "Δημιουργία φακέλου",
+    folderNamePlaceholder: "Όνομα φακέλου",
+    deleteConfirmation: "Επιβεβαίωση διαγραφής",
   },
   shortcuts: {
     title: "Συντομεύσεις πληκτρολογίου",
@@ -185,5 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Η εικόνα αντιγράφηκε στο πρόχειρο",
     imageCopyFailed: "Αποτυχία αντιγραφής εικόνας στο πρόχειρο",
+    folderCreated: "Ο φάκελος δημιουργήθηκε",
+    folderCreateError: "Σφάλμα κατά τη δημιουργία του φακέλου",
   },
-}; 
+} as const satisfies Translations; 

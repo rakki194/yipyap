@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "סגור",
     delete: "מחק",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "חזור לדף הראשי",
     home: "דף הבית",
     openSettings: "פתח הגדרות",
+    create: "צור",
+    creating: "יוצר...",
   },
   settings: {
     title: "הגדרות",
@@ -90,6 +92,8 @@ const translations: Translations = {
     },
     imageWork: "עבודה עם תמונות",
     audioWork: "עבודה עם שמע",
+    deselectAll: "בטל בחירת הכל",
+    deleteSelected: "מחק נבחרים",
   },
   gallery: {
     addTag: "הוסף תגית...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "קפיצה לתיקייה...",
     loadingFolders: "טוען תיקיות...",
     noResults: "לא נמצאו תוצאות",
-    folderCount: "{count} תיקיות",
+    folderCount: ({ count }: { count: number }) => `${count} תיקיות`,
     deleteConfirm: "האם אתה בטוח שברצונך למחוק תמונה זו?",
     deleteSuccess: "התמונה נמחקה בהצלחה",
     deleteError: "שגיאה במחיקת התמונה",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "שגיאה בשמירת הכיתוב",
     emptyFolder: "תיקייה זו ריקה",
     dropToUpload: "גרור קבצים לכאן להעלאה",
-    uploadProgress: "מעלה {count} קבצים...",
+    uploadProgress: ({ count }: { count: number }) => `מעלה ${count} קבצים...`,
     processingImage: "מעבד תמונה...",
     generateTags: "צור תגיות",
     generatingTags: "יוצר תגיות...",
@@ -122,7 +126,14 @@ const translations: Translations = {
     selectAll: "בחר הכל",
     deselectAll: "בטל בחירת הכל",
     deleteSelected: "מחק נבחרים",
-    confirmMultiDelete: "האם אתה בטוח שברצונך למחוק {count} תמונות?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `האם אתה בטוח שברצונך למחוק ${folders} תיקיות ו-${images} תמונות?`;
+      } else if (folders) {
+        return `האם אתה בטוח שברצונך למחוק ${folders} תיקיות?`;
+      }
+      return `האם אתה בטוח שברצונך למחוק ${images} תמונות?`;
+    },
     confirmFolderDelete: "האם אתה בטוח שברצונך למחוק את התיקייה {name}?",
     someFolderDeletesFailed: "חלק מהתיקיות לא נמחקו",
     folderDeleteError: "שגיאה במחיקת תיקייה",
@@ -131,6 +142,19 @@ const translations: Translations = {
     fileDeleteError: "שגיאה במחיקת קובץ",
     uploadError: "ההעלאה נכשלה",
     dropOverlay: "שחרר קבצים או תיקיות כאן",
+    fileCount: ({ count }: { count: number }) => `${count} קבצים`,
+    imageCount: ({ count }: { count: number }) => `${count} תמונות`,
+    foundFolders: ({ count }: { count: number }) => `נמצאו ${count} תיקיות`,
+    foundImages: ({ count }: { count: number }) => `נמצאו ${count} תמונות`,
+    deletedCount: ({ count }: { count: number }) => `נמחקו ${count} פריטים`,
+    selectedCount: ({ count }: { count: number }) => `${count} נבחרו`,
+    processingImages: ({ count }: { count: number }) => `מעבד ${count} תמונות...`,
+    folderLocation: ({ name }: { name: string }) => `מיקום: ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `העבר ל${name}`,
+    workWithFolder: ({ name }: { name: string }) => `עבוד עם ${name}`,
+    createFolder: "צור תיקייה",
+    folderNamePlaceholder: "שם התיקייה",
+    deleteConfirmation: "אישור מחיקה",
   },
   shortcuts: {
     title: "קיצורי מקלדת",
@@ -185,7 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "התמונה הועתקה ללוח",
     imageCopyFailed: "נכשל להעתיק את התמונה ללוח",
+    folderCreated: "התיקייה נוצרה בהצלחה",
+    folderCreateError: "שגיאה ביצירת התיקייה",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

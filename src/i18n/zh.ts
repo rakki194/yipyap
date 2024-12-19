@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "返回首页",
     home: "首页",
     openSettings: "打开设置",
+    create: "创建",
+    creating: "创建中...",
   },
   settings: {
     title: "设置",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "删除图片时保留.npz（latent）文件。",
     preserveTxt: "保留.txt",
     preserveTxtTooltip: "删除图片时保留.txt文件。",
+    thumbnailSize: "缩略图大小",
+    thumbnailSizeDescription: "调整网格视图中的缩略图大小",
+    thumbnailSizeUpdateError: "更新缩略图大小失败",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "处理图片",
     audioWork: "处理音频",
+    deselectAll: "取消全选",
+    deleteSelected: "删除所选",
   },
   gallery: {
     addTag: "添加标签...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "跳转到文件夹...",
     loadingFolders: "加载文件夹中...",
     noResults: "未找到结果",
-    folderCount: "{count}个文件夹",
+    folderCount: (params: { count: number }) => `${params.count}个文件夹`,
     deleteConfirm: "确定要删除这张图片吗？",
     deleteSuccess: "图片删除成功",
     deleteError: "删除图片时出错",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "保存说明时出错",
     emptyFolder: "此文件夹为空",
     dropToUpload: "拖放文件以上传",
-    uploadProgress: "正在上传{count}个文件...",
+    uploadProgress: (params: { count: number }) => `正在上传${params.count}个文件...`,
     processingImage: "处理图片中...",
     generateTags: "生成标签",
     generatingTags: "生成标签中...",
@@ -115,6 +123,38 @@ export default {
       wd: "创建新.wd文件"
     },
     noCaptionFiles: "还没有说明文件！",
+    fileCount: (params: { count: number }) => `${params.count}个文件`,
+    imageCount: (params: { count: number }) => `${params.count}张图片`,
+    foundFolders: (params: { count: number }) => `找到${params.count}个文件夹`,
+    foundImages: (params: { count: number }) => `找到${params.count}张图片`,
+    selectedCount: (params: { count: number }) => `已选择${params.count}项`,
+    selectAll: "全选",
+    createFolder: "创建文件夹",
+    moveToFolder: (params: { name: string }) => `移动到"${params.name}"文件夹`,
+    deletedCount: (params: { count: number }) => `已删除${params.count}项`,
+    deselectAll: "取消全选",
+    deleteSelected: "删除所选",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+        if (folders && images) {
+            return `确定要删除${folders}个文件夹和${images}张图片吗？`;
+        } else if (folders) {
+            return `确定要删除${folders}个文件夹吗？`;
+        }
+        return `确定要删除${images}张图片吗？`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `确定要删除"${name}"文件夹吗？`,
+    someFolderDeletesFailed: "部分文件夹删除失败",
+    folderDeleteError: "删除文件夹失败",
+    deletingFile: "正在删除文件...",
+    fileDeleteSuccess: "文件删除成功",
+    fileDeleteError: "删除文件失败",
+    folderLocation: ({ name }: { name: string }) => `在${name}中`,
+    workWithFolder: ({ name }: { name: string }) => `处理${name}`,
+    folderNamePlaceholder: "文件夹名称",
+    deleteConfirmation: "确认删除",
+    processingImages: ({ count }: { count: number }) => `正在处理${count}张图片...`,
+    uploadError: "上传失败",
+    dropOverlay: "拖放文件到此处",
   },
   shortcuts: {
     title: "键盘快捷键",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "图片已复制到剪贴板",
     imageCopyFailed: "复制图片到剪贴板失败",
+    folderCreated: "文件夹创建成功",
+    folderCreateError: "创建文件夹失败"
   },
-};
+} as const satisfies Translations;

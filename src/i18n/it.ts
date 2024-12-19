@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Torna alla pagina iniziale",
     home: "Home",
     openSettings: "Apri impostazioni",
+    create: "Crea",
+    creating: "Creazione...",
   },
   settings: {
     title: "Impostazioni",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Mantieni i file .npz (latent) durante l'eliminazione delle immagini.",
     preserveTxt: "Preserva .txt",
     preserveTxtTooltip: "Mantieni i file .txt durante l'eliminazione delle immagini.",
+    thumbnailSize: "Dimensione miniature",
+    thumbnailSizeDescription: "Regola la dimensione delle miniature nella galleria",
+    thumbnailSizeUpdateError: "Errore durante l'aggiornamento della dimensione delle miniature",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Lavora con le immagini",
     audioWork: "Lavora con l'audio",
+    deselectAll: "Deseleziona tutto",
+    deleteSelected: "Elimina selezionati",
   },
   gallery: {
     addTag: "Aggiungi tag...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Vai alla cartella...",
     loadingFolders: "Caricamento cartelle...",
     noResults: "Nessun risultato trovato",
-    folderCount: "{count} cartelle",
+    folderCount: ({ count }: { count: number }) => `${count} cartelle`,
     deleteConfirm: "Sei sicuro di voler eliminare questa immagine?",
     deleteSuccess: "Immagine eliminata con successo",
     deleteError: "Errore durante l'eliminazione dell'immagine",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Errore durante il salvataggio della didascalia",
     emptyFolder: "Questa cartella è vuota",
     dropToUpload: "Trascina qui i file per caricarli",
-    uploadProgress: "Caricamento di {count} file...",
+    uploadProgress: ({ count }: { count: number }) => `Caricamento di ${count} file...`,
     processingImage: "Elaborazione immagine...",
     generateTags: "Genera tag",
     generatingTags: "Generazione tag...",
@@ -115,6 +123,38 @@ export default {
       wd: "Crea nuovo file .wd"
     },
     noCaptionFiles: "Nessun file didascalia ancora!",
+    fileCount: ({ count }: { count: number }) => `${count} file`,
+    imageCount: ({ count }: { count: number }) => `${count} immagini`,
+    foundFolders: ({ count }: { count: number }) => `${count} cartelle trovate`,
+    foundImages: ({ count }: { count: number }) => `${count} immagini trovate`,
+    deletedCount: ({ count }: { count: number }) => `${count} elementi eliminati`,
+    selectedCount: ({ count }: { count: number }) => `${count} selezionati`,
+    processingImages: ({ count }: { count: number }) => `Elaborazione di ${count} immagini...`,
+    folderLocation: ({ name }: { name: string }) => `in ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Sposta in ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Lavora con ${name}`,
+    createFolder: "Crea cartella",
+    folderNamePlaceholder: "Nome cartella",
+    deleteConfirmation: "Conferma eliminazione",
+    uploadError: "Caricamento fallito",
+    dropOverlay: "Trascina qui file o cartelle",
+    selectAll: "Seleziona tutto",
+    deselectAll: "Deseleziona tutto",
+    deleteSelected: "Elimina selezionati",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `Sei sicuro di voler eliminare ${folders} cartelle e ${images} immagini?`;
+      } else if (folders) {
+        return `Sei sicuro di voler eliminare ${folders} cartelle?`;
+      }
+      return `Sei sicuro di voler eliminare ${images} immagini?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `Sei sicuro di voler eliminare la cartella ${name}?`,
+    someFolderDeletesFailed: "Alcune cartelle non sono state eliminate",
+    folderDeleteError: "Errore durante l'eliminazione della cartella",
+    deletingFile: "Eliminazione file...",
+    fileDeleteSuccess: "File eliminato con successo",
+    fileDeleteError: "Errore durante l'eliminazione del file",
   },
   shortcuts: {
     title: "Scorciatoie da tastiera",
@@ -164,5 +204,12 @@ export default {
   notifications: {
     imageCopied: "Immagine copiata negli appunti",
     imageCopyFailed: "Impossibile copiare l'immagine negli appunti",
+    folderCreated: "Cartella creata con successo",
+    folderCreateError: "Errore durante la creazione della cartella",
   },
-}; 
+  tools: {
+    removeCommas: "Rimuovi virgole",
+    replaceNewlinesWithCommas: "Sostituisci ritorni a capo con virgole",
+    replaceUnderscoresWithSpaces: "Sostituisci underscore con spazi",
+  },
+} as const satisfies Translations;

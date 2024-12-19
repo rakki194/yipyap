@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Повернутися на головну",
     home: "Головна",
     openSettings: "Відкрити налаштування",
+    create: "Створити",
+    creating: "Створення...",
   },
   settings: {
     title: "Налаштування",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Зберігайте файли .npz (latent) при видаленні зображень.",
     preserveTxt: "Зберегти .txt",
     preserveTxtTooltip: "Зберігайте файли .txt при видаленні зображень.",
+    thumbnailSize: "Розмір мініатюр",
+    thumbnailSizeDescription: "Налаштувати розмір мініатюр у режимі сітки",
+    thumbnailSizeUpdateError: "Помилка оновлення розміру мініатюр",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Робота з зображеннями",
     audioWork: "Робота з аудіо",
+    deselectAll: "Скасувати вибір",
+    deleteSelected: "Видалити вибране",
   },
   gallery: {
     addTag: "Додати тег...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Перейти до папки...",
     loadingFolders: "Завантаження папок...",
     noResults: "Нічого не знайдено",
-    folderCount: "{count} папок",
+    folderCount: (params: { count: number }) => `${params.count} папок`,
     deleteConfirm: "Ви впевнені, що хочете видалити це зображення?",
     deleteSuccess: "Зображення успішно видалено",
     deleteError: "Помилка при видаленні",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Помилка при збереженні підпису",
     emptyFolder: "Ця папка порожня",
     dropToUpload: "Перетягніть файли для завантаження",
-    uploadProgress: "Завантаження {count} файлів...",
+    uploadProgress: (params: { count: number }) => `Завантаження ${params.count} файлів...`,
     processingImage: "Обробка зображення...",
     generateTags: "Згенерувати теги",
     generatingTags: "Генерація тегів...",
@@ -115,6 +123,38 @@ export default {
       wd: "Створити новий файл .wd"
     },
     noCaptionFiles: "Поки немає файлів підписів!",
+    fileCount: (params: { count: number }) => `${params.count} файлів`,
+    imageCount: (params: { count: number }) => `${params.count} зображень`,
+    foundFolders: (params: { count: number }) => `Знайдено ${params.count} папок`,
+    foundImages: (params: { count: number }) => `Знайдено ${params.count} зображень`,
+    selectedCount: (params: { count: number }) => `Вибрано ${params.count}`,
+    selectAll: "Вибрати все",
+    createFolder: "Створити папку",
+    moveToFolder: (params: { name: string }) => `Перемістити в папку "${params.name}"`,
+    deletedCount: (params: { count: number }) => `Видалено ${params.count} елементів`,
+    uploadError: "Помилка завантаження",
+    dropOverlay: "Перетягніть файли сюди",
+    deselectAll: "Скасувати вибір",
+    deleteSelected: "Видалити вибране",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+        if (folders && images) {
+            return `Ви впевнені, що хочете видалити ${folders} папок та ${images} зображень?`;
+        } else if (folders) {
+            return `Ви впевнені, що хочете видалити ${folders} папок?`;
+        }
+        return `Ви впевнені, що хочете видалити ${images} зображень?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `Ви впевнені, що хочете видалити папку "${name}"?`,
+    someFolderDeletesFailed: "Деякі папки не вдалося видалити",
+    folderDeleteError: "Помилка видалення папки",
+    deletingFile: "Видалення файлу...",
+    fileDeleteSuccess: "Файл видалено",
+    fileDeleteError: "Помилка видалення файлу",
+    folderLocation: ({ name }: { name: string }) => `в ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Працювати з ${name}`,
+    folderNamePlaceholder: "Назва папки",
+    deleteConfirmation: "Підтвердження видалення",
+    processingImages: ({ count }: { count: number }) => `Обробка ${count} зображень...`,
   },
   shortcuts: {
     title: "Гарячі клавіші",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Зображення скопійовано в буфер обміну",
     imageCopyFailed: "Не вдалося скопіювати зображення в буфер обміну",
+    folderCreated: "Папку створено",
+    folderCreateError: "Не вдалося створити папку"
   },
-}; 
+} as const satisfies Translations;

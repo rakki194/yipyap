@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Voltar à página inicial",
     home: "Início",
     openSettings: "Abrir configurações",
+    create: "Criar",
+    creating: "Criando...",
   },
   settings: {
     title: "Configurações",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Mantenha os arquivos .npz (latent) ao excluir imagens.",
     preserveTxt: "Preservar .txt",
     preserveTxtTooltip: "Mantenha os arquivos .txt ao excluir imagens.",
+    thumbnailSize: "Tamanho das miniaturas",
+    thumbnailSizeDescription: "Ajuste o tamanho das miniaturas na visualização em grade",
+    thumbnailSizeUpdateError: "Erro ao atualizar o tamanho das miniaturas",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Trabalhar com imagens",
     audioWork: "Trabalhar com áudio",
+    deselectAll: "Desmarcar todos",
+    deleteSelected: "Excluir selecionados",
   },
   gallery: {
     addTag: "Adicionar tag...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Ir para pasta...",
     loadingFolders: "Carregando pastas...",
     noResults: "Nenhum resultado encontrado",
-    folderCount: "{count} pastas",
+    folderCount: (params: { count: number }) => `${params.count} pastas`,
     deleteConfirm: "Tem certeza que deseja excluir esta imagem?",
     deleteSuccess: "Imagem excluída com sucesso",
     deleteError: "Erro ao excluir imagem",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Erro ao salvar legenda",
     emptyFolder: "Esta pasta está vazia",
     dropToUpload: "Solte arquivos aqui para fazer upload",
-    uploadProgress: "Fazendo upload de {count} arquivos...",
+    uploadProgress: (params: { count: number }) => `Fazendo upload de ${params.count} arquivos...`,
     processingImage: "Processando imagem...",
     generateTags: "Gerar tags",
     generatingTags: "Gerando tags...",
@@ -115,6 +123,38 @@ export default {
       wd: "Criar novo arquivo .wd"
     },
     noCaptionFiles: "Ainda não há arquivos de legenda!",
+    fileCount: (params: { count: number }) => `${params.count} arquivos`,
+    imageCount: (params: { count: number }) => `${params.count} imagens`,
+    foundFolders: (params: { count: number }) => `${params.count} pastas encontradas`,
+    foundImages: (params: { count: number }) => `${params.count} imagens encontradas`,
+    selectedCount: (params: { count: number }) => `${params.count} selecionados`,
+    selectAll: "Selecionar todos",
+    createFolder: "Criar pasta",
+    moveToFolder: (params: { name: string }) => `Mover para pasta "${params.name}"`,
+    deletedCount: (params: { count: number }) => `${params.count} itens excluídos`,
+    uploadError: "Erro ao fazer upload do arquivo",
+    dropOverlay: "Solte os arquivos aqui",
+    deselectAll: "Desmarcar todos",
+    deleteSelected: "Excluir selecionados",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `Tem certeza que deseja excluir ${folders} pastas e ${images} imagens?`;
+      } else if (folders) {
+        return `Tem certeza que deseja excluir ${folders} pastas?`;
+      }
+      return `Tem certeza que deseja excluir ${images} imagens?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `Tem certeza que deseja excluir a pasta ${name}?`,
+    someFolderDeletesFailed: "Algumas pastas não puderam ser excluídas",
+    folderDeleteError: "Erro ao excluir pasta",
+    deletingFile: "Excluindo arquivo...",
+    fileDeleteSuccess: "Arquivo excluído com sucesso",
+    fileDeleteError: "Erro ao excluir arquivo",
+    folderLocation: ({ name }: { name: string }) => `em ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Trabalhar com ${name}`,
+    folderNamePlaceholder: "Nome da pasta",
+    deleteConfirmation: "Confirmar exclusão",
+    processingImages: ({ count }: { count: number }) => `Processando ${count} imagens...`,
   },
   shortcuts: {
     title: "Atalhos de teclado",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Imagem copiada para área de transferência",
     imageCopyFailed: "Falha ao copiar imagem para área de transferência",
+    folderCreated: "Pasta criada com sucesso",
+    folderCreateError: "Erro ao criar pasta"
   },
-}; 
+} as const satisfies Translations;

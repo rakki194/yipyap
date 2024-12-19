@@ -113,21 +113,21 @@ export interface ToolsTranslations {
   replaceUnderscoresWithSpaces: string;
 }
 
-export interface FrontPageSubtitle {
-  1: string;
-  2: string;
-  3: string;
-  4: string;
-  5: string;
-  6: string;
-  7: string;
-  8: string;
-}
-
 export interface FrontPageTranslations {
-  subtitle: FrontPageSubtitle;
+  subtitle: {
+    1: string;
+    2: string;
+    3: string;
+    4: string;
+    5: string;
+    6: string;
+    7: string;
+    8: string;
+  };
   imageWork: string;
   audioWork: string;
+  deselectAll: string;
+  deleteSelected: string;
 }
 
 export interface GalleryTranslations {
@@ -168,7 +168,7 @@ export interface GalleryTranslations {
   selectAll: string;
   deselectAll: string;
   deleteSelected: string;
-  confirmMultiDelete: (params: { count: number }) => string;
+  confirmMultiDelete: ({ folders, images }: { folders?: number; images?: number }) => string;
   confirmFolderDelete: TranslationValue;
   someFolderDeletesFailed: string;
   folderDeleteError: string;
@@ -180,6 +180,9 @@ export interface GalleryTranslations {
   deleteConfirmation: string;
   selectedCount: (params: { count: number }) => string;
   processingImages: (params: { count: number }) => string;
+  folderLocation: (params: { name: string }) => string;
+  moveToFolder: (params: { name: string }) => string;
+  workWithFolder: (params: { name: string }) => string;
 }
 
 export interface ShortcutsTranslations {

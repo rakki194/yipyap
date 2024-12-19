@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Quay lại trang chủ",
     home: "Trang chủ",
     openSettings: "Mở cài đặt",
+    create: "Tạo",
+    creating: "Đang tạo...",
   },
   settings: {
     title: "Cài đặt",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Giữ các tệp .npz (latent) khi xóa hình ảnh.",
     preserveTxt: "Bảo vệ .txt",
     preserveTxtTooltip: "Giữ các tệp .txt khi xóa hình ảnh.",
+    thumbnailSize: "Kích thước ảnh thu nhỏ",
+    thumbnailSizeDescription: "Điều chỉnh kích thước ảnh thu nhỏ trong chế độ xem lưới",
+    thumbnailSizeUpdateError: "Không thể cập nhật kích thước ảnh thu nhỏ",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Làm việc với hình ảnh",
     audioWork: "Làm việc với âm thanh",
+    deselectAll: "Bỏ chọn tất cả",
+    deleteSelected: "Xóa mục đã chọn",
   },
   gallery: {
     addTag: "Thêm thẻ...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Chuyển đến thư mục...",
     loadingFolders: "Đang tải thư mục...",
     noResults: "Không tìm thấy kết quả",
-    folderCount: "{count} thư mục",
+    folderCount: (params: { count: number }) => `${params.count} thư mục`,
     deleteConfirm: "Bạn có chắc chắn muốn xóa hình ảnh này?",
     deleteSuccess: "Đã xóa hình ảnh thành công",
     deleteError: "Lỗi khi xóa hình ảnh",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Lỗi khi lưu chú thích",
     emptyFolder: "Thư mục này trống",
     dropToUpload: "Kéo thả tệp vào đây để tải lên",
-    uploadProgress: "Đang tải lên {count} tệp...",
+    uploadProgress: (params: { count: number }) => `Đang tải lên ${params.count} tệp...`,
     processingImage: "Đang xử lý hình ảnh...",
     generateTags: "Tạo thẻ",
     generatingTags: "Đang tạo thẻ...",
@@ -117,6 +125,36 @@ export default {
     noCaptionFiles: "Chưa có tệp chú thích!",
     uploadError: "Tải lên thất bại",
     dropOverlay: "Thả tệp hoặc thư mục vào đây",
+    fileCount: (params: { count: number }) => `${params.count} tệp`,
+    imageCount: (params: { count: number }) => `${params.count} hình ảnh`,
+    foundFolders: (params: { count: number }) => `Tìm thấy ${params.count} thư mục`,
+    foundImages: (params: { count: number }) => `Tìm thấy ${params.count} hình ảnh`,
+    selectedCount: (params: { count: number }) => `Đã chọn ${params.count}`,
+    selectAll: "Chọn tất cả",
+    createFolder: "Tạo thư mục",
+    moveToFolder: (params: { name: string }) => `Di chuyển đến thư mục "${params.name}"`,
+    deletedCount: (params: { count: number }) => `Đã xóa ${params.count} mục`,
+    deselectAll: "Bỏ chọn tất cả",
+    deleteSelected: "Xóa mục đã chọn",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+        if (folders && images) {
+            return `Bạn có chắc chắn muốn xóa ${folders} thư mục và ${images} hình ảnh?`;
+        } else if (folders) {
+            return `Bạn có chắc chắn muốn xóa ${folders} thư mục?`;
+        }
+        return `Bạn có chắc chắn muốn xóa ${images} hình ảnh?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `Bạn có chắc chắn muốn xóa thư mục "${name}"?`,
+    someFolderDeletesFailed: "Một số thư mục không thể xóa",
+    folderDeleteError: "Không thể xóa thư mục",
+    deletingFile: "Đang xóa tệp...",
+    fileDeleteSuccess: "Đã xóa tệp",
+    fileDeleteError: "Không thể xóa tệp",
+    folderLocation: ({ name }: { name: string }) => `trong ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Làm việc với ${name}`,
+    folderNamePlaceholder: "Tên thư mục",
+    deleteConfirmation: "Xác nhận xóa",
+    processingImages: ({ count }: { count: number }) => `Đang xử lý ${count} hình ảnh...`,
   },
   shortcuts: {
     title: "Phím tắt",
@@ -171,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Đã sao chép ảnh vào clipboard",
     imageCopyFailed: "Không thể sao chép ảnh vào clipboard",
+    folderCreated: "Đã tạo thư mục",
+    folderCreateError: "Không thể tạo thư mục"
   },
-}; 
+} as const satisfies Translations;

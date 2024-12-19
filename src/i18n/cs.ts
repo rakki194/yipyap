@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Zavřít",
     delete: "Smazat",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "Zpět na hlavní stránku",
     home: "Domů",
     openSettings: "Otevřít nastavení",
+    create: "Vytvořit",
+    creating: "Vytváření...",
   },
   settings: {
     title: "Nastavení",
@@ -79,17 +81,19 @@ const translations: Translations = {
   },
   frontPage: {
     subtitle: {
-      1: "Velké jazykové modely podvádějí, lžou a halucinují. Stejně jako já!",
-      2: "Našli jsme jiný způsob modlitby",
-      3: "Nekonečný vesmír se odráží v prázdných očích",
-      4: "Rezavé srdce, nový výhonek",
-      5: "Kouzelné místo, kde se sen a realita protínají",
-      6: "Neznámé území, nekonečné možnosti",
-      7: "Věčná láska přesahující tok času",
-      8: "Za tohle mě vyhodí!",
+      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+      2: "私たちは別の祈り方を見つけました",
+      3: "虚ろな瞳に映る、無限の宇宙",
+      4: "錆びた心、新たな芽吹き",
+      5: "夢と現実が交錯する、不思議な境地",
+      6: "未知の領域、無限の可能性",
+      7: "時の流れを超えた、永遠の愛",
+      8: "これで追い出されますよ！",
     },
     imageWork: "Práce s obrázky",
     audioWork: "Práce se zvukem",
+    deselectAll: "Zrušit výběr",
+    deleteSelected: "Smazat vybrané",
   },
   gallery: {
     addTag: "Přidat tag...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "Přejít do složky...",
     loadingFolders: "Načítání složek...",
     noResults: "Žádné výsledky",
-    folderCount: "{count} složek",
+    folderCount: ({ count }: { count: number }) => `${count} složek`,
     deleteConfirm: "Opravdu chcete smazat tento obrázek?",
     deleteSuccess: "Obrázek byl úspěšně smazán",
     deleteError: "Chyba při mazání obrázku",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "Chyba při ukládání popisku",
     emptyFolder: "Tato složka je prázdná",
     dropToUpload: "Přetáhněte soubory pro nahrání",
-    uploadProgress: "Nahrávání {count} souborů...",
+    uploadProgress: ({ count }: { count: number }) => `Nahrávání ${count} souborů...`,
     processingImage: "Zpracování obrázku...",
     generateTags: "Generovat tagy",
     generatingTags: "Generování tagů...",
@@ -124,13 +128,33 @@ const translations: Translations = {
     selectAll: "Vybrat vše",
     deselectAll: "Zrušit výběr",
     deleteSelected: "Smazat vybrané",
-    confirmMultiDelete: "Opravdu chcete smazat {count} obrázků?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders > 0 && images > 0) {
+        return `Opravdu chcete smazat ${folders} složek a ${images} obrázků?`;
+      } else if (folders > 0) {
+        return `Opravdu chcete smazat ${folders} složek?`;
+      }
+      return `Opravdu chcete smazat ${images} obrázků?`;
+    },
     confirmFolderDelete: "Opravdu chcete smazat složku {name}?",
     someFolderDeletesFailed: "Některé složky se nepodařilo smazat",
     folderDeleteError: "Chyba při mazání složky",
     deletingFile: "Mazání souboru...",
     fileDeleteSuccess: "Soubor byl úspěšně smazán",
     fileDeleteError: "Chyba při mazání souboru",
+    fileCount: ({ count }: { count: number }) => `${count} souborů`,
+    imageCount: ({ count }: { count: number }) => `${count} obrázků`,
+    foundFolders: ({ count }: { count: number }) => `Nalezeno ${count} složek`,
+    foundImages: ({ count }: { count: number }) => `Nalezeno ${count} obrázků`,
+    deletedCount: ({ count }: { count: number }) => `Smazáno ${count} položek`,
+    selectedCount: ({ count }: { count: number }) => `${count} vybráno`,
+    processingImages: ({ count }: { count: number }) => `Zpracování ${count} obrázků...`,
+    folderLocation: ({ name }: { name: string }) => `ve složce ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Přesunout do ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Pracovat s ${name}`,
+    createFolder: "Vytvořit složku",
+    folderNamePlaceholder: "Název složky",
+    deleteConfirmation: "Potvrzení smazání",
   },
   shortcuts: {
     title: "Klávesové zkratky",
@@ -185,7 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Obrázek byl zkopírován do schránky",
     imageCopyFailed: "Nepodařilo se zkopírovat obrázek do schránky",
+    folderCreated: "Složka byla vytvořena",
+    folderCreateError: "Nepodařilo se vytvořit složku",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

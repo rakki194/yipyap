@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Close",
     delete: "Delete",
@@ -92,6 +92,8 @@ const translations: Translations = {
     },
     imageWork: "Work with Images",
     audioWork: "Work with Audio",
+    deselectAll: "Deselect All",
+    deleteSelected: "Delete Selected",
   },
   gallery: {
     addTag: "Add a tag...",
@@ -99,7 +101,7 @@ const translations: Translations = {
     quickJump: "Jump to folder...",
     loadingFolders: "Loading folders...",
     noResults: "No results found",
-    folderCount: "{count} folders",
+    folderCount: ({ count }: { count: number }) => `${count} folders`,
     deleteConfirm: "Are you sure you want to delete this image?",
     deleteSuccess: "Image deleted successfully",
     deleteError: "Error deleting image",
@@ -108,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "Error saving caption",
     emptyFolder: "This folder is empty",
     dropToUpload: "Drop files here to upload",
-    uploadProgress: "Uploading {count} files...",
+    uploadProgress: ({ count }: { count: number }) => `Uploading ${count} files...`,
     processingImage: "Processing image...",
     generateTags: "Generate Tags",
     generatingTags: "Generating tags...",
@@ -146,6 +148,16 @@ const translations: Translations = {
     createFolder: "Create Folder",
     folderNamePlaceholder: "Enter folder name",
     deleteConfirmation: "Confirm Deletion",
+    fileCount: ({ count }: { count: number }) => `${count} files`,
+    imageCount: ({ count }: { count: number }) => `${count} images`,
+    foundFolders: ({ count }: { count: number }) => `Found ${count} folders`,
+    foundImages: ({ count }: { count: number }) => `Found ${count} images`,
+    deletedCount: ({ count }: { count: number }) => `Deleted ${count} items`,
+    selectedCount: ({ count }: { count: number }) => `${count} selected`,
+    processingImages: ({ count }: { count: number }) => `Processing ${count} images...`,
+    folderLocation: ({ name }: { name: string }) => `in ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Move to ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Work with ${name}`,
   },
   shortcuts: {
     title: "Keyboard Shortcuts",
@@ -203,6 +215,4 @@ const translations: Translations = {
     folderCreated: "Folder created successfully",
     folderCreateError: "Error creating folder",
   },
-};
-
-export default translations;
+} as const satisfies Translations;

@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Ana sayfaya dön",
     home: "Ana Sayfa",
     openSettings: "Ayarları aç",
+    create: "Oluştur",
+    creating: "Oluşturuluyor...",
   },
   settings: {
     title: "Ayarlar",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Resimleri silerken .npz (latent) dosyalarını koruyun.",
     preserveTxt: ".txt'yi Koruyun",
     preserveTxtTooltip: "Resimleri silerken .txt dosyalarını koruyun.",
+    thumbnailSize: "Küçük resim boyutu",
+    thumbnailSizeDescription: "Izgara görünümündeki küçük resimlerin boyutunu ayarlayın",
+    thumbnailSizeUpdateError: "Küçük resim boyutu güncellenirken hata oluştu",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Görsellerle çalış",
     audioWork: "Sesle çalış",
+    deselectAll: "Seçimi kaldır",
+    deleteSelected: "Seçilenleri sil",
   },
   gallery: {
     addTag: "Etiket ekle...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Klasöre git...",
     loadingFolders: "Klasörler yükleniyor...",
     noResults: "Sonuç bulunamadı",
-    folderCount: "{count} klasör",
+    folderCount: (params: { count: number }) => `${params.count} klasör`,
     deleteConfirm: "Bu görseli silmek istediğinizden emin misiniz?",
     deleteSuccess: "Görsel başarıyla silindi",
     deleteError: "Görsel silinirken hata oluştu",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Altyazı kaydedilirken hata oluştu",
     emptyFolder: "Bu klasör boş",
     dropToUpload: "Yüklemek için dosyaları buraya sürükleyin",
-    uploadProgress: "{count} dosya yükleniyor...",
+    uploadProgress: (params: { count: number }) => `${params.count} dosya yükleniyor...`,
     processingImage: "Görsel işleniyor...",
     generateTags: "Etiket oluştur",
     generatingTags: "Etiketler oluşturuluyor...",
@@ -115,6 +123,38 @@ export default {
       wd: "Yeni .wd dosyası oluştur"
     },
     noCaptionFiles: "Henüz altyazı dosyası yok!",
+    fileCount: (params: { count: number }) => `${params.count} dosya`,
+    imageCount: (params: { count: number }) => `${params.count} görsel`,
+    foundFolders: (params: { count: number }) => `${params.count} klasör bulundu`,
+    foundImages: (params: { count: number }) => `${params.count} görsel bulundu`,
+    selectedCount: (params: { count: number }) => `${params.count} seçili`,
+    selectAll: "Tümünü seç",
+    createFolder: "Klasör oluştur",
+    moveToFolder: (params: { name: string }) => `"${params.name}" klasörüne taşı`,
+    deletedCount: (params: { count: number }) => `${params.count} öğe silindi`,
+    uploadError: "Dosya yüklenirken hata oluştu",
+    dropOverlay: "Dosyaları buraya bırakın",
+    deselectAll: "Seçimi kaldır",
+    deleteSelected: "Seçilenleri sil",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+        if (folders && images) {
+            return `${folders} klasör ve ${images} görseli silmek istediğinizden emin misiniz?`;
+        } else if (folders) {
+            return `${folders} klasörü silmek istediğinizden emin misiniz?`;
+        }
+        return `${images} görseli silmek istediğinizden emin misiniz?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `"${name}" klasörünü silmek istediğinizden emin misiniz?`,
+    someFolderDeletesFailed: "Bazı klasörler silinemedi",
+    folderDeleteError: "Klasör silinirken hata oluştu",
+    deletingFile: "Dosya siliniyor...",
+    fileDeleteSuccess: "Dosya silindi",
+    fileDeleteError: "Dosya silinirken hata oluştu",
+    folderLocation: ({ name }: { name: string }) => `${name} içinde`,
+    workWithFolder: ({ name }: { name: string }) => `${name} ile çalış`,
+    folderNamePlaceholder: "Klasör adı",
+    deleteConfirmation: "Silmeyi onayla",
+    processingImages: ({ count }: { count: number }) => `${count} görsel işleniyor...`,
   },
   shortcuts: {
     title: "Klavye kısayolları",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Resim panoya kopyalandı",
     imageCopyFailed: "Resim panoya kopyalanamadı",
+    folderCreated: "Klasör başarıyla oluşturuldu",
+    folderCreateError: "Klasör oluşturulurken hata oluştu"
   },
-}; 
+} as const satisfies Translations;

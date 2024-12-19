@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Lukk",
     delete: "Slett",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "Tilbake til forsiden",
     home: "Hjem",
     openSettings: "Åpne innstillinger",
+    create: "Opprett",
+    creating: "Oppretter...",
   },
   settings: {
     title: "Innstillinger",
@@ -90,6 +92,8 @@ const translations: Translations = {
     },
     imageWork: "Arbeid med bilder",
     audioWork: "Arbeid med lyd",
+    deselectAll: "Velg ingen",
+    deleteSelected: "Slett valgte",
   },
   gallery: {
     addTag: "Legg til tagg...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "Hopp til mappe...",
     loadingFolders: "Laster mapper...",
     noResults: "Ingen resultater funnet",
-    folderCount: "{count} mapper",
+    folderCount: ({ count }: { count: number }) => `${count} mapper`,
     deleteConfirm: "Er du sikker på at du vil slette dette bildet?",
     deleteSuccess: "Bildet ble slettet",
     deleteError: "Feil ved sletting av bilde",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "Feil ved lagring av bildetekst",
     emptyFolder: "Denne mappen er tom",
     dropToUpload: "Slipp filer her for å laste opp",
-    uploadProgress: "Laster opp {count} filer...",
+    uploadProgress: ({ count }: { count: number }) => `Laster opp ${count} filer...`,
     processingImage: "Behandler bilde...",
     generateTags: "Generer tagger",
     generatingTags: "Genererer tagger...",
@@ -124,13 +128,33 @@ const translations: Translations = {
     selectAll: "Velg alle",
     deselectAll: "Velg ingen",
     deleteSelected: "Slett valgte",
-    confirmMultiDelete: "Er du sikker på at du vil slette {count} bilder?",
-    confirmFolderDelete: "Er du sikker på at du vil slette mappen {name}?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `Er du sikker på at du vil slette ${folders} mapper og ${images} bilder?`;
+      } else if (folders) {
+        return `Er du sikker på at du vil slette ${folders} mapper?`;
+      }
+      return `Er du sikker på at du vil slette ${images} bilder?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `Er du sikker på at du vil slette mappen ${name}?`,
     someFolderDeletesFailed: "Noen mapper kunne ikke slettes",
     folderDeleteError: "Feil ved sletting av mappe",
     deletingFile: "Sletter fil...",
     fileDeleteSuccess: "Fil slettet",
     fileDeleteError: "Feil ved sletting av fil",
+    fileCount: ({ count }: { count: number }) => `${count} filer`,
+    imageCount: ({ count }: { count: number }) => `${count} bilder`,
+    foundFolders: ({ count }: { count: number }) => `${count} mapper funnet`,
+    foundImages: ({ count }: { count: number }) => `${count} bilder funnet`,
+    deletedCount: ({ count }: { count: number }) => `${count} elementer slettet`,
+    selectedCount: ({ count }: { count: number }) => `${count} valgt`,
+    processingImages: ({ count }: { count: number }) => `Behandler ${count} bilder...`,
+    folderLocation: ({ name }: { name: string }) => `i ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Flytt til ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Arbeid med ${name}`,
+    createFolder: "Opprett mappe",
+    folderNamePlaceholder: "Mappenavn",
+    deleteConfirmation: "Bekreft sletting",
   },
   shortcuts: {
     title: "Hurtigtaster",
@@ -185,7 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Bilde kopiert til utklippstavle",
     imageCopyFailed: "Kunne ikke kopiere bilde til utklippstavle",
+    folderCreated: "Mappe opprettet",
+    folderCreateError: "Kunne ikke opprette mappe",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

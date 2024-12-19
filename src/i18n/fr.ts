@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Retour à la page d'accueil",
     home: "Accueil",
     openSettings: "Ouvrir les paramètres",
+    create: "Créer",
+    creating: "Création...",
   },
   settings: {
     title: "Paramètres",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Conservez les fichiers .npz (latent) lors de la suppression des images.",
     preserveTxt: "Conserver les .txt",
     preserveTxtTooltip: "Conservez les fichiers .txt lors de la suppression des images.",
+    thumbnailSize: "Taille des vignettes",
+    thumbnailSizeDescription: "Ajuster la taille des vignettes dans la galerie",
+    thumbnailSizeUpdateError: "Erreur lors de la mise à jour de la taille des vignettes",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Travailler avec les images",
     audioWork: "Travailler avec l'audio",
+    deselectAll: "Tout désélectionner",
+    deleteSelected: "Supprimer la sélection",
   },
   gallery: {
     addTag: "Ajouter un tag...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Aller au dossier...",
     loadingFolders: "Chargement des dossiers...",
     noResults: "Aucun résultat trouvé",
-    folderCount: "{count} dossiers",
+    folderCount: ({ count }: { count: number }) => `${count} dossiers`,
     deleteConfirm: "Voulez-vous vraiment supprimer cette image ?",
     deleteSuccess: "Image supprimée avec succès",
     deleteError: "Erreur lors de la suppression",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Erreur lors de l'enregistrement de la légende",
     emptyFolder: "Ce dossier est vide",
     dropToUpload: "Déposez les fichiers ici pour télécharger",
-    uploadProgress: "Téléchargement de {count} fichiers...",
+    uploadProgress: ({ count }: { count: number }) => `Téléchargement de ${count} fichiers...`,
     processingImage: "Traitement de l'image...",
     generateTags: "Générer les tags",
     generatingTags: "Génération des tags...",
@@ -115,6 +123,38 @@ export default {
       wd: "Créer un nouveau fichier .wd"
     },
     noCaptionFiles: "Pas encore de fichiers de légende !",
+    fileCount: ({ count }: { count: number }) => `${count} fichiers`,
+    imageCount: ({ count }: { count: number }) => `${count} images`,
+    foundFolders: ({ count }: { count: number }) => `${count} dossiers trouvés`,
+    foundImages: ({ count }: { count: number }) => `${count} images trouvées`,
+    deletedCount: ({ count }: { count: number }) => `${count} éléments supprimés`,
+    selectAll: "Tout sélectionner",
+    deselectAll: "Tout désélectionner",
+    deleteSelected: "Supprimer la sélection",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `Voulez-vous vraiment supprimer ${folders} dossiers et ${images} images ?`;
+      } else if (folders) {
+        return `Voulez-vous vraiment supprimer ${folders} dossiers ?`;
+      }
+      return `Voulez-vous vraiment supprimer ${images} images ?`;
+    },
+    confirmFolderDelete: "Voulez-vous vraiment supprimer ce dossier ? Tout son contenu sera supprimé !",
+    someFolderDeletesFailed: "Certains dossiers n'ont pas pu être supprimés",
+    folderDeleteError: "Erreur lors de la suppression du dossier",
+    deletingFile: "Suppression du fichier...",
+    fileDeleteSuccess: "Fichier supprimé avec succès",
+    fileDeleteError: "Erreur lors de la suppression du fichier",
+    createFolder: "Créer un dossier",
+    folderNamePlaceholder: "Nom du dossier",
+    deleteConfirmation: "Confirmation de suppression",
+    selectedCount: ({ count }: { count: number }) => `${count} éléments sélectionnés`,
+    processingImages: ({ count }: { count: number }) => `Traitement de ${count} images...`,
+    folderLocation: ({ name }: { name: string }) => `Emplacement : ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Déplacer vers ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Travailler avec ${name}`,
+    uploadError: "Erreur lors du téléchargement",
+    dropOverlay: "Déposez les fichiers ou dossiers ici",
   },
   shortcuts: {
     title: "Raccourcis clavier",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Image copiée dans le presse-papiers",
     imageCopyFailed: "Échec de la copie de l'image dans le presse-papiers",
+    folderCreated: "Dossier créé avec succès",
+    folderCreateError: "Erreur lors de la création du dossier",
   },
-};
+} as const satisfies Translations;

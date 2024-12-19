@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "フロントページに戻る",
     home: "ホーム",
     openSettings: "設定を開く",
+    create: "作成",
+    creating: "作成中...",
   },
   settings: {
     title: "設定",
@@ -72,10 +75,25 @@ export default {
     preserveLatentsTooltip: "画像を削除する際に.npz（latent）ファイルを保持します。",
     preserveTxt: ".txtを保持",
     preserveTxtTooltip: "画像を削除する際に.txtファイルを保持します。",
+    thumbnailSize: "サムネイルサイズ",
+    thumbnailSizeDescription: "サムネイルのピクセルサイズ (例: 250)",
+    thumbnailSizeUpdateError: "サムネイルサイズの更新に失敗しました",
   },
   frontPage: {
     imageWork: "画像を扱う",
     audioWork: "音声を扱う",
+    subtitle: {
+      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+      2: "私たちは別の祈り方を見つけました",
+      3: "虚ろな瞳に映る、無限の宇宙",
+      4: "錆びた心、新たな芽吹き",
+      5: "夢と現実が交錯する、不思議な境地",
+      6: "未知の領域、無限の可能性",
+      7: "時の流れを超えた、永遠の愛",
+      8: "これで追い出されますよ！",
+    },
+    deselectAll: "選択解除",
+    deleteSelected: "選択項目を削除",
   },
   gallery: {
     addTag: "タグを追加...",
@@ -83,7 +101,7 @@ export default {
     quickJump: "フォルダーへジャンプ...",
     loadingFolders: "フォルダーを読み込み中...",
     noResults: "結果が見つかりません",
-    folderCount: "{count}個のフォルダー",
+    folderCount: ({ count }: { count: number }) => `${count}個のフォルダー`,
     deleteConfirm: "この画像を削除してもよろしいですか？",
     deleteSuccess: "画像を削除しました",
     deleteError: "画像の削除中にエラーが発生しました",
@@ -92,7 +110,7 @@ export default {
     errorSavingCaption: "キャプションの保存中にエラーが発生しました",
     emptyFolder: "このフォルダは空です",
     dropToUpload: "ファイルをドロップしてアップロード",
-    uploadProgress: "{count}個のファイルをアップロード中...",
+    uploadProgress: ({ count }: { count: number }) => `${count}個のファイルをアップロード中...`,
     processingImage: "画像を処理中...",
     generateTags: "タグを生成",
     generatingTags: "タグを生成中...",
@@ -105,20 +123,38 @@ export default {
       wd: "新規.wdファイルを作成"
     },
     noCaptionFiles: "キャプションファイルがまだありません！",
-    uploadError: "アップロードに失敗しました",
-    dropOverlay: "ファイルやフォルダをここにドロップ",
+    fileCount: ({ count }: { count: number }) => `${count}個のファイル`,
+    imageCount: ({ count }: { count: number }) => `${count}個の画像`,
+    foundFolders: ({ count }: { count: number }) => `${count}個のフォルダーが見つかりました`,
+    foundImages: ({ count }: { count: number }) => `${count}個の画像が見つかりました`,
+    deletedCount: ({ count }: { count: number }) => `${count}個のアイテムを削除しました`,
+    selectedCount: ({ count }: { count: number }) => `${count}個選択中`,
+    processingImages: ({ count }: { count: number }) => `${count}個の画像を処理中...`,
+    folderLocation: ({ name }: { name: string }) => `場所: ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `${name}に移動`,
+    workWithFolder: ({ name }: { name: string }) => `${name}を操作`,
+    createFolder: "フォルダーを作成",
+    folderNamePlaceholder: "フォルダー名",
     deleteConfirmation: "削除の確認",
-    confirmMultiDelete: ({ folders = 0, images = 0 }: { folders?: number; images?: number }) => {
+    selectAll: "すべて選択",
+    deselectAll: "選択解除",
+    deleteSelected: "選択項目を削除",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders && images) {
         return `${folders}個のフォルダーと${images}個の画像を削除してもよろしいですか？`;
       } else if (folders) {
         return `${folders}個のフォルダーを削除してもよろしいですか？`;
-      } else if (images) {
-        return `${images}個の画像を削除してもよろしいですか？`;
-      } else {
-        return 'これらのアイテムを削除してもよろしいですか？'; // fallback message
       }
+      return `${images}個の画像を削除してもよろしいですか？`;
     },
+    confirmFolderDelete: ({ name = "" }) => `フォルダー「${name}」を削除してもよろしいですか？`,
+    someFolderDeletesFailed: "一部のフォルダーを削除できませんでした",
+    folderDeleteError: "フォルダーの削除中にエラーが発生しました",
+    deletingFile: "ファイルを削除中...",
+    fileDeleteSuccess: "ファイルを削除しました",
+    fileDeleteError: "ファイルの削除中にエラーが発生しました",
+    uploadError: "アップロードに失敗しました",
+    dropOverlay: "ファイルやフォルダをここにドロップ",
   },
   shortcuts: {
     title: "キーボードショートカット",
@@ -173,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "画像をクリップボードにコピーしました",
     imageCopyFailed: "画像のクリップボードへのコピーに失敗しました",
+    folderCreated: "フォルダーを作成しました",
+    folderCreateError: "フォルダーの作成に失敗しました",
   },
-};
+} as const satisfies Translations;

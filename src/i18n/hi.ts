@@ -1,7 +1,7 @@
 import type { Translations } from "./types";
 import { getPathSeparator } from "~/i18n";
 
-const translations: Translations = {
+export default {
   common: {
     theme: "थीम",
     search: "खोजें",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "मुख्य पृष्ठ पर वापस जाएं",
     home: "होम",
     openSettings: "सेटिंग्स खोलें",
+    create: "बनाएं",
+    creating: "बना रहे हैं...",
   },
   settings: {
     appearance: "दिखावट",
@@ -90,6 +92,8 @@ const translations: Translations = {
     },
     imageWork: "छवियों के साथ काम करें",
     audioWork: "ऑडियो के साथ काम करें",
+    deselectAll: "सभी अचयनित करें",
+    deleteSelected: "चयनित हटाएं",
   },
   gallery: {
     addTag: "टैग जोड़ें...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "फ़ोल्डर में जाएं...",
     loadingFolders: "फ़ोल्डर लोड हो रहे हैं...",
     noResults: "कोई परिणाम नहीं मिला",
-    folderCount: "{count} फ़ोल्डर",
+    folderCount: ({ count }: { count: number }) => `${count} फ़ोल्डर`,
     deleteConfirm: "क्या आप वाकई इस छवि को हटाना चाहते हैं?",
     deleteSuccess: "छवि सफलतापूर्वक हटा दी गई",
     deleteError: "छवि हटाने में त्रुटि",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "कैप्शन सहेजने में त्रुटि",
     emptyFolder: "यह फ़ोल्डर खाली है",
     dropToUpload: "अपलोड करने के लिए फ़ाइलें यहां छोड़ें",
-    uploadProgress: "{count} फ़ाइलें अपलोड हो रही हैं...",
+    uploadProgress: ({ count }: { count: number }) => `${count} फ़ाइलें अपलोड हो रही हैं...`,
     processingImage: "छवि प्रोसेस हो रही है...",
     generateTags: "टैग जनरेट करें",
     generatingTags: "टैग जनरेट हो रहे हैं...",
@@ -121,16 +125,36 @@ const translations: Translations = {
     noCaptionFiles: "अभी तक कोई कैप्शन फ़ाइल नहीं है!",
     uploadError: "अपलोड विफल रहा",
     dropOverlay: "फ़ाइलें या फ़ोल्डर यहां छोड़ें",
-    selectAll: "सभी चुनें",
-    deselectAll: "सभी अचयनित करें",
-    deleteSelected: "चयनित हटाएं",
-    confirmMultiDelete: "क्या आप वाकई {count} छवियों को हटाना चाहते हैं?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `क्या आप वाकई ${folders} फ़ोल्डर और ${images} छवियों को हटाना चाहते हैं?`;
+      } else if (folders) {
+        return `क्या आप वाकई ${folders} फ़ोल्डर को हटाना चाहते हैं?`;
+      }
+      return `क्या आप वाकई ${images} छवियों को हटाना चाहते हैं?`;
+    },
     confirmFolderDelete: "क्या आप वाकई फ़ोल्डर {name} को हटाना चाहते हैं?",
     someFolderDeletesFailed: "कुछ फ़ोल्डर हटाए नहीं जा सके",
     folderDeleteError: "फ़ोल्डर हटाने में त्रुटि",
     deletingFile: "फ़ाइल हटा रहा है...",
     fileDeleteSuccess: "फ़ाइल सफलतापूर्वक हटा दी गई",
     fileDeleteError: "फ़ाइल हटाने में त्रुटि",
+    fileCount: ({ count }: { count: number }) => `${count} फ़ाइलें`,
+    imageCount: ({ count }: { count: number }) => `${count} छवियां`,
+    foundFolders: ({ count }: { count: number }) => `${count} फ़ोल्डर मिले`,
+    foundImages: ({ count }: { count: number }) => `${count} छवियां मिलीं`,
+    deletedCount: ({ count }: { count: number }) => `${count} आइटम हटाए गए`,
+    selectedCount: ({ count }: { count: number }) => `${count} चयनित`,
+    processingImages: ({ count }: { count: number }) => `${count} छवियां प्रोसेस हो रही हैं...`,
+    folderLocation: ({ name }: { name: string }) => `स्थान: ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `${name} में ले जाएं`,
+    workWithFolder: ({ name }: { name: string }) => `${name} के साथ काम करें`,
+    createFolder: "फ़ोल्डर बनाएं",
+    folderNamePlaceholder: "फ़ोल्डर का नाम",
+    deleteConfirmation: "हटाने की पुष्टि",
+    selectAll: "सभी चुनें",
+    deselectAll: "सभी अचयनित करें",
+    deleteSelected: "चयनित हटाएं",
   },
   shortcuts: {
     title: "कीबोर्ड शॉर्टकट",
@@ -185,7 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "छवि क्लिपबोर्ड में कॉपी की गई",
     imageCopyFailed: "छवि को क्लिपबोर्ड में कॉपी करने में विफल",
+    folderCreated: "फ़ोल्डर सफलतापूर्वक बनाया गया",
+    folderCreateError: "फ़ोल्डर बनाने में त्रुटि",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Tutup",
     delete: "Hapus",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "Kembali ke Halaman Utama",
     home: "Beranda",
     openSettings: "Buka Pengaturan",
+    create: "Buat",
+    creating: "Membuat...",
   },
   settings: {
     title: "Pengaturan",
@@ -90,6 +92,8 @@ const translations: Translations = {
     },
     imageWork: "Bekerja dengan Gambar",
     audioWork: "Bekerja dengan Audio",
+    deselectAll: "Batalkan Pilihan",
+    deleteSelected: "Hapus yang Dipilih",
   },
   gallery: {
     addTag: "Tambah tag...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "Lompat ke folder...",
     loadingFolders: "Memuat folder...",
     noResults: "Tidak ada hasil",
-    folderCount: "{count} folder",
+    folderCount: ({ count }: { count: number }) => `${count} folder`,
     deleteConfirm: "Anda yakin ingin menghapus gambar ini?",
     deleteSuccess: "Gambar berhasil dihapus",
     deleteError: "Kesalahan saat menghapus gambar",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "Kesalahan saat menyimpan keterangan",
     emptyFolder: "Folder ini kosong",
     dropToUpload: "Jatuhkan file di sini untuk mengunggah",
-    uploadProgress: "Mengunggah {count} file...",
+    uploadProgress: ({ count }: { count: number }) => `Mengunggah ${count} file...`,
     processingImage: "Memproses gambar...",
     generateTags: "Buat Tag",
     generatingTags: "Membuat tag...",
@@ -124,13 +128,33 @@ const translations: Translations = {
     selectAll: "Pilih Semua",
     deselectAll: "Batalkan Pilihan",
     deleteSelected: "Hapus yang Dipilih",
-    confirmMultiDelete: "Anda yakin ingin menghapus {count} gambar?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `Anda yakin ingin menghapus ${folders} folder dan ${images} gambar?`;
+      } else if (folders) {
+        return `Anda yakin ingin menghapus ${folders} folder?`;
+      }
+      return `Anda yakin ingin menghapus ${images} gambar?`;
+    },
     confirmFolderDelete: "Anda yakin ingin menghapus folder {name}?",
     someFolderDeletesFailed: "Beberapa folder gagal dihapus",
     folderDeleteError: "Gagal menghapus folder",
     deletingFile: "Menghapus file...",
     fileDeleteSuccess: "File berhasil dihapus",
     fileDeleteError: "Gagal menghapus file",
+    fileCount: ({ count }: { count: number }) => `${count} file`,
+    imageCount: ({ count }: { count: number }) => `${count} gambar`,
+    foundFolders: ({ count }: { count: number }) => `${count} folder ditemukan`,
+    foundImages: ({ count }: { count: number }) => `${count} gambar ditemukan`,
+    deletedCount: ({ count }: { count: number }) => `${count} item dihapus`,
+    selectedCount: ({ count }: { count: number }) => `${count} dipilih`,
+    processingImages: ({ count }: { count: number }) => `Memproses ${count} gambar...`,
+    folderLocation: ({ name }: { name: string }) => `di ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Pindah ke ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Bekerja dengan ${name}`,
+    createFolder: "Buat Folder",
+    folderNamePlaceholder: "Masukkan nama folder",
+    deleteConfirmation: "Konfirmasi Penghapusan",
   },
   shortcuts: {
     title: "Pintasan Keyboard",
@@ -185,7 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Gambar disalin ke clipboard",
     imageCopyFailed: "Gagal menyalin gambar ke clipboard",
+    folderCreated: "Folder berhasil dibuat",
+    folderCreateError: "Gagal membuat folder",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

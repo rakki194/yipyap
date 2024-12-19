@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Затвори",
     delete: "Изтрий",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "Обратно към началната страница",
     home: "Начало",
     openSettings: "Отвори настройки",
+    create: "Създай",
+    creating: "Създаване...",
   },
   settings: {
     title: "Настройки",
@@ -79,17 +81,19 @@ const translations: Translations = {
   },
   frontPage: {
     subtitle: {
-      1: "Големите езикови модели мамят, лъжат и халюцинират. Точно като мен!",
-      2: "Намерихме друг начин да се молим",
-      3: "Безкрайната вселена се отразява в празните очи",
-      4: "Ръждясало сърце, нов кълн",
-      5: "Магично място, където сънят и реалността се пресичат",
-      6: "Непозната територия, безкрайни възможности",
-      7: "Вечна любов отвъд потока на времето",
-      8: "Това ще ви изгони!",
+      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+      2: "私たちは別の祈り方を見つけました",
+      3: "虚ろな瞳に映る、無限の宇宙",
+      4: "錆びた心、新たな芽吹き",
+      5: "夢と現実が交錯する、不思議な境地",
+      6: "未知の領域、無限の可能性",
+      7: "時の流れを超えた、永遠の愛",
+      8: "これで追い出されますよ！",
     },
     imageWork: "Работа с изображения",
-    audioWork: "Работа със звук",
+    audioWork: "Работа с аудио",
+    deselectAll: "Отмени избора на всички",
+    deleteSelected: "Изтрий избраните",
   },
   gallery: {
     addTag: "Добави таг...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "Бърз преход към папка...",
     loadingFolders: "Зареждане на папки...",
     noResults: "Няма намерени резултати",
-    folderCount: "{count} папки",
+    folderCount: ({ count }: { count: number }) => `${count} папки`,
     deleteConfirm: "Сигурни ли сте, че искате да изтриете това изображение?",
     deleteSuccess: "Изображението е изтрито успешно",
     deleteError: "Грешка при изтриване на изображението",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "Грешка при запазване на надписа",
     emptyFolder: "Тази папка е празна",
     dropToUpload: "Пуснете файлове тук за качване",
-    uploadProgress: "Качване на {count} файла...",
+    uploadProgress: ({ count }: { count: number }) => `Качване на ${count} файла...`,
     processingImage: "Обработка на изображение...",
     generateTags: "Генерирай тагове",
     generatingTags: "Генериране на тагове...",
@@ -124,13 +128,33 @@ const translations: Translations = {
     selectAll: "Избери всички",
     deselectAll: "Отмени избора на всички",
     deleteSelected: "Изтрий избраните",
-    confirmMultiDelete: "Сигурни ли сте, че искате да изтриете {count} изображения?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders > 0 && images > 0) {
+        return `Сигурни ли сте, че искате да изтриете ${folders} папки и ${images} изображения?`;
+      } else if (folders > 0) {
+        return `Сигурни ли сте, че искате да изтриете ${folders} папки?`;
+      }
+      return `Сигурни ли сте, че искате да изтриете ${images} изображения?`;
+    },
     confirmFolderDelete: "Сигурни ли сте, че искате да изтриете папката {name}?",
     someFolderDeletesFailed: "Някои папки не можаха да бъдат изтрити",
     folderDeleteError: "Грешка при изтриване на папката",
     deletingFile: "Изтриване на файл...",
     fileDeleteSuccess: "Файлът е изтрит успешно",
     fileDeleteError: "Грешка при изтриване на файла",
+    fileCount: ({ count }: { count: number }) => `${count} файла`,
+    imageCount: ({ count }: { count: number }) => `${count} изображения`,
+    foundFolders: ({ count }: { count: number }) => `Намерени ${count} папки`,
+    foundImages: ({ count }: { count: number }) => `Намерени ${count} изображения`,
+    deletedCount: ({ count }: { count: number }) => `Изтрити ${count} елемента`,
+    selectedCount: ({ count }: { count: number }) => `${count} избрани`,
+    processingImages: ({ count }: { count: number }) => `Обработка на ${count} изображения...`,
+    folderLocation: ({ name }: { name: string }) => `в ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Премести в ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Работа с ${name}`,
+    createFolder: "Създай папка",
+    folderNamePlaceholder: "Име на папката",
+    deleteConfirmation: "Потвърждение за изтриване",
   },
   shortcuts: {
     title: "Клавишни комбинации",
@@ -185,7 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Изображението е копирано в клипборда",
     imageCopyFailed: "Неуспешно копиране на изображението в клипборда",
+    folderCreated: "Папката е създадена",
+    folderCreateError: "Грешка при създаване на папката",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

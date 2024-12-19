@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Palaa etusivulle",
     home: "Etusivu",
     openSettings: "Avaa asetukset",
+    create: "Luo",
+    creating: "Luodaan...",
   },
   settings: {
     title: "Asetukset",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Säilytä .npz (latent) tiedostot kuvia poistaessa.",
     preserveTxt: "Säilytä .txt",
     preserveTxtTooltip: "Säilytä .txt-tiedostot kuvia poistaessa.",
+    thumbnailSize: "Pikkukuvien koko",
+    thumbnailSizeDescription: "Säädä gallerian pikkukuvien kokoa",
+    thumbnailSizeUpdateError: "Virhe pikkukuvien koon päivityksessä",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Työskentele kuvien kanssa",
     audioWork: "Työskentele äänen kanssa",
+    deselectAll: "Poista kaikki valinnat",
+    deleteSelected: "Poista valitut",
   },
   gallery: {
     addTag: "Lisää tagi...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Siirry kansioon...",
     loadingFolders: "Ladataan kansioita...",
     noResults: "Ei tuloksia",
-    folderCount: "{count} kansiota",
+    folderCount: ({ count }: { count: number }) => `${count} kansiota`,
     deleteConfirm: "Haluatko varmasti poistaa tämän kuvan?",
     deleteSuccess: "Kuva poistettu onnistuneesti",
     deleteError: "Virhe poistettaessa kuvaa",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Virhe tallennettaessa kuvatekstiä",
     emptyFolder: "Tämä kansio on tyhjä",
     dropToUpload: "Pudota tiedostot tähän ladataksesi",
-    uploadProgress: "Ladataan {count} tiedostoa...",
+    uploadProgress: ({ count }: { count: number }) => `Ladataan ${count} tiedostoa...`,
     processingImage: "Käsitellään kuvaa...",
     generateTags: "Luo tagit",
     generatingTags: "Luodaan tageja...",
@@ -117,6 +125,36 @@ export default {
     noCaptionFiles: "Ei vielä kuvatekstitiedostoja!",
     uploadError: "Lataus epäonnistui",
     dropOverlay: "Pudota tiedostot tai kansiot tähän",
+    fileCount: ({ count }: { count: number }) => `${count} tiedostoa`,
+    imageCount: ({ count }: { count: number }) => `${count} kuvaa`,
+    foundFolders: ({ count }: { count: number }) => `${count} kansiota löydetty`,
+    foundImages: ({ count }: { count: number }) => `${count} kuvaa löydetty`,
+    deletedCount: ({ count }: { count: number }) => `${count} kohdetta poistettu`,
+    selectAll: "Valitse kaikki",
+    deselectAll: "Poista kaikki valinnat",
+    deleteSelected: "Poista valitut",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `Haluatko varmasti poistaa ${folders} kansiota ja ${images} kuvaa?`;
+      } else if (folders) {
+        return `Haluatko varmasti poistaa ${folders} kansiota?`;
+      }
+      return `Haluatko varmasti poistaa ${images} kuvaa?`;
+    },
+    confirmFolderDelete: "Haluatko varmasti poistaa tämän kansion? Tämä poistaa kaiken sen sisällön!",
+    someFolderDeletesFailed: "Joidenkin kansioiden poisto epäonnistui",
+    folderDeleteError: "Virhe kansion poistossa",
+    deletingFile: "Poistetaan tiedostoa...",
+    fileDeleteSuccess: "Tiedosto poistettu onnistuneesti",
+    fileDeleteError: "Virhe tiedoston poistossa",
+    createFolder: "Luo kansio",
+    folderNamePlaceholder: "Kansion nimi",
+    deleteConfirmation: "Poiston vahvistus",
+    selectedCount: ({ count }: { count: number }) => `${count} valittu`,
+    processingImages: ({ count }: { count: number }) => `Käsitellään ${count} kuvaa...`,
+    folderLocation: ({ name }: { name: string }) => `Sijainti: ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Siirrä kansioon ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Työskentele kansion ${name} kanssa`,
   },
   shortcuts: {
     title: "Pikanäppäimet",
@@ -171,5 +209,8 @@ export default {
   notifications: {
     imageCopied: "Kuva kopioitu leikepöydälle",
     imageCopyFailed: "Kuvan kopiointi leikepöydälle epäonnistui",
+    folderCreated: "Kansio luotu",
+    folderCreateError: "Virhe kansion luonnissa",
   },
-}; 
+} as const satisfies Translations;
+ 

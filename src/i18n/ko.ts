@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "메인 페이지로 돌아가기",
     home: "홈",
     openSettings: "설정 열기",
+    create: "생성",
+    creating: "생성 중...",
   },
   settings: {
     title: "설정",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "이미지를 삭제할 때 .npz (latent) 파일을 보존합니다.",
     preserveTxt: ".txt 보존",
     preserveTxtTooltip: "이미지를 삭제할 때 .txt 파일을 보존합니다.",
+    thumbnailSize: "썸네일 크기",
+    thumbnailSizeDescription: "썸네일의 픽셀 크기 (예: 250)",
+    thumbnailSizeUpdateError: "썸네일 크기 업데이트 실패",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "이미지 작업",
     audioWork: "오디오 작업",
+    deselectAll: "선택 해제",
+    deleteSelected: "선택 항목 삭제",
   },
   gallery: {
     addTag: "태그 추가...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "폴더로 이동...",
     loadingFolders: "폴더 로딩 중...",
     noResults: "결과 없음",
-    folderCount: "폴더 {count}개",
+    folderCount: ({ count }: { count: number }) => `폴더 ${count}개`,
     deleteConfirm: "이 이미지를 삭제하시겠습니까?",
     deleteSuccess: "이미지가 성공적으로 삭제되었습니다",
     deleteError: "이미지 삭제 중 오류 발생",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "캡션 저장 중 오류 발생",
     emptyFolder: "이 폴더는 비어 있습니다",
     dropToUpload: "파일을 여기에 드롭하여 업로드",
-    uploadProgress: "{count}개 파일 업로드 중...",
+    uploadProgress: ({ count }: { count: number }) => `${count}개 파일 업로드 중...`,
     processingImage: "이미지 처리 중...",
     generateTags: "태그 생성",
     generatingTags: "태그 생성 중...",
@@ -115,6 +123,38 @@ export default {
       wd: "새 .wd 파일 생성"
     },
     noCaptionFiles: "아직 캡션 파일이 없습니다!",
+    fileCount: ({ count }: { count: number }) => `${count}개 파일`,
+    imageCount: ({ count }: { count: number }) => `${count}개 이미지`,
+    foundFolders: ({ count }: { count: number }) => `${count}개 폴더 찾음`,
+    foundImages: ({ count }: { count: number }) => `${count}개 이미지 찾음`,
+    deletedCount: ({ count }: { count: number }) => `${count}개 항목 삭제됨`,
+    selectedCount: ({ count }: { count: number }) => `${count}개 선택됨`,
+    processingImages: ({ count }: { count: number }) => `${count}개 이미지 처리 중...`,
+    folderLocation: ({ name }: { name: string }) => `위치: ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `${name}(으)로 이동`,
+    workWithFolder: ({ name }: { name: string }) => `${name} 작업`,
+    createFolder: "폴더 생성",
+    folderNamePlaceholder: "폴더 이름",
+    deleteConfirmation: "삭제 확인",
+    selectAll: "모두 선택",
+    deselectAll: "선택 해제",
+    deleteSelected: "선택 항목 삭제",
+    uploadError: "업로드 실패",
+    dropOverlay: "파일이나 폴더를 여기에 드롭",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `${folders}개의 폴더와 ${images}개의 이미지를 삭제하시겠습니까?`;
+      } else if (folders) {
+        return `${folders}개의 폴더를 삭제하시겠습니까?`;
+      }
+      return `${images}개의 이미지를 삭제하시겠습니까?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `${name} 폴더를 삭제하시겠습니까?`,
+    someFolderDeletesFailed: "일부 폴더를 삭제하지 못했습니다",
+    folderDeleteError: "폴더 삭제 중 오류 발생",
+    deletingFile: "파일 삭제 중...",
+    fileDeleteSuccess: "파일이 삭제되었습니다",
+    fileDeleteError: "파일 삭제 중 오류 발생",
   },
   shortcuts: {
     title: "키보드 단축키",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "이미지가 클립보드에 복사되었습니다",
     imageCopyFailed: "이미지를 클립보드에 복사하지 못했습니다",
+    folderCreated: "폴더가 생성되었습니다",
+    folderCreateError: "폴더 생성 중 오류가 발생했습니다",
   },
-}; 
+} as const satisfies Translations;

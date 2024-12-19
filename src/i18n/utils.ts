@@ -226,6 +226,53 @@ export function getArabicPlural(
   return forms.pluralLarge || forms.plural;
 }
 
+/**
+ * Determines the correct form of a Hungarian suffix based on vowel harmony
+ * 
+ * Hungarian words can be categorized into:
+ * - Back vowel words (a, á, o, ó, u, ú)
+ * - Front vowel words (e, é, i, í, ö, ő, ü, ű)
+ * - Mixed vowel words (usually follow the last vowel)
+ * 
+ * Common suffix pairs:
+ * -ban/-ben (in)
+ * -nak/-nek (to/for)
+ * -val/-vel (with)
+ * -ra/-re (onto)
+ * -ba/-be (into)
+ * etc.
+ * 
+ * @param word The base word
+ * @param backSuffix The suffix form for back vowel words (e.g., "ban")
+ * @param frontSuffix The suffix form for front vowel words (e.g., "ben")
+ * @returns The appropriate suffix form
+ */
+export function getHungarianSuffix(
+  word: string,
+  backSuffix: string,
+  frontSuffix: string
+): string {
+  // Define vowel groups
+  const backVowels = ['a', 'á', 'o', 'ó', 'u', 'ú'];
+  const frontVowels = ['e', 'é', 'i', 'í', 'ö', 'ő', 'ü', 'ű'];
+  
+  // Convert to lowercase for comparison
+  const lowerWord = word.toLowerCase();
+  
+  // Find the last vowel in the word
+  let lastVowel = '';
+  for (let i = lowerWord.length - 1; i >= 0; i--) {
+    if (backVowels.includes(lowerWord[i])) {
+      return backSuffix;
+    } else if (frontVowels.includes(lowerWord[i])) {
+      return frontSuffix;
+    }
+  }
+  
+  // If no vowels found, default to front vowel form
+  return frontSuffix;
+}
+
 // Add test for the function
 if (import.meta.vitest) {
   const { describe, it, expect } = import.meta.vitest;

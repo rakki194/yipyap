@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import type { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Volver a la página principal",
     home: "Inicio",
     openSettings: "Abrir ajustes",
+    create: "Crear",
+    creating: "Creando...",
   },
   settings: {
     title: "Ajustes",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Mantén los archivos .npz (latent) al eliminar imágenes.",
     preserveTxt: "Preservar .txt",
     preserveTxtTooltip: "Mantén los archivos .txt al eliminar imágenes.",
+    thumbnailSize: "Tamaño de miniaturas",
+    thumbnailSizeDescription: "Ajustar el tamaño de las miniaturas en la galería",
+    thumbnailSizeUpdateError: "Error al actualizar el tamaño de las miniaturas",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Trabajar con imágenes",
     audioWork: "Trabajar con audio",
+    deselectAll: "Deseleccionar todo",
+    deleteSelected: "Eliminar seleccionados",
   },
   gallery: {
     addTag: "Añadir etiqueta...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Ir a carpeta...",
     loadingFolders: "Cargando carpetas...",
     noResults: "No se encontraron resultados",
-    folderCount: "{count} carpetas",
+    folderCount: ({ count }: { count: number }) => `${count} carpetas`,
     deleteConfirm: "¿Estás seguro de que quieres eliminar esta imagen?",
     deleteSuccess: "Imagen eliminada con éxito",
     deleteError: "Error al eliminar la imagen",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Error al guardar el título",
     emptyFolder: "Esta carpeta está vacía",
     dropToUpload: "Suelta archivos aquí para subir",
-    uploadProgress: "Subiendo {count} archivos...",
+    uploadProgress: ({ count }: { count: number }) => `Subiendo ${count} archivos...`,
     processingImage: "Procesando imagen...",
     generateTags: "Generar etiquetas",
     generatingTags: "Generando etiquetas...",
@@ -115,6 +123,38 @@ export default {
       wd: "Crear nuevo archivo .wd"
     },
     noCaptionFiles: "¡Aún no hay archivos de título!",
+    fileCount: ({ count }: { count: number }) => `${count} archivos`,
+    imageCount: ({ count }: { count: number }) => `${count} imágenes`,
+    foundFolders: ({ count }: { count: number }) => `${count} carpetas encontradas`,
+    foundImages: ({ count }: { count: number }) => `${count} imágenes encontradas`,
+    deletedCount: ({ count }: { count: number }) => `${count} elementos eliminados`,
+    selectAll: "Seleccionar todo",
+    deselectAll: "Deseleccionar todo",
+    deleteSelected: "Eliminar seleccionados",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `¿Estás seguro de que quieres eliminar ${folders} carpetas y ${images} imágenes?`;
+      } else if (folders) {
+        return `¿Estás seguro de que quieres eliminar ${folders} carpetas?`;
+      }
+      return `¿Estás seguro de que quieres eliminar ${images} imágenes?`;
+    },
+    confirmFolderDelete: "¿Estás seguro de que quieres eliminar esta carpeta? ¡Esto eliminará todo su contenido!",
+    someFolderDeletesFailed: "No se pudieron eliminar algunas carpetas",
+    folderDeleteError: "Error al eliminar la carpeta",
+    deletingFile: "Eliminando archivo...",
+    fileDeleteSuccess: "Archivo eliminado correctamente",
+    fileDeleteError: "Error al eliminar el archivo",
+    createFolder: "Crear carpeta",
+    folderNamePlaceholder: "Nombre de la carpeta",
+    deleteConfirmation: "Confirmar eliminación",
+    selectedCount: ({ count }: { count: number }) => `${count} elementos seleccionados`,
+    processingImages: ({ count }: { count: number }) => `Procesando ${count} imágenes...`,
+    folderLocation: ({ name }: { name: string }) => `Ubicación: ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Mover a ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Trabajar con ${name}`,
+    uploadError: "Error al subir el archivo",
+    dropOverlay: "Suelta archivos o carpetas aquí",
   },
   shortcuts: {
     title: "Atajos de teclado",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Imagen copiada al portapapeles",
     imageCopyFailed: "Error al copiar la imagen al portapapeles",
+    folderCreated: "Carpeta creada correctamente",
+    folderCreateError: "Error al crear la carpeta",
   },
-}; 
+} as const satisfies Translations;

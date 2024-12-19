@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import type { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Zurück zur Startseite",
     home: "Startseite",
     openSettings: "Einstellungen öffnen",
+    create: "Erstellen",
+    creating: "Wird erstellt...",
   },
   settings: {
     title: "Einstellungen",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Behalten Sie die .npz (latent) Dateien beim Löschen von Bildern.",
     preserveTxt: "Behalte .txt",
     preserveTxtTooltip: "Behalte die .txt Dateien beim Löschen von Bildern.",
+    thumbnailSize: "Vorschaubildgröße",
+    thumbnailSizeDescription: "Größe der Vorschaubilder in Pixeln (z.B. 250)",
+    thumbnailSizeUpdateError: "Fehler beim Aktualisieren der Vorschaubildgröße",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Mit Bildern arbeiten",
     audioWork: "Mit Audio arbeiten",
+    deselectAll: "Auswahl aufheben",
+    deleteSelected: "Ausgewählte löschen",
   },
   gallery: {
     addTag: "Tag hinzufügen...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Zum Ordner springen...",
     loadingFolders: "Ordner werden geladen...",
     noResults: "Keine Ergebnisse gefunden",
-    folderCount: "{count} Ordner",
+    folderCount: ({ count }: { count: number }) => `${count} Ordner`,
     deleteConfirm: "Möchten Sie dieses Bild wirklich löschen?",
     deleteSuccess: "Bild erfolgreich gelöscht",
     deleteError: "Fehler beim Löschen des Bildes",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Fehler beim Speichern der Beschriftung",
     emptyFolder: "Dieser Ordner ist leer",
     dropToUpload: "Dateien zum Hochladen hier ablegen",
-    uploadProgress: "Lade {count} Dateien hoch...",
+    uploadProgress: ({ count }: { count: number }) => `Lade ${count} Dateien hoch...`,
     processingImage: "Bild wird verarbeitet...",
     generateTags: "Tags generieren",
     generatingTags: "Tags werden generiert...",
@@ -115,6 +123,38 @@ export default {
       wd: "Neue .wd-Datei erstellen"
     },
     noCaptionFiles: "Noch keine Beschriftungsdateien!",
+    fileCount: ({ count }: { count: number }) => `${count} Dateien`,
+    imageCount: ({ count }: { count: number }) => `${count} Bilder`,
+    foundFolders: ({ count }: { count: number }) => `${count} Ordner gefunden`,
+    foundImages: ({ count }: { count: number }) => `${count} Bilder gefunden`,
+    deletedCount: ({ count }: { count: number }) => `${count} Elemente gelöscht`,
+    selectedCount: ({ count }: { count: number }) => `${count} ausgewählt`,
+    processingImages: ({ count }: { count: number }) => `${count} Bilder werden verarbeitet...`,
+    folderLocation: ({ name }: { name: string }) => `in ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Nach ${name} verschieben`,
+    workWithFolder: ({ name }: { name: string }) => `Mit ${name} arbeiten`,
+    createFolder: "Ordner erstellen",
+    folderNamePlaceholder: "Ordnername",
+    deleteConfirmation: "Löschen bestätigen",
+    uploadError: "Upload fehlgeschlagen",
+    dropOverlay: "Dateien oder Ordner hier ablegen",
+    selectAll: "Alle auswählen",
+    deselectAll: "Auswahl aufheben",
+    deleteSelected: "Ausgewählte löschen",
+    confirmFolderDelete: "Möchten Sie den Ordner {name} wirklich löschen?",
+    someFolderDeletesFailed: "Einige Ordner konnten nicht gelöscht werden",
+    folderDeleteError: "Fehler beim Löschen des Ordners",
+    deletingFile: "Datei wird gelöscht...",
+    fileDeleteSuccess: "Datei erfolgreich gelöscht",
+    fileDeleteError: "Fehler beim Löschen der Datei",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders > 0 && images > 0) {
+        return `Möchten Sie wirklich ${folders} Ordner und ${images} Bilder löschen?`;
+      } else if (folders > 0) {
+        return `Möchten Sie wirklich ${folders} Ordner löschen?`;
+      }
+      return `Möchten Sie wirklich ${images} Bilder löschen?`;
+    },
   },
   shortcuts: {
     title: "Tastenkombinationen",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Bild in Zwischenablage kopiert",
     imageCopyFailed: "Fehler beim Kopieren des Bildes in die Zwischenablage",
+    folderCreated: "Ordner erstellt",
+    folderCreateError: "Fehler beim Erstellen des Ordners",
   },
-}; 
+} as const satisfies Translations;

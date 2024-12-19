@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Închide",
     delete: "Șterge",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "Înapoi la pagina principală",
     home: "Acasă",
     openSettings: "Deschide setările",
+    create: "Creează",
+    creating: "Se creează...",
   },
   settings: {
     title: "Setări",
@@ -90,6 +92,8 @@ const translations: Translations = {
     },
     imageWork: "Lucru cu imagini",
     audioWork: "Lucru cu audio",
+    deselectAll: "Deselectează tot",
+    deleteSelected: "Șterge selectate",
   },
   gallery: {
     addTag: "Adaugă etichetă...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "Salt la folder...",
     loadingFolders: "Se încarcă folderele...",
     noResults: "Nu s-au găsit rezultate",
-    folderCount: "{count} foldere",
+    folderCount: ({ count }: { count: number }) => `${count} foldere`,
     deleteConfirm: "Sigur doriți să ștergeți această imagine?",
     deleteSuccess: "Imagine ștearsă cu succes",
     deleteError: "Eroare la ștergerea imaginii",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "Eroare la salvarea descrierii",
     emptyFolder: "Acest folder este gol",
     dropToUpload: "Trageți fișiere aici pentru încărcare",
-    uploadProgress: "Se încarcă {count} fișiere...",
+    uploadProgress: ({ count }: { count: number }) => `Se încarcă ${count} fișiere...`,
     processingImage: "Se procesează imaginea...",
     generateTags: "Generare etichete",
     generatingTags: "Se generează etichete...",
@@ -124,13 +128,33 @@ const translations: Translations = {
     selectAll: "Selectează tot",
     deselectAll: "Deselectează tot",
     deleteSelected: "Șterge selectate",
-    confirmMultiDelete: "Sigur doriți să ștergeți {count} imagini?",
-    confirmFolderDelete: "Sigur doriți să ștergeți folderul {name}?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `Sigur doriți să ștergeți ${folders} foldere și ${images} imagini?`;
+      } else if (folders) {
+        return `Sigur doriți să ștergeți ${folders} foldere?`;
+      }
+      return `Sigur doriți să ștergeți ${images} imagini?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `Sigur doriți să ștergeți folderul ${name}?`,
     someFolderDeletesFailed: "Unele foldere nu au putut fi șterse",
     folderDeleteError: "Eroare la ștergerea folderului",
     deletingFile: "Se șterge fișierul...",
     fileDeleteSuccess: "Fișier șters cu succes",
     fileDeleteError: "Eroare la ștergerea fișierului",
+    fileCount: ({ count }: { count: number }) => `${count} fișiere`,
+    imageCount: ({ count }: { count: number }) => `${count} imagini`,
+    foundFolders: ({ count }: { count: number }) => `${count} foldere găsite`,
+    foundImages: ({ count }: { count: number }) => `${count} imagini găsite`,
+    deletedCount: ({ count }: { count: number }) => `${count} elemente șterse`,
+    selectedCount: ({ count }: { count: number }) => `${count} selectate`,
+    processingImages: ({ count }: { count: number }) => `Se procesează ${count} imagini...`,
+    folderLocation: ({ name }: { name: string }) => `în ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Mută în ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Lucrează cu ${name}`,
+    createFolder: "Creare folder",
+    folderNamePlaceholder: "Nume folder",
+    deleteConfirmation: "Confirmare ștergere",
   },
   shortcuts: {
     title: "Scurtături tastatură",
@@ -185,7 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Imaginea a fost copiată în clipboard",
     imageCopyFailed: "Nu s-a putut copia imaginea în clipboard",
+    folderCreated: "Folder creat cu succes",
+    folderCreateError: "Eroare la crearea folderului",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

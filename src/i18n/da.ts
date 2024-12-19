@@ -1,7 +1,7 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Luk",
     delete: "Slet",
@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "Tilbage til forsiden",
     home: "Hjem",
     openSettings: "Åbn indstillinger",
+    create: "Opret",
+    creating: "Opretter...",
   },
   settings: {
     title: "Indstillinger",
@@ -79,17 +81,19 @@ const translations: Translations = {
   },
   frontPage: {
     subtitle: {
-      1: "Store sprogmodeller snyder, lyver og hallucinerer. Ligesom mig!",
-      2: "Vi fandt en anden måde at bede på",
-      3: "Det uendelige univers reflekteres i tomme øjne",
-      4: "Rustent hjerte, nyt skud",
-      5: "Et magisk sted hvor drøm og virkelighed krydser",
-      6: "Ukendt territorium, uendelige muligheder",
-      7: "Evig kærlighed ud over tidens strøm",
-      8: "Dette vil få dig smidt ud!",
+      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+      2: "私たちは別の祈り方を見つけました",
+      3: "虚ろな瞳に映る、無限の宇宙",
+      4: "錆びた心、新たな芽吹き",
+      5: "夢と現実が交錯する、不思議な境地",
+      6: "未知の領域、無限の可能性",
+      7: "時の流れを超えた、永遠の愛",
+      8: "これで追い出されますよ！",
     },
     imageWork: "Arbejd med billeder",
     audioWork: "Arbejd med lyd",
+    deselectAll: "Fravælg alle",
+    deleteSelected: "Slet valgte",
   },
   gallery: {
     addTag: "Tilføj tag...",
@@ -97,7 +101,7 @@ const translations: Translations = {
     quickJump: "Hop til mappe...",
     loadingFolders: "Indlæser mapper...",
     noResults: "Ingen resultater fundet",
-    folderCount: "{count} mapper",
+    folderCount: ({ count }: { count: number }) => `${count} mapper`,
     deleteConfirm: "Er du sikker på, at du vil slette dette billede?",
     deleteSuccess: "Billede slettet med succes",
     deleteError: "Fejl ved sletning af billede",
@@ -106,7 +110,7 @@ const translations: Translations = {
     errorSavingCaption: "Fejl ved gemning af billedtekst",
     emptyFolder: "Denne mappe er tom",
     dropToUpload: "Slip filer her for at uploade",
-    uploadProgress: "Uploader {count} filer...",
+    uploadProgress: ({ count }: { count: number }) => `Uploader ${count} filer...`,
     processingImage: "Behandler billede...",
     generateTags: "Generer tags",
     generatingTags: "Genererer tags...",
@@ -122,7 +126,14 @@ const translations: Translations = {
     selectAll: "Vælg alle",
     deselectAll: "Fravælg alle",
     deleteSelected: "Slet valgte",
-    confirmMultiDelete: "Er du sikker på, at du vil slette {count} billeder?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders > 0 && images > 0) {
+        return `Er du sikker på, at du vil slette ${folders} mapper og ${images} billeder?`;
+      } else if (folders > 0) {
+        return `Er du sikker på, at du vil slette ${folders} mapper?`;
+      }
+      return `Er du sikker på, at du vil slette ${images} billeder?`;
+    },
     confirmFolderDelete: "Er du sikker på, at du vil slette mappen {name}?",
     someFolderDeletesFailed: "Nogle mapper kunne ikke slettes",
     folderDeleteError: "Fejl ved sletning af mappe",
@@ -131,6 +142,19 @@ const translations: Translations = {
     fileDeleteError: "Fejl ved sletning af fil",
     uploadError: "Upload fejlede",
     dropOverlay: "Slip filer eller mapper her",
+    fileCount: ({ count }: { count: number }) => `${count} filer`,
+    imageCount: ({ count }: { count: number }) => `${count} billeder`,
+    foundFolders: ({ count }: { count: number }) => `Fandt ${count} mapper`,
+    foundImages: ({ count }: { count: number }) => `Fandt ${count} billeder`,
+    deletedCount: ({ count }: { count: number }) => `Slettede ${count} elementer`,
+    selectedCount: ({ count }: { count: number }) => `${count} valgt`,
+    processingImages: ({ count }: { count: number }) => `Behandler ${count} billeder...`,
+    folderLocation: ({ name }: { name: string }) => `i ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Flyt til ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Arbejd med ${name}`,
+    createFolder: "Opret mappe",
+    folderNamePlaceholder: "Mappenavn",
+    deleteConfirmation: "Bekræft sletning",
   },
   shortcuts: {
     title: "Tastaturgenveje",
@@ -185,7 +209,7 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Billede kopieret til udklipsholder",
     imageCopyFailed: "Kunne ikke kopiere billede til udklipsholder",
+    folderCreated: "Mappe oprettet",
+    folderCreateError: "Kunne ikke oprette mappe",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

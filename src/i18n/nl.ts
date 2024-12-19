@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Terug naar startpagina",
     home: "Home",
     openSettings: "Instellingen openen",
+    create: "Aanmaken",
+    creating: "Aanmaken...",
   },
   settings: {
     title: "Instellingen",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Bevar .npz (latent) bestanden bij het verwijderen van afbeeldingen.",
     preserveTxt: "Bevar .txt",
     preserveTxtTooltip: "Bevar .txt-bestanden bij het verwijderen van afbeeldingen.",
+    thumbnailSize: "Miniatuurgrootte",
+    thumbnailSizeDescription: "Grootte van miniaturen in pixels (bijv. 250)",
+    thumbnailSizeUpdateError: "Kon miniatuurgrootte niet bijwerken",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Werken met afbeeldingen",
     audioWork: "Werken met audio",
+    deselectAll: "Alles deselecteren",
+    deleteSelected: "Selectie verwijderen",
   },
   gallery: {
     addTag: "Tag toevoegen...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Naar map springen...",
     loadingFolders: "Mappen laden...",
     noResults: "Geen resultaten gevonden",
-    folderCount: "{count} mappen",
+    folderCount: ({ count }: { count: number }) => `${count} mappen`,
     deleteConfirm: "Weet je zeker dat je deze afbeelding wilt verwijderen?",
     deleteSuccess: "Afbeelding succesvol verwijderd",
     deleteError: "Fout bij verwijderen van afbeelding",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Fout bij opslaan van bijschrift",
     emptyFolder: "Deze map is leeg",
     dropToUpload: "Sleep bestanden hier om te uploaden",
-    uploadProgress: "{count} bestanden uploaden...",
+    uploadProgress: ({ count }: { count: number }) => `${count} bestanden uploaden...`,
     processingImage: "Afbeelding verwerken...",
     generateTags: "Tags genereren",
     generatingTags: "Tags genereren...",
@@ -115,6 +123,38 @@ export default {
       wd: "Nieuw .wd-bestand maken"
     },
     noCaptionFiles: "Nog geen bijschriftbestanden!",
+    fileCount: ({ count }: { count: number }) => `${count} bestanden`,
+    imageCount: ({ count }: { count: number }) => `${count} afbeeldingen`,
+    foundFolders: ({ count }: { count: number }) => `${count} mappen gevonden`,
+    foundImages: ({ count }: { count: number }) => `${count} afbeeldingen gevonden`,
+    deletedCount: ({ count }: { count: number }) => `${count} items verwijderd`,
+    selectedCount: ({ count }: { count: number }) => `${count} geselecteerd`,
+    processingImages: ({ count }: { count: number }) => `${count} afbeeldingen verwerken...`,
+    folderLocation: ({ name }: { name: string }) => `in ${name}`,
+    moveToFolder: ({ name }: { name: string }) => `Verplaats naar ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Werk met ${name}`,
+    createFolder: "Map aanmaken",
+    folderNamePlaceholder: "Mapnaam",
+    deleteConfirmation: "Verwijderen bevestigen",
+    selectAll: "Alles selecteren",
+    deselectAll: "Alles deselecteren",
+    deleteSelected: "Selectie verwijderen",
+    uploadError: "Upload mislukt",
+    dropOverlay: "Sleep bestanden of mappen hier",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        return `Weet je zeker dat je ${folders} mappen en ${images} afbeeldingen wilt verwijderen?`;
+      } else if (folders) {
+        return `Weet je zeker dat je ${folders} mappen wilt verwijderen?`;
+      }
+      return `Weet je zeker dat je ${images} afbeeldingen wilt verwijderen?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `Weet je zeker dat je de map ${name} wilt verwijderen?`,
+    someFolderDeletesFailed: "Sommige mappen konden niet worden verwijderd",
+    folderDeleteError: "Fout bij verwijderen van map",
+    deletingFile: "Bestand verwijderen...",
+    fileDeleteSuccess: "Bestand verwijderd",
+    fileDeleteError: "Fout bij verwijderen van bestand",
   },
   shortcuts: {
     title: "Sneltoetsen",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Afbeelding gekopieerd naar klembord",
     imageCopyFailed: "Kon afbeelding niet naar klembord kopiëren",
+    folderCreated: "Map aangemaakt",
+    folderCreateError: "Kon map niet aanmaken",
   },
-}; 
+} as const satisfies Translations;

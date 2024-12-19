@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "กลับไปหน้าแรก",
     home: "หน้าแรก",
     openSettings: "เปิดการตั้งค่า",
+    create: "สร้าง",
+    creating: "กำลังสร้าง...",
   },
   settings: {
     title: "การตั้งค่า",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: ".npz (latent) ไฟล์เมื่อทำการลบภาพ",
     preserveTxt: "รักษา .txt",
     preserveTxtTooltip: ".txt ไฟล์เมื่อทำการลบภาพ",
+    thumbnailSize: "ขนาดภาพขนาดย่อ",
+    thumbnailSizeDescription: "ปรับขนาดภาพขนาดย่อในมุมมองตาราง",
+    thumbnailSizeUpdateError: "ไม่สามารถอัปเดตขนาดภาพขนาดย่อ",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "ทำงานกับรูปภาพ",
     audioWork: "ทำงานกับเสียง",
+    deselectAll: "ยกเลิกการเลือกทั้งหมด",
+    deleteSelected: "ลบรายการที่เลือก",
   },
   gallery: {
     addTag: "เพิ่มแท็ก...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "ข้ามไปยังโฟลเดอร์...",
     loadingFolders: "กำลังโหลดโฟลเดอร์...",
     noResults: "ไม่พบผลลัพธ์",
-    folderCount: "{count} โฟลเดอร์",
+    folderCount: (params: { count: number }) => `${params.count} โฟลเดอร์`,
     deleteConfirm: "คุณแน่ใจหรือไม่ว่าต้องการลบรูปภาพนี้?",
     deleteSuccess: "ลบรูปภาพสำเร็จ",
     deleteError: "เกิดข้อผิดพลาดในการลบรูปภาพ",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "เกิดข้อผิดพลาดในการบันทึกคำบรรยาย",
     emptyFolder: "โฟลเดอร์นี้ว่างเปล่า",
     dropToUpload: "วางไฟล์ที่นี่เพื่ออัปโหลด",
-    uploadProgress: "กำลังอัปโหลด {count} ไฟล์...",
+    uploadProgress: (params: { count: number }) => `กำลังอัปโหลด ${params.count} ไฟล์...`,
     processingImage: "กำลังประมวลผลรูปภาพ...",
     generateTags: "สร้างแท็ก",
     generatingTags: "กำลังสร้างแท็ก...",
@@ -115,6 +123,38 @@ export default {
       wd: "สร้างไฟล์ .wd ใหม่"
     },
     noCaptionFiles: "ยังไม่มีไฟล์คำบรรยาย!",
+    fileCount: (params: { count: number }) => `${params.count} ไฟล์`,
+    imageCount: (params: { count: number }) => `${params.count} รูปภาพ`,
+    foundFolders: (params: { count: number }) => `พบ ${params.count} โฟลเดอร์`,
+    foundImages: (params: { count: number }) => `พบ ${params.count} รูปภาพ`,
+    selectedCount: (params: { count: number }) => `เลือก ${params.count} รายการ`,
+    selectAll: "เลือกทั้งหมด",
+    createFolder: "สร้างโฟลเดอร์",
+    moveToFolder: (params: { name: string }) => `ย้ายไปยังโฟลเดอร์ "${params.name}"`,
+    deletedCount: (params: { count: number }) => `ลบ ${params.count} รายการแล้ว`,
+    uploadError: "ไม่สามารถอัปโหลดไฟล์",
+    dropOverlay: "วางไฟล์ที่นี่",
+    deselectAll: "ยกเลิกการเลือกทั้งหมด",
+    deleteSelected: "ลบรายการที่เลือก",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+        if (folders && images) {
+            return `คุณแน่ใจหรือไม่ว่าต้องการลบ ${folders} โฟลเดอร์และ ${images} รูปภาพ?`;
+        } else if (folders) {
+            return `คุณแน่ใจหรือไม่ว่าต้องการลบ ${folders} โฟลเดอร์?`;
+        }
+        return `คุณแน่ใจหรือไม่ว่าต้องการลบ ${images} รูปภาพ?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `คุณแน่ใจหรือไม่ว่าต้องการลบโฟลเดอร์ ${name}?`,
+    someFolderDeletesFailed: "ไม่สามารถลบบางโฟลเดอร์",
+    folderDeleteError: "ไม่สามารถลบโฟลเดอร์",
+    deletingFile: "กำลังลบไฟล์...",
+    fileDeleteSuccess: "ลบไฟล์สำเร็จ",
+    fileDeleteError: "ไม่สามารถลบไฟล์",
+    folderLocation: ({ name }: { name: string }) => `ใน ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `ทำงานกับ ${name}`,
+    folderNamePlaceholder: "ชื่อโฟลเดอร์",
+    deleteConfirmation: "ยืนยันการลบ",
+    processingImages: ({ count }: { count: number }) => `กำลังประมวลผล ${count} รูปภาพ...`,
   },
   shortcuts: {
     title: "ปุ่มลัด",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "คัดลอกรูปภาพไปยังคลิปบอร์ดแล้ว",
     imageCopyFailed: "ไม่สามารถคัดลอกรูปภาพไปยังคลิปบอร์ด",
+    folderCreated: "สร้างโฟลเดอร์สำเร็จ",
+    folderCreateError: "ไม่สามารถสร้างโฟลเดอร์"
   },
-}; 
+} as const satisfies Translations;

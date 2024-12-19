@@ -1,8 +1,8 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
-import { getHungarianArticle, getHungarianArticleForWord } from "./utils";
+import { getHungarianArticle, getHungarianArticleForWord, getHungarianSuffix } from "./utils";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Bezárás",
     delete: "Törlés",
@@ -94,6 +94,8 @@ const translations: Translations = {
     },
     imageWork: "Képekkel való munka",
     audioWork: "Hanganyagokkal való munka",
+    deselectAll: "Kijelölés megszüntetése",
+    deleteSelected: "Kijelöltek törlése",
   },
   gallery: {
     addTag: "Címke hozzáadása...",
@@ -101,7 +103,12 @@ const translations: Translations = {
     quickJump: "Ugrás mappához...",
     loadingFolders: "Mappák betöltése...",
     noResults: "Nincs találat",
-    folderCount: "{count} mappa",
+    folderCount: ({ count }: { count: number }) => `${count} mappa`,
+    fileCount: ({ count }: { count: number }) => `${count} fájl`,
+    imageCount: ({ count }: { count: number }) => `${count} kép`,
+    foundFolders: ({ count }: { count: number }) => `${count} mappa található`,
+    foundImages: ({ count }: { count: number }) => `${count} kép található`,
+    deletedCount: ({ count }: { count: number }) => `${count} elem törölve`,
     deleteConfirm: ({ name = "kiválasztott" }) => 
       `Biztosan törölni szeretné ${getHungarianArticleForWord(name)} ${name} képet?`,
     deleteSuccess: "A kép sikeresen törölve",
@@ -134,7 +141,7 @@ const translations: Translations = {
     selectAll: "Összes kijelölése",
     deselectAll: "Kijelölés megszüntetése",
     deleteSelected: "Kijelöltek törlése",
-    confirmMultiDelete: ({ count = 0, folders = 0, images = 0 }) => {
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders > 0 && images > 0) {
         return `Biztosan szeretne törölni ${folders} mappát és ${images} képet?`;
       } else if (folders > 0) {
@@ -153,6 +160,16 @@ const translations: Translations = {
     createFolder: "Mappa létrehozása",
     folderNamePlaceholder: "Mappa neve",
     deleteConfirmation: "Törlés megerősítése",
+    folderLocation: ({ name = "" }) => 
+      `${name}${getHungarianSuffix(name, "ban", "ben")}`,
+    moveToFolder: ({ name = "" }) =>
+      `Áthelyezés ${name}${getHungarianSuffix(name, "ra", "re")}`,
+    workWithFolder: ({ name = "" }) =>
+      `Munka ${name}${getHungarianSuffix(name, "val", "vel")}`,
+    selectedCount: ({ count }: { count: number }) => 
+      `${count} elem kiválasztva`,
+    processingImages: ({ count }: { count: number }) => 
+      `${count} kép feldolgozása...`,
   },
   shortcuts: {
     title: "Billentyűparancsok",
@@ -210,6 +227,4 @@ const translations: Translations = {
     folderCreated: "Mappa létrehozva",
     folderCreateError: "Hiba történt a mappa létrehozása közben",
   },
-};
-
-export default translations; 
+} as const satisfies Translations;

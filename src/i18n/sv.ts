@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { Translations } from "./types";
 
 export default {
   common: {
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Återgå till startsidan",
     home: "Hem",
     openSettings: "Öppna inställningar",
+    create: "Skapa",
+    creating: "Skapar...",
   },
   settings: {
     title: "Inställningar",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Bevara .npz (latent) filer när du tar bort bilder.",
     preserveTxt: "Bevara .txt",
     preserveTxtTooltip: "Bevara .txt-filer när du tar bort bilder.",
+    thumbnailSize: "Miniatyrstorlek",
+    thumbnailSizeDescription: "Justera storleken på miniatyrbilder i rutnätsvyn",
+    thumbnailSizeUpdateError: "Kunde inte uppdatera miniatyrstorlek",
   },
   frontPage: {
     subtitle: {
@@ -86,6 +92,8 @@ export default {
     },
     imageWork: "Arbeta med bilder",
     audioWork: "Arbeta med ljud",
+    deselectAll: "Avmarkera alla",
+    deleteSelected: "Radera markerade",
   },
   gallery: {
     addTag: "Lägg till tagg...",
@@ -93,7 +101,7 @@ export default {
     quickJump: "Hoppa till mapp...",
     loadingFolders: "Laddar mappar...",
     noResults: "Inga resultat hittades",
-    folderCount: "{count} mappar",
+    folderCount: (params: { count: number }) => `${params.count} mappar`,
     deleteConfirm: "Är du säker på att du vill radera denna bild?",
     deleteSuccess: "Bilden har raderats",
     deleteError: "Fel vid radering av bild",
@@ -102,7 +110,7 @@ export default {
     errorSavingCaption: "Fel vid sparande av bildtext",
     emptyFolder: "Denna mapp är tom",
     dropToUpload: "Släpp filer här för att ladda upp",
-    uploadProgress: "Laddar upp {count} filer...",
+    uploadProgress: (params: { count: number }) => `Laddar upp ${params.count} filer...`,
     processingImage: "Bearbetar bild...",
     generateTags: "Generera taggar",
     generatingTags: "Genererar taggar...",
@@ -115,6 +123,38 @@ export default {
       wd: "Skapa ny .wd-fil"
     },
     noCaptionFiles: "Inga bildtextfiler än!",
+    fileCount: (params: { count: number }) => `${params.count} filer`,
+    imageCount: (params: { count: number }) => `${params.count} bilder`,
+    foundFolders: (params: { count: number }) => `${params.count} mappar hittades`,
+    foundImages: (params: { count: number }) => `${params.count} bilder hittades`,
+    selectedCount: (params: { count: number }) => `${params.count} valda`,
+    selectAll: "Markera alla",
+    createFolder: "Skapa mapp",
+    moveToFolder: (params: { name: string }) => `Flytta till mapp "${params.name}"`,
+    deletedCount: (params: { count: number }) => `${params.count} objekt raderade`,
+    uploadError: "Kunde inte ladda upp fil",
+    dropOverlay: "Släpp filer här",
+    deselectAll: "Avmarkera alla",
+    deleteSelected: "Radera markerade",
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+        if (folders && images) {
+            return `Är du säker på att du vill radera ${folders} mappar och ${images} bilder?`;
+        } else if (folders) {
+            return `Är du säker på att du vill radera ${folders} mappar?`;
+        }
+        return `Är du säker på att du vill radera ${images} bilder?`;
+    },
+    confirmFolderDelete: ({ name = "" }) => `Är du säker på att du vill radera mappen ${name}?`,
+    someFolderDeletesFailed: "Vissa mappar kunde inte raderas",
+    folderDeleteError: "Kunde inte radera mapp",
+    deletingFile: "Raderar fil...",
+    fileDeleteSuccess: "Fil raderad",
+    fileDeleteError: "Kunde inte radera fil",
+    folderLocation: ({ name }: { name: string }) => `i ${name}`,
+    workWithFolder: ({ name }: { name: string }) => `Arbeta med ${name}`,
+    folderNamePlaceholder: "Mappnamn",
+    deleteConfirmation: "Bekräfta radering",
+    processingImages: ({ count }: { count: number }) => `Bearbetar ${count} bilder...`,
   },
   shortcuts: {
     title: "Kortkommandon",
@@ -169,5 +209,7 @@ export default {
   notifications: {
     imageCopied: "Bild kopierad till urklipp",
     imageCopyFailed: "Kunde inte kopiera bild till urklipp",
+    folderCreated: "Mapp skapad",
+    folderCreateError: "Kunde inte skapa mapp"
   },
-};
+} as const satisfies Translations;

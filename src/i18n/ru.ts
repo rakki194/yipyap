@@ -1,7 +1,7 @@
 import { getPathSeparator, getRussianPlural } from "~/i18n";
 import type { Translations } from "./types";
 
-const translations: Translations = {
+export default {
   common: {
     close: "Закрыть",
     delete: "Удалить",
@@ -92,6 +92,8 @@ const translations: Translations = {
     },
     imageWork: "Работа с изображениями",
     audioWork: "Работа с аудио",
+    deselectAll: "Отменить выбор",
+    deleteSelected: "Удалить выбранные",
   },
   gallery: {
     addTag: "Добавить тег...",
@@ -116,12 +118,14 @@ const translations: Translations = {
     generatingTags: "Генерация тегов...",
     removeTags: "Удалить теги",
     noCaptionFiles: "Пока нет файлов подписей!",
-    confirmMultiDelete: ({ count = 0 }) =>
-      `Вы уверены, что хотите удалить ${count} ${getRussianPlural(count, [
-        'изображение',
-        'изображения',
-        'изображений'
-      ])}?`,
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders > 0 && images > 0) {
+        return `Вы уверены, что хотите удалить ${folders} ${getRussianPlural(folders, ['папку', 'папки', 'папок'])} и ${images} ${getRussianPlural(images, ['изображение', 'изображения', 'изображений'])}?`;
+      } else if (folders > 0) {
+        return `Вы уверены, что хотите удалить ${folders} ${getRussianPlural(folders, ['папку', 'папки', 'папок'])}?`;
+      }
+      return `Вы уверены, что хотите удалить ${images} ${getRussianPlural(images, ['изображение', 'изображения', 'изображений'])}?`;
+    },
     createCaption: "Создать подпись",
     captionTypes: {
       txt: "Создать новый текстовый файл",
@@ -173,6 +177,12 @@ const translations: Translations = {
       `${count} ${getRussianPlural(count, ['файл', 'файла', 'файлов'])}`,
     imageCount: ({ count = 0 }) => 
       `${count} ${getRussianPlural(count, ['изображение', 'изображения', 'изображений'])}`,
+    folderLocation: ({ name }: { name: string }) => 
+      `в папке ${name}`,
+    moveToFolder: ({ name }: { name: string }) => 
+      `Переместить в ${name}`,
+    workWithFolder: ({ name }: { name: string }) => 
+      `Работать с ${name}`,
   },
   shortcuts: {
     title: "Горячие клавиши",
@@ -230,6 +240,4 @@ const translations: Translations = {
     folderCreated: "Папка создана",
     folderCreateError: "Ошибка создания папки",
   },
-};
-
-export default translations;
+} as const satisfies Translations;
