@@ -6,7 +6,6 @@
 #gallery {
   & > * {
     padding: var(--spacing);
-    scroll-behavior: smooth;
   }
 
   & > .responsive-grid {
@@ -15,9 +14,9 @@
     gap: var(--spacing);
     width: 100%;
     container-type: inline-size;
-    scroll-behavior: auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   &.crop > .responsive-grid > .item > img {

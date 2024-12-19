@@ -98,7 +98,6 @@ export const Gallery = () => {
   const [showQuickJump, setShowQuickJump] = createSignal(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   const [isDragging, setIsDragging] = createSignal(false);
-  const [dragOverPath, setDragOverPath] = createSignal<string | null>(null);
   let dragCounter = 0;
   const [uploadProgress, setUploadProgress] = createSignal<{current: number, total: number} | null>(null);
   const [currentFile, setCurrentFile] = createSignal<string | null>(null);
@@ -108,19 +107,11 @@ export const Gallery = () => {
     type: 'upload' | 'delete';
     message: string;
   } | null>(null);
-  const [isScrolling, setIsScrolling] = createSignal(false);
-  const scrollTimeout = createMemo(() => 200); // Reduce from 300 to 200ms for faster animation
-  const scrollDebounceTimeout = createMemo(() => 16); // Reduce from 50 to 16ms (~1 frame) for more responsive input
-  let lastScrollTime = 0;
+  const [isWheelScrolling, setWheelScrolling] = createSignal(false);
+  const scrollTimeout = createMemo(() => 200);
   const [autoScrolling, setAutoScrolling] = createSignal(false);
   const [checkingPosition, setCheckingPosition] = createSignal(false);
   let positionCheckInterval: number | null = null;
-  const [scrollAnimationState, setScrollAnimationState] = createSignal<{
-    active: boolean;
-    targetY: number | null;
-    startTime: number | null;
-    cleanup?: () => void;
-  } | null>(null);
   const scrollManager = new ScrollManager(
     scrollTimeout()
   );
@@ -191,18 +182,55 @@ export const Gallery = () => {
     }
   };
 
+  // Add these signals at the top of the Gallery component
+  const [lastWheelTime, setLastWheelTime] = createSignal(0);
+  const [isScrolling, setIsScrolling] = createSignal(false);
+  const SCROLL_DEBOUNCE = 150; // ms
+
   // Update handleWheel function
   const handleWheel = (e: WheelEvent) => {
     const galleryElement = document.getElementById('gallery');
     if (!galleryElement) return;
 
-    // Only prevent default if we're going to handle the scroll
+    // Check if it's a touchpad gesture (smooth scrolling)
+    const isTouchpad = e.deltaMode === 0 && Math.abs(e.deltaY) < 50;
+    
+    if (isTouchpad) {
+      const now = performance.now();
+      setLastWheelTime(now);
+      
+      if (!isWheelScrolling()) {
+        setWheelScrolling(true);
+        // Start a new scroll session
+        requestAnimationFrame(function checkScrollEnd() {
+          const timeSinceLastWheel = performance.now() - lastWheelTime();
+          
+          if (timeSinceLastWheel < SCROLL_DEBOUNCE) {
+            // Still scrolling, check again next frame
+            requestAnimationFrame(checkScrollEnd);
+          } else {
+            // Scrolling has stopped
+            setWheelScrolling(false);
+            // Update selection based on final scroll position
+            const success = e.deltaY > 0 
+              ? gallery.selection.selectDown()
+              : gallery.selection.selectUp();
+              
+            if (success) {
+              scrollToSelected(true);
+            }
+          }
+        });
+      }
+      return;
+    }
+
+    // Handle mouse wheel scrolling
     const bounds = scrollManager.getScrollBounds();
     const currentScroll = galleryElement.scrollTop;
     const canScrollUp = currentScroll > bounds.min;
     const canScrollDown = currentScroll < bounds.max;
 
-    // Use existing selection methods without arguments
     const success = e.deltaY > 0 
       ? gallery.selection.selectDown()
       : gallery.selection.selectUp();
@@ -218,7 +246,6 @@ export const Gallery = () => {
         smoothScroll(targetY, true);
       }
     }
-    // Allow native scroll behavior if we can't handle it
   };
 
   const keyDownHandler = async (event: KeyboardEvent) => {
