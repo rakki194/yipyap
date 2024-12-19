@@ -172,6 +172,7 @@ export interface GalleryTranslations {
   fileDeleteError: string;
   createFolder: string;
   folderNamePlaceholder: string;
+  deleteConfirmation: string;
 }
 
 export interface ShortcutsTranslations {

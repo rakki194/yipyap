@@ -152,6 +152,7 @@ const translations: Translations = {
     fileDeleteError: "Hiba a fájl törlésekor",
     createFolder: "Mappa létrehozása",
     folderNamePlaceholder: "Mappa neve",
+    deleteConfirmation: "Törlés megerősítése",
   },
   shortcuts: {
     title: "Billentyűparancsok",

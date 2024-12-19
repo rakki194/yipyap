@@ -287,10 +287,12 @@ export const DirectoryItem = (props: {
           <span class="icon">{getIcon("check")}</span>
         </div>
       </Show>
-      <span class="icon">
+      <span class="icon directory-icon">
         {getIcon(props.name === ".." ? "folderArrowUp" : "folder")}
       </span>
-      <span>{props.name}</span>
+      <span class="directory-name">
+        {props.name}
+      </span>
     </A>
   );
 };

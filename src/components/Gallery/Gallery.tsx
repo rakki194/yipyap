@@ -8,6 +8,7 @@ import { useAction, useNavigate } from "@solidjs/router";
 import "./Gallery.css";
 import { QuickJump } from "./QuickJump";
 import { useAppContext } from "~/contexts/app";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 
 // Add new ScrollManager class to handle scroll logic
 class ScrollManager {
@@ -95,6 +96,7 @@ export const Gallery = () => {
   const appContext = useAppContext();
   const deleteImageAction = useAction(gallery.deleteImage);
   const [showQuickJump, setShowQuickJump] = createSignal(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   const [isDragging, setIsDragging] = createSignal(false);
   const [dragOverPath, setDragOverPath] = createSignal<string | null>(null);
   let dragCounter = 0;
@@ -358,86 +360,25 @@ export const Gallery = () => {
 
       // Handle multi-selection delete
       if (gallery.selection.multiSelected.size > 0 || gallery.selection.multiFolderSelected.size > 0) {
-        const selectedCount = gallery.selection.multiSelected.size + gallery.selection.multiFolderSelected.size;
-        const confirmMessage = appContext.t('gallery.confirmMultiDelete', { 
-          count: selectedCount 
-        });
-        
-        if (confirm(confirmMessage)) {
-          // Handle folder deletions first
-          const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
-          if (selectedFolders.length > 0) {
-            const folderResults = await Promise.allSettled(
-              selectedFolders.map(async (idx) => {
-                const item = data.items[idx];
-                if (item?.type !== 'directory') return;
-                
-                const folderPath = data.path
-                  ? `${data.path}/${item.file_name}`
-                  : item.file_name;
-                  
-                const params = new URLSearchParams();
-                params.append("confirm", "true");
-                
-                return await fetch(`/api/browse/${folderPath}?${params.toString()}`, {
-                  method: 'DELETE',
-                });
-              })
-            );
-
-            const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
-            if (failedFolders > 0) {
-              alert(appContext.t('gallery.folderDeleteError'));
-            }
-          }
-
-          // Handle image deletions
-          const selectedImages = Array.from(gallery.selection.multiSelected);
-          if (selectedImages.length > 0) {
-            const results = await Promise.allSettled(
-              selectedImages.map(async (idx) => {
-                const item = data.items[idx];
-                if (item?.type !== 'image') return;
-                
-                const imagePath = data.path
-                  ? `${data.path}/${item.file_name}`
-                  : item.file_name;
-                  
-                const params = new URLSearchParams();
-                params.append("confirm", "true");
-                
-                if (appContext.preserveLatents) {
-                  params.append("preserve_latents", "true");
-                }
-                if (appContext.preserveTxt) {
-                  params.append("preserve_txt", "true");
-                }
-
-                return await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
-                  method: "DELETE",
-                });
-              })
-            );
-
-            const failedCount = results.filter(r => r.status === 'rejected').length;
-            if (failedCount > 0) {
-              alert(appContext.t('gallery.fileDeleteError'));
-            }
-          }
-
-          // Clear selection after all operations
-          gallery.selection.clearMultiSelect();
-          gallery.selection.clearFolderMultiSelect();
-          
-          // Force a refetch
-          gallery.invalidate();
-          await gallery.refetch();
-        }
-      } else if (gallery.selectedImage !== null) {
+        event.preventDefault();
+        setShowDeleteConfirm(true);
+      } else if (gallery.selected !== null) {
         // Handle single image delete
-        const selectedItem = data.items[gallery.selected!];
+        const selectedItem = data.items[gallery.selected];
         if (selectedItem?.type === 'image') {
-          await deleteImageAction(gallery.selected!);
+          event.preventDefault();
+          try {
+            await deleteImageAction(gallery.selected);
+            appContext.createNotification({
+              message: appContext.t('gallery.fileDeleteSuccess'),
+              type: "success"
+            });
+          } catch (error) {
+            appContext.createNotification({
+              message: appContext.t('gallery.fileDeleteError'),
+              type: "error"
+            });
+          }
         }
       }
     } else if (event.key === "q") {
@@ -958,6 +899,95 @@ export const Gallery = () => {
       </Show>
       <Show when={showQuickJump()}>
         <QuickJump onClose={() => setShowQuickJump(false)} />
+      </Show>
+
+      <Show when={showDeleteConfirm()}>
+        <DeleteConfirmDialog
+          imageCount={gallery.selection.multiSelected.size}
+          folderCount={gallery.selection.multiFolderSelected.size}
+          onConfirm={async () => {
+            const data = gallery.data();
+            if (!data) return;
+            
+            // Handle folder deletions first
+            const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
+            if (selectedFolders.length > 0) {
+              const folderResults = await Promise.allSettled(
+                selectedFolders.map(async (idx) => {
+                  const item = data.items[idx];
+                  if (item?.type !== 'directory') return;
+                  
+                  const folderPath = data.path
+                    ? `${data.path}/${item.file_name}`
+                    : item.file_name;
+                    
+                  const params = new URLSearchParams();
+                  params.append("confirm", "true");
+                  
+                  return await fetch(`/api/browse/${folderPath}?${params.toString()}`, {
+                    method: 'DELETE',
+                  });
+                })
+              );
+
+              const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
+              if (failedFolders > 0) {
+                appContext.createNotification({
+                  message: appContext.t('gallery.folderDeleteError'),
+                  type: "error"
+                });
+              }
+            }
+
+            // Handle image deletions
+            const selectedImages = Array.from(gallery.selection.multiSelected);
+            if (selectedImages.length > 0) {
+              const results = await Promise.allSettled(
+                selectedImages.map(async (idx) => {
+                  const item = data.items[idx];
+                  if (item?.type !== 'image') return;
+                  
+                  const imagePath = data.path
+                    ? `${data.path}/${item.file_name}`
+                    : item.file_name;
+                    
+                  const params = new URLSearchParams();
+                  params.append("confirm", "true");
+                  
+                  if (appContext.preserveLatents) {
+                    params.append("preserve_latents", "true");
+                  }
+                  if (appContext.preserveTxt) {
+                    params.append("preserve_txt", "true");
+                  }
+
+                  return await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
+                    method: "DELETE",
+                  });
+                })
+              );
+
+              const failedCount = results.filter(r => r.status === 'rejected').length;
+              if (failedCount > 0) {
+                appContext.createNotification({
+                  message: appContext.t('gallery.fileDeleteError'),
+                  type: "error"
+                });
+              }
+            }
+
+            // Clear selection after all operations
+            gallery.selection.clearMultiSelect();
+            gallery.selection.clearFolderMultiSelect();
+            
+            // Force a refetch
+            gallery.invalidate();
+            await gallery.refetch();
+            
+            setShowDeleteConfirm(false);
+          }}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
       </Show>
     </>
   );

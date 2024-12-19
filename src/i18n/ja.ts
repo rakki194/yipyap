@@ -107,6 +107,18 @@ export default {
     noCaptionFiles: "キャプションファイルがまだありません！",
     uploadError: "アップロードに失敗しました",
     dropOverlay: "ファイルやフォルダをここにドロップ",
+    deleteConfirmation: "削除の確認",
+    confirmMultiDelete: ({ folders = 0, images = 0 }: { folders?: number; images?: number }) => {
+      if (folders && images) {
+        return `${folders}個のフォルダーと${images}個の画像を削除してもよろしいですか？`;
+      } else if (folders) {
+        return `${folders}個のフォルダーを削除してもよろしいですか？`;
+      } else if (images) {
+        return `${images}個の画像を削除してもよろしいですか？`;
+      } else {
+        return 'これらのアイテムを削除してもよろしいですか？'; // fallback message
+      }
+    },
   },
   shortcuts: {
     title: "キーボードショートカット",

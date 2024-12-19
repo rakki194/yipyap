@@ -126,7 +126,17 @@ const translations: Translations = {
     selectAll: "Select all images",
     deselectAll: "Deselect all",
     deleteSelected: "Delete {{count}} selected items",
-    confirmMultiDelete: "Are you sure you want to delete {{count}} items?",
+    confirmMultiDelete: ({ folders = 0, images = 0 }: { folders?: number; images?: number }) => {
+      if (folders && images) {
+        return `Are you sure you want to delete ${folders} folder${folders > 1 ? 's' : ''} and ${images} image${images > 1 ? 's' : ''}?`;
+      } else if (folders) {
+        return `Are you sure you want to delete ${folders} folder${folders > 1 ? 's' : ''}?`;
+      } else if (images) {
+        return `Are you sure you want to delete ${images} image${images > 1 ? 's' : ''}?`;
+      } else {
+        return 'Are you sure you want to delete these items?'; // fallback message
+      }
+    },
     confirmFolderDelete: "Are you sure you want to delete {{count}} folders? This will delete all contents!",
     someFolderDeletesFailed: "Failed to delete {{count}} folders",
     folderDeleteError: "Error deleting folders",
@@ -135,6 +145,7 @@ const translations: Translations = {
     fileDeleteError: "Error deleting file",
     createFolder: "Create Folder",
     folderNamePlaceholder: "Enter folder name",
+    deleteConfirmation: "Confirm Deletion",
   },
   shortcuts: {
     title: "Keyboard Shortcuts",

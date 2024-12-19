@@ -374,8 +374,64 @@
 }
 
 /* Ensure text and icons remain visible in multiselected directories */
-.item.directory.multi-selected > span,
-.item.directory.multi-selected > .icon {
+.item.directory.multi-selected > .directory-icon,
+.item.directory.multi-selected > .directory-name {
   position: relative;
+  z-index: 1;
+}
+
+/* Ensure the check icon stays above everything */
+.item.directory .multi-select-indicator {
   z-index: 2;
+}
+
+/* Add blur and darken effect for multiselected items */
+.item.directory.multi-selected::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px) saturate(220%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.modal-dialog .delete {
+  background: var(--error);
+  border-color: var(--error);
+  color: white;
+}
+
+.modal-dialog .delete:hover {
+  background: color-mix(in srgb, var(--error) 85%, black);
+}
+
+.modal-dialog p {
+  margin: var(--spacing) 0;
+  color: var(--text-secondary);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: var(--overlay-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.modal-dialog {
+  background: var(--bg-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing);
+  box-shadow: var(--shadow-default);
+  max-width: 90%;
+  width: 400px;
+}
+
+.modal-dialog h2 {
+  margin: 0 0 var(--spacing) 0;
+  color: var(--text-primary);
 }
