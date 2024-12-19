@@ -326,7 +326,7 @@ const createAppContext = (): AppContext => {
  * Provider component that makes the app context available to child components.
  * @param props - Component properties including children
  */
-export const AppProvider: ParentComponent = (props) => {
+export const AppProvider: ParentComponent<{ children: any }> = (props) => {
   const value = createAppContext();
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>

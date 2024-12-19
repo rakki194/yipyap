@@ -440,9 +440,11 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 max="500"
                 step="50"
                 value={app.thumbnailSize}
-                onChange={(e) => app.setThumbnailSize(parseInt(e.currentTarget.value))}
+                onInput={(e) => app.setThumbnailSize(parseInt(e.currentTarget.value))}
               />
-              <span class="thumbnail-size-value">{app.thumbnailSize}px</span>
+              <span class="thumbnail-size-value" data-testid="thumbnail-size-value">
+                {app.thumbnailSize}px
+              </span>
             </div>
             <small class="setting-description">
               {t('settings.thumbnailSizeDescription')}

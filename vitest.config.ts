@@ -1,27 +1,27 @@
-/// <reference types="vitest" />
-import { defineConfig } from "vite";
+import { defineConfig } from 'vitest/config';
+import solidPlugin from 'vite-plugin-solid';
+import { resolve } from 'path';
 
-import makeConfig from "./vite.config";
-
-export default defineConfig((env) => {
-  const viteConfig = makeConfig(env);
-  return {
-    ...viteConfig,
-    test: {
-      environment: "jsdom",
-      globals: true,
-      setupFiles: ["./src/test/setup.ts"], // Optional setup file
-      testTransformMode: {
-        web: ["\\.[jt]sx?$"],
-      },
-      // if you have few tests, try commenting one
-      // or both out to improve performance:
-      // threads: false,
-      // isolate: false,
+export default defineConfig({
+  plugins: [solidPlugin()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
+    deps: {
+      inline: [/solid-js/],
     },
-    resolve: {
-      conditions: ["development", "browser"],
-      ...viteConfig.resolve,
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+      ],
     },
-  };
+  },
+  resolve: {
+    alias: {
+      '~': resolve(__dirname, 'src'),
+    },
+  },
 });

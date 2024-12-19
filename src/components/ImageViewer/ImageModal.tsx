@@ -17,7 +17,7 @@ import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
 import getIcon from "~/icons";
 import { useAction } from "@solidjs/router";
-import type { ImageInfo as ImageInfoType, Captions } from "~/types";
+import type { ImageInfo as ImageInfoType, Captions, SaveCaption } from "~/types";
 import { useAppContext } from "~/contexts/app";
 import { captionIconsMap } from "~/icons";
 
@@ -25,6 +25,10 @@ interface ImageModalProps {
   imageInfo: ImageInfoType;
   captions: Captions;
   onClose: () => void;
+  generateTags: (model: string) => Promise<any>;
+  saveCaption: (caption: SaveCaption) => Promise<any>;
+  deleteCaption: (type: string) => Promise<any>;
+  deleteImageAction: (idx: number) => Promise<any>;
 }
 
 const NO_CAPTION_IMAGES = [
@@ -316,8 +320,8 @@ const DeleteButton = (props: {
   const deleteImageAction = useAction(gallery.deleteImage);
   const [isHolding, setIsHolding] = createSignal(false);
   const [progress, setProgress] = createSignal(0);
-  let deleteTimeout: number;
-  let progressInterval: number;
+  let deleteTimeout: ReturnType<typeof setTimeout>;
+  let progressInterval: ReturnType<typeof setInterval>;
 
   const hasMultiSelection = () => {
     return gallery.selection.multiSelected.size > 0 || gallery.selection.multiFolderSelected.size > 0;
@@ -623,3 +627,5 @@ function computeLayout(image: Size, windowSize: Readonly<Size>): LayoutInfo {
   };
   return res;
 }
+
+export { EmptyCaptionState, DeleteButton };

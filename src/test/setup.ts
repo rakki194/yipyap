@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 import { beforeAll, afterAll, afterEach } from 'vitest';
+import { cleanup } from '@solidjs/testing-library';
 
 beforeAll(() => {
   // Add any global setup if needed
@@ -12,6 +13,8 @@ afterAll(() => {
 
 afterEach(() => {
   // Clean up after each test if needed
+  cleanup();
+  vi.clearAllMocks();
 });
 
 // Mock matchMedia
@@ -60,3 +63,10 @@ global.fetch = vi.fn(() =>
 ) as any;
 
 // Add any other global mocks or setup here
+
+// Mock IntersectionObserver
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));

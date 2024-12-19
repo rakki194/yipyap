@@ -14,7 +14,7 @@ export function useGallery() {
   return context;
 }
 
-export const GalleryProvider: ParentComponent = (props) => {
+export const GalleryProvider: ParentComponent<{ children: any }> = (props) => {
   return (
     <GalleryContext.Provider value={makeGalleryState()}>
       {props.children}
