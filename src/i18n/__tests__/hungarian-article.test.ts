@@ -1,5 +1,34 @@
 import { describe, it, expect } from "vitest";
-import { getHungarianArticle } from "./utils";
+import { getHungarianArticle } from "../utils";
+
+/**
+ * Tests for Hungarian language utilities
+ * 
+ * Hungarian articles ("a" vs "az") follow specific rules:
+ * 1. Words starting with vowels (a, á, e, é, i, í, o, ó, ö, ő, u, ú, ü, ű) use "az"
+ * 2. Words starting with consonants use "a"
+ * 3. Special cases exist for words starting with "egy-" which use "az"
+ * 4. Numbers have specific rules:
+ *    - Numbers starting with vowel sounds use "az" (e.g., "egy", "öt")
+ *    - Numbers starting with consonant sounds use "a" (e.g., "három", "tíz")
+ * 5. The rules are case-insensitive
+ * 
+ * Test cases cover:
+ * - Basic vowel/consonant rules
+ * - Special cases with "egy-" prefix
+ * - Case sensitivity
+ * - Numbers (including negative and decimal)
+ * - Edge cases (empty strings, spaces)
+ * 
+ * The getHungarianArticle function is used in translations to automatically 
+ * determine the correct article for dynamic content like model names or folder names.
+ * 
+ * @example
+ * getHungarianArticle("alma") // returns "az" (vowel)
+ * getHungarianArticle("kutya") // returns "a" (consonant)
+ * getHungarianArticle("egyetem") // returns "az" (special case)
+ * getHungarianArticle(5) // returns "az" (öt - starts with vowel)
+ */
 
 describe("Hungarian language utilities", () => {
   describe("getHungarianArticle", () => {

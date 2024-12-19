@@ -136,7 +136,12 @@ export interface GalleryTranslations {
   quickJump: string;
   loadingFolders: string;
   noResults: string;
-  folderCount: string;
+  folderCount: (params: { count: number }) => string;
+  fileCount: (params: { count: number }) => string;
+  imageCount: (params: { count: number }) => string;
+  foundFolders: (params: { count: number }) => string;
+  foundImages: (params: { count: number }) => string;
+  deletedCount: (params: { count: number }) => string;
   deleteConfirm: TranslationValue;
   deleteSuccess: string;
   deleteError: TranslationValue;
@@ -145,7 +150,7 @@ export interface GalleryTranslations {
   errorSavingCaption: TranslationValue;
   emptyFolder: string;
   dropToUpload: string;
-  uploadProgress: TranslationValue;
+  uploadProgress: (params: { count: number }) => string;
   processingImage: TranslationValue;
   generateTags: string;
   generatingTags: string;
@@ -163,7 +168,7 @@ export interface GalleryTranslations {
   selectAll: string;
   deselectAll: string;
   deleteSelected: string;
-  confirmMultiDelete: TranslationValue;
+  confirmMultiDelete: (params: { count: number }) => string;
   confirmFolderDelete: TranslationValue;
   someFolderDeletesFailed: string;
   folderDeleteError: string;
@@ -173,6 +178,8 @@ export interface GalleryTranslations {
   createFolder: string;
   folderNamePlaceholder: string;
   deleteConfirmation: string;
+  selectedCount: (params: { count: number }) => string;
+  processingImages: (params: { count: number }) => string;
 }
 
 export interface ShortcutsTranslations {

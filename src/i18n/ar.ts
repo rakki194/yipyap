@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
+import { getArabicPlural } from "./utils";
 
 const translations: Translations = {
   common: {
@@ -34,6 +35,8 @@ const translations: Translations = {
     returnToFrontPage: "العودة إلى الصفحة الرئيسية",
     home: "الرئيسية",
     openSettings: "فتح الإعدادات",
+    create: "إنشاء",
+    creating: "جارٍ الإنشاء...",
   },
   settings: {
     title: "الإعدادات",
@@ -97,7 +100,12 @@ const translations: Translations = {
     quickJump: "القفز إلى المجلد...",
     loadingFolders: "جارٍ تحميل المجلدات...",
     noResults: "لم يتم العثور على نتائج",
-    folderCount: "{count} مجلدات",
+    folderCount: ({ count = 0 }) => getArabicPlural(count, {
+      singular: "مجلد واحد",
+      dual: "مجلدان",
+      plural: "مجلدات",
+      pluralLarge: "مجلداً"
+    }),
     deleteConfirm: "هل أنت متأكد أنك تريد حذف هذه الصورة؟",
     deleteSuccess: "تم حذف الصورة بنجاح",
     deleteError: "خطأ أثناء حذف الصورة",
@@ -106,7 +114,7 @@ const translations: Translations = {
     errorSavingCaption: "خطأ أثناء حفظ التعليق",
     emptyFolder: "هذا المجلد فارغ",
     dropToUpload: "اسحب الملفات هنا للتحميل",
-    uploadProgress: "جارٍ تحميل {count} ملف...",
+    uploadProgress: ({ count }) => `جارٍ تحميل ${count} ملف...`,
     processingImage: "جارٍ معالجة الصورة...",
     generateTags: "إنشاء وسوم",
     generatingTags: "جارٍ إنشاء الوسوم...",
@@ -124,13 +132,33 @@ const translations: Translations = {
     selectAll: "تحديد الكل",
     deselectAll: "إلغاء تحديد الكل",
     deleteSelected: "حذف المحدد",
-    confirmMultiDelete: "هل أنت متأكد من حذف {count} صورة؟",
+    confirmMultiDelete: ({ count }) => `هل أنت متأكد من حذف ${count} صورة؟`,
     confirmFolderDelete: "هل أنت متأكد من حذف المجلد {name}؟",
     someFolderDeletesFailed: "فشل حذف بعض المجلدات",
     folderDeleteError: "خطأ في حذف المجلد",
     deletingFile: "جاري حذف الملف...",
     fileDeleteSuccess: "تم حذف الملف بنجاح",
     fileDeleteError: "خطأ في حذف الملف",
+    createFolder: "إنشاء مجلد",
+    folderNamePlaceholder: "اسم المجلد",
+    deleteConfirmation: "تأكيد الحذف",
+    selectedCount: ({ count }) => `${count} محدد`,
+    processingImages: ({ count = 0 }) => `معالجة ${count} صور...`,
+    foundImages: ({ count = 0 }) => `تم العثور على ${count} صور`,
+    foundFolders: ({ count = 0 }) => `تم العثور على ${count} مجلدات`,
+    deletedCount: ({ count = 0 }) => `تم حذف ${count} عناصر`,
+    fileCount: ({ count = 0 }) => getArabicPlural(count, {
+      singular: "ملف واحد",
+      dual: "ملفان",
+      plural: "ملفات",
+      pluralLarge: "ملفاً"
+    }),
+    imageCount: ({ count = 0 }) => getArabicPlural(count, {
+      singular: "صورة واحدة",
+      dual: "صورتان",
+      plural: "صور",
+      pluralLarge: "صورةً"
+    }),
   },
   shortcuts: {
     title: "اختصارات لوحة المفاتيح",
@@ -185,6 +213,8 @@ const translations: Translations = {
   notifications: {
     imageCopied: "تم نسخ الصورة إلى الحافظة",
     imageCopyFailed: "فشل نسخ الصورة إلى الحافظة",
+    folderCreated: "تم إنشاء المجلد",
+    folderCreateError: "فشل إنشاء المجلد",
   },
 };
 

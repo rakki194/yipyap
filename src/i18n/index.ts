@@ -75,3 +75,6 @@ export function getTranslationValue(
   }
   return value;
 }
+
+export { getRussianPlural } from "./utils";
+export { getArabicPlural } from "./utils";

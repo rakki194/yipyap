@@ -1,6 +1,7 @@
-import { getPathSeparator } from "~/i18n";
+import { getPathSeparator, getRussianPlural } from "~/i18n";
+import type { Translations } from "./types";
 
-export default {
+const translations: Translations = {
   common: {
     close: "Закрыть",
     delete: "Удалить",
@@ -33,6 +34,8 @@ export default {
     returnToFrontPage: "Вернуться на главную",
     home: "Главная",
     openSettings: "Открыть настройки",
+    create: "Создать",
+    creating: "Создание...",
   },
   settings: {
     title: "Настройки",
@@ -72,6 +75,9 @@ export default {
     preserveLatentsTooltip: "Сохраните файлы .npz (latent) при удалении изображений.",
     preserveTxt: "Сохранить .txt",
     preserveTxtTooltip: "Сохраните файлы .txt при удалении изображений.",
+    thumbnailSize: "Размер миниатюр",
+    thumbnailSizeDescription: "Размер миниатюр в галерее",
+    thumbnailSizeUpdateError: "Ошибка обновления размера миниатюр",
   },
   frontPage: {
     subtitle: {
@@ -93,7 +99,8 @@ export default {
     quickJump: "Перейти к папке...",
     loadingFolders: "Загрузка папок...",
     noResults: "Ничего не найдено",
-    folderCount: "{count} папок",
+    folderCount: ({ count = 0 }) => 
+      `${count} ${getRussianPlural(count, ['папка', 'папки', 'папок'])}`,
     deleteConfirm: "Вы уверены, что хотите удалить это изображение?",
     deleteSuccess: "Изображение успешно удалено",
     deleteError: "Ошибка при удалении",
@@ -102,12 +109,70 @@ export default {
     errorSavingCaption: "Ошибка при сохранении подписи",
     emptyFolder: "Эта папка пуста",
     dropToUpload: "Перетащите файлы для загрузки",
-    uploadProgress: "Загрузка {count} файлов...",
+    uploadProgress: ({ count = 0 }) => 
+      `Загрузка ${count} ${getRussianPlural(count, ['файла', 'файлов', 'файлов'])}...`,
     processingImage: "Обработка изображения...",
     generateTags: "Сгенерировать теги",
     generatingTags: "Генерация тегов...",
     removeTags: "Удалить теги",
     noCaptionFiles: "Пока нет файлов подписей!",
+    confirmMultiDelete: ({ count = 0 }) =>
+      `Вы уверены, что хотите удалить ${count} ${getRussianPlural(count, [
+        'изображение',
+        'изображения',
+        'изображений'
+      ])}?`,
+    createCaption: "Создать подпись",
+    captionTypes: {
+      txt: "Создать новый текстовый файл",
+      tags: "Создать новый файл .tags",
+      caption: "Создать новый файл .caption",
+      wd: "Создать новый файл .wd"
+    },
+    uploadError: "Ошибка загрузки",
+    dropOverlay: "Перетащите файлы или папки сюда",
+    selectAll: "Выбрать все",
+    deselectAll: "Отменить выбор",
+    deleteSelected: "Удалить выбранные",
+    confirmFolderDelete: "Вы уверены, что хотите удалить эту папку?",
+    someFolderDeletesFailed: "Некоторые папки не удалось удалить",
+    folderDeleteError: "Ошибка при удалении папки",
+    deletingFile: "Удаление файла...",
+    fileDeleteSuccess: "Файл успешно удален",
+    fileDeleteError: "Ошибка при удалении файла",
+    createFolder: "Создать папку",
+    folderNamePlaceholder: "Имя папки",
+    deleteConfirmation: "Подтверждение удаления",
+    selectedCount: ({ count = 0 }) => 
+      `${count} ${getRussianPlural(count, ['выбран', 'выбрано', 'выбрано'])}`,
+    processingImages: ({ count = 0 }) =>
+      `Обработка ${count} ${getRussianPlural(count, [
+        'изображения',
+        'изображений',
+        'изображений'
+      ])}...`,
+    foundImages: ({ count = 0 }) =>
+      `Найдено ${count} ${getRussianPlural(count, [
+        'изображение',
+        'изображения',
+        'изображений'
+      ])}`,
+    foundFolders: ({ count = 0 }) =>
+      `Найдено ${count} ${getRussianPlural(count, [
+        'папка',
+        'папки',
+        'папок'
+      ])}`,
+    deletedCount: ({ count = 0 }) =>
+      `Удалено ${count} ${getRussianPlural(count, [
+        'элемент',
+        'элемента',
+        'элементов'
+      ])}`,
+    fileCount: ({ count = 0 }) => 
+      `${count} ${getRussianPlural(count, ['файл', 'файла', 'файлов'])}`,
+    imageCount: ({ count = 0 }) => 
+      `${count} ${getRussianPlural(count, ['изображение', 'изображения', 'изображений'])}`,
   },
   shortcuts: {
     title: "Горячие клавиши",
@@ -162,5 +227,9 @@ export default {
   notifications: {
     imageCopied: "Изображение скопировано в буфер обмена",
     imageCopyFailed: "Не удалось скопировать изображение в буфер обмена",
+    folderCreated: "Папка создана",
+    folderCreateError: "Ошибка создания папки",
   },
 };
+
+export default translations;

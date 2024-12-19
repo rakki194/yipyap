@@ -168,3 +168,93 @@ export function getHungarianArticle(word: string | number): "a" | "az" {
 export function getHungarianArticleForWord(name: string): string {
   return startsWithVowel(name) ? "az" : "a";
 }
+
+/**
+ * Gets the correct Russian plural form based on number
+ * @param num The number to get plural form for
+ * @param forms Array of [singular, few, many] forms
+ * @returns The correct plural form
+ */
+export function getRussianPlural(num: number, forms: [string, string, string]): string {
+  // Truncate decimal numbers to integers
+  const n = Math.trunc(Math.abs(num));
+  const lastDigit = n % 10;
+  const lastTwoDigits = n % 100;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return forms[2]; // many
+  }
+
+  if (lastDigit === 1) {
+    return forms[0]; // singular
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return forms[1]; // few
+  }
+
+  return forms[2]; // many
+}
+
+/**
+ * Gets the correct Arabic plural form for a number
+ * Arabic has three number forms:
+ * - Singular (1)
+ * - Dual (2)
+ * - Plural (3-10)
+ * - Plural (11+)
+ * 
+ * @param count The number to get the plural form for
+ * @param forms Object containing the different forms [singular, dual, plural]
+ * @returns The correct plural form for the number
+ */
+export function getArabicPlural(
+  count: number,
+  forms: {
+    singular: string;
+    dual: string;
+    plural: string;
+    pluralLarge?: string;
+  }
+): string {
+  const absCount = Math.trunc(Math.abs(count));
+  
+  if (absCount === 0) return forms.plural;
+  if (absCount === 1) return forms.singular;
+  if (absCount === 2) return forms.dual;
+  if (absCount >= 3 && absCount <= 10) return forms.plural;
+  return forms.pluralLarge || forms.plural;
+}
+
+// Add test for the function
+if (import.meta.vitest) {
+  const { describe, it, expect } = import.meta.vitest;
+
+  describe('getRussianPlural', () => {
+    const forms: [string, string, string] = ['файл', 'файла', 'файлов'];
+
+    it('handles singular form (1, 21, 31, etc.)', () => {
+      expect(getRussianPlural(1, forms)).toBe('файл');
+      expect(getRussianPlural(21, forms)).toBe('файл');
+      expect(getRussianPlural(101, forms)).toBe('файл');
+    });
+
+    it('handles few form (2-4, 22-24, etc.)', () => {
+      expect(getRussianPlural(2, forms)).toBe('файла');
+      expect(getRussianPlural(3, forms)).toBe('файла');
+      expect(getRussianPlural(4, forms)).toBe('файла');
+      expect(getRussianPlural(22, forms)).toBe('файла');
+      expect(getRussianPlural(23, forms)).toBe('файла');
+      expect(getRussianPlural(24, forms)).toBe('файла');
+    });
+
+    it('handles many form (5-20, 25-30, etc.)', () => {
+      expect(getRussianPlural(5, forms)).toBe('файлов');
+      expect(getRussianPlural(11, forms)).toBe('файлов');
+      expect(getRussianPlural(15, forms)).toBe('файлов');
+      expect(getRussianPlural(20, forms)).toBe('файлов');
+      expect(getRussianPlural(25, forms)).toBe('файлов');
+      expect(getRussianPlural(30, forms)).toBe('файлов');
+    });
+  });
+}
