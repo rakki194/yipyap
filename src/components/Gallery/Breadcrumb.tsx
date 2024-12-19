@@ -12,6 +12,7 @@ export const Breadcrumb = () => {
   const { data } = useGallery();
   const app = useAppContext();
   const t = app.t;
+  const gallery = useGallery();
 
   const Crumbs = () => {
     const segments = () => data()?.path.split("/").filter(Boolean) || [];
@@ -43,6 +44,56 @@ export const Breadcrumb = () => {
   };
 
   const [showSettings, setShowSettings] = createSignal(false);
+  const [showNewFolderDialog, setShowNewFolderDialog] = createSignal(false);
+  const [newFolderName, setNewFolderName] = createSignal("");
+  const [isCreatingFolder, setIsCreatingFolder] = createSignal(false);
+
+  const handleCreateFolder = async () => {
+    const folderName = newFolderName().trim();
+    if (!folderName) return;
+
+    try {
+      setIsCreatingFolder(true);
+      const currentPath = data()?.path || "";
+      const folderPath = currentPath ? `${currentPath}/${folderName}` : folderName;
+
+      const response = await fetch(`/api/folder/${folderPath}`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      // Clear any existing selection to avoid index mismatches
+      gallery.selection.clearMultiSelect();
+      gallery.selection.clearFolderMultiSelect();
+      gallery.select(null);
+
+      // Force a complete refresh of the gallery data
+      gallery.invalidate();
+      await gallery.refetch();
+
+      // Close dialog and reset input
+      setShowNewFolderDialog(false);
+      setNewFolderName("");
+
+      // Show success notification
+      app.createNotification({
+        message: t('notifications.folderCreated'),
+        type: "success"
+      });
+
+    } catch (error) {
+      console.error("Error creating folder:", error);
+      app.createNotification({
+        message: t('notifications.folderCreateError'),
+        type: "error"
+      });
+    } finally {
+      setIsCreatingFolder(false);
+    }
+  };
 
   return (
     <>
@@ -79,6 +130,15 @@ export const Breadcrumb = () => {
             </Suspense>
           </small>
           <div class="breadcrumb-actions">
+            <button
+              type="button"
+              class="icon"
+              onClick={() => setShowNewFolderDialog(true)}
+              title={t('gallery.createFolder')}
+              aria-label={t('gallery.createFolder')}
+            >
+              {getIcon("folderAdd")}
+            </button>
             <MultiSelectActions />
             <ThemeToggle />
             <button
@@ -100,6 +160,44 @@ export const Breadcrumb = () => {
           </div>
         </Show>
       </nav>
+      <Show when={showNewFolderDialog()}>
+        <div class="modal-overlay" onClick={() => setShowNewFolderDialog(false)}>
+          <div class="modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <h2>{t('gallery.createFolder')}</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleCreateFolder();
+              }}
+            >
+              <input
+                type="text"
+                value={newFolderName()}
+                onInput={(e) => setNewFolderName(e.currentTarget.value)}
+                placeholder={t('gallery.folderNamePlaceholder')}
+                disabled={isCreatingFolder()}
+                autofocus
+              />
+              <div class="modal-actions">
+                <button
+                  type="button"
+                  onClick={() => setShowNewFolderDialog(false)}
+                  disabled={isCreatingFolder()}
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="submit"
+                  class="primary"
+                  disabled={!newFolderName().trim() || isCreatingFolder()}
+                >
+                  {isCreatingFolder() ? t('common.creating') : t('common.create')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Show>
     </>
   );
 };
@@ -129,7 +227,12 @@ const MultiSelectActions = () => {
   const app = useAppContext();
   const selection = gallery.selection;
   const [deleteProgress, setDeleteProgress] = createSignal<{ current: number, total: number } | null>(null);
-  const selectedCount = () => selection.multiSelected.size + selection.multiFolderSelected.size;
+  const selectedCount = () => {
+    const imageCount = selection.multiSelected.size;
+    const folderCount = selection.multiFolderSelected.size;
+    console.log('Calculating selected count:', { imageCount, folderCount, total: imageCount + folderCount });
+    return imageCount + folderCount;
+  };
   const hasSelection = () => selectedCount() > 0;
   const hasFolderSelection = () => selection.multiFolderSelected.size > 0;
   
@@ -137,7 +240,17 @@ const MultiSelectActions = () => {
     if (!hasSelection()) return;
     
     try {
-      const message = app.t('gallery.confirmMultiDelete').replace('{{count}}', selectedCount().toString());
+      console.log('Selected images:', selection.multiSelected.size);
+      console.log('Selected folders:', selection.multiFolderSelected.size);
+      console.log('Total selected:', selectedCount());
+      
+      const message = app.t('gallery.confirmMultiDelete', {
+        count: selectedCount(),
+        folders: selection.multiFolderSelected.size,
+        images: selection.multiSelected.size
+      });
+      console.log('Confirmation message:', message);
+      
       if (confirm(message)) {
         const data = gallery.data();
         if (!data) return;
@@ -179,7 +292,7 @@ const MultiSelectActions = () => {
           // Handle folder deletion errors
           const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
           if (failedFolders > 0) {
-            alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedFolders.toString()));
+            alert(app.t('gallery.someDeletesFailed').replace('{count}', failedFolders.toString()));
           }
         }
 
@@ -230,7 +343,7 @@ const MultiSelectActions = () => {
           // Handle image deletion errors
           const failedCount = results.filter(r => r.status === 'rejected').length;
           if (failedCount > 0) {
-            alert(app.t('gallery.someDeletesFailed').replace('{{count}}', failedCount.toString()));
+            alert(app.t('gallery.someDeletesFailed').replace('{count}', failedCount.toString()));
           }
         }
         

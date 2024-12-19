@@ -359,9 +359,11 @@ export const Gallery = () => {
       // Handle multi-selection delete
       if (gallery.selection.multiSelected.size > 0 || gallery.selection.multiFolderSelected.size > 0) {
         const selectedCount = gallery.selection.multiSelected.size + gallery.selection.multiFolderSelected.size;
-        const message = appContext.t('gallery.confirmMultiDelete').replace('{{count}}', selectedCount.toString());
+        const confirmMessage = appContext.t('gallery.confirmMultiDelete', { 
+          count: selectedCount 
+        });
         
-        if (confirm(message)) {
+        if (confirm(confirmMessage)) {
           // Handle folder deletions first
           const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
           if (selectedFolders.length > 0) {
@@ -456,7 +458,7 @@ export const Gallery = () => {
       const targetY = galleryElement.scrollTop + (galleryElement.clientHeight * 0.25);
       smoothScroll(targetY);
       gallery.selection.selectDown();
-    } else if (event.key.toLowerCase() === "x" && event.shiftKey) {
+    } else if (event.key.toLowerCase() === "d" && event.shiftKey) {
       event.preventDefault();
       const data = gallery.data();
       if (!data || gallery.selected === null) return;
@@ -465,28 +467,110 @@ export const Gallery = () => {
       if (selectedItem?.type !== 'image') return;
 
       try {
+        // First check if the Clipboard API is supported
+        if (!navigator.clipboard || !window.ClipboardItem) {
+          throw new Error('Clipboard API not supported');
+        }
+
         const imagePath = data.path
           ? `${data.path}/${selectedItem.file_name}`
           : selectedItem.file_name;
         
-        const response = await fetch(`/api/browse/${imagePath}`);
-        const blob = await response.blob();
+        // Use the download endpoint instead of browse
+        const response = await fetch(`/api/download/${imagePath}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'image/*'
+          }
+        });
         
-        // Create a ClipboardItem and write to clipboard
-        const item = new ClipboardItem({ "image/png": blob });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        const item = new ClipboardItem({ [blob.type]: blob });
         await navigator.clipboard.write([item]);
         
-        // Use the existing notification system
         appContext.createNotification({
           message: appContext.t('notifications.imageCopied'),
           type: "success"
         });
       } catch (error) {
         console.error("Failed to copy image to clipboard:", error);
-        appContext.createNotification({
-          message: appContext.t('notifications.imageCopyFailed'),
-          type: "error"
-        });
+        
+        // Always use PNG fallback since it has the best compatibility
+        try {
+          const imagePath = data.path
+            ? `${data.path}/${selectedItem.file_name}`
+            : selectedItem.file_name;
+          
+          // Use the download endpoint for the fallback as well
+          const response = await fetch(`/api/download/${imagePath}`, {
+            method: 'GET',
+            headers: {
+              'Accept': 'image/*'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const blob = await response.blob();
+          
+          // Create an image element to draw to canvas
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(blob);
+          img.src = objectUrl;
+          
+          try {
+            await new Promise((resolve, reject) => {
+              img.onload = resolve;
+              img.onerror = (e) => reject(new Error('Failed to load image: ' + e.toString()));
+            });
+            
+            // Create canvas and convert to PNG
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) throw new Error('Failed to get canvas context');
+            
+            ctx.drawImage(img, 0, 0);
+            
+            // Convert to PNG blob and copy to clipboard
+            const pngBlob = await new Promise<Blob>((resolve, reject) => {
+              canvas.toBlob(blob => {
+                if (blob) resolve(blob);
+                else reject(new Error('Failed to convert to PNG'));
+              }, 'image/png');
+            });
+
+            // Try clipboard.write - if not available, throw error
+            if (navigator.clipboard?.write) {
+              await navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': pngBlob })
+              ]);
+            } else {
+              throw new Error('Clipboard write API not available');
+            }
+            
+            appContext.createNotification({
+              message: appContext.t('notifications.imageCopied'),
+              type: "success"
+            });
+          } finally {
+            // Clean up the object URL
+            URL.revokeObjectURL(objectUrl);
+          }
+        } catch (fallbackError) {
+          console.error("Fallback conversion failed:", fallbackError);
+          appContext.createNotification({
+            message: appContext.t('notifications.imageCopyFailed'),
+            type: "error"
+          });
+        }
       }
       return;
     } else {

@@ -49,6 +49,7 @@ import GhostIcon from "./ghost.svg?raw";
 import WdIcon from "./wd.svg?raw";
 import CheckIcon from "@fluentui/svg-icons/icons/checkmark_circle_24_regular.svg?raw";
 import CheckAllIcon from "@fluentui/svg-icons/icons/multiselect_rtl_24_regular.svg?raw";
+import FolderAddIcon from "@fluentui/svg-icons/icons/folder_add_24_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -77,6 +78,7 @@ export const themeIconMap = {
 };
 
 const iconMap: Readonly<Record<string, string>> = {
+  folderAdd: FolderAddIcon,
   checkAll: CheckAllIcon,
   check: CheckIcon,
   peanut: PeanutIcon,

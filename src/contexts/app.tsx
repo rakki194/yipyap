@@ -46,7 +46,7 @@ export interface AppContext {
   setEnableMinimap: (value: boolean) => void;
   readonly locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: { [key: string]: any }) => string;
   preserveLatents: boolean;
   setPreserveLatents: (value: boolean) => void;
   preserveTxt: boolean;
@@ -290,20 +290,8 @@ const createAppContext = (): AppContext => {
     setLocale: (locale: Locale) => {
       setStore("locale", locale);
     },
-    t: (key: string) => {
-      const value = getTranslationValue(translation(), key);
-      
-      if (import.meta.env.DEV && value === undefined) {
-        console.warn(`Missing translation for key: ${key}`);
-        return key;
-      }
-
-      if (import.meta.env.DEV && typeof value !== "string") {
-        console.warn(`Translation for key "${key}" is not a string:`, value);
-        return "";
-      }
-
-      return value || key;
+    t: (key: string, params?: { [key: string]: any }) => {
+      return getTranslationValue(translation(), key, params) || key;
     },
     preserveLatents: preserveLatents(),
     setPreserveLatents,

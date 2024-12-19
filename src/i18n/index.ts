@@ -61,11 +61,17 @@ export const translations: Record<string, () => Promise<Translations>> = Object.
 export function getTranslationValue(
   obj: any, 
   path: string, 
-  params?: Record<string, string | number>
+  params?: { [key: string]: any }
 ): string {
   const value = path.split('.').reduce((acc, part) => acc?.[part], obj);
   if (typeof value === 'function') {
     return value(params || {});
+  }
+  if (typeof value === 'string' && params) {
+    return Object.entries(params).reduce(
+      (str, [key, val]) => str.replace(`{${key}}`, val.toString()),
+      value
+    );
   }
   return value;
 }

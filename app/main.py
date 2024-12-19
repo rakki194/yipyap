@@ -705,3 +705,32 @@ async def upload_files_root(files: List[UploadFile] = File(...)):
         - Wrapper around upload_files with empty path
     """
     return await upload_files("", files)
+
+@app.post("/api/folder/{path:path}")
+async def create_folder(path: str):
+    """Create a new folder at the specified path."""
+    try:
+        target_path = utils.resolve_path(path, ROOT_DIR)
+        
+        # Check if folder already exists
+        if target_path.exists():
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Folder already exists: {path}"
+            )
+            
+        # Create the folder
+        target_path.mkdir(parents=True, exist_ok=False)
+        
+        # Touch parent directory to force cache invalidation
+        target_path.parent.touch()
+        
+        # Clear directory cache to force rescan
+        if target_path.parent in data_source.directory_cache:
+            del data_source.directory_cache[target_path.parent]
+            
+        return {"success": True, "path": str(target_path)}
+        
+    except Exception as e:
+        logger.error(f"Error creating folder: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

@@ -34,6 +34,8 @@ const translations: Translations = {
     returnToFrontPage: "Return to the front page",
     home: "Home",
     openSettings: "Open settings",
+    create: "Create",
+    creating: "Creating...",
   },
   settings: {
     title: "Settings",
@@ -131,6 +133,8 @@ const translations: Translations = {
     deletingFile: "Deleting file...",
     fileDeleteSuccess: "File deleted successfully",
     fileDeleteError: "Error deleting file",
+    createFolder: "Create Folder",
+    folderNamePlaceholder: "Enter folder name",
   },
   shortcuts: {
     title: "Keyboard Shortcuts",
@@ -185,6 +189,8 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Image copied to clipboard",
     imageCopyFailed: "Failed to copy image to clipboard",
+    folderCreated: "Folder created successfully",
+    folderCreateError: "Error creating folder",
   },
 };
 

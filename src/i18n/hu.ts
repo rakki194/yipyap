@@ -1,6 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations } from "./types";
-import { getHungarianArticle } from "./utils";
+import { getHungarianArticle, getHungarianArticleForWord } from "./utils";
 
 const translations: Translations = {
   common: {
@@ -35,6 +35,8 @@ const translations: Translations = {
     returnToFrontPage: "Vissza a főoldalra",
     home: "Főoldal",
     openSettings: "Beállítások megnyitása",
+    create: "Létrehozás",
+    creating: "Létrehozás...",
   },
   settings: {
     title: "Beállítások",
@@ -53,7 +55,7 @@ const translations: Translations = {
     language: "Nyelv",
     disableNonsense: "Japán nyelv kikapcsolása",
     modelSettings: ({ name = "ismeretlen" }) => 
-      `${getHungarianArticle(name)} ${name} modell beállításai`,
+      `${getHungarianArticleForWord(name)} ${name} modell beállításai`,
     jtp2ModelPath: "JTP2 modell útvonala",
     jtp2TagsPath: "JTP2 címkék útvonala",
     downloadModel: "Modell letöltése (1.8GB)",
@@ -101,21 +103,21 @@ const translations: Translations = {
     noResults: "Nincs találat",
     folderCount: "{count} mappa",
     deleteConfirm: ({ name = "kiválasztott" }) => 
-      `Biztosan törölni szeretné ${getHungarianArticle(name)} ${name} képet?`,
+      `Biztosan törölni szeretné ${getHungarianArticleForWord(name)} ${name} képet?`,
     deleteSuccess: "A kép sikeresen törölve",
     deleteError: ({ name = "kiválasztott" }) => 
-      `Hiba történt ${getHungarianArticle(name)} ${name} kép törlése közben`,
+      `Hiba történt ${getHungarianArticleForWord(name)} ${name} kép törlése közben`,
     savingCaption: ({ name = "kiválasztott" }) => 
-      `${getHungarianArticle(name)} ${name} képaláírás mentése...`,
+      `${getHungarianArticleForWord(name)} ${name} képaláírás mentése...`,
     savedCaption: "Képaláírás mentve",
     errorSavingCaption: ({ name = "kiválasztott" }) => 
-      `Hiba történt ${getHungarianArticle(name)} ${name} képaláírás mentése közben`,
+      `Hiba történt ${getHungarianArticleForWord(name)} ${name} képaláírás mentése közben`,
     emptyFolder: "Ez a mappa üres",
     dropToUpload: "Húzza ide a fájlokat a feltöltéshez",
     uploadProgress: ({ count = 0 }) => 
-      `${getHungarianArticle(count.toString())} ${count} fájl feltöltése...`,
+      `${getHungarianArticle(count)} ${count} fájl feltöltése...`,
     processingImage: ({ name = "kiválasztott" }) => 
-      `${getHungarianArticle(name)} ${name} kép feldolgozása...`,
+      `${getHungarianArticleForWord(name)} ${name} kép feldolgozása...`,
     generateTags: "Címkék generálása",
     generatingTags: "Címkék generálása...",
     removeTags: "Címkék eltávolítása",
@@ -132,14 +134,24 @@ const translations: Translations = {
     selectAll: "Összes kijelölése",
     deselectAll: "Kijelölés megszüntetése",
     deleteSelected: "Kijelöltek törlése",
-    confirmMultiDelete: "Biztosan törölni szeretne {count} képet?",
-    confirmFolderDelete: ({ name = "kiválasztott" }) => 
-      `Biztosan törölni szeretné ${getHungarianArticle(name)} ${name} mappát?`,
+    confirmMultiDelete: ({ count = 0, folders = 0, images = 0 }) => {
+      if (folders > 0 && images > 0) {
+        return `Biztosan szeretne törölni ${folders} mappát és ${images} képet?`;
+      } else if (folders > 0) {
+        return `Biztosan szeretne törölni ${folders} mappát?`;
+      } else {
+        return `Biztosan szeretne törölni ${images} képet?`;
+      }
+    },
+    confirmFolderDelete: ({ name = "" }) => 
+      `Biztosan szeretne törölni ${name} mappát?`,
     someFolderDeletesFailed: "Néhány mappát nem sikerült törölni",
     folderDeleteError: "Hiba a mappa törlésekor",
     deletingFile: "Fájl törlése...",
     fileDeleteSuccess: "Fájl sikeresen törölve",
     fileDeleteError: "Hiba a fájl törlésekor",
+    createFolder: "Mappa létrehozása",
+    folderNamePlaceholder: "Mappa neve",
   },
   shortcuts: {
     title: "Billentyűparancsok",
@@ -194,6 +206,8 @@ const translations: Translations = {
   notifications: {
     imageCopied: "Kép másolva a vágólapra",
     imageCopyFailed: "Nem sikerült a képet a vágólapra másolni",
+    folderCreated: "Mappa létrehozva",
+    folderCreateError: "Hiba történt a mappa létrehozása közben",
   },
 };
 

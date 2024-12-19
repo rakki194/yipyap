@@ -99,3 +99,72 @@
   background: var(--error);
   transition: width 0.2s ease-out;
 }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-dialog {
+  background: var(--bg-color);
+  padding: var(--spacing);
+  border-radius: var(--border-radius);
+  min-width: 300px;
+  max-width: 90%;
+  box-shadow: var(--shadow);
+}
+
+.modal-dialog h2 {
+  margin: 0 0 var(--spacing);
+}
+
+.modal-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.modal-dialog input {
+  width: 100%;
+  padding: var(--half-spacing);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--input-bg);
+  color: var(--text-primary);
+}
+
+.modal-dialog input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.modal-dialog .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing);
+}
+
+.modal-dialog button {
+  padding: var(--half-spacing) var(--spacing);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--button-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.modal-dialog button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-dialog button.primary {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: var(--accent);
+}

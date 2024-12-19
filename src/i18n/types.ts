@@ -1,10 +1,21 @@
 import type { LanguageCode } from ".";
 
-// Add support for function-based translations
-type TranslationValue = string | ((params: { 
-  name?: string;
+// First, define the translation parameter types
+export type TranslationParams = {
   count?: number;
-}) => string);
+  folders?: number;
+  images?: number;
+  name?: string;
+};
+
+// Then define the translation value type
+type TranslationValue = string | ((params: TranslationParams) => string);
+
+// Finally define the translation function type
+export type TranslationFunction = {
+  (key: string): string;
+  (key: string, params: TranslationParams): string;
+};
 
 export interface CommonTranslations {
   close: string;
@@ -38,6 +49,8 @@ export interface CommonTranslations {
   returnToFrontPage: string;
   home: string;
   openSettings: string;
+  create: string;
+  creating: string;
 }
 
 export interface ThemeTranslations {
@@ -150,13 +163,15 @@ export interface GalleryTranslations {
   selectAll: string;
   deselectAll: string;
   deleteSelected: string;
-  confirmMultiDelete: string;
+  confirmMultiDelete: TranslationValue;
   confirmFolderDelete: TranslationValue;
   someFolderDeletesFailed: string;
   folderDeleteError: string;
   deletingFile: string;
   fileDeleteSuccess: string;
   fileDeleteError: string;
+  createFolder: string;
+  folderNamePlaceholder: string;
 }
 
 export interface ShortcutsTranslations {
@@ -209,6 +224,8 @@ export interface ImageViewerTranslations {
 export interface NotificationsTranslations {
   imageCopied: string;
   imageCopyFailed: string;
+  folderCreated: string;
+  folderCreateError: string;
 }
 
 export interface Translations {
@@ -222,4 +239,4 @@ export interface Translations {
   notifications: NotificationsTranslations;
 }
 
-export type { LanguageCode }; 
+export type { LanguageCode };
