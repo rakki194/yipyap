@@ -320,8 +320,6 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
         if (newSet.has(idx)) {
           newSet.delete(idx);
         } else {
-          // Clear image selection when selecting folders
-          setState("multiSelected", new Set());
           newSet.add(idx);
         }
         return { ...prev, multiFolderSelected: newSet };
