@@ -1,16 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@solidjs/testing-library';
 import { ImageModal, EmptyCaptionState, DeleteButton } from '../ImageModal';
-import { GalleryProvider } from '~/contexts/GalleryContext';
-import { AppProvider } from '~/contexts/app';
-import { AppContext } from '~/contexts/contexts';
 import type { ImageInfo } from '~/types';
 import type { Component } from 'solid-js';
 import userEvent from '@testing-library/user-event';
 import { Router } from '@solidjs/router';
-import { Theme } from '~/contexts/theme';
-import { Locale } from '~/i18n';
-import { createContext } from 'solid-js';
 import { GalleryContext } from '~/contexts/contexts';
 import { createResource } from 'solid-js';
 import type { AnyItem } from '~/resources/browse';
@@ -18,7 +12,10 @@ import { Action } from '@solidjs/router';
 import type { Mode } from '~/contexts/selection';
 import type { ImageItem } from '~/resources/browse';
 import type { SaveCaption } from '~/resources/browse';
-import { action } from '@solidjs/router';
+import { ThemeProvider } from '~/theme/ThemeProvider';
+import { AppProvider } from '~/contexts/app';
+import type { Theme } from '~/contexts/theme';
+import { Locale } from '~/i18n';
 
 // Mock the necessary dependencies
 vi.mock('~/icons', () => ({
@@ -74,15 +71,16 @@ const mockCaptions: [string, string][] = [
   ['tags', 'tag1, tag2, tag3']
 ];
 
-// Update the mock actions to be proper functions
+// First, create properly typed mock functions
 const mockActions = {
-  saveCaption: vi.fn().mockResolvedValue({ success: true }),
-  generateTags: vi.fn().mockResolvedValue({ success: true }),
-  deleteImage: vi.fn().mockResolvedValue([]),
-  deleteCaption: vi.fn().mockResolvedValue({ success: true })
+  saveCaption: vi.fn().mockImplementation(async (caption: SaveCaption) => ({ success: true })),
+  generateTags: vi.fn().mockImplementation(async (model: string) => ({ success: true })),
+  deleteImageAction: vi.fn().mockImplementation(async (idx: number) => ({ success: true })),
+  deleteCaption: vi.fn().mockImplementation(async (type: string) => ({ success: true })),
+  onClose: vi.fn()
 };
 
-// Update the mockGalleryContext to use the properly typed actions
+// Create a mock gallery context that includes both the actions and their implementations
 const mockGalleryContext = {
   windowSize: { width: 1920, height: 1080 },
   selection: {
@@ -113,20 +111,44 @@ const mockGalleryContext = {
   },
   saveCaption: {
     url: '/api/save-caption',
-    with: mockActions.saveCaption
+    with: mockActions.saveCaption,
+    pending: false,
+    error: null,
+    run: mockActions.saveCaption
   } as unknown as Action<[SaveCaption], Response | Error, [SaveCaption]>,
   generateTags: {
     url: '/api/generate-tags',
-    with: mockActions.generateTags
+    with: mockActions.generateTags,
+    pending: false,
+    error: null,
+    run: mockActions.generateTags
   } as unknown as Action<[string], unknown, [string]>,
   deleteImage: {
     url: '/api/delete-image',
-    with: mockActions.deleteImage
+    with: mockActions.deleteImageAction,
+    pending: false,
+    error: null,
+    run: mockActions.deleteImageAction
   } as unknown as Action<[number], AnyItem[] | Error, [number]>,
   deleteCaption: {
     url: '/api/delete-caption',
-    with: mockActions.deleteCaption
+    with: mockActions.deleteCaption,
+    pending: false,
+    error: null,
+    run: mockActions.deleteCaption
   } as unknown as Action<[string], Error | { success: boolean }, [string]>,
+  setViewMode: vi.fn(),
+  setSort: vi.fn(),
+  setSearch: vi.fn(),
+  setPage: vi.fn().mockResolvedValue(undefined),
+  viewMode: 'grid' as const,
+  sort: 'name' as const,
+  search: '',
+  page: 1,
+  loading: false,
+  error: null,
+  setError: vi.fn(),
+  setLoading: vi.fn(),
   invalidate: vi.fn(),
   refetch: vi.fn(),
   data: createResource(() => ({
@@ -149,25 +171,13 @@ const mockGalleryContext = {
   }))[0],
   selected: 0,
   selectedImage: mockImageInfoWithTypes,
-  setViewMode: vi.fn(),
-  setSort: vi.fn(),
-  setSearch: vi.fn(),
-  setPage: vi.fn().mockResolvedValue(undefined),
-  viewMode: 'grid',
-  sort: 'name',
-  search: '',
-  page: 1,
-  loading: false,
-  error: null,
-  setError: vi.fn(),
-  setLoading: vi.fn(),
+  getPreviewSize: () => ({ width: 800, height: 600 }),
+  getThumbnailSize: () => ({ width: 200, height: 150 }),
+  params: { path: '' },
+  getEditedImage: vi.fn(),
+  clearImageCache: vi.fn(),
+  getAllKnownFolders: vi.fn(),
   select: vi.fn(),
-  selectPrev: vi.fn(),
-  selectNext: vi.fn(),
-  selectUp: vi.fn(),
-  selectDown: vi.fn(),
-  selectPageUp: vi.fn(),
-  selectPageDown: vi.fn(),
   selectedIndex: 0,
   setSelectedIndex: vi.fn(),
   clearSelection: vi.fn(),
@@ -183,9 +193,6 @@ const mockGalleryContext = {
   isFolderMultiSelected: vi.fn(),
   folderMultiSelectedCount: 0,
   clearFolderMultiSelect: vi.fn(),
-  getPreviewSize: () => ({ width: 800, height: 600 }),
-  getThumbnailSize: () => ({ width: 200, height: 150 }),
-  params: { path: '' },
   setCaption: vi.fn(),
   setTags: vi.fn(),
   setWdTags: vi.fn(),
@@ -198,18 +205,28 @@ const mockGalleryContext = {
   getImageDownloadUrl: vi.fn(),
   getImageCaptionUrl: vi.fn(),
   getImageTagsUrl: vi.fn(),
-  getEditedImage: vi.fn(),
-  clearImageCache: vi.fn(),
-  getAllKnownFolders: vi.fn(),
+  selectPrev: () => true,
+  selectNext: () => true,
+  selectDown: () => true,
+  selectUp: () => true,
+  selectPageUp: () => true,
+  selectPageDown: () => true,
   editedImage: null,
-  toggleEdit: vi.fn(),
-  mode: 'view' as Mode,
-  edit: vi.fn(),
-  setColumns: vi.fn(),
-  setMode: vi.fn(),
+  mode: 'view' as const,
   multiSelected: new Set<number>(),
   multiFolderSelected: new Set<number>(),
-  selectAllFolders: vi.fn()
+  toggleEdit: vi.fn(),
+  edit: vi.fn(),
+  setMode: vi.fn(),
+  setColumns: vi.fn(),
+  selectAllFolders: vi.fn(),
+  actions: {
+    save: mockActions.saveCaption,
+    generateTags: mockActions.generateTags,
+    deleteImageAction: mockActions.deleteImageAction,
+    invalidate: vi.fn(),
+    refetch: vi.fn()
+  }
 };
 
 const mockAppContext = {
@@ -311,11 +328,13 @@ const MockGalleryProvider: Component<{ children: any }> = (props) => {
 // Update the Wrapper component
 const Wrapper: Component<WrapperProps> = (props) => (
   <Router>
-    <AppContext.Provider value={mockAppContext}>
-      <MockGalleryProvider>
-        {props.children}
-      </MockGalleryProvider>
-    </AppContext.Provider>
+    <ThemeProvider>
+      <AppProvider>
+        <GalleryContext.Provider value={mockGalleryContext}>
+          {props.children}
+        </GalleryContext.Provider>
+      </AppProvider>
+    </ThemeProvider>
   </Router>
 );
 
@@ -325,6 +344,7 @@ describe('ImageModal', () => {
   let saveCaption: ReturnType<typeof vi.fn>;
   let deleteImageAction: ReturnType<typeof vi.fn>;
   let deleteCaption: ReturnType<typeof vi.fn>;
+  let testGalleryContext: typeof mockGalleryContext;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -333,19 +353,53 @@ describe('ImageModal', () => {
     saveCaption = vi.fn().mockResolvedValue({ success: true });
     deleteImageAction = vi.fn().mockResolvedValue({ success: true });
     deleteCaption = vi.fn().mockResolvedValue({ success: true });
+
+    testGalleryContext = {
+      ...mockGalleryContext,
+      saveCaption: {
+        url: '/api/save-caption',
+        with: saveCaption,
+        pending: false,
+        error: null,
+        run: saveCaption
+      } as unknown as Action<[SaveCaption], Response | Error, [SaveCaption]>,
+      generateTags: {
+        url: '/api/generate-tags',
+        with: generateTags,
+        pending: false,
+        error: null,
+        run: generateTags
+      } as unknown as Action<[string], unknown, [string]>,
+      deleteImage: {
+        url: '/api/delete-image',
+        with: deleteImageAction,
+        pending: false,
+        error: null,
+        run: deleteImageAction
+      } as unknown as Action<[number], AnyItem[] | Error, [number]>,
+      deleteCaption: {
+        url: '/api/delete-caption',
+        with: deleteCaption,
+        pending: false,
+        error: null,
+        run: deleteCaption
+      } as unknown as Action<[string], Error | { success: boolean }, [string]>
+    };
   });
 
   const renderImageModal = () => {
     return render(() => (
-      <ImageModal
-        imageInfo={mockImageInfoWithTypes}
-        captions={mockCaptions}
-        onClose={vi.fn()}
-        generateTags={generateTags}
-        saveCaption={saveCaption}
-        deleteCaption={deleteCaption}
-        deleteImageAction={deleteImageAction}
-      />
+      <GalleryContext.Provider value={mockGalleryContext}>
+        <ImageModal
+          imageInfo={mockImageInfoWithTypes}
+          captions={mockCaptions}
+          onClose={mockActions.onClose}
+          generateTags={mockActions.generateTags}
+          saveCaption={mockActions.saveCaption}
+          deleteCaption={mockActions.deleteCaption}
+          deleteImageAction={mockActions.deleteImageAction}
+        />
+      </GalleryContext.Provider>
     ), { wrapper: Wrapper });
   };
 
@@ -370,31 +424,53 @@ describe('ImageModal', () => {
   });
 
   it('handles caption creation', async () => {
-    renderImageModal();
+    const user = userEvent.setup();
+    
+    render(() => (
+      <GalleryContext.Provider value={mockGalleryContext}>
+        <ImageModal
+          imageInfo={mockImageInfoWithTypes}
+          captions={mockCaptions}
+          onClose={mockActions.onClose}
+          generateTags={mockActions.generateTags}
+          saveCaption={mockActions.saveCaption}
+          deleteCaption={mockActions.deleteCaption}
+          deleteImageAction={mockActions.deleteImageAction}
+        />
+      </GalleryContext.Provider>
+    ), { wrapper: Wrapper });
 
-    // Find and fill the caption textarea
     const textarea = screen.getByPlaceholderText('gallery.addCaption');
     await user.type(textarea, 'New caption');
 
-    // Click the create button
     const createButton = screen.getByText('gallery.createCaption');
     await user.click(createButton);
 
-    // Wait for the caption type button to appear and click it
-    const txtOption = await screen.findByText('gallery.captionTypes.txt');
-    await user.click(txtOption);
+    const captionTypeButton = await screen.findByText('gallery.captionTypes.caption');
+    await user.click(captionTypeButton);
 
     await waitFor(() => {
-      expect(saveCaption).toHaveBeenCalledWith({
-        type: 'txt',
+      expect(mockActions.saveCaption).toHaveBeenCalledWith({
+        type: 'caption',
         caption: 'New caption'
       });
     });
   });
 
   it('handles image deletion with confirmation', async () => {
+    const user = userEvent.setup();
     global.confirm = vi.fn(() => true);
-    renderImageModal();
+    render(() => (
+      <ImageModal
+        imageInfo={mockImageInfoWithTypes}
+        captions={mockCaptions}
+        onClose={mockActions.onClose}
+        generateTags={mockActions.generateTags}
+        saveCaption={mockActions.saveCaption}
+        deleteCaption={mockActions.deleteCaption}
+        deleteImageAction={mockActions.deleteImageAction}
+      />
+    ), { wrapper: Wrapper });
 
     const deleteButton = screen.getByTitle('Hold to delete image');
     
@@ -409,7 +485,7 @@ describe('ImageModal', () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     await waitFor(() => {
-      expect(deleteImageAction).toHaveBeenCalledWith(0);
+      expect(mockActions.deleteImageAction).toHaveBeenCalledWith(0);
     });
   });
 
@@ -420,11 +496,11 @@ describe('ImageModal', () => {
       <ImageModal
         imageInfo={mockImageInfoWithTypes}
         captions={mockCaptions}
-        onClose={vi.fn()}
+        onClose={mockActions.onClose}
         generateTags={mockActions.generateTags}
         saveCaption={mockActions.saveCaption}
         deleteCaption={mockActions.deleteCaption}
-        deleteImageAction={mockActions.deleteImage}
+        deleteImageAction={mockActions.deleteImageAction}
       />
     ), { wrapper: Wrapper });
 
@@ -436,7 +512,21 @@ describe('ImageModal', () => {
   });
 
   it('handles tag generation', async () => {
-    renderImageModal();
+    const user = userEvent.setup();
+    
+    render(() => (
+      <GalleryContext.Provider value={mockGalleryContext}>
+        <ImageModal
+          imageInfo={mockImageInfoWithTypes}
+          captions={mockCaptions}
+          onClose={mockActions.onClose}
+          generateTags={mockActions.generateTags}
+          saveCaption={mockActions.saveCaption}
+          deleteCaption={mockActions.deleteCaption}
+          deleteImageAction={mockActions.deleteImageAction}
+        />
+      </GalleryContext.Provider>
+    ), { wrapper: Wrapper });
 
     // Click the generate tags button to open dropdown
     const generateButton = screen.getByTitle('Generate Tags');
@@ -447,7 +537,7 @@ describe('ImageModal', () => {
     await user.click(jtp2Button);
 
     await waitFor(() => {
-      expect(generateTags).toHaveBeenCalledWith('jtp2');
+      expect(mockActions.generateTags).toHaveBeenCalledWith('jtp2');
     });
   });
 
@@ -462,7 +552,7 @@ describe('ImageModal', () => {
         generateTags={mockActions.generateTags}
         saveCaption={mockActions.saveCaption}
         deleteCaption={mockActions.deleteCaption}
-        deleteImageAction={mockActions.deleteImage}
+        deleteImageAction={mockActions.deleteImageAction}
       />
     ), { wrapper: Wrapper });
 
