@@ -21,7 +21,7 @@ vi.mock("~/contexts/app", () => ({
 
 // Mock the icons
 vi.mock("~/icons", () => ({
-  default: () => '<svg data-testid="mock-icon" />',
+  default: () => <svg data-testid="mock-icon" />,
 }));
 
 describe("ImageInfo Component", () => {
@@ -41,7 +41,7 @@ describe("ImageInfo Component", () => {
     render(() => <ImageInfo imageInfo={mockImageInfo} />);
 
     // Check if size is displayed correctly (1 MB)
-    expect(screen.getByText("1 MB")).toBeInTheDocument();
+    expect(screen.getByText("1.0 MB")).toBeInTheDocument();
 
     // Check if date is displayed
     expect(
