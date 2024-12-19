@@ -25,14 +25,15 @@ export const makeImage = (
 ): ReactiveImage => {
   // Create and configure image element
   const img = new Image();
-  img.src = src;
   img.alt = alt ?? ""; // Use nullish coalescing
   img.fetchPriority = priority ?? "low";
 
   // Apply styles if provided
   if (style) {
     Object.entries(style).forEach(([prop, value]) => {
-      img.style.setProperty(prop, value as string);
+      // Convert camelCase to kebab-case for CSS properties
+      const kebabProp = prop.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+      img.style.setProperty(kebabProp, value as string);
     });
   }
 
@@ -54,20 +55,23 @@ export const makeImage = (
     img.onerror = null;
   };
 
+  // Set up load handlers before setting src
+  img.onload = () => {
+    markAsLoaded();
+    cleanup();
+  };
+
+  img.onerror = (event) => {
+    console.error(`Failed to load image: ${src}`, event);
+    cleanup();
+  };
+
+  // Set src after handlers are in place
+  img.src = src;
+
   // Handle already loaded images
   if (img.complete) {
     markAsLoaded();
-  } else {
-    // Handle async loading
-    img.onload = () => {
-      markAsLoaded();
-      cleanup();
-    };
-
-    img.onerror = (event) => {
-      console.error(`Failed to load image: ${src}`, event);
-      cleanup();
-    };
   }
 
   return {
@@ -77,7 +81,7 @@ export const makeImage = (
       if (import.meta.env.DEV) {  
         console.debug("makeImage: unloading image", src);
       }
-      img.src = "";
+      img.setAttribute('src', ''); // Use setAttribute instead of src property
       cleanup();
     },
     setPriority: (priority: "low" | "high") => {
