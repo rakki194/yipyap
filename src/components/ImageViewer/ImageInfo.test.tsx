@@ -1,7 +1,30 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+/**
+ * Test suite for the ImageInfo component.
+ * 
+ * This test file verifies the correct rendering and functionality of the ImageInfo component,
+ * which displays metadata about an image in the gallery viewer.
+ * 
+ * Test Coverage:
+ * - Rendering of image metadata (size, date, type, dimensions)
+ * - Correct formatting of values (e.g., file size in MB)
+ * - Presence of all required icons
+ * - Integration with the translation system
+ * 
+ * Mocks:
+ * - App Context: Mocked to provide simplified translations
+ * - Icons: Mocked to return a simple SVG with test ID
+ * - ImageInfo: Mocked with sample image data including:
+ *   - Basic metadata (name, size, date)
+ *   - Image properties (dimensions, aspect ratio)
+ *   - File paths (download, preview, thumbnail)
+ *   - Image objects with loading states
+ * 
+ * @jest-environment jsdom
+ */
+
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@solidjs/testing-library";
 import { ImageInfo } from "./ImageInfo";
-import { AppContext } from "~/contexts/app";
 
 // Mock the app context
 vi.mock("~/contexts/app", () => ({
@@ -26,15 +49,32 @@ vi.mock("~/icons", () => ({
 
 describe("ImageInfo Component", () => {
   const mockImageInfo = {
+    idx: 0,
+    name: "test",
     file_name: "test.jpg",
     size: 1024 * 1024, // 1MB
-    mtime: new Date("2024-01-01").getTime(),
+    mtime: new Date("2024-01-01").toISOString(),
     mime: "image/jpeg",
     width: 1920,
     height: 1080,
+    aspect_ratio: (1920/1080).toString(),
     download_path: "/test.jpg",
-    preview_img: { img: { src: "", alt: "" }, isLoaded: () => true },
-    thumbnail_img: { img: { src: "", alt: "" }, isLoaded: () => true },
+    preview_path: "/preview/test.jpg",
+    thumbnail_path: "/thumbnail/test.jpg",
+    preview_img: { 
+      img: new Image(),
+      isLoaded: () => true,
+      unload: () => {},
+      setPriority: () => {}
+    },
+    thumbnail_img: { 
+      img: new Image(),
+      isLoaded: () => true,
+      unload: () => {},
+      setPriority: () => {}
+    },
+    type: "image" as const,
+    captions: [],
   };
 
   it("renders image information correctly", () => {

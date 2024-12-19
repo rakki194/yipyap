@@ -185,7 +185,10 @@ export const Gallery = () => {
   // Add these signals at the top of the Gallery component
   const [lastWheelTime, setLastWheelTime] = createSignal(0);
   const [isScrolling, setIsScrolling] = createSignal(false);
-  const SCROLL_DEBOUNCE = 150; // ms
+  const SCROLL_DEBOUNCE = 150; // ms for vertical scrolling
+  const HORIZONTAL_SCROLL_DEBOUNCE = 50; // ms for horizontal scrolling
+
+  // Add this at the top with other signals
 
   // Update handleWheel function
   const handleWheel = (e: WheelEvent) => {
@@ -199,6 +202,47 @@ export const Gallery = () => {
       const now = performance.now();
       setLastWheelTime(now);
       
+      // Handle horizontal scrolling for touchpad
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        e.preventDefault();
+        
+        if (!isWheelScrolling()) {
+          setWheelScrolling(true);
+          // Start a new scroll session
+          requestAnimationFrame(function checkScrollEnd() {
+            const timeSinceLastWheel = performance.now() - lastWheelTime();
+            
+            if (timeSinceLastWheel < HORIZONTAL_SCROLL_DEBOUNCE) {
+              // Still scrolling, check again next frame
+              requestAnimationFrame(checkScrollEnd);
+            } else {
+              // Scrolling has stopped
+              setWheelScrolling(false);
+              
+              // Immediate response to horizontal scroll
+              const success = e.deltaX > 0 
+                ? gallery.selection.selectPrev()
+                : gallery.selection.selectNext();
+                  
+              if (success) {
+                scrollToSelected(true);
+              }
+            }
+          });
+        } else {
+          // Allow new scroll events while scrolling
+          const success = e.deltaX > 0 
+            ? gallery.selection.selectPrev()
+            : gallery.selection.selectNext();
+            
+          if (success) {
+            scrollToSelected(true);
+          }
+        }
+        return;
+      }
+      
+      // Handle vertical scrolling (existing touchpad logic)
       if (!isWheelScrolling()) {
         setWheelScrolling(true);
         // Start a new scroll session
@@ -225,7 +269,7 @@ export const Gallery = () => {
       return;
     }
 
-    // Handle mouse wheel scrolling
+    // Handle mouse wheel scrolling (existing logic)
     const bounds = scrollManager.getScrollBounds();
     const currentScroll = galleryElement.scrollTop;
     const canScrollUp = currentScroll > bounds.min;

@@ -3,7 +3,7 @@
  * Contains theme-related logic. Integrated in AppProvider.
  */
 
-function makeThemeList() {
+export function makeThemeList() {
   const today = new Date();
   const month = today.getMonth(); // 0-based (0 = January, 11 = December)
   const date = today.getDate();
@@ -68,13 +68,18 @@ export function getNextTheme(theme: Theme): Theme {
 export function getInitialTheme(): Theme {
   const stored = localStorage.getItem("theme");
 
-  // Check that the theme is still valid
-  if (stored && Object.keys(themeIconMap).includes(stored)) {
+  // Helper function to check if a theme is currently available
+  const isThemeAvailable = (theme: string): boolean => {
+    return Object.keys(makeThemeList()).includes(theme);
+  };
+
+  // Check that the theme is still valid and available for the current date
+  if (stored && isThemeAvailable(stored)) {
     return stored as Theme;
   }
 
   const dsTheme = document.documentElement.dataset.theme;
-  if (dsTheme && Object.keys(themeIconMap).includes(dsTheme)) {
+  if (dsTheme && isThemeAvailable(dsTheme)) {
     return dsTheme as Theme;
   }
 
