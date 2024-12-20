@@ -293,7 +293,9 @@ export const TagBubble: Component<{
    */
   const handleSubmit = (value: string) => {
     const newValue = value.trim();
-    if (newValue && newValue !== props.tag) {
+    if (!newValue) {
+      props.onRemove();
+    } else if (newValue !== props.tag) {
       tagColorGenerator.clearCache(); // Clear the cache before editing
       props.onEdit(newValue);
     }

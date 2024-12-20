@@ -17,8 +17,10 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
   }
 }

@@ -4,6 +4,5 @@ node_modules/
 venv/
 dist/
 *.db
-*.db-wal
-*.db-shm
+*.db-*
 package-lock.json

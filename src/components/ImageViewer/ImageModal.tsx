@@ -47,24 +47,24 @@ export const ImageModal = (props: ImageModalProps) => {
   );
   const [showMetadata, setShowMetadata] = createSignal(false);
 
-  // Add state for metadata bubble visibility
-  const [isMetadataOpen, setIsMetadataOpen] = createSignal(false);
-
   return (
     <div class="modal-content">
       <ModalHeader 
         imageInfo={props.imageInfo} 
-        onClose={props.onClose} 
+        onClose={props.onClose}
+        showMetadata={showMetadata()}
+        setShowMetadata={setShowMetadata}
       />
       <ModelBody
         imageInfo={props.imageInfo}
         captions={props.captions}
         layout={getLayout()}
-      >
-        <Show when={showMetadata()}>
+      />
+      <Show when={showMetadata()}>
+        <div class="metadata-panel">
           <ImageInfo imageInfo={props.imageInfo} />
-        </Show>
-      </ModelBody>
+        </div>
+      </Show>
     </div>
   );
 };
@@ -261,13 +261,12 @@ const ModelBody = (props: {
 const ModalHeader = (props: {
   imageInfo: ImageInfoType;
   onClose: () => void;
+  showMetadata: boolean;
+  setShowMetadata: (show: boolean) => void;
 }) => {
   const gallery = useGallery();
   const generateTags = useAction(gallery.generateTags);
-
-  // Reference to the metadata bubble for click detection
-  let metadataButtonRef: HTMLButtonElement | undefined;
-
+  const { t } = useAppContext();
 
   return (
     <div class="modal-header">
@@ -276,9 +275,10 @@ const ModalHeader = (props: {
         <button
           type="button"
           class="icon metadata-button"
-          ref={metadataButtonRef}
-          title="Show Metadata"
-          aria-label="Show Metadata"
+          classList={{ active: props.showMetadata }}
+          onClick={() => props.setShowMetadata(!props.showMetadata)}
+          title={t('imageViewer.showMetadata')}
+          aria-label={t('imageViewer.showMetadata')}
         >
           {getIcon("info")}
         </button>
