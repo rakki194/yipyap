@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Lỗi khi lưu chú thích",
     emptyFolder: "Thư mục này trống",
     dropToUpload: "Kéo thả tệp vào đây để tải lên",
-    uploadProgress: (params: { count: number }) => `Đang tải lên ${params.count} tệp...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Đang tải lên tệp...';
+      if (typeof params.count !== 'number') return 'Đang tải lên tệp...';
+      return `Đang tải lên ${params.count} tệp...`;
+    },
     processingImage: "Đang xử lý hình ảnh...",
     generateTags: "Tạo thẻ",
     generatingTags: "Đang tạo thẻ...",

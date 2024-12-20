@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Помилка при збереженні підпису",
     emptyFolder: "Ця папка порожня",
     dropToUpload: "Перетягніть файли для завантаження",
-    uploadProgress: (params: { count: number }) => `Завантаження ${params.count} файлів...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Завантаження файлів...';
+      if (typeof params.count !== 'number') return 'Завантаження файлів...';
+      return `Завантаження ${params.count} файлів...`;
+    },
     processingImage: "Обробка зображення...",
     generateTags: "Згенерувати теги",
     generatingTags: "Генерація тегів...",

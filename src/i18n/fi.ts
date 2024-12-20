@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Virhe tallennettaessa kuvatekstiä",
     emptyFolder: "Tämä kansio on tyhjä",
     dropToUpload: "Pudota tiedostot tähän ladataksesi",
-    uploadProgress: ({ count }: { count: number }) => `Ladataan ${count} tiedostoa...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Ladataan tiedostoja...';
+      if (typeof params.count !== 'number') return 'Ladataan tiedostoja...';
+      return `Ladataan ${params.count} tiedostoa...`;
+    },
     processingImage: "Käsitellään kuvaa...",
     generateTags: "Luo tagit",
     generatingTags: "Luodaan tageja...",

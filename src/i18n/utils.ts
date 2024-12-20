@@ -423,6 +423,90 @@ export function getTurkishPlural(
   return forms.pluralLer;
 }
 
+/**
+ * Gets the correct Czech plural form based on the number
+ * 
+ * Czech has 3 plural forms:
+ * 1. Singular (1): soubor
+ * 2. Plural for 2-4: soubory
+ * 3. Plural for 0, 5+: souborů
+ * 
+ * @example
+ * getCzechPlural(1, {
+ *   singular: "soubor",
+ *   plural2_4: "soubory",
+ *   plural5_: "souborů"
+ * }) // returns "soubor"
+ */
+export function getCzechPlural(
+  count: number,
+  forms: {
+    singular: string;
+    plural2_4: string;
+    plural5_: string;
+  }
+): string {
+  // Get absolute value and last digit
+  const absCount = Math.abs(Math.floor(count));
+  const lastDigit = absCount % 10;
+  const lastTwoDigits = absCount % 100;
+
+  // Singular case (1, but not 11)
+  if (lastDigit === 1 && lastTwoDigits !== 11) {
+    return forms.singular;
+  }
+
+  // 2-4 case (but not 12-14)
+  if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 12 || lastTwoDigits > 14)) {
+    return forms.plural2_4;
+  }
+
+  // All other cases (0, 5-9, teens)
+  return forms.plural5_;
+}
+
+/**
+ * Gets the correct plural form for Romanian based on count.
+ * Romanian has three forms:
+ * - Singular (1): carte
+ * - Few (2-19): cărți
+ * - Many (20+): de cărți
+ * 
+ * Special cases:
+ * - Zero uses the few form: cărți
+ * - Decimal numbers follow the same rules as integers:
+ *   - If < 20: cărți
+ *   - If >= 20: de cărți
+ * 
+ * @param count The number to get plural form for
+ * @param forms Object containing the three plural forms
+ * @returns The correct plural form
+ */
+export function getRomanianPlural(
+  count: number,
+  forms: { one: string; few: string; many: string }
+): string {
+  const absCount = Math.abs(count);
+  
+  // Handle zero
+  if (count === 0) {
+    return forms.few;
+  }
+  
+  // Handle exact 1
+  if (absCount === 1 && Number.isInteger(count)) {
+    return forms.one;
+  }
+  
+  // Handle numbers >= 20 (including decimals)
+  if (absCount >= 20) {
+    return forms.many;
+  }
+  
+  // All other cases (2-19 and decimals < 20)
+  return forms.few;
+}
+
 // Add test for the function
 if (import.meta.vitest) {
   const { describe, it, expect } = import.meta.vitest;

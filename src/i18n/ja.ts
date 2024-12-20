@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "キャプションの保存中にエラーが発生しました",
     emptyFolder: "このフォルダは空です",
     dropToUpload: "ファイルをドロップしてアップロード",
-    uploadProgress: ({ count }: { count: number }) => `${count}個のファイルをアップロード中...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'ファイルをアップロード中...';
+      if (typeof params.count !== 'number') return 'ファイルをアップロード中...';
+      return `${params.count}個のファイルをアップロード中...`;
+    },
     processingImage: "画像を処理中...",
     generateTags: "タグを生成",
     generatingTags: "タグを生成中...",
@@ -127,7 +131,11 @@ export default {
     imageCount: ({ count }: { count: number }) => `${count}個の画像`,
     foundFolders: ({ count }: { count: number }) => `${count}個のフォルダーが見つかりました`,
     deletedCount: ({ count }: { count: number }) => `${count}個のアイテムを削除しました`,
-    selectedCount: ({ count }: { count: number }) => `${count}個選択中`,
+    selectedCount: (params?: { count: number }) => {
+      if (!params) return '選択済み';
+      if (typeof params.count !== 'number') return '選択済み';
+      return `${params.count}個選択済み`;
+    },
     processingImages: ({ count }: { count: number }) => `${count}個の画像を処理中...`,
     folderLocation: ({ name }: { name: string }) => `場所: ${name}`,
     moveToFolder: ({ name }: { name: string }) => `${name}に移動`,
@@ -138,12 +146,13 @@ export default {
     selectAll: "すべて選択",
     deselectAll: "選択解除",
     deleteSelected: "選択項目を削除",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `${folders}個のフォルダーと${images}個の画像を削除してもよろしいですか？`;
-      } else if (folders) {
-        return `${folders}個のフォルダーを削除してもよろしいですか？`;
-      }
+    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
+      if (!params) return 'これらのアイテムを削除してもよろしいですか？';
+      const { folders = 0, images = 0 } = params;
+      if (folders === 0 && images === 0) return 'これらのアイテムを削除してもよろしいですか？';
+      if (typeof folders !== 'number' || typeof images !== 'number') return 'これらのアイテムを削除してもよろしいですか？';
+      if (folders > 0 && images > 0) return `${folders}個のフォルダと${images}個の画像を削除してもよろしいですか？`;
+      if (folders > 0) return `${folders}個のフォルダを削除してもよろしいですか？`;
       return `${images}個の画像を削除してもよろしいですか？`;
     },
     confirmFolderDelete: ({ name = "" }) => `フォルダー「${name}」を削除してもよろしいですか？`,

@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "캡션 저장 중 오류 발생",
     emptyFolder: "이 폴더는 비어 있습니다",
     dropToUpload: "파일을 여기에 드롭하여 업로드",
-    uploadProgress: ({ count }: { count: number }) => `${count}개 파일 업로드 중...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return '파일 업로드 중...';
+      if (typeof params.count !== 'number') return '파일 업로드 중...';
+      return `${params.count}개의 파일 업로드 중...`;
+    },
     processingImage: "이미지 처리 중...",
     generateTags: "태그 생성",
     generatingTags: "태그 생성 중...",
@@ -127,7 +131,20 @@ export default {
     imageCount: ({ count }: { count: number }) => `${count}개 이미지`,
     foundFolders: ({ count }: { count: number }) => `${count}개 폴더 찾음`,
     deletedCount: ({ count }: { count: number }) => `${count}개 항목 삭제됨`,
-    selectedCount: ({ count }: { count: number }) => `${count}개 선택됨`,
+    selectedCount: (params?: { count: number }) => {
+      if (!params) return '선택됨';
+      if (typeof params.count !== 'number') return '선택됨';
+      return `${params.count}개 선택됨`;
+    },
+    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
+      if (!params) return '이 항목들을 삭제하시겠습니까?';
+      const { folders = 0, images = 0 } = params;
+      if (folders === 0 && images === 0) return '이 항목들을 삭제하시겠습니까?';
+      if (typeof folders !== 'number' || typeof images !== 'number') return '이 항목들을 삭제하시겠습니까?';
+      if (folders > 0 && images > 0) return `${folders}개의 폴더와 ${images}개의 이미지를 삭제하시겠습니까?`;
+      if (folders > 0) return `${folders}개의 폴더를 삭제하시겠습니까?`;
+      return `${images}개의 이미지를 삭제하시겠습니까?`;
+    },
     processingImages: ({ count }: { count: number }) => `${count}개 이미지 처리 중...`,
     folderLocation: ({ name }: { name: string }) => `위치: ${name}`,
     moveToFolder: ({ name }: { name: string }) => `${name}(으)로 이동`,
@@ -140,14 +157,6 @@ export default {
     deleteSelected: "선택 항목 삭제",
     uploadError: "업로드 실패",
     dropOverlay: "파일이나 폴더를 여기에 드롭",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `${folders}개의 폴더와 ${images}개의 이미지를 삭제하시겠습니까?`;
-      } else if (folders) {
-        return `${folders}개의 폴더를 삭제하시겠습니까?`;
-      }
-      return `${images}개의 이미지를 삭제하시겠습니까?`;
-    },
     confirmFolderDelete: ({ name = "" }) => `${name} 폴더를 삭제하시겠습니까?`,
     someFolderDeletesFailed: "일부 폴더를 삭제하지 못했습니다",
     folderDeleteError: "폴더 삭제 중 오류 발생",

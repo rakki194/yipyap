@@ -114,7 +114,11 @@ export default {
     errorSavingCaption: "Erro ao salvar legenda",
     emptyFolder: "Esta pasta está vazia",
     dropToUpload: "Solte arquivos aqui para fazer upload",
-    uploadProgress: (params: { count: number }) => `Fazendo upload de ${params.count} arquivos...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'A carregar ficheiros...';
+      if (typeof params.count !== 'number') return 'A carregar ficheiros...';
+      return `A carregar ${params.count} ficheiros...`;
+    },
     processingImage: "Processando imagem...",
     generateTags: "Gerar tags",
     generatingTags: "Gerando tags...",

@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "שגיאה בשמירת הכיתוב",
     emptyFolder: "תיקייה זו ריקה",
     dropToUpload: "גרור קבצים לכאן להעלאה",
-    uploadProgress: ({ count }: { count: number }) => `מעלה ${count} קבצים...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'מעלה קבצים...';
+      if (typeof params.count !== 'number') return 'מעלה קבצים...';
+      return `מעלה ${params.count} קבצים...`;
+    },
     processingImage: "מעבד תמונה...",
     generateTags: "צור תגיות",
     generatingTags: "יוצר תגיות...",

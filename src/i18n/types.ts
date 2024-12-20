@@ -6,6 +6,7 @@ export type TranslationParams = {
   folders?: number;
   images?: number;
   name?: string;
+  [key: string]: string | number | undefined;  // Allow any string/number parameter
 };
 
 // Then define the translation value type
@@ -67,16 +68,7 @@ export interface ThemeTranslations {
 export interface SettingsTranslations {
   title: string;
   appearance: string;
-  theme: {
-    light: string;
-    gray: string;
-    dark: string;
-    banana: string;
-    strawberry: string;
-    peanut: string;
-    christmas: string;
-    halloween: string;
-  };
+  theme: ThemeTranslations;
   disableAnimations: string;
   language: string;
   disableNonsense: string;
@@ -136,11 +128,11 @@ export interface GalleryTranslations {
   quickJump: string;
   loadingFolders: string;
   noResults: string;
-  folderCount: (params: { count: number }) => string;
-  fileCount: (params: { count: number }) => string;
-  imageCount: (params: { count: number }) => string;
-  foundFolders: (params: { count: number }) => string;
-  deletedCount: (params: { count: number }) => string;
+  folderCount: TranslationValue;
+  fileCount: TranslationValue;
+  imageCount: TranslationValue;
+  foundFolders: TranslationValue;
+  deletedCount: TranslationValue;
   deleteConfirm: TranslationValue;
   deleteSuccess: string;
   deleteError: TranslationValue;
@@ -149,7 +141,7 @@ export interface GalleryTranslations {
   errorSavingCaption: TranslationValue;
   emptyFolder: string;
   dropToUpload: string;
-  uploadProgress: (params: { count: number }) => string;
+  uploadProgress: TranslationValue;
   processingImage: TranslationValue;
   generateTags: string;
   generatingTags: string;
@@ -167,7 +159,7 @@ export interface GalleryTranslations {
   selectAll: string;
   deselectAll: string;
   deleteSelected: string;
-  confirmMultiDelete: ({ folders, images }: { folders?: number; images?: number }) => string;
+  confirmMultiDelete: TranslationValue;
   confirmFolderDelete: TranslationValue;
   someFolderDeletesFailed: string;
   folderDeleteError: string;
@@ -177,11 +169,11 @@ export interface GalleryTranslations {
   createFolder: string;
   folderNamePlaceholder: string;
   deleteConfirmation: string;
-  selectedCount: (params: { count: number }) => string;
-  processingImages: (params: { count: number }) => string;
-  folderLocation: (params: { name: string }) => string;
-  moveToFolder: (params: { name: string }) => string;
-  workWithFolder: (params: { name: string }) => string;
+  selectedCount: TranslationValue;
+  processingImages: TranslationValue;
+  folderLocation: TranslationValue;
+  moveToFolder: TranslationValue;
+  workWithFolder: TranslationValue;
 }
 
 export interface ShortcutsTranslations {

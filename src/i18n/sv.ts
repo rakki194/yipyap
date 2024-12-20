@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Fel vid sparande av bildtext",
     emptyFolder: "Denna mapp är tom",
     dropToUpload: "Släpp filer här för att ladda upp",
-    uploadProgress: (params: { count: number }) => `Laddar upp ${params.count} filer...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Laddar upp filer...';
+      if (typeof params.count !== 'number') return 'Laddar upp filer...';
+      return `Laddar upp ${params.count} filer...`;
+    },
     processingImage: "Bearbetar bild...",
     generateTags: "Generera taggar",
     generatingTags: "Genererar taggar...",

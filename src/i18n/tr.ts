@@ -111,7 +111,15 @@ export default {
     errorSavingCaption: "Altyazı kaydedilirken hata oluştu",
     emptyFolder: "Bu klasör boş",
     dropToUpload: "Yüklemek için dosyaları buraya sürükleyin",
-    uploadProgress: (params: { count: number }) => `${params.count} dosya yükleniyor...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Dosyalar yükleniyor...';
+      if (typeof params.count !== 'number') return 'Dosyalar yükleniyor...';
+      return `${params.count} ${getTurkishPlural(`${params.count} dosya`, {
+        singular: "dosya",
+        pluralLar: "dosya",
+        pluralLer: "dosya"
+      })} yükleniyor...`;
+    },
     processingImage: "Görsel işleniyor...",
     generateTags: "Etiket oluştur",
     generatingTags: "Etiketler oluşturuluyor...",
@@ -126,9 +134,9 @@ export default {
     noCaptionFiles: "Henüz altyazı dosyası yok!",
     selectedCount: ({ count }: { count: number }) => 
       getTurkishPlural(`${count} öğe`, {
-        singular: "1 öğe seçili",
-        pluralLar: `${count} öğe seçili`,
-        pluralLer: `${count} öğe seçili`
+        singular: "1 öğe seçildi",
+        pluralLar: `${count} öğe seçildi`,
+        pluralLer: `${count} öğe seçildi`
       }),
     foundFolders: ({ count }: { count: number }) => 
       getTurkishPlural(`${count} klasör`, {
@@ -149,7 +157,7 @@ export default {
         pluralLer: `${count} görsel işleniyor...`
       }),
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
+      if (folders > 0 && images > 0) {
         const folderText = getTurkishPlural(`${folders} klasör`, {
           singular: "1 klasör",
           pluralLar: `${folders} klasör`,
@@ -160,8 +168,8 @@ export default {
           pluralLar: `${images} görsel`,
           pluralLer: `${images} görsel`
         });
-        return `${folderText} ve ${imageText}i silmek istediğinizden emin misiniz?`;
-      } else if (folders) {
+        return `${folderText} ve ${imageText} silmek istediğinizden emin misiniz?`;
+      } else if (folders > 0) {
         return getTurkishPlural(`${folders} klasör`, {
           singular: "1 klasörü silmek istediğinizden emin misiniz?",
           pluralLar: `${folders} klasörü silmek istediğinizden emin misiniz?`,

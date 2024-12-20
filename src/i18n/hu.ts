@@ -1,6 +1,7 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 import { getHungarianArticle, getHungarianArticleForWord, getHungarianSuffix } from "./utils";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -103,11 +104,26 @@ export default {
     quickJump: "Ugrás mappához...",
     loadingFolders: "Mappák betöltése...",
     noResults: "Nincs találat",
-    folderCount: ({ count }: { count: number }) => `${count} mappa`,
-    fileCount: ({ count }: { count: number }) => `${count} fájl`,
-    imageCount: ({ count }: { count: number }) => `${count} kép`,
-    foundFolders: ({ count }: { count: number }) => `${count} mappa található`,
-    deletedCount: ({ count }: { count: number }) => `${count} elem törölve`,
+    folderCount: createPluralTranslation({
+      one: "1 mappa",
+      other: "${count} mappa"
+    }, "hu"),
+    fileCount: createPluralTranslation({
+      one: "1 fájl",
+      other: "${count} fájl"
+    }, "hu"),
+    imageCount: createPluralTranslation({
+      one: "1 kép",
+      other: "${count} kép"
+    }, "hu"),
+    foundFolders: createPluralTranslation({
+      one: "1 mappa található",
+      other: "${count} mappa található"
+    }, "hu"),
+    deletedCount: createPluralTranslation({
+      one: "1 elem törölve",
+      other: "${count} elem törölve"
+    }, "hu"),
     deleteConfirm: ({ name = "kiválasztott" }) => 
       `Biztosan törölni szeretné ${getHungarianArticleForWord(name)} ${name} képet?`,
     deleteSuccess: "A kép sikeresen törölve",
@@ -120,8 +136,10 @@ export default {
       `Hiba történt ${getHungarianArticleForWord(name)} ${name} képaláírás mentése közben`,
     emptyFolder: "Ez a mappa üres",
     dropToUpload: "Húzza ide a fájlokat a feltöltéshez",
-    uploadProgress: ({ count = 0 }) => 
-      `${getHungarianArticle(count)} ${count} fájl feltöltése...`,
+    uploadProgress: createPluralTranslation({
+      one: "1 fájl feltöltése...",
+      other: "${count} fájl feltöltése..."
+    }, "hu"),
     processingImage: ({ name = "kiválasztott" }) => 
       `${getHungarianArticleForWord(name)} ${name} kép feldolgozása...`,
     generateTags: "Címkék generálása",
@@ -165,10 +183,14 @@ export default {
       `Áthelyezés ${name}${getHungarianSuffix(name, "ra", "re")}`,
     workWithFolder: ({ name = "" }) =>
       `Munka ${name}${getHungarianSuffix(name, "val", "vel")}`,
-    selectedCount: ({ count }: { count: number }) => 
-      `${count} elem kiválasztva`,
-    processingImages: ({ count }: { count: number }) => 
-      `${count} kép feldolgozása...`,
+    selectedCount: createPluralTranslation({
+      one: "1 elem kiválasztva",
+      other: "${count} elem kiválasztva"
+    }, "hu"),
+    processingImages: createPluralTranslation({
+      one: "1 kép feldolgozása...",
+      other: "${count} kép feldolgozása..."
+    }, "hu"),
   },
   shortcuts: {
     title: "Billentyűparancsok",

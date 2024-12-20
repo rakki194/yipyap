@@ -111,7 +111,15 @@ export default {
     errorSavingCaption: "Błąd podczas zapisywania podpisu",
     emptyFolder: "Ten folder jest pusty",
     dropToUpload: "Upuść pliki tutaj, aby przesłać",
-    uploadProgress: ({ count }: { count: number }) => `Przesyłanie ${count} plików...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Przesyłanie plików...';
+      if (typeof params.count !== 'number') return 'Przesyłanie plików...';
+      return `Przesyłanie ${params.count} ${getPolishPlural(params.count, {
+        singular: "plik",
+        plural2_4: "pliki",
+        plural5_: "plików"
+      })}...`;
+    },
     processingImage: "Przetwarzanie obrazu...",
     generateTags: "Generuj tagi",
     generatingTags: "Generowanie tagów...",
@@ -126,7 +134,12 @@ export default {
     noCaptionFiles: "Brak plików podpisów!",
     foundFolders: ({ count }: { count: number }) => `Znaleziono ${count} folderów`,
     deletedCount: ({ count }: { count: number }) => `Usunięto ${count} elementów`,
-    selectedCount: ({ count }: { count: number }) => `Wybrano ${count}`,
+    selectedCount: ({ count }: { count: number }) => 
+      `${count} ${getPolishPlural(count, {
+        singular: "element wybrany",
+        plural2_4: "elementy wybrane",
+        plural5_: "elementów wybranych"
+      })}`,
     processingImages: ({ count }: { count: number }) => `Przetwarzanie ${count} obrazów...`,
     folderLocation: ({ name }: { name: string }) => `w ${name}`,
     moveToFolder: ({ name }: { name: string }) => `Przenieś do ${name}`,
@@ -140,12 +153,28 @@ export default {
     uploadError: "Błąd przesyłania",
     dropOverlay: "Upuść pliki lub foldery tutaj",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `Czy na pewno chcesz usunąć ${folders} folderów i ${images} obrazów?`;
-      } else if (folders) {
-        return `Czy na pewno chcesz usunąć ${folders} folderów?`;
+      if (folders > 0 && images > 0) {
+        return `Czy na pewno chcesz usunąć ${folders} ${getPolishPlural(folders, {
+          singular: "folder",
+          plural2_4: "foldery",
+          plural5_: "folderów"
+        })} i ${images} ${getPolishPlural(images, {
+          singular: "obraz",
+          plural2_4: "obrazy",
+          plural5_: "obrazów"
+        })}?`;
+      } else if (folders > 0) {
+        return `Czy na pewno chcesz usunąć ${folders} ${getPolishPlural(folders, {
+          singular: "folder",
+          plural2_4: "foldery",
+          plural5_: "folderów"
+        })}?`;
       }
-      return `Czy na pewno chcesz usunąć ${images} obrazów?`;
+      return `Czy na pewno chcesz usunąć ${images} ${getPolishPlural(images, {
+        singular: "obraz",
+        plural2_4: "obrazy",
+        plural5_: "obrazów"
+      })}?`;
     },
     confirmFolderDelete: ({ name = "" }) => `Czy na pewno chcesz usunąć folder ${name}?`,
     someFolderDeletesFailed: "Nie udało się usunąć niektórych folderów",

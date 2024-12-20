@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Eroare la salvarea descrierii",
     emptyFolder: "Acest folder este gol",
     dropToUpload: "Trageți fișiere aici pentru încărcare",
-    uploadProgress: ({ count }: { count: number }) => `Se încarcă ${count} fișiere...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Se încarcă fișiere...';
+      if (typeof params.count !== 'number') return 'Se încarcă fișiere...';
+      return `Se încarcă ${params.count} fișiere...`;
+    },
     processingImage: "Se procesează imaginea...",
     generateTags: "Generare etichete",
     generatingTags: "Se generează etichete...",

@@ -99,8 +99,8 @@ export default {
   gallery: {
     selectedCount: ({ count }: { count: number }) => 
       `${count} ${getSpanishPlural(count, {
-        singular: "seleccionado",
-        plural: "seleccionados"
+        singular: "elemento seleccionado",
+        plural: "elementos seleccionados"
       })}`,
     processingImages: ({ count }: { count: number }) => 
       `Procesando ${count} ${getSpanishPlural(count, {
@@ -144,7 +144,14 @@ export default {
     errorSavingCaption: "Error al guardar el título",
     emptyFolder: "Esta carpeta está vacía",
     dropToUpload: "Suelta archivos aquí para subir",
-    uploadProgress: ({ count }: { count: number }) => `Subiendo ${count} archivos...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Subiendo archivos...';
+      if (typeof params.count !== 'number') return 'Subiendo archivos...';
+      return `Subiendo ${params.count} ${getSpanishPlural(params.count, {
+        singular: "archivo",
+        plural: "archivos"
+      })}...`;
+    },
     processingImage: "Procesando imagen...",
     generateTags: "Generar etiquetas",
     generatingTags: "Generando etiquetas...",
@@ -158,12 +165,24 @@ export default {
     },
     noCaptionFiles: "¡Aún no hay archivos de título!",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `¿Estás seguro de que quieres eliminar ${folders} carpetas y ${images} imágenes?`;
-      } else if (folders) {
-        return `¿Estás seguro de que quieres eliminar ${folders} carpetas?`;
+      if (folders > 0 && images > 0) {
+        return `¿Estás seguro de que quieres eliminar ${folders} ${getSpanishPlural(folders, {
+          singular: "carpeta",
+          plural: "carpetas"
+        })} y ${images} ${getSpanishPlural(images, {
+          singular: "imagen",
+          plural: "imágenes"
+        })}?`;
+      } else if (folders > 0) {
+        return `¿Estás seguro de que quieres eliminar ${folders} ${getSpanishPlural(folders, {
+          singular: "carpeta",
+          plural: "carpetas"
+        })}?`;
       }
-      return `¿Estás seguro de que quieres eliminar ${images} imágenes?`;
+      return `¿Estás seguro de que quieres eliminar ${images} ${getSpanishPlural(images, {
+        singular: "imagen",
+        plural: "imágenes"
+      })}?`;
     },
     confirmFolderDelete: "¿Estás seguro de que quieres eliminar esta carpeta? ¡Esto eliminará todo su contenido!",
     someFolderDeletesFailed: "No se pudieron eliminar algunas carpetas",

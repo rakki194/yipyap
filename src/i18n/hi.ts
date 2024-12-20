@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "कैप्शन सहेजने में त्रुटि",
     emptyFolder: "यह फ़ोल्डर खाली है",
     dropToUpload: "अपलोड करने के लिए फ़ाइलें यहां छोड़ें",
-    uploadProgress: ({ count }: { count: number }) => `${count} फ़ाइलें अपलोड हो रही हैं...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'कुछ फ़ाइलें अपलोड हो रही हैं...';
+      if (typeof params.count !== 'number') return 'कुछ फ़ाइलें अपलोड हो रही हैं...';
+      return `${params.count} फ़ाइलें अपलोड हो रही हैं...`;
+    },
     processingImage: "छवि प्रोसेस हो रही है...",
     generateTags: "टैग जनरेट करें",
     generatingTags: "टैग जनरेट हो रहे हैं...",

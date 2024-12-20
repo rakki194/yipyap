@@ -1,14 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import en from '../en';
-import type { GalleryTranslations } from '../types';
+import type { GalleryTranslations, TranslationParams } from '../types';
+
+type TranslationFunction = (params: TranslationParams) => string;
 
 describe('Translation Messages', () => {
   describe('gallery.uploadProgress', () => {
-    const uploadProgress = en.gallery.uploadProgress as GalleryTranslations['uploadProgress'];
+    const uploadProgress = en.gallery.uploadProgress as TranslationFunction;
 
     it('should format upload progress message with count', () => {
       const message = uploadProgress({ count: 1 });
-      expect(message).toBe('Uploading 1 files...');
+      expect(message).toBe('Uploading 1 file...');
 
       const messagePlural = uploadProgress({ count: 5 });
       expect(messagePlural).toBe('Uploading 5 files...');
@@ -20,7 +22,6 @@ describe('Translation Messages', () => {
     });
 
     it('should handle missing count parameter', () => {
-      // @ts-expect-error - Testing runtime behavior with missing parameter
       const message = uploadProgress({});
       expect(message).toBe('Uploading some files...');
     });
@@ -33,7 +34,7 @@ describe('Translation Messages', () => {
   });
 
   describe('gallery.confirmMultiDelete', () => {
-    const confirmMultiDelete = en.gallery.confirmMultiDelete as GalleryTranslations['confirmMultiDelete'];
+    const confirmMultiDelete = en.gallery.confirmMultiDelete as TranslationFunction;
 
     it('should format message with only images', () => {
       const message = confirmMultiDelete({ images: 2 });
@@ -68,44 +69,43 @@ describe('Translation Messages', () => {
   });
 
   describe('gallery.selectedCount', () => {
-    const selectedCount = en.gallery.selectedCount as GalleryTranslations['selectedCount'];
+    const selectedCount = en.gallery.selectedCount as TranslationFunction;
 
     it('should format selected count message', () => {
       const message = selectedCount({ count: 1 });
-      expect(message).toBe('1 selected');
+      expect(message).toBe('1 item selected');
 
       const messagePlural = selectedCount({ count: 3 });
-      expect(messagePlural).toBe('3 selected');
+      expect(messagePlural).toBe('3 items selected');
     });
 
     it('should handle zero selected', () => {
       const message = selectedCount({ count: 0 });
-      expect(message).toBe('0 selected');
+      expect(message).toBe('0 items selected');
     });
 
     it('should handle missing count parameter', () => {
-      // @ts-expect-error - Testing runtime behavior with missing parameter
       const message = selectedCount({});
-      expect(message).toBe('some selected');
+      expect(message).toBe('some items selected');
     });
 
     it('should handle invalid count value', () => {
-      // @ts-expect-error - Testing runtime behavior with invalid parameter
+      // @ts-expect-error - Testing runtime behavior with invalid parameter type
       const message = selectedCount({ count: 'invalid' });
-      expect(message).toBe('some selected');
+      expect(message).toBe('some items selected');
     });
   });
 
   describe('Null/Undefined Cases', () => {
-    const uploadProgress = en.gallery.uploadProgress as GalleryTranslations['uploadProgress'];
-    const selectedCount = en.gallery.selectedCount as GalleryTranslations['selectedCount'];
-    const confirmMultiDelete = en.gallery.confirmMultiDelete as GalleryTranslations['confirmMultiDelete'];
+    const uploadProgress = en.gallery.uploadProgress as TranslationFunction;
+    const selectedCount = en.gallery.selectedCount as TranslationFunction;
+    const confirmMultiDelete = en.gallery.confirmMultiDelete as TranslationFunction;
 
     it('should handle undefined parameters', () => {
       // @ts-expect-error - Testing runtime behavior with undefined
       expect(uploadProgress(undefined)).toBe('Uploading some files...');
       // @ts-expect-error - Testing runtime behavior with undefined
-      expect(selectedCount(undefined)).toBe('some selected');
+      expect(selectedCount(undefined)).toBe('some items selected');
       // @ts-expect-error - Testing runtime behavior with undefined
       expect(confirmMultiDelete(undefined)).toBe('Are you sure you want to delete these items?');
     });
@@ -114,7 +114,7 @@ describe('Translation Messages', () => {
       // @ts-expect-error - Testing runtime behavior with null
       expect(uploadProgress(null)).toBe('Uploading some files...');
       // @ts-expect-error - Testing runtime behavior with null
-      expect(selectedCount(null)).toBe('some selected');
+      expect(selectedCount(null)).toBe('some items selected');
       // @ts-expect-error - Testing runtime behavior with null
       expect(confirmMultiDelete(null)).toBe('Are you sure you want to delete these items?');
     });

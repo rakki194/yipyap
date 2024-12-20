@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -101,7 +102,10 @@ export default {
     quickJump: "Μετάβαση σε φάκελο...",
     loadingFolders: "Φόρτωση φακέλων...",
     noResults: "Δεν βρέθηκαν αποτελέσματα",
-    folderCount: ({ count }: { count: number }) => `${count} φάκελοι`,
+    folderCount: createPluralTranslation({
+      one: "1 φάκελος",
+      other: "${count} φάκελοι"
+    }, "el"),
     deleteConfirm: "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν την εικόνα;",
     deleteSuccess: "Η εικόνα διαγράφηκε με επιτυχία",
     deleteError: "Σφάλμα κατά τη διαγραφή της εικόνας",
@@ -110,7 +114,10 @@ export default {
     errorSavingCaption: "Σφάλμα κατά την αποθήκευση της λεζάντας",
     emptyFolder: "Αυτός ο φάκελος είναι κενός",
     dropToUpload: "Σύρετε αρχεία εδώ για μεταφόρτωση",
-    uploadProgress: ({ count }: { count: number }) => `Μεταφόρτωση ${count} αρχείων...`,
+    uploadProgress: createPluralTranslation({
+      one: "Μεταφόρτωση 1 αρχείου...",
+      other: "Μεταφόρτωση ${count} αρχείων..."
+    }, "el"),
     processingImage: "Επεξεργασία εικόνας...",
     generateTags: "Δημιουργία ετικετών",
     generatingTags: "Δημιουργία ετικετών...",
@@ -142,15 +149,33 @@ export default {
     fileDeleteError: "Σφάλμα κατά τη διαγραφή του αρχείου",
     uploadError: "Η μεταφόρτωση απέτυχε",
     dropOverlay: "Αποθέστε αρχεία ή φακέλους εδώ",
-    fileCount: ({ count }: { count: number }) => `${count} αρχεία`,
-    imageCount: ({ count }: { count: number }) => `${count} εικόνες`,
-    foundFolders: ({ count }: { count: number }) => `Βρέθηκαν ${count} φάκελοι`,
-    deletedCount: ({ count }: { count: number }) => `Διαγράφηκαν ${count} στοιχεία`,
-    selectedCount: ({ count }: { count: number }) => `${count} επιλεγμένα`,
-    processingImages: ({ count }: { count: number }) => `Επεξεργασία ${count} εικόνων...`,
-    folderLocation: ({ name }: { name: string }) => `στο ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Μετακίνηση στο ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Εργασία με ${name}`,
+    fileCount: createPluralTranslation({
+      one: "1 αρχείο",
+      other: "${count} αρχεία"
+    }, "el"),
+    imageCount: createPluralTranslation({
+      one: "1 εικόνα",
+      other: "${count} εικόνες"
+    }, "el"),
+    foundFolders: createPluralTranslation({
+      one: "Βρέθηκε 1 φάκελος",
+      other: "Βρέθηκαν ${count} φάκελοι"
+    }, "el"),
+    deletedCount: createPluralTranslation({
+      one: "Διαγράφηκε 1 στοιχείο",
+      other: "Διαγράφηκαν ${count} στοιχεία"
+    }, "el"),
+    selectedCount: createPluralTranslation({
+      one: "1 επιλεγμένο",
+      other: "${count} επιλεγμένα"
+    }, "el"),
+    processingImages: createPluralTranslation({
+      one: "Επεξεργασία 1 εικόνας...",
+      other: "Επεξεργασία ${count} εικόνων..."
+    }, "el"),
+    folderLocation: (params: TranslationParams) => `στο ${params.name ?? ""}`,
+    moveToFolder: (params: TranslationParams) => `Μετακίνηση στο ${params.name ?? ""}`,
+    workWithFolder: (params: TranslationParams) => `Εργασία με ${params.name ?? ""}`,
     createFolder: "Δημιουργία φακέλου",
     folderNamePlaceholder: "Όνομα φακέλου",
     deleteConfirmation: "Επιβεβαίωση διαγραφής",

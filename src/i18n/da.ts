@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -101,7 +102,10 @@ export default {
     quickJump: "Hop til mappe...",
     loadingFolders: "Indlæser mapper...",
     noResults: "Ingen resultater fundet",
-    folderCount: ({ count }: { count: number }) => `${count} mapper`,
+    folderCount: createPluralTranslation({
+      one: "1 mappe",
+      other: "${count} mapper"
+    }, "da"),
     deleteConfirm: "Er du sikker på, at du vil slette dette billede?",
     deleteSuccess: "Billede slettet med succes",
     deleteError: "Fejl ved sletning af billede",
@@ -110,7 +114,10 @@ export default {
     errorSavingCaption: "Fejl ved gemning af billedtekst",
     emptyFolder: "Denne mappe er tom",
     dropToUpload: "Slip filer her for at uploade",
-    uploadProgress: ({ count }: { count: number }) => `Uploader ${count} filer...`,
+    uploadProgress: createPluralTranslation({
+      one: "Uploader 1 fil...",
+      other: "Uploader ${count} filer..."
+    }, "da"),
     processingImage: "Behandler billede...",
     generateTags: "Generer tags",
     generatingTags: "Genererer tags...",
@@ -142,15 +149,33 @@ export default {
     fileDeleteError: "Fejl ved sletning af fil",
     uploadError: "Upload fejlede",
     dropOverlay: "Slip filer eller mapper her",
-    fileCount: ({ count }: { count: number }) => `${count} filer`,
-    imageCount: ({ count }: { count: number }) => `${count} billeder`,
-    foundFolders: ({ count }: { count: number }) => `Fandt ${count} mapper`,
-    deletedCount: ({ count }: { count: number }) => `Slettede ${count} elementer`,
-    selectedCount: ({ count }: { count: number }) => `${count} valgt`,
-    processingImages: ({ count }: { count: number }) => `Behandler ${count} billeder...`,
-    folderLocation: ({ name }: { name: string }) => `i ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Flyt til ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Arbejd med ${name}`,
+    fileCount: createPluralTranslation({
+      one: "1 fil",
+      other: "${count} filer"
+    }, "da"),
+    imageCount: createPluralTranslation({
+      one: "1 billede",
+      other: "${count} billeder"
+    }, "da"),
+    foundFolders: createPluralTranslation({
+      one: "Fandt 1 mappe",
+      other: "Fandt ${count} mapper"
+    }, "da"),
+    deletedCount: createPluralTranslation({
+      one: "Slettede 1 element",
+      other: "Slettede ${count} elementer"
+    }, "da"),
+    selectedCount: createPluralTranslation({
+      one: "1 valgt",
+      other: "${count} valgt"
+    }, "da"),
+    processingImages: createPluralTranslation({
+      one: "Behandler 1 billede...",
+      other: "Behandler ${count} billeder..."
+    }, "da"),
+    folderLocation: (params: TranslationParams) => `i ${params.name ?? ""}`,
+    moveToFolder: (params: TranslationParams) => `Flyt til ${params.name ?? ""}`,
+    workWithFolder: (params: TranslationParams) => `Arbejd med ${params.name ?? ""}`,
     createFolder: "Opret mappe",
     folderNamePlaceholder: "Mappenavn",
     deleteConfirmation: "Bekræft sletning",

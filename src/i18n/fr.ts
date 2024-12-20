@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Erreur lors de l'enregistrement de la légende",
     emptyFolder: "Ce dossier est vide",
     dropToUpload: "Déposez les fichiers ici pour télécharger",
-    uploadProgress: ({ count }: { count: number }) => `Téléchargement de ${count} fichiers...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Téléchargement de quelques fichiers...';
+      if (typeof params.count !== 'number') return 'Téléchargement de quelques fichiers...';
+      return `Téléchargement de ${params.count} fichiers...`;
+    },
     processingImage: "Traitement de l'image...",
     generateTags: "Générer les tags",
     generatingTags: "Génération des tags...",
@@ -130,13 +134,14 @@ export default {
     selectAll: "Tout sélectionner",
     deselectAll: "Tout désélectionner",
     deleteSelected: "Supprimer la sélection",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `Voulez-vous vraiment supprimer ${folders} dossiers et ${images} images ?`;
-      } else if (folders) {
-        return `Voulez-vous vraiment supprimer ${folders} dossiers ?`;
-      }
-      return `Voulez-vous vraiment supprimer ${images} images ?`;
+    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
+      if (!params) return 'Êtes-vous sûr de vouloir supprimer ces éléments ?';
+      const { folders = 0, images = 0 } = params;
+      if (folders === 0 && images === 0) return 'Êtes-vous sûr de vouloir supprimer ces éléments ?';
+      if (typeof folders !== 'number' || typeof images !== 'number') return 'Êtes-vous sûr de vouloir supprimer ces éléments ?';
+      if (folders > 0 && images > 0) return `Êtes-vous sûr de vouloir supprimer ${folders} dossier${folders > 1 ? 's' : ''} et ${images} image${images > 1 ? 's' : ''} ?`;
+      if (folders > 0) return `Êtes-vous sûr de vouloir supprimer ${folders} dossier${folders > 1 ? 's' : ''} ?`;
+      return `Êtes-vous sûr de vouloir supprimer ${images} image${images > 1 ? 's' : ''} ?`;
     },
     confirmFolderDelete: "Voulez-vous vraiment supprimer ce dossier ? Tout son contenu sera supprimé !",
     someFolderDeletesFailed: "Certains dossiers n'ont pas pu être supprimés",
@@ -147,7 +152,11 @@ export default {
     createFolder: "Créer un dossier",
     folderNamePlaceholder: "Nom du dossier",
     deleteConfirmation: "Confirmation de suppression",
-    selectedCount: ({ count }: { count: number }) => `${count} éléments sélectionnés`,
+    selectedCount: (params?: { count: number }) => {
+      if (!params) return 'sélectionné';
+      if (typeof params.count !== 'number') return 'sélectionné';
+      return `${params.count} sélectionné${params.count > 1 ? 's' : ''}`;
+    },
     processingImages: ({ count }: { count: number }) => `Traitement de ${count} images...`,
     folderLocation: ({ name }: { name: string }) => `Emplacement : ${name}`,
     moveToFolder: ({ name }: { name: string }) => `Déplacer vers ${name}`,

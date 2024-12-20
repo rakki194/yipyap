@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Errore durante il salvataggio della didascalia",
     emptyFolder: "Questa cartella è vuota",
     dropToUpload: "Trascina qui i file per caricarli",
-    uploadProgress: ({ count }: { count: number }) => `Caricamento di ${count} file...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Caricamento di alcuni file...';
+      if (typeof params.count !== 'number') return 'Caricamento di alcuni file...';
+      return `Caricamento di ${params.count} file...`;
+    },
     processingImage: "Elaborazione immagine...",
     generateTags: "Genera tag",
     generatingTags: "Generazione tag...",
@@ -127,7 +131,11 @@ export default {
     imageCount: ({ count }: { count: number }) => `${count} immagini`,
     foundFolders: ({ count }: { count: number }) => `${count} cartelle trovate`,
     deletedCount: ({ count }: { count: number }) => `${count} elementi eliminati`,
-    selectedCount: ({ count }: { count: number }) => `${count} selezionati`,
+    selectedCount: (params?: { count: number }) => {
+      if (!params) return 'selezionato';
+      if (typeof params.count !== 'number') return 'selezionato';
+      return `${params.count} selezionat${params.count === 1 ? 'o' : 'i'}`;
+    },
     processingImages: ({ count }: { count: number }) => `Elaborazione di ${count} immagini...`,
     folderLocation: ({ name }: { name: string }) => `in ${name}`,
     moveToFolder: ({ name }: { name: string }) => `Sposta in ${name}`,
@@ -140,13 +148,14 @@ export default {
     selectAll: "Seleziona tutto",
     deselectAll: "Deseleziona tutto",
     deleteSelected: "Elimina selezionati",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `Sei sicuro di voler eliminare ${folders} cartelle e ${images} immagini?`;
-      } else if (folders) {
-        return `Sei sicuro di voler eliminare ${folders} cartelle?`;
-      }
-      return `Sei sicuro di voler eliminare ${images} immagini?`;
+    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
+      if (!params) return 'Sei sicuro di voler eliminare questi elementi?';
+      const { folders = 0, images = 0 } = params;
+      if (folders === 0 && images === 0) return 'Sei sicuro di voler eliminare questi elementi?';
+      if (typeof folders !== 'number' || typeof images !== 'number') return 'Sei sicuro di voler eliminare questi elementi?';
+      if (folders > 0 && images > 0) return `Sei sicuro di voler eliminare ${folders} cartell${folders === 1 ? 'a' : 'e'} e ${images} immagin${images === 1 ? 'e' : 'i'}?`;
+      if (folders > 0) return `Sei sicuro di voler eliminare ${folders} cartell${folders === 1 ? 'a' : 'e'}?`;
+      return `Sei sicuro di voler eliminare ${images} immagin${images === 1 ? 'e' : 'i'}?`;
     },
     confirmFolderDelete: ({ name = "" }) => `Sei sicuro di voler eliminare la cartella ${name}?`,
     someFolderDeletesFailed: "Alcune cartelle non sono state eliminate",

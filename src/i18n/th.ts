@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "เกิดข้อผิดพลาดในการบันทึกคำบรรยาย",
     emptyFolder: "โฟลเดอร์นี้ว่างเปล่า",
     dropToUpload: "วางไฟล์ที่นี่เพื่ออัปโหลด",
-    uploadProgress: (params: { count: number }) => `กำลังอัปโหลด ${params.count} ไฟล์...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'กำลังอัปโหลดไฟล์...';
+      if (typeof params.count !== 'number') return 'กำลังอัปโหลดไฟล์...';
+      return `กำลังอัปโหลด ${params.count} ไฟล์...`;
+    },
     processingImage: "กำลังประมวลผลรูปภาพ...",
     generateTags: "สร้างแท็ก",
     generatingTags: "กำลังสร้างแท็ก...",

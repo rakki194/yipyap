@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -101,7 +102,10 @@ export default {
     quickJump: "Бърз преход към папка...",
     loadingFolders: "Зареждане на папки...",
     noResults: "Няма намерени резултати",
-    folderCount: ({ count }: { count: number }) => `${count} папки`,
+    folderCount: createPluralTranslation({
+      one: "1 папка",
+      other: "${count} папки"
+    }, "bg"),
     deleteConfirm: "Сигурни ли сте, че искате да изтриете това изображение?",
     deleteSuccess: "Изображението е изтрито успешно",
     deleteError: "Грешка при изтриване на изображението",
@@ -110,7 +114,10 @@ export default {
     errorSavingCaption: "Грешка при запазване на надписа",
     emptyFolder: "Тази папка е празна",
     dropToUpload: "Пуснете файлове тук за качване",
-    uploadProgress: ({ count }: { count: number }) => `Качване на ${count} файла...`,
+    uploadProgress: createPluralTranslation({
+      one: "Качване на 1 файл...",
+      other: "Качване на ${count} файла..."
+    }, "bg"),
     processingImage: "Обработка на изображение...",
     generateTags: "Генерирай тагове",
     generatingTags: "Генериране на тагове...",
@@ -142,15 +149,33 @@ export default {
     deletingFile: "Изтриване на файл...",
     fileDeleteSuccess: "Файлът е изтрит успешно",
     fileDeleteError: "Грешка при изтриване на файла",
-    fileCount: ({ count }: { count: number }) => `${count} файла`,
-    imageCount: ({ count }: { count: number }) => `${count} изображения`,
-    foundFolders: ({ count }: { count: number }) => `Намерени ${count} папки`,
-    deletedCount: ({ count }: { count: number }) => `Изтрити ${count} елемента`,
-    selectedCount: ({ count }: { count: number }) => `${count} избрани`,
-    processingImages: ({ count }: { count: number }) => `Обработка на ${count} изображения...`,
-    folderLocation: ({ name }: { name: string }) => `в ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Премести в ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Работа с ${name}`,
+    fileCount: createPluralTranslation({
+      one: "1 файл",
+      other: "${count} файла"
+    }, "bg"),
+    imageCount: createPluralTranslation({
+      one: "1 изображение",
+      other: "${count} изображения"
+    }, "bg"),
+    foundFolders: createPluralTranslation({
+      one: "Намерена 1 папка",
+      other: "Намерени ${count} папки"
+    }, "bg"),
+    deletedCount: createPluralTranslation({
+      one: "Изтрит 1 елемент",
+      other: "Изтрити ${count} елемента"
+    }, "bg"),
+    selectedCount: createPluralTranslation({
+      one: "1 избран",
+      other: "${count} избрани"
+    }, "bg"),
+    processingImages: createPluralTranslation({
+      one: "Обработка на 1 изображение...",
+      other: "Обработка на ${count} изображения..."
+    }, "bg"),
+    folderLocation: (params: TranslationParams) => `в ${params.name ?? ""}`,
+    moveToFolder: (params: TranslationParams) => `Премести в ${params.name ?? ""}`,
+    workWithFolder: (params: TranslationParams) => `Работа с ${params.name ?? ""}`,
     createFolder: "Създай папка",
     folderNamePlaceholder: "Име на папката",
     deleteConfirmation: "Потвърждение за изтриване",

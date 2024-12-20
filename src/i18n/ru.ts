@@ -111,8 +111,11 @@ export default {
     errorSavingCaption: "Ошибка при сохранении подписи",
     emptyFolder: "Эта папка пуста",
     dropToUpload: "Перетащите файлы для загрузки",
-    uploadProgress: ({ count = 0 }) => 
-      `Загрузка ${count} ${getRussianPlural(count, ['файла', 'файлов', 'файлов'])}...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Загрузка файлов...';
+      if (typeof params.count !== 'number') return 'Загрузка файлов...';
+      return `Загрузка ${params.count} ${getRussianPlural(params.count, ['файла', 'файлов', 'файлов'])}...`;
+    },
     processingImage: "Обработка изображения...",
     generateTags: "Сгенерировать теги",
     generatingTags: "Генерация тегов...",
@@ -120,11 +123,27 @@ export default {
     noCaptionFiles: "Пока нет файлов подписей!",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders > 0 && images > 0) {
-        return `Вы уверены, что хотите удалить ${folders} ${getRussianPlural(folders, ['папку', 'папки', 'папок'])} и ${images} ${getRussianPlural(images, ['изображение', 'изображения', 'изображений'])}?`;
+        return `Вы уверены, что хотите удалить ${folders} ${getRussianPlural(folders, [
+          'папку',
+          'папки',
+          'папок'
+        ])} и ${images} ${getRussianPlural(images, [
+          'изображение',
+          'изображения',
+          'изображений'
+        ])}?`;
       } else if (folders > 0) {
-        return `Вы уверены, что хотите удалить ${folders} ${getRussianPlural(folders, ['папку', 'папки', 'папок'])}?`;
+        return `Вы уверены, что хотите удалить ${folders} ${getRussianPlural(folders, [
+          'папку',
+          'папки',
+          'папок'
+        ])}?`;
       }
-      return `Вы уверены, что хотите удалить ${images} ${getRussianPlural(images, ['изображение', 'изображения', 'изображений'])}?`;
+      return `Вы уверены, что хотите удалить ${images} ${getRussianPlural(images, [
+        'изображение',
+        'изображения',
+        'изображений'
+      ])}?`;
     },
     createCaption: "Создать подпись",
     captionTypes: {
@@ -148,7 +167,11 @@ export default {
     folderNamePlaceholder: "Имя папки",
     deleteConfirmation: "Подтверждение удаления",
     selectedCount: ({ count = 0 }) => 
-      `${count} ${getRussianPlural(count, ['выбран', 'выбрано', 'выбрано'])}`,
+      `${count} ${getRussianPlural(count, [
+        'элемент выбран',
+        'элемента выбрано',
+        'элементов выбрано'
+      ])}`,
     processingImages: ({ count = 0 }) =>
       `Обработка ${count} ${getRussianPlural(count, [
         'изображения',

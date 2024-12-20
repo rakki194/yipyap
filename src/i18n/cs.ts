@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -101,7 +102,12 @@ export default {
     quickJump: "Přejít do složky...",
     loadingFolders: "Načítání složek...",
     noResults: "Žádné výsledky",
-    folderCount: ({ count }: { count: number }) => `${count} složek`,
+    folderCount: createPluralTranslation({
+      one: "1 složka",
+      few: "${count} složky",
+      many: "${count} složek",
+      other: "${count} složek"
+    }, "cs"),
     deleteConfirm: "Opravdu chcete smazat tento obrázek?",
     deleteSuccess: "Obrázek byl úspěšně smazán",
     deleteError: "Chyba při mazání obrázku",
@@ -110,7 +116,12 @@ export default {
     errorSavingCaption: "Chyba při ukládání popisku",
     emptyFolder: "Tato složka je prázdná",
     dropToUpload: "Přetáhněte soubory pro nahrání",
-    uploadProgress: ({ count }: { count: number }) => `Nahrávání ${count} souborů...`,
+    uploadProgress: createPluralTranslation({
+      one: "Nahrávání 1 souboru...",
+      few: "Nahrávání ${count} souborů...",
+      many: "Nahrávání ${count} souborů...",
+      other: "Nahrávání ${count} souborů..."
+    }, "cs"),
     processingImage: "Zpracování obrázku...",
     generateTags: "Generovat tagy",
     generatingTags: "Generování tagů...",
@@ -142,15 +153,45 @@ export default {
     deletingFile: "Mazání souboru...",
     fileDeleteSuccess: "Soubor byl úspěšně smazán",
     fileDeleteError: "Chyba při mazání souboru",
-    fileCount: ({ count }: { count: number }) => `${count} souborů`,
-    imageCount: ({ count }: { count: number }) => `${count} obrázků`,
-    foundFolders: ({ count }: { count: number }) => `Nalezeno ${count} složek`,
-    deletedCount: ({ count }: { count: number }) => `Smazáno ${count} položek`,
-    selectedCount: ({ count }: { count: number }) => `${count} vybráno`,
-    processingImages: ({ count }: { count: number }) => `Zpracování ${count} obrázků...`,
-    folderLocation: ({ name }: { name: string }) => `ve složce ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Přesunout do ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Pracovat s ${name}`,
+    fileCount: createPluralTranslation({
+      one: "1 soubor",
+      few: "${count} soubory",
+      many: "${count} souborů",
+      other: "${count} souborů"
+    }, "cs"),
+    imageCount: createPluralTranslation({
+      one: "1 obrázek",
+      few: "${count} obrázky",
+      many: "${count} obrázků",
+      other: "${count} obrázků"
+    }, "cs"),
+    foundFolders: createPluralTranslation({
+      one: "Nalezena 1 složka",
+      few: "Nalezeny ${count} složky",
+      many: "Nalezeno ${count} složek",
+      other: "Nalezeno ${count} složek"
+    }, "cs"),
+    deletedCount: createPluralTranslation({
+      one: "Smazána 1 položka",
+      few: "Smazány ${count} položky",
+      many: "Smazáno ${count} položek",
+      other: "Smazáno ${count} položek"
+    }, "cs"),
+    selectedCount: createPluralTranslation({
+      one: "1 vybraný",
+      few: "${count} vybrané",
+      many: "${count} vybraných",
+      other: "${count} vybraných"
+    }, "cs"),
+    processingImages: createPluralTranslation({
+      one: "Zpracování 1 obrázku...",
+      few: "Zpracování ${count} obrázků...",
+      many: "Zpracování ${count} obrázků...",
+      other: "Zpracování ${count} obrázků..."
+    }, "cs"),
+    folderLocation: (params: TranslationParams) => `ve složce ${params.name ?? ""}`,
+    moveToFolder: (params: TranslationParams) => `Přesunout do ${params.name ?? ""}`,
+    workWithFolder: (params: TranslationParams) => `Pracovat s ${params.name ?? ""}`,
     createFolder: "Vytvořit složku",
     folderNamePlaceholder: "Název složky",
     deleteConfirmation: "Potvrzení smazání",

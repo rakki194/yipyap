@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -101,7 +102,10 @@ export default {
     quickJump: "Zum Ordner springen...",
     loadingFolders: "Ordner werden geladen...",
     noResults: "Keine Ergebnisse gefunden",
-    folderCount: ({ count }: { count: number }) => `${count} Ordner`,
+    folderCount: createPluralTranslation({
+      one: "1 Ordner",
+      other: "${count} Ordner"
+    }, "de"),
     deleteConfirm: "Möchten Sie dieses Bild wirklich löschen?",
     deleteSuccess: "Bild erfolgreich gelöscht",
     deleteError: "Fehler beim Löschen des Bildes",
@@ -110,7 +114,10 @@ export default {
     errorSavingCaption: "Fehler beim Speichern der Beschriftung",
     emptyFolder: "Dieser Ordner ist leer",
     dropToUpload: "Dateien zum Hochladen hier ablegen",
-    uploadProgress: ({ count }: { count: number }) => `Lade ${count} Dateien hoch...`,
+    uploadProgress: createPluralTranslation({
+      one: "1 Datei wird hochgeladen...",
+      other: "${count} Dateien werden hochgeladen..."
+    }, "de"),
     processingImage: "Bild wird verarbeitet...",
     generateTags: "Tags generieren",
     generatingTags: "Tags werden generiert...",
@@ -123,12 +130,21 @@ export default {
       wd: "Neue .wd-Datei erstellen"
     },
     noCaptionFiles: "Noch keine Beschriftungsdateien!",
-    deletedCount: ({ count }: { count: number }) => `${count} Elemente gelöscht`,
-    selectedCount: ({ count }: { count: number }) => `${count} ausgewählt`,
-    processingImages: ({ count }: { count: number }) => `${count} Bilder werden verarbeitet...`,
-    folderLocation: ({ name }: { name: string }) => `in ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Nach ${name} verschieben`,
-    workWithFolder: ({ name }: { name: string }) => `Mit ${name} arbeiten`,
+    deletedCount: createPluralTranslation({
+      one: "1 Element gelöscht",
+      other: "${count} Elemente gelöscht"
+    }, "de"),
+    selectedCount: createPluralTranslation({
+      one: "1 ausgewählt",
+      other: "${count} ausgewählt"
+    }, "de"),
+    processingImages: createPluralTranslation({
+      one: "1 Bild wird verarbeitet...",
+      other: "${count} Bilder werden verarbeitet..."
+    }, "de"),
+    folderLocation: (params: TranslationParams) => `in ${params.name ?? ""}`,
+    moveToFolder: (params: TranslationParams) => `Nach ${params.name ?? ""} verschieben`,
+    workWithFolder: (params: TranslationParams) => `Mit ${params.name ?? ""} arbeiten`,
     createFolder: "Ordner erstellen",
     folderNamePlaceholder: "Ordnername",
     deleteConfirmation: "Löschen bestätigen",
@@ -143,20 +159,30 @@ export default {
     deletingFile: "Datei wird gelöscht...",
     fileDeleteSuccess: "Datei erfolgreich gelöscht",
     fileDeleteError: "Fehler beim Löschen der Datei",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+    confirmMultiDelete: (params: TranslationParams) => {
+      const folders = params.folders ?? 0;
+      const images = params.images ?? 0;
       if (folders > 0 && images > 0) {
-        return `Möchten Sie wirklich ${folders} Ordner und ${images} Bilder löschen?`;
+        return `Sind Sie sicher, dass Sie ${folders} Ordner und ${images} Bilder löschen möchten?`;
       } else if (folders > 0) {
-        return `Möchten Sie wirklich ${folders} Ordner löschen?`;
+        return `Sind Sie sicher, dass Sie ${folders} Ordner löschen möchten?`;
+      } else if (images > 0) {
+        return `Sind Sie sicher, dass Sie ${images} Bilder löschen möchten?`;
       }
-      return `Möchten Sie wirklich ${images} Bilder löschen?`;
+      return 'Sind Sie sicher, dass Sie diese Elemente löschen möchten?';
     },
-    fileCount: ({ count }: { count: number }) => 
-      `${count} Dateien`,
-    imageCount: ({ count }: { count: number }) => 
-      `${count} Bilder`,
-    foundFolders: ({ count }: { count: number }) => 
-      `${count} Ordner gefunden`,
+    fileCount: createPluralTranslation({
+      one: "1 Datei",
+      other: "${count} Dateien"
+    }, "de"),
+    imageCount: createPluralTranslation({
+      one: "1 Bild",
+      other: "${count} Bilder"
+    }, "de"),
+    foundFolders: createPluralTranslation({
+      one: "1 Ordner gefunden",
+      other: "${count} Ordner gefunden"
+    }, "de"),
   },
   shortcuts: {
     title: "Tastenkombinationen",

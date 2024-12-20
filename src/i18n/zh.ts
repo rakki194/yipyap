@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "保存说明时出错",
     emptyFolder: "此文件夹为空",
     dropToUpload: "拖放文件以上传",
-    uploadProgress: (params: { count: number }) => `正在上传${params.count}个文件...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return '正在上传文件...';
+      if (typeof params.count !== 'number') return '正在上传文件...';
+      return `正在上传 ${params.count} 个文件...`;
+    },
     processingImage: "处理图片中...",
     generateTags: "生成标签",
     generatingTags: "生成标签中...",
@@ -126,20 +130,25 @@ export default {
     fileCount: (params: { count: number }) => `${params.count}个文件`,
     imageCount: (params: { count: number }) => `${params.count}张图片`,
     foundFolders: (params: { count: number }) => `找到${params.count}个文件夹`,
-    selectedCount: (params: { count: number }) => `已选择${params.count}项`,
+    selectedCount: (params?: { count: number }) => {
+      if (!params) return '已选择';
+      if (typeof params.count !== 'number') return '已选择';
+      return `已选择 ${params.count} 个`;
+    },
     selectAll: "全选",
     createFolder: "创建文件夹",
     moveToFolder: (params: { name: string }) => `移动到"${params.name}"文件夹`,
     deletedCount: (params: { count: number }) => `已删除${params.count}项`,
     deselectAll: "取消全选",
     deleteSelected: "删除所选",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-        if (folders && images) {
-            return `确定要删除${folders}个文件夹和${images}张图片吗？`;
-        } else if (folders) {
-            return `确定要删除${folders}个文件夹吗？`;
-        }
-        return `确定要删除${images}张图片吗？`;
+    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
+      if (!params) return '确定要删除这些项目吗？';
+      const { folders = 0, images = 0 } = params;
+      if (folders === 0 && images === 0) return '确定要删除这些项目吗？';
+      if (typeof folders !== 'number' || typeof images !== 'number') return '确定要删除这些项目吗？';
+      if (folders > 0 && images > 0) return `确定要删除 ${folders} 个文件夹和 ${images} 张图片吗？`;
+      if (folders > 0) return `确定要删除 ${folders} 个文件夹吗？`;
+      return `确定要删除 ${images} 张图片吗？`;
     },
     confirmFolderDelete: ({ name = "" }) => `确定要删除"${name}"文件夹吗？`,
     someFolderDeletesFailed: "部分文件夹删除失败",

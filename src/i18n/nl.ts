@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Fout bij opslaan van bijschrift",
     emptyFolder: "Deze map is leeg",
     dropToUpload: "Sleep bestanden hier om te uploaden",
-    uploadProgress: ({ count }: { count: number }) => `${count} bestanden uploaden...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Bestanden uploaden...';
+      if (typeof params.count !== 'number') return 'Bestanden uploaden...';
+      return `${params.count} bestanden uploaden...`;
+    },
     processingImage: "Afbeelding verwerken...",
     generateTags: "Tags genereren",
     generatingTags: "Tags genereren...",
@@ -127,7 +131,11 @@ export default {
     imageCount: ({ count }: { count: number }) => `${count} afbeeldingen`,
     foundFolders: ({ count }: { count: number }) => `${count} mappen gevonden`,
     deletedCount: ({ count }: { count: number }) => `${count} items verwijderd`,
-    selectedCount: ({ count }: { count: number }) => `${count} geselecteerd`,
+    selectedCount: (params?: { count: number }) => {
+      if (!params) return 'enkele geselecteerd';
+      if (typeof params.count !== 'number') return 'enkele geselecteerd';
+      return `${params.count} geselecteerd`;
+    },
     processingImages: ({ count }: { count: number }) => `${count} afbeeldingen verwerken...`,
     folderLocation: ({ name }: { name: string }) => `in ${name}`,
     moveToFolder: ({ name }: { name: string }) => `Verplaats naar ${name}`,
@@ -140,13 +148,14 @@ export default {
     deleteSelected: "Selectie verwijderen",
     uploadError: "Upload mislukt",
     dropOverlay: "Sleep bestanden of mappen hier",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `Weet je zeker dat je ${folders} mappen en ${images} afbeeldingen wilt verwijderen?`;
-      } else if (folders) {
-        return `Weet je zeker dat je ${folders} mappen wilt verwijderen?`;
-      }
-      return `Weet je zeker dat je ${images} afbeeldingen wilt verwijderen?`;
+    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
+      if (!params) return 'Weet u zeker dat u deze items wilt verwijderen?';
+      const { folders = 0, images = 0 } = params;
+      if (folders === 0 && images === 0) return 'Weet u zeker dat u deze items wilt verwijderen?';
+      if (typeof folders !== 'number' || typeof images !== 'number') return 'Weet u zeker dat u deze items wilt verwijderen?';
+      if (folders > 0 && images > 0) return `Weet u zeker dat u ${folders} mappen en ${images} afbeeldingen wilt verwijderen?`;
+      if (folders > 0) return `Weet u zeker dat u ${folders} mappen wilt verwijderen?`;
+      return `Weet u zeker dat u ${images} afbeeldingen wilt verwijderen?`;
     },
     confirmFolderDelete: ({ name = "" }) => `Weet je zeker dat je de map ${name} wilt verwijderen?`,
     someFolderDeletesFailed: "Sommige mappen konden niet worden verwijderd",

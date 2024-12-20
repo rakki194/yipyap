@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 import { getArabicPlural } from "./utils";
 
 export default {
@@ -116,7 +116,16 @@ export default {
     errorSavingCaption: "خطأ أثناء حفظ التعليق",
     emptyFolder: "هذا المجلد فارغ",
     dropToUpload: "اسحب الملفات هنا للتحميل",
-    uploadProgress: ({ count }) => `جارٍ تحميل ${count} ملف...`,
+    uploadProgress: (params: TranslationParams) => {
+      const count = params.count;
+      if (typeof count !== 'number') return 'جاري تحميل الملفات...';
+      return `جاري تحميل ${count} ${getArabicPlural(count, {
+        singular: "ملف",
+        dual: "ملفان",
+        plural: "ملفات",
+        pluralLarge: "ملفاً"
+      })}...`;
+    },
     processingImage: "جارٍ معالجة الصورة...",
     generateTags: "إنشاء وسوم",
     generatingTags: "جارٍ إنشاء الوسوم...",
@@ -136,11 +145,31 @@ export default {
     deleteSelected: "حذف المحدد",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders > 0 && images > 0) {
-        return `هل أنت متأكد من حذف ${folders} مجلد و ${images} صورة؟`;
+        return `هل أنت متأكد من حذف ${folders} ${getArabicPlural(folders, {
+          singular: "مجلد",
+          dual: "مجلدان",
+          plural: "مجلدات",
+          pluralLarge: "مجلداً"
+        })} و ${images} ${getArabicPlural(images, {
+          singular: "صورة",
+          dual: "صورتان",
+          plural: "صور",
+          pluralLarge: "صورةً"
+        })}؟`;
       } else if (folders > 0) {
-        return `هل أنت متأكد من حذف ${folders} مجلد؟`;
+        return `هل أنت متأكد من حذف ${folders} ${getArabicPlural(folders, {
+          singular: "مجلد",
+          dual: "مجلدان",
+          plural: "مجلدات",
+          pluralLarge: "مجلداً"
+        })}؟`;
       }
-      return `هل أنت متأكد من حذف ${images} صورة؟`;
+      return `هل أنت متأكد من حذف ${images} ${getArabicPlural(images, {
+        singular: "صورة",
+        dual: "صورتان",
+        plural: "صور",
+        pluralLarge: "صورةً"
+      })}؟`;
     },
     confirmFolderDelete: "هل أنت متأكد من حذف المجلد {name}؟",
     someFolderDeletesFailed: "فشل حذف بعض المجلدات",
@@ -151,28 +180,57 @@ export default {
     createFolder: "إنشاء مجلد",
     folderNamePlaceholder: "اسم المجلد",
     deleteConfirmation: "تأكيد الحذف",
-    selectedCount: ({ count }) => `${count} محدد`,
-    processingImages: ({ count = 0 }) => `معالجة ${count} صور...`,
-    foundFolders: ({ count = 0 }) => `تم العثور على ${count} مجلدات`,
-    deletedCount: ({ count = 0 }) => `تم حذف ${count} عناصر`,
-    fileCount: ({ count = 0 }) => getArabicPlural(count, {
-      singular: "ملف واحد",
-      dual: "ملفان",
-      plural: "ملفات",
-      pluralLarge: "ملفاً"
-    }),
-    imageCount: ({ count = 0 }) => getArabicPlural(count, {
-      singular: "صورة واحدة",
-      dual: "صورتان",
-      plural: "صور",
-      pluralLarge: "صورةً"
-    }),
-    folderLocation: ({ name }: { name: string }) => 
-      `في ${name}`,
-    moveToFolder: ({ name }: { name: string }) => 
-      `نقل إلى ${name}`,
-    workWithFolder: ({ name }: { name: string }) => 
-      `العمل مع ${name}`,
+    selectedCount: (params: TranslationParams) => {
+      const count = params.count ?? 0;
+      return `${count} ${getArabicPlural(count, {
+        singular: "عنصر محدد",
+        dual: "عنصران محددان",
+        plural: "عناصر محددة",
+        pluralLarge: "عنصراً محدداً"
+      })}`;
+    },
+    processingImages: (params: TranslationParams) => {
+      const count = params.count ?? 0;
+      return `معالجة ${count} صور...`;
+    },
+    foundFolders: (params: TranslationParams) => {
+      const count = params.count ?? 0;
+      return `تم العثور على ${count} مجلدات`;
+    },
+    deletedCount: (params: TranslationParams) => {
+      const count = params.count ?? 0;
+      return `تم حذف ${count} عناصر`;
+    },
+    fileCount: (params: TranslationParams) => {
+      const count = params.count ?? 0;
+      return getArabicPlural(count, {
+        singular: "ملف واحد",
+        dual: "ملفان",
+        plural: "ملفات",
+        pluralLarge: "ملفاً"
+      });
+    },
+    imageCount: (params: TranslationParams) => {
+      const count = params.count ?? 0;
+      return getArabicPlural(count, {
+        singular: "صورة واحدة",
+        dual: "صورتان",
+        plural: "صور",
+        pluralLarge: "صورةً"
+      });
+    },
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `في ${name}`;
+    },
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "المجلد";
+      return `نقل إلى ${name}`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "المجلد";
+      return `العمل مع ${name}`;
+    },
   },
   shortcuts: {
     title: "اختصارات لوحة المفاتيح",

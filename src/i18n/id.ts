@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Kesalahan saat menyimpan keterangan",
     emptyFolder: "Folder ini kosong",
     dropToUpload: "Jatuhkan file di sini untuk mengunggah",
-    uploadProgress: ({ count }: { count: number }) => `Mengunggah ${count} file...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Mengunggah beberapa file...';
+      if (typeof params.count !== 'number') return 'Mengunggah beberapa file...';
+      return `Mengunggah ${params.count} file...`;
+    },
     processingImage: "Memproses gambar...",
     generateTags: "Buat Tag",
     generatingTags: "Membuat tag...",

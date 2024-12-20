@@ -110,7 +110,11 @@ export default {
     errorSavingCaption: "Feil ved lagring av bildetekst",
     emptyFolder: "Denne mappen er tom",
     dropToUpload: "Slipp filer her for å laste opp",
-    uploadProgress: ({ count }: { count: number }) => `Laster opp ${count} filer...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Laster opp noen filer...';
+      if (typeof params.count !== 'number') return 'Laster opp noen filer...';
+      return `Laster opp ${params.count} filer...`;
+    },
     processingImage: "Behandler bilde...",
     generateTags: "Generer tagger",
     generatingTags: "Genererer tagger...",
