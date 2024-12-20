@@ -12,12 +12,14 @@ import {
   createResource,
   createSignal,
 } from "solid-js";
-import { Location, useLocation } from "@solidjs/router";
+import { ErrorBoundary } from "solid-js/web";
+import { Location, useLocation, useNavigate } from "@solidjs/router";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { AppContext } from "~/contexts/contexts";
 import { Theme, getInitialTheme } from "~/contexts/theme";
 import { Locale, getTranslationValue, translations } from "~/i18n";
 import type { Translations } from "~/i18n/types";
+import { addNotification } from "~/components/Notification/NotificationContainer";
 
 /**
  * Interface defining the shape of the app context.
@@ -51,6 +53,8 @@ export interface AppContext {
   setPreserveLatents: (value: boolean) => void;
   preserveTxt: boolean;
   setPreserveTxt: (value: boolean) => void;
+  alwaysShowCaptionEditor: boolean;
+  setAlwaysShowCaptionEditor: (value: boolean) => void;
   notify: (notification: {
     type: 'error' | 'success' | 'info' | 'warning';
     message: string;
@@ -61,7 +65,7 @@ export interface AppContext {
   setThumbnailSize: (size: number) => void;
   createNotification: (notification: {
     message: string;
-    type: 'success' | 'error';
+    type: 'error' | 'success' | 'info' | 'warning';
   }) => void;
 }
 
@@ -83,6 +87,7 @@ const createAppContext = (): AppContext => {
     enableMinimap: boolean;
     locale: Locale;
     thumbnailSize: number;
+    alwaysShowCaptionEditor: boolean;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
@@ -94,6 +99,7 @@ const createAppContext = (): AppContext => {
     enableMinimap: localStorage.getItem("enableMinimap") === "true",
     locale: (localStorage.getItem("locale") as Locale) || "en",
     thumbnailSize: parseInt(localStorage.getItem("thumbnailSize") || "250"),
+    alwaysShowCaptionEditor: localStorage.getItem("alwaysShowCaptionEditor") === "true",
   });
 
   // Previous Location tracking
@@ -149,6 +155,9 @@ const createAppContext = (): AppContext => {
   });
   createRenderEffect(() =>
     localStorage.setItem("thumbnailSize", store.thumbnailSize.toString())
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("alwaysShowCaptionEditor", store.alwaysShowCaptionEditor.toString())
   );
 
   const setJtp2ModelPath = (value: string) => {
@@ -302,7 +311,10 @@ const createAppContext = (): AppContext => {
       message: string;
       details?: string;
     }) => {
-      // Implement notification logic here
+      addNotification({
+        type: notification.type,
+        message: notification.message,
+      });
     },
     setDisableNonsense,
     get thumbnailSize() {
@@ -313,13 +325,36 @@ const createAppContext = (): AppContext => {
     },
     createNotification: (notification: {
       message: string;
-      type: 'success' | 'error';
+      type: 'error' | 'success' | 'info' | 'warning';
     }) => {
-      // Implement notification logic here
+      addNotification(notification);
     },
+    get alwaysShowCaptionEditor() {
+      return store.alwaysShowCaptionEditor;
+    },
+    setAlwaysShowCaptionEditor: (value: boolean) => setStore("alwaysShowCaptionEditor", value),
   };
 
   return appContext;
+};
+
+const ErrorFallback: ParentComponent<{ error: Error }> = (props) => {
+  const navigate = useNavigate();
+  return (
+    <div class="error-message">
+      Error: {props.error.toString()}
+      <br />
+      <button onClick={() => navigate("/")}>Return to front page</button>
+    </div>
+  );
+};
+
+const CustomErrorBoundary: ParentComponent = (props) => {
+  return (
+    <ErrorBoundary fallback={(err: Error) => <ErrorFallback error={err} />}>
+      {props.children}
+    </ErrorBoundary>
+  );
 };
 
 /**
@@ -329,7 +364,9 @@ const createAppContext = (): AppContext => {
 export const AppProvider: ParentComponent<{ children: any }> = (props) => {
   const value = createAppContext();
   return (
-    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+    <CustomErrorBoundary>
+      <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+    </CustomErrorBoundary>
   );
 };
 

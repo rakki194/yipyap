@@ -28,6 +28,7 @@ import type {
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
 import { joinUrlParts, replaceExtension, cacheNavigation } from "~/utils";
+import { useAppContext } from "~/contexts/app";
 
 export interface GalleryState {
   viewMode: "grid" | "list";
@@ -106,6 +107,8 @@ export interface FolderInfo {
 
 // Call in reactive contexts only
 export function makeGalleryState() {
+  const app = useAppContext();
+
   // State part of the URL
   // FIXME: Most of these are unused, but eventually we want to have some search params in the URL
   const [searchParams, setSearchParams] = useSearchParams<{
@@ -272,13 +275,20 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     try {
+      // Show generating notification
+      app.notify({
+        message: app.t('notifications.generatingCaption'),
+        type: "info"
+      });
+
       const response = await generateCaption(
         database.path,
         image.name,
         generator
       );
       if (!response.ok) {
-        throw new Error(`Failed to generate tags: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(errorText || response.statusText);
       }
 
       const data = await response.json();
@@ -292,10 +302,20 @@ export function makeGalleryState() {
           },
           database
         );
+
+        // Show success notification
+        app.notify({
+          message: app.t('notifications.captionGenerated'),
+          type: "success"
+        });
       }
     } catch (error) {
       console.error("Error generating tags:", error);
-      return error; // Re-throw to propagate error to UI
+      app.notify({
+        message: error instanceof Error ? error.message : "Failed to generate tags",
+        type: "error",
+      });
+      return error;
     }
   });
 

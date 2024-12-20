@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Experimentella funktioner",
     enableZoom: "Aktivera bildzoom",
     enableMinimap: "Aktivera minikarta vid zoom",
+    alwaysShowCaptionEditor: "Visa alltid bildtextredigeraren",
     instantDelete: "Aktivera direktradering (hoppar över bekräftelse)",
     warning: "Varning",
     gallery: "Galleri",
@@ -212,6 +213,8 @@ export default {
     imageCopied: "Bild kopierad till urklipp",
     imageCopyFailed: "Kunde inte kopiera bild till urklipp",
     folderCreated: "Mapp skapad",
-    folderCreateError: "Kunde inte skapa mapp"
+    folderCreateError: "Kunde inte skapa mapp",
+    generatingCaption: "Genererar bildtext...",
+    captionGenerated: "Bildtext genererad"
   },
 } as const satisfies Translations;

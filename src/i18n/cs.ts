@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "Experimentální funkce",
     enableZoom: "Povolit přiblížení",
     enableMinimap: "Povolit minimapu při přiblížení",
+    alwaysShowCaptionEditor: "Vždy zobrazit editor popisků",
     instantDelete: "Povolit okamžité mazání (bez potvrzení)",
     warning: "Varování",
     gallery: "Galerie",
@@ -251,5 +252,7 @@ export default {
     imageCopyFailed: "Nepodařilo se zkopírovat obrázek do schránky",
     folderCreated: "Složka byla vytvořena",
     folderCreateError: "Nepodařilo se vytvořit složku",
+    generatingCaption: "Generování popisku...",
+    captionGenerated: "Popisek byl vygenerován",
   },
 } as const satisfies Translations;

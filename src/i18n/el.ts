@@ -50,6 +50,7 @@ export default {
     instantDelete: "Άμεση διαγραφή (χωρίς επιβεβαίωση)",
     enableZoom: "Ενεργοποίηση μεγέθυνσης",
     enableMinimap: "Ενεργοποίηση μικρογραφίας",
+    alwaysShowCaptionEditor: "Εμφάνιση επεξεργαστή λεζάντας πάντα",
     theme: {
       light: "Φωτεινό",
       gray: "Γκρι",
@@ -235,5 +236,7 @@ export default {
     imageCopyFailed: "Αποτυχία αντιγραφής εικόνας στο πρόχειρο",
     folderCreated: "Ο φάκελος δημιουργήθηκε",
     folderCreateError: "Σφάλμα κατά τη δημιουργία του φακέλου",
+    generatingCaption: "Δημιουργία λεζάντας...",
+    captionGenerated: "Η λεζάντα δημιουργήθηκε",
   },
-} as const satisfies Translations; 
+} as const satisfies Translations;

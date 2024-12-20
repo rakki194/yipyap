@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "คุณสมบัติทดลอง",
     enableZoom: "เปิดใช้งานการซูม",
     enableMinimap: "เปิดใช้งานแผนที่ย่อเมื่อซูม",
+    alwaysShowCaptionEditor: "แสดงตัวแก้ไขคำบรรยายเสมอ",
     instantDelete: "เปิดใช้งานการลบทันที (ข้ามการยืนยัน)",
     warning: "คำเตือน",
     gallery: "แกลเลอรี",
@@ -212,6 +213,8 @@ export default {
     imageCopied: "คัดลอกรูปภาพไปยังคลิปบอร์ดแล้ว",
     imageCopyFailed: "ไม่สามารถคัดลอกรูปภาพไปยังคลิปบอร์ด",
     folderCreated: "สร้างโฟลเดอร์สำเร็จ",
-    folderCreateError: "ไม่สามารถสร้างโฟลเดอร์"
+    folderCreateError: "ไม่สามารถสร้างโฟลเดอร์",
+    generatingCaption: "กำลังสร้างคำบรรยาย",
+    captionGenerated: "สร้างคำบรรยายเสร็จสิ้น"
   },
 } as const satisfies Translations;

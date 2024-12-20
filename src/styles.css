@@ -47,6 +47,22 @@
   --scroll-track: 0;
   --font-size: 14px;
   --line-height: 1.6;
+
+  /* Base colors */
+  --error: #dc3545;
+  --success: #28a745;
+  --info: #17a2b8;
+  --warning: #ffc107;
+
+  /* Notification colors */
+  --error-bg: color-mix(in srgb, var(--error) 10%, var(--card-bg));
+  --error-text: var(--error);
+  --success-bg: color-mix(in srgb, var(--success) 10%, var(--card-bg));
+  --success-text: var(--success);
+  --info-bg: color-mix(in srgb, var(--info) 10%, var(--card-bg));
+  --info-text: var(--info);
+  --warning-bg: color-mix(in srgb, var(--warning) 10%, var(--card-bg));
+  --warning-text: var(--warning);
 }
 
 .no-animations {

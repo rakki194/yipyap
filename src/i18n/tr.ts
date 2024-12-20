@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "Deneysel özellikler",
     enableZoom: "Yakınlaştırmayı etkinleştir",
     enableMinimap: "Yakınlaştırmada mini haritayı etkinleştir",
+    alwaysShowCaptionEditor: "Başlık düzenleyiciyi her zaman göster",
     instantDelete: "Anında silmeyi etkinleştir (onay olmadan)",
     warning: "Uyarı",
     gallery: "Galeri",
@@ -277,6 +278,7 @@ export default {
     imageCopied: "Resim panoya kopyalandı",
     imageCopyFailed: "Resim panoya kopyalanamadı",
     folderCreated: "Klasör başarıyla oluşturuldu",
-    folderCreateError: "Klasör oluşturulurken hata oluştu"
+    generatingCaption: "Başlık oluşturuluyor...",
+    captionGenerated: "Başlık oluşturuldu"
   },
 } as const satisfies Translations;

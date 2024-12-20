@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "Experimentelle Funktionen",
     enableZoom: "Zoom aktivieren",
     enableMinimap: "Minimap beim Zoomen aktivieren",
+    alwaysShowCaptionEditor: "Beschriftungseditor immer anzeigen",
     instantDelete: "Sofortiges Löschen aktivieren (ohne Bestätigung)",
     warning: "Warnung",
     gallery: "Galerie",
@@ -237,6 +238,8 @@ export default {
   notifications: {
     imageCopied: "Bild in Zwischenablage kopiert",
     imageCopyFailed: "Fehler beim Kopieren des Bildes in die Zwischenablage",
+    generatingCaption: "Bildunterschrift wird generiert...",
+    captionGenerated: "Bildunterschrift wurde generiert",
     folderCreated: "Ordner erstellt",
     folderCreateError: "Fehler beim Erstellen des Ordners",
   },

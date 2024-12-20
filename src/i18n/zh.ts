@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "实验性功能",
     enableZoom: "启用图片缩放",
     enableMinimap: "缩放时启用小地图",
+    alwaysShowCaptionEditor: "始终显示标题编辑器",
     instantDelete: "启用即时删除（跳过确认）",
     warning: "警告",
     gallery: "图库",
@@ -216,6 +217,8 @@ export default {
     imageCopied: "图片已复制到剪贴板",
     imageCopyFailed: "复制图片到剪贴板失败",
     folderCreated: "文件夹创建成功",
-    folderCreateError: "创建文件夹失败"
+    folderCreateError: "创建文件夹失败",
+    generatingCaption: "正在生成图片说明...",
+    captionGenerated: "图片说明已生成"
   },
 } as const satisfies Translations;

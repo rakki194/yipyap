@@ -76,9 +76,9 @@ const ModelBody = (props: {
   children?: JSX.Element;
 }) => {
   const gallery = useGallery();
-  const { t } = useAppContext();
+  const { t, alwaysShowCaptionEditor } = useAppContext();
   let refImageInfo!: HTMLDivElement;
-  const [focused, setFocused] = createSignal(false);
+  const [focused, setFocused] = createSignal(alwaysShowCaptionEditor);
   const [focusedType, setFocusedType] = createSignal<string | null>(null);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
   const [isExpanded, setIsExpanded] = createSignal(false);
@@ -118,6 +118,13 @@ const ModelBody = (props: {
     onCleanup(() => {
       window.removeEventListener("keydown", handleKeyDown);
     });
+  });
+
+  // Keep focused state in sync with alwaysShowCaptionEditor setting
+  createEffect(() => {
+    if (alwaysShowCaptionEditor) {
+      setFocused(true);
+    }
   });
 
   // Update the style of the image info based on the layout and focus
@@ -182,7 +189,7 @@ const ModelBody = (props: {
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
       <ImageView
         imageInfo={props.imageInfo}
-        onClick={() => setFocused((f) => !f)}
+        onClick={() => !alwaysShowCaptionEditor && setFocused((f) => !f)}
       />
       <div
         class="image-info"
@@ -190,12 +197,16 @@ const ModelBody = (props: {
         ref={refImageInfo}
         style={getStyle()}
         onClick={(e) => {
-          setFocused(true);
+          if (!alwaysShowCaptionEditor) {
+            setFocused(true);
+          }
         }}
       >
         <div class="caption-editor"
           onClick={(e) => {
-            if (e.currentTarget === e.target) setFocusedType(null);
+            if (e.currentTarget === e.target && !alwaysShowCaptionEditor) {
+              setFocusedType(null);
+            }
           }}
         >
           <Show

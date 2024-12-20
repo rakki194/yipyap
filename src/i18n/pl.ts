@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "Funkcje eksperymentalne",
     enableZoom: "Włącz przybliżanie obrazów",
     enableMinimap: "Włącz minimapę podczas przybliżania",
+    alwaysShowCaptionEditor: "Zawsze pokazuj edytor podpisów",
     instantDelete: "Włącz natychmiastowe usuwanie (bez potwierdzenia)",
     warning: "Ostrzeżenie",
     gallery: "Galeria",
@@ -250,6 +251,8 @@ export default {
     imageCopyFailed: "Nie udało się skopiować obrazu do schowka",
     folderCreated: "Folder został utworzony",
     folderCreateError: "Nie udało się utworzyć folderu",
+    generatingCaption: "Generowanie podpisu...",
+    captionGenerated: "Podpis został wygenerowany",
   },
   tools: {
     removeCommas: "Usuń przecinki",

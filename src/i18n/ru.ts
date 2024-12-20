@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Экспериментальные функции",
     enableZoom: "Включить масштабирование",
     enableMinimap: "Включить миникарту при масштабировании",
+    alwaysShowCaptionEditor: "Всегда показывать редактор подписей",
     instantDelete: "Мгновенное удаление (без подтверждения)",
     warning: "Предупреждение",
     gallery: "Галерея",
@@ -250,5 +251,7 @@ export default {
     imageCopyFailed: "Не удалось скопировать изображение в буфер обмена",
     folderCreated: "Папка создана",
     folderCreateError: "Ошибка создания папки",
+    generatingCaption: "Генерация подписи...",
+    captionGenerated: "Подпись сгенерирована",
   },
 } as const satisfies Translations;

@@ -71,6 +71,7 @@ export default {
     experimentalFeatures: "Kísérleti funkciók",
     enableZoom: "Nagyítás engedélyezése",
     enableMinimap: "Minitérkép engedélyezése",
+    alwaysShowCaptionEditor: "Feliratszerkesztő állandó megjelenítése",
     instantDelete: "Azonnali törlés (megerősítés nélkül)",
     warning: "Figyelmeztetés",
     gallery: "Galéria",
@@ -247,5 +248,7 @@ export default {
     imageCopyFailed: "Nem sikerült a képet a vágólapra másolni",
     folderCreated: "Mappa létrehozva",
     folderCreateError: "Hiba történt a mappa létrehozása közben",
+    generatingCaption: "Képaláírás generálása...",
+    captionGenerated: "Képaláírás generálva",
   },
 } as const satisfies Translations;

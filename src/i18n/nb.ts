@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Eksperimentelle funksjoner",
     enableZoom: "Aktiver zoom",
     enableMinimap: "Aktiver minikart ved zoom",
+    alwaysShowCaptionEditor: "Vis alltid bildetekstredigering",
     instantDelete: "Aktiver øyeblikkelig sletting (hopper over bekreftelse)",
     warning: "Advarsel",
     gallery: "Galleri",
@@ -213,5 +214,7 @@ export default {
     imageCopyFailed: "Kunne ikke kopiere bilde til utklippstavle",
     folderCreated: "Mappe opprettet",
     folderCreateError: "Kunne ikke opprette mappe",
+    generatingCaption: "Genererer bildetekst...",
+    captionGenerated: "Bildetekst generert",
   },
 } as const satisfies Translations;

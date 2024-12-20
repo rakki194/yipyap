@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Kokeelliset ominaisuudet",
     enableZoom: "Ota zoomaus käyttöön",
     enableMinimap: "Ota pienoiskartta käyttöön zoomattaessa",
+    alwaysShowCaptionEditor: "Näytä aina kuvatekstin muokkain",
     instantDelete: "Ota välitön poisto käyttöön (ohita vahvistus)",
     warning: "Varoitus",
     gallery: "Galleria",
@@ -213,6 +214,8 @@ export default {
     imageCopyFailed: "Kuvan kopiointi leikepöydälle epäonnistui",
     folderCreated: "Kansio luotu",
     folderCreateError: "Virhe kansion luonnissa",
+    generatingCaption: "Kuvatekstiä luodaan...",
+    captionGenerated: "Kuvateksti luotu",
   },
 } as const satisfies Translations;
  

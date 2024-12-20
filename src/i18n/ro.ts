@@ -46,9 +46,10 @@ export default {
     experimentalFeatures: "Funcții experimentale",
     disableAnimations: "Dezactivare animații",
     disableNonsense: "Dezactivare japoneză",
-    instantDelete: "Ștergere instantanee",
     enableZoom: "Activare zoom",
     enableMinimap: "Activare minimapă",
+    alwaysShowCaptionEditor: "Afișează întotdeauna editorul de descriere",
+    instantDelete: "Ștergere instantanee",
     theme: {
       light: "Luminos",
       gray: "Gri",
@@ -213,5 +214,7 @@ export default {
     imageCopyFailed: "Nu s-a putut copia imaginea în clipboard",
     folderCreated: "Folder creat cu succes",
     folderCreateError: "Eroare la crearea folderului",
+    generatingCaption: "Se generează descrierea...",
+    captionGenerated: "Descriere generată cu succes",
   },
 } as const satisfies Translations;

@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Funzionalità sperimentali",
     enableZoom: "Attiva zoom",
     enableMinimap: "Attiva minimappa durante lo zoom",
+    alwaysShowCaptionEditor: "Mostra sempre l'editor delle didascalie",
     instantDelete: "Attiva eliminazione istantanea (senza conferma)",
     warning: "Avviso",
     gallery: "Galleria",
@@ -212,6 +213,8 @@ export default {
     imageCopyFailed: "Impossibile copiare l'immagine negli appunti",
     folderCreated: "Cartella creata con successo",
     folderCreateError: "Errore durante la creazione della cartella",
+    generatingCaption: "Generazione didascalia in corso...",
+    captionGenerated: "Didascalia generata con successo",
   },
   tools: {
     removeCommas: "Rimuovi virgole",

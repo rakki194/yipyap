@@ -10,6 +10,7 @@ import {
 } from "@solidjs/router";
 import { routes } from "./router";
 import { AppProvider } from "./contexts/app";
+import { NotificationContainer } from "./components/Notification/NotificationContainer";
 import "./styles.css";
 
 const CustomErrorBoundary: ParentComponent = (props) => {
@@ -33,6 +34,7 @@ const Layout: ParentComponent = (props) => {
     <>
       <AppProvider>
         <CustomErrorBoundary>{props.children}</CustomErrorBoundary>
+        <NotificationContainer />
       </AppProvider>
     </>
   );

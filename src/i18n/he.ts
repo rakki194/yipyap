@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "תכונות ניסיוניות",
     enableZoom: "אפשר הגדלה",
     enableMinimap: "אפשר מפה מוקטנת בהגדלה",
+    alwaysShowCaptionEditor: "הצג תמיד את עורך הכיתוב",
     instantDelete: "מחיקה מיידית (ללא אישור)",
     warning: "אזהרה",
     gallery: "גלריה",
@@ -213,5 +214,7 @@ export default {
     imageCopyFailed: "נכשל להעתיק את התמונה ללוח",
     folderCreated: "התיקייה נוצרה בהצלחה",
     folderCreateError: "שגיאה ביצירת התיקייה",
+    generatingCaption: "מייצר כיתוב...",
+    captionGenerated: "הכיתוב נוצר בהצלחה",
   },
 } as const satisfies Translations;

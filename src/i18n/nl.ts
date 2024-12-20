@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Experimentele functies",
     enableZoom: "Zoom inschakelen",
     enableMinimap: "Minimap inschakelen bij zoom",
+    alwaysShowCaptionEditor: "Bijschrifteditor altijd weergeven",
     instantDelete: "Direct verwijderen inschakelen (zonder bevestiging)",
     warning: "Waarschuwing",
     gallery: "Galerij",
@@ -217,5 +218,7 @@ export default {
     imageCopyFailed: "Kon afbeelding niet naar klembord kopiëren",
     folderCreated: "Map aangemaakt",
     folderCreateError: "Kon map niet aanmaken",
+    generatingCaption: "Bijschrift genereren...",
+    captionGenerated: "Bijschrift gegenereerd",
   },
 } as const satisfies Translations;

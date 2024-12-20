@@ -87,6 +87,7 @@ export interface SettingsTranslations {
   experimentalFeatures: string;
   enableZoom: string;
   enableMinimap: string;
+  alwaysShowCaptionEditor: string;
   instantDelete: string;
   warning: string;
   gallery: string;
@@ -228,6 +229,8 @@ export interface NotificationsTranslations {
   imageCopyFailed: string;
   folderCreated: string;
   folderCreateError: string;
+  generatingCaption: string;
+  captionGenerated: string;
 }
 
 export interface Translations {

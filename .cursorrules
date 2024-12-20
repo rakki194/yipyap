@@ -1,10 +1,12 @@
 # yipyap
 
-The frontend of yipyap is built with SolidJS, a reactive JavaScript framework that emphasizes fine-grained reactivity and performance. The application follows a component-based architecture with a central app context managing global state. The main entry point is `/src/main.tsx`, which sets up routing and the app context, while the core application logic resides in `/src/contexts/app.tsx`.
+The frontend of yipyap is built with SolidJS, a reactive JavaScript framework that emphasizes fine-grained reactivity and performance, using Vite as the build tool for fast development and optimized production builds. The application follows a component-based architecture with a central app context managing global state. The main entry point is `/src/main.tsx`, which sets up routing and the app context, while the core application logic resides in `/src/contexts/app.tsx`.
 
-The gallery system is the heart of the application, featuring a sophisticated image viewer with support for captions, tags, and metadata. The `ImageViewer` component provides advanced features like smooth zooming, panning, and a minimap for navigation. The tagging system uses the OKLCH color space for generating visually pleasing, theme-aware tag colors, with support for keyboard navigation and batch operations.
+Components are organized in feature-based directories under `/src/components`, each with its own CSS module for styling and `__tests__` directory for component-specific tests. Global styles are defined in `/src/styles.css`, while theme-specific styles are in `/src/themes.css`. The application uses CSS custom properties extensively for theming and maintains a consistent visual hierarchy through shared spacing and color variables.
 
-The application implements a robust theming system with multiple built-in themes (light, dark, strawberry, etc.) that affect not just colors but also animations and visual effects. File operations are handled through a drag-and-drop interface with progress tracking and support for recursive directory uploads.
+The gallery system is the heart of the application, featuring a sophisticated image viewer with support for captions, tags, and metadata. The `ImageViewer` component provides advanced features like smooth zooming, panning, and a minimap for navigation. The tagging system uses the OKLCH color space for generating visually pleasing, theme-aware tag colors, with support for keyboard navigation and batch operations. File operations are handled through an advanced drag-and-drop interface with real-time progress tracking, support for recursive directory uploads, and a robust error handling system. The gallery includes a quick-jump feature for rapid navigation between folders and a comprehensive keyboard shortcut system for efficient browsing and editing.
+
+The application implements a robust theming system with multiple built-in themes (light, dark, gray, strawberry, peanut, christmas, halloween, etc.) that affect not just colors but also animations, visual effects, and component-specific behaviors. Each theme provides custom scrollbar styling, keyboard shortcut visual indicators, and consistent contrast ratios for accessibility. Theme changes are persisted across sessions and can be toggled via keyboard shortcuts or the theme switcher in the settings panel.
 
 The backend is built with FastAPI and follows a modular architecture focused on performance and extensibility. The core functionality is divided into distinct layers: HTTP endpoints (main.py), data access (data_access.py), caption generation (caption_generation/), and utilities (utils.py). The system uses SQLite for caching metadata and thumbnails, with careful attention to cache invalidation and concurrent access patterns.
 
@@ -18,10 +20,355 @@ There is no `App.tsx` file, do not create it, the root component is in the `/src
 
 Think step-by-step and write code that is easy to understand and maintain.
 
-The translations are in the `/src/i18n` folder, with each language having its own file (e.g., `en.ts`, `ja.ts`, etc.). All language files must follow the type definitions in `/src/i18n/types.ts`, which defines interfaces for different sections of the application (common, settings, frontPage, gallery, tools, etc.). 
+The translations are in the `/src/i18n` folder, with each language having its own file (e.g., `en.ts`, `ja.ts`, etc.). All language files must follow the type definitions in `/src/i18n/types.ts`, which defines interfaces for different sections of the application (common, settings, frontPage, gallery, tools, etc.). The translation system supports complex pluralization rules through language-specific plural functions (e.g., `getRussianPlural` for Russian's three-form pluralization) and provides type-safe interpolation for dynamic content.
 
-The list of supported languages is defined in `/src/i18n/index.ts` in the `languages` array, which includes language codes and their display names. Each new language must be added to this array. The file also provides helper functions like `getPathSeparator` for platform-specific path separators and `getTranslationValue` for type-safe access to nested translation values.
+The list of supported languages is defined in `/src/i18n/index.ts` in the `languages` array, which includes language codes and their display names. Each new language must be added to this array. The file also provides helper functions like `getPathSeparator` for platform-specific path separators and `getTranslationValue` for type-safe access to nested translation values. Translations are dynamically imported using Vite's glob imports, allowing for code-splitting and lazy loading of language files. Each translation file exports a default object that implements the `Translations` interface, ensuring type safety across all language implementations.
 
-Translation files are dynamically imported using Vite's glob imports, allowing for code-splitting and lazy loading of language files. Each translation file exports a default object that implements the `Translations` interface, ensuring type safety across all language implementations.
+The system includes RTL (right-to-left) support for languages like Arabic and Hebrew, with automatic text direction switching and appropriate layout adjustments. Translation files can include language-specific formatting rules and custom plural forms, with fallback handling for missing translations.
+
+## Adding New Settings
+
+To add a new setting to the application, follow these steps:
+
+1. Add the setting to the `AppContext` interface in `/src/contexts/app.tsx`:
+   ```typescript
+   export interface AppContext {
+     // ... existing settings ...
+     newSetting: boolean; // or appropriate type
+     setNewSetting: (value: boolean) => void;
+   }
+   ```
+
+2. Add the setting to the store type and initial state in `createAppContext`:
+   ```typescript
+   const [store, setStore] = createStaticStore<{
+     // ... existing store properties ...
+     newSetting: boolean;
+   }>({
+     // ... existing initial values ...
+     newSetting: localStorage.getItem("newSetting") === "true",
+   });
+   ```
+
+3. Add a persistence effect to save the setting to localStorage:
+   ```typescript
+   createRenderEffect(() =>
+     localStorage.setItem("newSetting", store.newSetting.toString())
+   );
+   ```
+
+4. Add the getter and setter to the returned app context:
+   ```typescript
+   const appContext = {
+     // ... existing context properties ...
+     get newSetting() {
+       return store.newSetting;
+     },
+     setNewSetting: (value: boolean) => setStore("newSetting", value),
+   };
+   ```
+
+5. Add the setting to the `SettingsTranslations` interface in `/src/i18n/types.ts`:
+   ```typescript
+   export interface SettingsTranslations {
+     // ... existing translations ...
+     newSetting: string;
+     newSettingTooltip?: string; // if tooltip is needed
+   }
+   ```
+
+6. Add the setting UI to the Settings component in `/src/components/Settings/Settings.tsx`:
+   ```typescript
+   <div class="setting-item">
+     <label class="tooltip-container">
+       <input
+         type="checkbox"
+         checked={app.newSetting}
+         onChange={(e) => app.setNewSetting(e.currentTarget.checked)}
+       />
+       {t('settings.newSetting')}
+       <span class="tooltip">{t('settings.newSettingTooltip')}</span>
+     </label>
+   </div>
+   ```
+
+7. Add translations for the setting in each language file in `/src/i18n/`:
+   ```typescript
+   settings: {
+     // ... existing translations ...
+     newSetting: "New Setting Name",
+     newSettingTooltip: "Description of what the setting does",
+   }
+   ```
 
 If you are refactoring the code, make sure to update the documentation and comments to reflect the changes and also update the `/.cursorrules` file and `/README.md` file accordingly.
+
+## Making Style Changes
+
+To make style changes to the application, follow these steps:
+
+1. Identify the component and its CSS file:
+   - Components are in `/src/components/`
+   - Each component has its own CSS file (e.g., `/src/components/Gallery/Gallery.css`)
+   - Global styles are in `/src/styles.css`
+   - Theme-specific styles are in `/src/themes.css`
+
+2. Check for theme variables:
+   - Look for CSS variables in `/src/themes.css` that might be relevant
+   - Use theme variables (e.g., `var(--accent)`, `var(--text-primary)`) when possible
+   - This ensures consistency across all themes
+
+3. Consider the cascading effects:
+   - Check if the style affects other components
+   - Look for related styles in parent/child components
+   - Consider responsive design implications
+   - Test the changes across different screen sizes
+
+4. Follow CSS best practices:
+   - Use CSS variables for reusable values
+   - Keep specificity as low as possible
+   - Group related properties together
+   - Add comments for complex selectors or calculations
+   - Use modern CSS features like `color-mix()` when appropriate
+   - Ensure sufficient contrast in all themes
+   - Check that animations and transitions work smoothly
+   - Verify that the changes respect theme-specific customizations
+
+Example of a style change:
+```css
+/* Before: Basic selected state */
+&.selected {
+  background-color: color-mix(in srgb, var(--card-bg) 95%, black);
+  backdrop-filter: blur(2px);
+}
+
+/* After: Enhanced selected state with theme awareness */
+&.selected {
+  background-color: color-mix(in srgb, var(--card-bg), var(--text-primary) 80%);
+  backdrop-filter: blur(10px);
+  box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.4);
+  
+  & > img {
+    filter: brightness(1.1);
+  }
+}
+```
+
+Remember to:
+- Document significant style changes in comments
+- Update any related documentation
+- Consider performance implications of complex CSS properties
+
+## Writing Tests
+
+The project uses Vitest with SolidJS testing utilities. Tests are placed in `__tests__` directories alongside the code they're testing. Each test file should follow the pattern `*.test.ts` or `*.test.tsx`.
+
+### Test Environment Setup
+
+The global test environment is configured in `src/test/setup.ts` and includes:
+- DOM environment with jsdom
+- Global mocks for browser APIs (matchMedia, ResizeObserver, etc.)
+- Automatic cleanup after each test
+- SolidJS testing utilities setup
+
+```typescript
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
+import { cleanup } from "@solidjs/testing-library";
+
+beforeAll(() => {
+  setupGlobalMocks();
+});
+
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
+```
+
+### Test Utilities
+
+Common test utilities are provided in `src/test/test-utils.ts` and `src/test/test-hooks.ts`:
+
+1. Standard test wrapper components:
+```typescript
+export const TestWrapper: Component<{ context: any; children: any }> = (props) => {
+  return (
+    <AppContext.Provider value={props.context}>
+      {props.children}
+    </AppContext.Provider>
+  );
+};
+```
+
+2. Test hooks for common setup patterns:
+```typescript
+export function useBasicTestSetup() {
+  beforeEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
+}
+
+export function useResourceTestSetup() {
+  useBasicTestSetup();
+  // Additional resource-specific setup...
+}
+```
+
+### Component Testing
+
+Component tests should use `@solidjs/testing-library` and follow these patterns:
+
+1. Basic component testing:
+```typescript
+describe("Component Name", () => {
+  it("should render correctly", () => {
+    const { container } = render(() => <Component prop={value} />);
+    expect(container).toMatchSnapshot();
+  });
+
+  it("should handle user interactions", async () => {
+    const { getByRole } = render(() => <Component />);
+    const button = getByRole("button");
+    await fireEvent.click(button);
+    expect(result).toBe(expectedValue);
+  });
+});
+```
+
+2. Testing with context:
+```typescript
+describe("Component with Context", () => {
+  const mockContext = {
+    // Mock context values...
+  };
+
+  it("should use context correctly", () => {
+    const { container } = render(() => (
+      <TestWrapper context={mockContext}>
+        <Component />
+      </TestWrapper>
+    ));
+    // Assertions...
+  });
+});
+```
+
+### Testing Patterns
+
+1. Context Testing:
+```typescript
+describe("Context Creation", () => {
+  test("Context should be defined", () => {
+    expect(AppContext).toBeDefined();
+    expect(AppContext.id).toBeDefined();
+    expect(typeof AppContext.id).toBe("symbol");
+  });
+});
+```
+
+2. Utility Function Testing:
+```typescript
+describe("Utility Function", () => {
+  it("should handle normal input", () => {
+    expect(utilityFunction(input)).toBe(expectedOutput);
+  });
+
+  it("should handle edge cases", () => {
+    expect(utilityFunction(edgeCase)).toBe(expectedOutput);
+  });
+
+  it("should throw on invalid input", () => {
+    expect(() => utilityFunction(invalidInput)).toThrow();
+  });
+});
+```
+
+3. i18n Testing:
+```typescript
+describe("Translation System", () => {
+  it("should handle pluralization correctly", () => {
+    const forms = {
+      one: "item",
+      few: "items",
+      many: "items"
+    };
+    expect(getPlural(1, forms)).toBe("item");
+    expect(getPlural(2, forms)).toBe("items");
+  });
+});
+```
+
+### Mocking
+
+1. API Calls:
+```typescript
+vi.mock("~/resources/browse", () => ({
+  fetchData: vi.fn().mockResolvedValue({ data: "mocked" }),
+  saveCaptionToBackend: vi.fn().mockResolvedValue({ success: true })
+}));
+```
+
+2. Browser APIs:
+```typescript
+beforeEach(() => {
+  Object.defineProperty(window, "matchMedia", {
+    value: vi.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn()
+    }))
+  });
+});
+```
+
+3. Router:
+```typescript
+vi.mock("@solidjs/router", () => ({
+  useParams: () => ({ path: "test/path" }),
+  useSearchParams: () => [{ page: "1" }, vi.fn()],
+  useNavigate: () => vi.fn()
+}));
+```
+
+### Test Documentation
+
+Each test suite should include a JSDoc comment describing:
+- Purpose of the test suite
+- Key areas being tested
+- Test environment setup
+- Any special considerations or rules
+
+Example:
+```typescript
+/**
+ * Test suite for the Gallery State Management system.
+ * 
+ * These tests cover:
+ * - Basic state operations
+ * - Caption management
+ * - Image operations
+ * - Navigation and selection
+ * 
+ * Test Environment Setup:
+ * - Mocks router functionality
+ * - Mocks backend resources
+ * - Mocks window resize observer
+ */
+```
+
+Remember to:
+- Write tests before fixing bugs
+- Test edge cases and error conditions
+- Keep tests focused and isolated
+- Use meaningful test descriptions
+- Document complex test setups
+- Update tests when modifying functionality
+
+The backend integration is handled through a well-defined API interface, with endpoints for file operations, metadata management, and caption generation. The frontend communicates with these endpoints using typed fetch requests, with proper error handling and loading states. The API interface is defined in TypeScript types shared between the frontend and backend, ensuring type safety across the full stack.
+
+The application includes a comprehensive error handling system with a global error boundary and component-level error states. Errors are displayed through a notification system that supports different severity levels (error, warning, info, success) and can be configured for automatic dismissal. Loading states are managed through SolidJS's resource system, providing a consistent loading experience across the application.
+
+The application's state management is handled through a combination of SolidJS's fine-grained reactivity system and context providers. The app context (`/src/contexts/app.tsx`) manages global settings and theme state, while feature-specific contexts (like the gallery context) handle domain-specific state. All state changes are properly typed and can be persisted to localStorage when appropriate.

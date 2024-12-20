@@ -198,8 +198,8 @@
       gap: var(--spacing);
       transition-property: flex;
       flex: 1 1 min-content;
-      max-height: min-content;
-      min-height: 2rem;
+      max-height: 20rem;
+      min-height: 10rem;
 
       &.collapsed {
         flex-grow: 0;

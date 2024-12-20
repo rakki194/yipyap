@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "ميزات تجريبية",
     enableZoom: "تمكين التكبير",
     enableMinimap: "تمكين الخريطة المصغرة عند التكبير",
+    alwaysShowCaptionEditor: "إظهار محرر التسمية التوضيحية دائمًا",
     instantDelete: "تمكين الحذف الفوري (تخطي التأكيد)",
     warning: "تحذير",
     gallery: "معرض",
@@ -287,5 +288,7 @@ export default {
     imageCopyFailed: "فشل نسخ الصورة إلى الحافظة",
     folderCreated: "تم إنشاء المجلد",
     folderCreateError: "فشل إنشاء المجلد",
+    generatingCaption: "جاري إنشاء التسمية التوضيحية...",
+    captionGenerated: "تم إنشاء التسمية التوضيحية"
   },
 } as const satisfies Translations;

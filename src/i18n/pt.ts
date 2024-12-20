@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "Recursos experimentais",
     enableZoom: "Ativar zoom",
     enableMinimap: "Ativar minimapa ao dar zoom",
+    alwaysShowCaptionEditor: "Sempre mostrar editor de legendas",
     instantDelete: "Ativar exclusão instantânea (pula confirmação)",
     warning: "Aviso",
     gallery: "Galeria",
@@ -237,6 +238,8 @@ export default {
     imageCopied: "Imagem copiada para área de transferência",
     imageCopyFailed: "Falha ao copiar imagem para área de transferência",
     folderCreated: "Pasta criada com sucesso",
-    folderCreateError: "Erro ao criar pasta"
+    folderCreateError: "Erro ao criar pasta",
+    generatingCaption: "Gerando legenda...",
+    captionGenerated: "Legenda gerada com sucesso",
   },
 } as const satisfies Translations;

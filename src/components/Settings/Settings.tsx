@@ -439,6 +439,14 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 />
                 {t('settings.enableMinimap')}
               </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={app.alwaysShowCaptionEditor}
+                  onChange={(e) => app.setAlwaysShowCaptionEditor(e.currentTarget.checked)}
+                />
+                {t('settings.alwaysShowCaptionEditor')}
+              </label>
             </div>
           </section>
 

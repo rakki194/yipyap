@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Fonctionnalités expérimentales",
     enableZoom: "Activer le zoom d'image",
     enableMinimap: "Activer la minimap en zoom",
+    alwaysShowCaptionEditor: "Toujours afficher l'éditeur de légende",
     instantDelete: "Activer la suppression instantanée",
     warning: "Avertissement",
     gallery: "Galerie",
@@ -217,5 +218,7 @@ export default {
     imageCopyFailed: "Échec de la copie de l'image dans le presse-papiers",
     folderCreated: "Dossier créé avec succès",
     folderCreateError: "Erreur lors de la création du dossier",
+    generatingCaption: "Génération de la légende en cours",
+    captionGenerated: "Légende générée avec succès"
   },
 } as const satisfies Translations;

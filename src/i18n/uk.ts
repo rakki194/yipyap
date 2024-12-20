@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Експериментальні функції",
     enableZoom: "Увімкнути масштабування",
     enableMinimap: "Увімкнути мінікарту при масштабуванні",
+    alwaysShowCaptionEditor: "Завжди показувати редактор підписів",
     instantDelete: "Миттєве видалення (без підтвердження)",
     warning: "Попередження",
     gallery: "Галерея",
@@ -212,6 +213,8 @@ export default {
     imageCopied: "Зображення скопійовано в буфер обміну",
     imageCopyFailed: "Не вдалося скопіювати зображення в буфер обміну",
     folderCreated: "Папку створено",
-    folderCreateError: "Не вдалося створити папку"
+    folderCreateError: "Не вдалося створити папку",
+    generatingCaption: "Генерування підпису...",
+    captionGenerated: "Підпис згенеровано"
   },
 } as const satisfies Translations;

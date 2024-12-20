@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "実験的機能",
     enableZoom: "画像ズームを有効化",
     enableMinimap: "ズーム時のミニマップを有効化",
+    alwaysShowCaptionEditor: "常にキャプションエディターを表示",
     instantDelete: "即時削除を有効化（確認をスキップ）",
     warning: "警告",
     gallery: "ギャラリー",
@@ -217,5 +218,7 @@ export default {
     imageCopyFailed: "画像のクリップボードへのコピーに失敗しました",
     folderCreated: "フォルダーを作成しました",
     folderCreateError: "フォルダーの作成に失敗しました",
+    generatingCaption: "キャプションを生成中...",
+    captionGenerated: "キャプションを生成しました",
   },
 } as const satisfies Translations;

@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "Експериментални функции",
     enableZoom: "Активирай мащабиране",
     enableMinimap: "Активирай минимапа при мащабиране",
+    alwaysShowCaptionEditor: "Винаги показвай редактора на надписи",
     instantDelete: "Активирай моментално изтриване (без потвърждение)",
     warning: "Предупреждение",
     gallery: "Галерия",
@@ -235,5 +236,7 @@ export default {
     imageCopyFailed: "Неуспешно копиране на изображението в клипборда",
     folderCreated: "Папката е създадена",
     folderCreateError: "Грешка при създаване на папката",
+    generatingCaption: "Генериране на надпис...",
+    captionGenerated: "Надписът е генериран",
   },
 } as const satisfies Translations;

@@ -117,13 +117,13 @@ function createTagColorGenerator() {
 
             return isGreen
               ? {
-                  l: 30 + (hash % 15),  // Darker for greens
-                  c: 0.15 + (hash % 10) / 100,
+                  l: 35 + (hash % 10),  // Dark background for green (white text)
+                  c: 0.25 + (hash % 10) / 100,  // Saturated green
                   h: selectedStrawberryHue,
                 }
               : {
-                  l: 70 + (hash % 20),  // Lighter for reds/pinks
-                  c: 0.2 + (hash % 10) / 100,
+                  l: 75 + (hash % 15),  // Light background for pink/red (black text)
+                  c: 0.2 + (hash % 15) / 100,  // Variable saturation for pink/red
                   h: selectedStrawberryHue,
                 };
           }

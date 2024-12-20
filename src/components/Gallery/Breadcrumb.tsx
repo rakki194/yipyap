@@ -298,6 +298,15 @@ const MultiSelectActions = () => {
             if (!data) return;
             
             try {
+              // Show initial deletion notification
+              app.notify({
+                message: app.t('gallery.deletingFiles'),
+                type: "info"
+              });
+
+              let failedFolders = 0;
+              let failedCount = 0;
+
               // Handle folder deletions
               const selectedFolders = Array.from(selection.multiFolderSelected);
               if (selectedFolders.length > 0) {
@@ -330,9 +339,9 @@ const MultiSelectActions = () => {
                   })
                 );
 
-                const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
+                failedFolders = folderResults.filter(r => r.status === 'rejected').length;
                 if (failedFolders > 0) {
-                  app.createNotification({
+                  app.notify({
                     message: app.t('gallery.folderDeleteError'),
                     type: "error"
                   });
@@ -378,13 +387,21 @@ const MultiSelectActions = () => {
                   })
                 );
 
-                const failedCount = results.filter(r => r.status === 'rejected').length;
+                failedCount = results.filter(r => r.status === 'rejected').length;
                 if (failedCount > 0) {
-                  app.createNotification({
+                  app.notify({
                     message: app.t('gallery.someDeletesFailed', { count: failedCount }),
                     type: "error"
                   });
                 }
+              }
+              
+              // Show success notification if no errors
+              if (!failedFolders && !failedCount) {
+                app.notify({
+                  message: app.t('gallery.deleteSuccess'),
+                  type: "success"
+                });
               }
               
               // Clear selection and refresh
@@ -394,7 +411,7 @@ const MultiSelectActions = () => {
               
             } catch (error) {
               console.error('Error in bulk delete operation:', error);
-              app.createNotification({
+              app.notify({
                 message: app.t('gallery.deleteError'),
                 type: "error"
               });

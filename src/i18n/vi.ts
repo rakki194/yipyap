@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "Tính năng thử nghiệm",
     enableZoom: "Bật phóng to",
     enableMinimap: "Bật bản đồ thu nhỏ khi phóng to",
+    alwaysShowCaptionEditor: "Luôn hiển thị trình chỉnh sửa chú thích",
     instantDelete: "Bật xóa ngay lập tức (không cần xác nhận)",
     warning: "Cảnh báo",
     gallery: "Thư viện",
@@ -212,6 +213,8 @@ export default {
     imageCopied: "Đã sao chép ảnh vào clipboard",
     imageCopyFailed: "Không thể sao chép ảnh vào clipboard",
     folderCreated: "Đã tạo thư mục",
-    folderCreateError: "Không thể tạo thư mục"
+    folderCreateError: "Không thể tạo thư mục",
+    generatingCaption: "Đang tạo chú thích...",
+    captionGenerated: "Đã tạo chú thích"
   },
 } as const satisfies Translations;

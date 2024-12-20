@@ -465,9 +465,12 @@ export async function generateCaption(
   const imagePath = cleanPath ? `${cleanPath}/${name}` : `_/${name}`;
   
   return fetch(
-    `/api/generate-caption/${imagePath}?generator=${generator}&force=${false}`,
+    `/api/generate-caption/${imagePath}?generator=${generator}&force=${force}`,
     {
       method: "POST",
+      headers: {
+        "Accept": "application/json",
+      },
     }
   );
 }

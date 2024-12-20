@@ -774,7 +774,10 @@ export const Gallery = () => {
       const files: File[] = [];
       
       // Show initial processing message
-      setCurrentFile(appContext.t('gallery.processingFiles'));
+      appContext.notify({
+        message: appContext.t('gallery.processingFiles'),
+        type: "info"
+      });
       
       // Process all dropped items in parallel
       const filePromises = Array.from(items).map(item => {
@@ -788,7 +791,6 @@ export const Gallery = () => {
       await Promise.all(filePromises);
 
       if (files.length === 0) {
-        setCurrentFile(null);
         return;
       }
 
@@ -796,7 +798,7 @@ export const Gallery = () => {
       const oversizedFiles = files.filter(file => file.size > MAX_UPLOAD_SIZE);
       if (oversizedFiles.length > 0) {
         const maxSizeMB = MAX_UPLOAD_SIZE / (1024 * 1024);
-        appContext.createNotification({
+        appContext.notify({
           message: appContext.t('gallery.fileTooLarge', { 
             count: oversizedFiles.length,
             maxSize: maxSizeMB,
@@ -804,7 +806,6 @@ export const Gallery = () => {
           }),
           type: "error"
         });
-        setCurrentFile(null);
         return;
       }
 
@@ -812,14 +813,13 @@ export const Gallery = () => {
       const totalSize = files.reduce((acc, file) => acc + file.size, 0);
       if (totalSize > MAX_REQUEST_SIZE) {
         const maxRequestSizeMB = MAX_REQUEST_SIZE / (1024 * 1024);
-        appContext.createNotification({
+        appContext.notify({
           message: appContext.t('gallery.requestTooLarge', {
             totalSize: (totalSize / (1024 * 1024)).toFixed(1),
             maxSize: maxRequestSizeMB
           }),
           type: "error"
         });
-        setCurrentFile(null);
         return;
       }
 
@@ -842,15 +842,23 @@ export const Gallery = () => {
         ? `/api/upload/${currentPath}`
         : '/api/upload';
       
-      // Show total files being uploaded
-      setCurrentFile(appContext.t('gallery.uploadProgress', { count: files.length }));
-      
+      // Show upload notification
+      appContext.notify({
+        message: appContext.t('gallery.uploadProgress', { count: files.length }),
+        type: "info"
+      });
+
       try {
         await uploadFiles(formData, uploadUrl);
         
         // Clear progress on success
         setProgressInfo(null);
-        setCurrentFile(null);
+        
+        // Show success notification
+        appContext.notify({
+          message: appContext.t('gallery.uploadSuccess', { count: files.length }),
+          type: "success"
+        });
         
         // Clear any existing selection to avoid index mismatches
         gallery.selection.clearMultiSelect();
@@ -865,7 +873,7 @@ export const Gallery = () => {
         if (uploadError instanceof Error) {
           if (uploadError.message.includes('413')) {
             const isRequestTooLarge = totalSize > MAX_REQUEST_SIZE;
-            appContext.createNotification({
+            appContext.notify({
               message: appContext.t(
                 isRequestTooLarge ? 'gallery.requestTooLarge' : 'gallery.fileTooLarge',
                 isRequestTooLarge 
@@ -881,25 +889,22 @@ export const Gallery = () => {
               type: "error"
             });
           } else {
-            appContext.createNotification({
+            appContext.notify({
               message: appContext.t('gallery.uploadError'),
               type: "error"
             });
           }
         }
         setProgressInfo(null);
-        setCurrentFile(null);
       }
       
     } catch (error) {
       console.error('Error processing files:', error);
-      setProgressInfo({
-        current: 0,
-        total: 1,
-        type: 'upload',
-        message: appContext.t('gallery.uploadError')
+      appContext.notify({
+        message: appContext.t('gallery.uploadError'),
+        type: "error"
       });
-      setTimeout(() => setProgressInfo(null), 3000);
+      setProgressInfo(null);
     }
   };
 

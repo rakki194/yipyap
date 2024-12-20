@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "Funciones experimentales",
     enableZoom: "Activar zoom",
     enableMinimap: "Activar minimapa al hacer zoom",
+    alwaysShowCaptionEditor: "Mostrar siempre el editor de subtítulos",
     instantDelete: "Activar eliminación instantánea (sin confirmación)",
     warning: "Advertencia",
     gallery: "Galería",
@@ -253,5 +254,7 @@ export default {
     imageCopyFailed: "Error al copiar la imagen al portapapeles",
     folderCreated: "Carpeta creada correctamente",
     folderCreateError: "Error al crear la carpeta",
+    generatingCaption: "Generando subtítulo...",
+    captionGenerated: "Subtítulo generado"
   },
 } as const satisfies Translations;

@@ -69,6 +69,7 @@ export default {
     experimentalFeatures: "Experimental features",
     enableZoom: "Enable zoom",
     enableMinimap: "Enable minimap",
+    alwaysShowCaptionEditor: "Always show caption editor",
     instantDelete: "Instant delete",
     warning: "Warning",
     gallery: "Gallery",
@@ -280,5 +281,7 @@ export default {
     imageCopyFailed: "Failed to copy image path",
     folderCreated: "Folder created successfully",
     folderCreateError: "Failed to create folder",
+    generatingCaption: "Generating caption...",
+    captionGenerated: "Caption generated successfully",
   },
 } satisfies Translations;

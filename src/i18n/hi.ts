@@ -49,11 +49,12 @@ export default {
       christmas: "क्रिसमस",
       halloween: "हैलोवीन",
     },
+    enableZoom: "ज़ूम सक्षम करें",
+    enableMinimap: "मिनीमैप सक्षम करें",
+    alwaysShowCaptionEditor: "कैप्शन एडिटर हमेशा दिखाएं",
     instantDelete: "तुरंत हटाएं",
     disableAnimations: "एनिमेशन बंद करें",
     disableNonsense: "जापानी बंद करें",
-    enableZoom: "ज़ूम सक्षम करें",
-    enableMinimap: "मिनीमैप सक्षम करें",
     modelSettings: "मॉडल सेटिंग्स",
     jtp2ModelPath: "JTP2 मॉडल पथ",
     gallery: "गैलरी",
@@ -213,5 +214,7 @@ export default {
     imageCopyFailed: "छवि को क्लिपबोर्ड में कॉपी करने में विफल",
     folderCreated: "फ़ोल्डर सफलतापूर्वक बनाया गया",
     folderCreateError: "फ़ोल्डर बनाने में त्रुटि",
+    generatingCaption: "कैप्शन जनरेट किया जा रहा है...",
+    captionGenerated: "कैप्शन सफलतापूर्वक जनरेट किया गया"
   },
 } as const satisfies Translations;

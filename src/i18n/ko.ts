@@ -68,6 +68,7 @@ export default {
     experimentalFeatures: "실험적 기능",
     enableZoom: "확대/축소 활성화",
     enableMinimap: "확대 시 미니맵 활성화",
+    alwaysShowCaptionEditor: "항상 캡션 편집기 표시",
     instantDelete: "즉시 삭제 활성화 (확인 생략)",
     warning: "경고",
     gallery: "갤러리",
@@ -217,5 +218,7 @@ export default {
     imageCopyFailed: "이미지를 클립보드에 복사하지 못했습니다",
     folderCreated: "폴더가 생성되었습니다",
     folderCreateError: "폴더 생성 중 오류가 발생했습니다",
+    generatingCaption: "캡션 생성 중...",
+    captionGenerated: "캡션이 생성되었습니다",
   },
 } as const satisfies Translations;
