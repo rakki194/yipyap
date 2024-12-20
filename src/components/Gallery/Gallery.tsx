@@ -828,7 +828,7 @@ export const Gallery = () => {
         current: 0,
         total: totalSize,
         type: 'upload',
-        message: appContext.t('gallery.uploadProgress').replace('{count}', files.length.toString())
+        message: appContext.t('gallery.uploadProgress', { count: files.length })
       });
 
       // Add all collected files to formData
@@ -843,7 +843,7 @@ export const Gallery = () => {
         : '/api/upload';
       
       // Show total files being uploaded
-      setCurrentFile(appContext.t('gallery.uploadProgress').replace('{count}', files.length.toString()));
+      setCurrentFile(appContext.t('gallery.uploadProgress', { count: files.length }));
       
       try {
         await uploadFiles(formData, uploadUrl);
