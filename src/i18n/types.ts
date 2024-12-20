@@ -128,6 +128,9 @@ export interface FrontPageTranslations {
   audioWork: string;
   deselectAll: string;
   deleteSelected: string;
+  fileCount: (params: { count: number }) => string;
+  imageCount: (params: { count: number }) => string;
+  foundFolders: (params: { count: number }) => string;
 }
 
 export interface GalleryTranslations {

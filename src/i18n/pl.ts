@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import { getPolishPlural } from "./utils";
+import type { Translations } from "./types";
 
 export default {
   common: {
@@ -94,6 +95,21 @@ export default {
     audioWork: "Praca z dźwiękiem",
     deselectAll: "Odznacz wszystkie",
     deleteSelected: "Usuń zaznaczone",
+    fileCount: ({ count = 0 }) => getPolishPlural(count, {
+      singular: "plik",
+      plural2_4: "pliki",
+      plural5_: "plików"
+    }),
+    imageCount: ({ count = 0 }) => getPolishPlural(count, {
+      singular: "obraz",
+      plural2_4: "obrazy",
+      plural5_: "obrazów"
+    }),
+    foundFolders: ({ count = 0 }) => getPolishPlural(count, {
+      singular: "Znaleziono folder",
+      plural2_4: "Znaleziono foldery",
+      plural5_: "Znaleziono folderów"
+    }),
   },
   gallery: {
     addTag: "Dodaj tag...",
@@ -123,8 +139,6 @@ export default {
       wd: "Utwórz nowy plik .wd"
     },
     noCaptionFiles: "Brak plików podpisów!",
-    fileCount: ({ count }: { count: number }) => `${count} plików`,
-    imageCount: ({ count }: { count: number }) => `${count} obrazów`,
     foundFolders: ({ count }: { count: number }) => `Znaleziono ${count} folderów`,
     foundImages: ({ count }: { count: number }) => `Znaleziono ${count} obrazów`,
     deletedCount: ({ count }: { count: number }) => `Usunięto ${count} elementów`,
@@ -155,6 +169,16 @@ export default {
     deletingFile: "Usuwanie pliku...",
     fileDeleteSuccess: "Plik został usunięty",
     fileDeleteError: "Błąd podczas usuwania pliku",
+    fileCount: ({ count = 0 }) => getPolishPlural(count, {
+      singular: "plik",
+      plural2_4: "pliki",
+      plural5_: "plików"
+    }),
+    imageCount: ({ count = 0 }) => getPolishPlural(count, {
+      singular: "obraz",
+      plural2_4: "obrazy",
+      plural5_: "obrazów"
+    }),
   },
   shortcuts: {
     title: "Skróty klawiszowe",
