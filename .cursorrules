@@ -817,6 +817,139 @@ Remember to:
 - Handle async operations properly
 - Clean up after each test
 
+### 6. Connection Status Test Failures
+
+Location: `src/hooks/__tests__/useConnectionStatus.test.tsx`
+
+```typescript
+// Error 1: Router dependency causing test failures
+// The test fails because the app context requires router functionality
+test("shows error notification", () => {
+  render(() => (
+    <Router>  // Error: <A> and 'use' router primitives can only be used inside a Route
+      <AppProvider>
+        <TestComponent />
+      </AppProvider>
+    </Router>
+  ));
+});
+
+// Solution: Mock the router at module level
+vi.mock("@solidjs/router", () => ({
+  Router: (props: any) => props.children,
+  useLocation: () => ({
+    pathname: "/test",
+    search: "",
+    hash: "",
+    state: null,
+    query: {}
+  })
+}));
+
+// Error 2: Translation integration causing mismatched expectations
+// The test fails because the actual message includes the "translated:" prefix
+expect(addNotification).toHaveBeenCalledWith({
+  message: "notifications.connectionLost",  // Fails: actual is "translated:notifications.connectionLost"
+  type: "error"
+});
+
+// Solution: Mock translations and update expectations
+vi.mock("~/i18n", () => ({
+  getTranslationValue: (translations: any, key: string) => `translated:${key}`,
+  translations: {
+    en: () => Promise.resolve({
+      notifications: {
+        connectionLost: "Connection lost",
+        connectionRestored: "Connection restored"
+      }
+    })
+  }
+}));
+
+expect(addNotification).toHaveBeenCalledWith(
+  expect.objectContaining({
+    message: "translated:notifications.connectionLost",
+    type: "error"
+  })
+);
+
+// Error 3: Reactive effects not completing
+// The test fails because notifications aren't triggered immediately
+test("shows notification", () => {
+  render(() => <Component />);
+  window.dispatchEvent(new Event('offline'));  // Fails: notification not called
+  expect(addNotification).toHaveBeenCalled();
+});
+
+// Solution: Wait for effects and use async/await
+test("shows notification", async () => {
+  render(() => <Component />);
+  
+  // Wait for initial effects
+  await Promise.resolve();
+  vi.runAllTimers();
+  
+  window.dispatchEvent(new Event('offline'));
+  
+  // Wait for event effects
+  await Promise.resolve();
+  vi.runAllTimers();
+  
+  expect(addNotification).toHaveBeenCalled();
+});
+```
+
+These errors highlight several important testing principles:
+
+1. **Module-Level Mocking**
+   - Mock external dependencies at the module level
+   - Provide complete mock implementations
+   - Consider all required functionality
+
+2. **Translation Testing**
+   - Mock the translation system consistently
+   - Account for translation prefixes/formatting
+   - Test with actual translation keys
+
+3. **Reactive Effect Handling**
+   - Wait for effects with `Promise.resolve()`
+   - Use `vi.runAllTimers()` for timers
+   - Make tests async when dealing with effects
+
+4. **Test Environment Setup**
+   - Set up browser APIs (navigator.onLine)
+   - Mock global objects (__notificationContainer)
+   - Clean up after each test
+
+Best practices to avoid these issues:
+
+1. **Dependency Management**
+   - Identify all external dependencies
+   - Mock dependencies before tests
+   - Provide complete mock implementations
+
+2. **Effect Timing**
+   - Always handle async operations
+   - Wait for effects to complete
+   - Use proper cleanup in tests
+
+3. **Browser API Mocking**
+   - Mock browser APIs at setup
+   - Make properties configurable
+   - Reset state between tests
+
+4. **Notification Testing**
+   - Mock notification container
+   - Verify complete notification objects
+   - Check for proper message translation
+
+Remember to:
+- Mock all external dependencies
+- Handle async operations properly
+- Wait for reactive effects
+- Clean up between tests
+- Match exact notification formats
+
 ## Common TypeScript Linting Errors and Solutions
 
 ### 1. Object Literal Type Mismatch in Notifications
