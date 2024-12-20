@@ -80,17 +80,17 @@ export const Breadcrumb = () => {
       setNewFolderName("");
 
       // Show success notification
-      app.createNotification({
-        message: t('notifications.folderCreated'),
-        type: "success"
-      });
+      app.notify(
+        t('notifications.folderCreated'),
+        "success"
+      );
 
     } catch (error) {
       console.error("Error creating folder:", error);
-      app.createNotification({
-        message: t('notifications.folderCreateError'),
-        type: "error"
-      });
+      app.notify(
+        t('notifications.folderCreateError'),
+        "error"
+      );
     } finally {
       setIsCreatingFolder(false);
     }
@@ -299,10 +299,10 @@ const MultiSelectActions = () => {
             
             try {
               // Show initial deletion notification
-              app.notify({
-                message: app.t('gallery.deletingFiles'),
-                type: "info"
-              });
+              app.notify(
+                app.t('gallery.deletingFiles'),
+                "info"
+              );
 
               let failedFolders = 0;
               let failedCount = 0;
@@ -341,10 +341,10 @@ const MultiSelectActions = () => {
 
                 failedFolders = folderResults.filter(r => r.status === 'rejected').length;
                 if (failedFolders > 0) {
-                  app.notify({
-                    message: app.t('gallery.folderDeleteError'),
-                    type: "error"
-                  });
+                  app.notify(
+                    app.t('gallery.folderDeleteError'),
+                    "error"
+                  );
                 }
               }
 
@@ -389,19 +389,19 @@ const MultiSelectActions = () => {
 
                 failedCount = results.filter(r => r.status === 'rejected').length;
                 if (failedCount > 0) {
-                  app.notify({
-                    message: app.t('gallery.someDeletesFailed', { count: failedCount }),
-                    type: "error"
-                  });
+                  app.notify(
+                    app.t('gallery.someDeletesFailed', { count: failedCount }),
+                    "error"
+                  );
                 }
               }
               
               // Show success notification if no errors
               if (!failedFolders && !failedCount) {
-                app.notify({
-                  message: app.t('gallery.deleteSuccess'),
-                  type: "success"
-                });
+                app.notify(
+                  app.t('gallery.deleteSuccess'),
+                  "success"
+                );
               }
               
               // Clear selection and refresh
@@ -411,10 +411,10 @@ const MultiSelectActions = () => {
               
             } catch (error) {
               console.error('Error in bulk delete operation:', error);
-              app.notify({
-                message: app.t('gallery.deleteError'),
-                type: "error"
-              });
+              app.notify(
+                app.t('gallery.deleteError'),
+                "error"
+              );
             } finally {
               setDeleteProgress(null);
               setShowDeleteConfirm(false);

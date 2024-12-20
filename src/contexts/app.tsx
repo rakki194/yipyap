@@ -58,7 +58,8 @@ export interface AppContext {
   notify: (
     message: string,
     type?: "error" | "success" | "info" | "warning",
-    group?: string
+    group?: string,
+    icon?: "spinner" | "success" | "error" | "info" | "warning"
   ) => void;
   setDisableNonsense: (value: boolean) => void;
   thumbnailSize: number; // Size in pixels (e.g., 250)
@@ -66,6 +67,8 @@ export interface AppContext {
   createNotification: (notification: {
     message: string;
     type: "error" | "success" | "info" | "warning";
+    group?: string;
+    icon?: "spinner" | "success" | "error" | "info" | "warning";
   }) => void;
 }
 
@@ -252,10 +255,20 @@ const createAppContext = (): AppContext => {
   const notify = (
     message: string,
     type: "error" | "success" | "info" | "warning" = "info",
-    group?: string
+    group?: string,
+    icon?: "spinner" | "success" | "error" | "info" | "warning"
   ) => {
-    const notification = createNotification(message, type, group);
-    (window as any).__notificationContainer?.addNotification(notification);
+    // If message is a translation key and we have translations loaded, translate it
+    const translatedMessage = getTranslationValue(translation(), message) || message;
+    
+    if (typeof window !== "undefined" && (window as any).__notificationContainer) {
+      (window as any).__notificationContainer.addNotification({
+        message: translatedMessage,
+        type,
+        group,
+        icon: icon || type
+      });
+    }
   };
 
   const appContext = {
@@ -326,8 +339,12 @@ const createAppContext = (): AppContext => {
     createNotification: (notification: {
       message: string;
       type: "error" | "success" | "info" | "warning";
+      group?: string;
+      icon?: "spinner" | "success" | "error" | "info" | "warning";
     }) => {
-      notify(notification.message, notification.type);
+      if (typeof window !== "undefined" && (window as any).__notificationContainer) {
+        (window as any).__notificationContainer.addNotification(notification);
+      }
     },
     get alwaysShowCaptionEditor() {
       return store.alwaysShowCaptionEditor;

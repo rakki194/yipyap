@@ -785,7 +785,7 @@ export const Gallery = () => {
       if (event.lengthComputable) {
         const progress = Math.round((event.loaded / event.total) * 100);
         appContext.notify(
-          t("gallery.uploadProgress", { progress }),
+          t("gallery.uploadProgressPercent", { progress }),
           "info",
           "file-upload"
         );

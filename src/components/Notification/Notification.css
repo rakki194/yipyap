@@ -1,88 +1,134 @@
 .notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background-color: var(--card-bg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 200px;
-  max-width: 400px;
-  z-index: 9999;
-  animation: slide-in 0.3s ease-out;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out, background-color 0.2s ease-out;
+  will-change: transform, opacity;
+  animation: notification-enter 0.3s ease-out;
+}
+
+.notification.skip-animation {
+  animation: none;
+}
+
+.notification:hover {
+  background-color: color-mix(in srgb, var(--card-bg) 95%, var(--text-primary));
+}
+
+.notification.error {
+  background-color: var(--error-bg, #fef2f2);
+  color: var(--error-text, #991b1b);
+}
+
+.notification.error:hover {
+  background-color: color-mix(in srgb, var(--error-bg, #fef2f2) 95%, var(--error-text, #991b1b));
+}
+
+.notification.success {
+  background-color: var(--success-bg, #f0fdf4);
+  color: var(--success-text, #166534);
+}
+
+.notification.success:hover {
+  background-color: color-mix(in srgb, var(--success-bg, #f0fdf4) 95%, var(--success-text, #166534));
+}
+
+.notification.info {
+  background-color: var(--info-bg, #eff6ff);
+  color: var(--info-text, #1e40af);
+}
+
+.notification.info:hover {
+  background-color: color-mix(in srgb, var(--info-bg, #eff6ff) 95%, var(--info-text, #1e40af));
+}
+
+.notification.warning {
+  background-color: var(--warning-bg, #fffbeb);
+  color: var(--warning-text, #92400e);
+}
+
+.notification.warning:hover {
+  background-color: color-mix(in srgb, var(--warning-bg, #fffbeb) 95%, var(--warning-text, #92400e));
 }
 
 .notification.exiting {
-  animation: slide-out 0.3s ease-in forwards;
-}
-
-.notification .message {
-  flex: 1;
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
+  transform: translateX(100%);
+  opacity: 0;
 }
 
 .notification .icon {
-  font-size: 20px;
   flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.notification .message {
+  flex-grow: 1;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notification .message .spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes notification-enter {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .notification .close-button {
-  padding: 4px;
-  border: none;
+  flex-shrink: 0;
+  padding: 0;
   background: none;
-  cursor: pointer;
+  border: none;
   color: inherit;
-  opacity: 0.7;
-  transition: opacity 0.2s;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease-out;
+  transform: translateX(0.5rem);
+}
+
+.notification:hover .close-button,
+.notification.error .close-button {
+  opacity: 0.6;
+  transform: translateX(0);
 }
 
 .notification .close-button:hover {
   opacity: 1;
 }
 
-.notification.error {
-  background-color: var(--error-bg);
-  color: var(--error-text);
+.notification .close-button:focus {
+  outline: none;
+  opacity: 1;
 }
 
-.notification.success {
-  background-color: var(--success-bg);
-  color: var(--success-text);
-}
-
-.notification.info {
-  background-color: var(--info-bg);
-  color: var(--info-text);
-}
-
-.notification.warning {
-  background-color: var(--warning-bg);
-  color: var(--warning-text);
-}
-
-@keyframes slide-in {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slide-out {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
+.notification .close-button .icon {
+  width: 1rem;
+  height: 1rem;
 } 

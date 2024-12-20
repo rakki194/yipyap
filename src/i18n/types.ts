@@ -143,7 +143,19 @@ export interface GalleryTranslations {
   emptyFolder: string;
   dropToUpload: string;
   uploadProgress: TranslationValue;
+  uploadProgressPercent: string;
+  filesExceedLimit: string;
+  noFilesToUpload: string;
+  processingFiles: string;
+  uploadComplete: string;
+  uploadFailed: string;
+  deletingFiles: string;
+  deleteComplete: string;
+  deleteFailed: string;
   processingImage: TranslationValue;
+  processingImages: TranslationValue;
+  generatingCaption: string;
+  captionGenerated: string;
   generateTags: string;
   generatingTags: string;
   removeTags: string;
@@ -171,7 +183,6 @@ export interface GalleryTranslations {
   folderNamePlaceholder: string;
   deleteConfirmation: string;
   selectedCount: TranslationValue;
-  processingImages: TranslationValue;
   folderLocation: TranslationValue;
   moveToFolder: TranslationValue;
   workWithFolder: TranslationValue;

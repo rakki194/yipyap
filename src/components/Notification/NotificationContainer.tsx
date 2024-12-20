@@ -7,6 +7,7 @@ export interface NotificationItem {
   message: string;
   type: "error" | "success" | "info" | "warning";
   group?: string;
+  icon?: "spinner" | "success" | "error" | "info" | "warning";
 }
 
 let notificationId = 0;
@@ -14,33 +15,41 @@ let notificationId = 0;
 export const createNotification = (
   message: string,
   type: NotificationItem["type"],
-  group?: string
+  group?: string,
+  icon?: NotificationItem["icon"]
 ): NotificationItem => ({
   id: `notification-${notificationId++}`,
   message,
   type,
   group,
+  icon,
 });
 
 export const NotificationContainer: Component = () => {
   const [notifications, setNotifications] = createSignal<NotificationItem[]>([]);
 
   const addNotification = (notification: NotificationItem) => {
-    if (notification.group) {
-      // If there's an existing notification with the same group, update it
-      setNotifications((prev) => {
+    setNotifications((prev) => {
+      // If the notification has a group
+      if (notification.group) {
+        // Find any existing notification with the same group
         const existingIndex = prev.findIndex((n) => n.group === notification.group);
         if (existingIndex !== -1) {
+          // Update the existing notification in place
           const updated = [...prev];
-          updated[existingIndex] = { ...notification, id: prev[existingIndex].id };
+          // Keep the same ID but update message, type and icon
+          updated[existingIndex] = {
+            ...prev[existingIndex],
+            message: notification.message,
+            type: notification.type,
+            icon: notification.icon
+          };
           return updated;
         }
-        return [...prev, notification];
-      });
-    } else {
-      // If no group, just add as a new notification
-      setNotifications((prev) => [...prev, notification]);
-    }
+      }
+      // If no group or no existing notification with this group, add as new
+      return [...prev, notification];
+    });
   };
 
   const removeNotification = (id: string) => {
@@ -62,6 +71,8 @@ export const NotificationContainer: Component = () => {
           <Notification
             message={notification.message}
             type={notification.type}
+            group={notification.group}
+            icon={notification.icon}
             onClose={() => removeNotification(notification.id)}
           />
         )}

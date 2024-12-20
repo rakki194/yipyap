@@ -148,10 +148,24 @@ export default {
     },
     emptyFolder: "This folder is empty",
     dropToUpload: "Drop files here to upload",
-    uploadProgress: createPluralTranslation({
-      one: "Uploading 1 file...",
-      other: "Uploading ${count} files..."
-    }, "en"),
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Uploading some files...';
+      }
+      return createPluralTranslation({
+        one: "Uploading 1 file...",
+        other: "Uploading ${count} files..."
+      }, "en")(params);
+    },
+    uploadProgressPercent: "Uploading... {{progress}}%",
+    filesExceedLimit: "Files too large: {{files}}",
+    noFilesToUpload: "No files to upload",
+    processingFiles: "Processing files...",
+    uploadComplete: "Upload complete",
+    uploadFailed: "Upload failed: {{error}}",
+    deletingFiles: "Deleting {{count}} files...",
+    deleteComplete: "Deleted {{count}} files",
+    deleteFailed: "Delete failed: {{error}}",
     processingImage: (params: TranslationParams) => {
       const name = params.name ?? "image";
       return `Processing "${name}"...`;
@@ -230,6 +244,8 @@ export default {
       const name = params.name ?? "folder";
       return `Work with "${name}"`;
     },
+    generatingCaption: "Generating caption with {{generator}}...",
+    captionGenerated: "Caption generated with {{generator}}",
   },
   shortcuts: {
     title: "Keyboard shortcuts",

@@ -29,6 +29,7 @@ import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
 import { joinUrlParts, replaceExtension, cacheNavigation } from "~/utils";
 import { useAppContext } from "~/contexts/app";
+import getIcon from "~/icons";
 
 export interface GalleryState {
   viewMode: "grid" | "list";
@@ -279,7 +280,8 @@ export function makeGalleryState() {
       app.notify(
         t("gallery.generatingCaption", { generator }),
         "info",
-        `caption-${generator}`
+        `caption-${generator}`,
+        "spinner"
       );
 
       const response = await generateCaption(
@@ -307,7 +309,8 @@ export function makeGalleryState() {
         app.notify(
           t("gallery.captionGenerated", { generator }),
           "success",
-          `caption-${generator}`
+          `caption-${generator}`,
+          "success"
         );
       }
     } catch (error) {
