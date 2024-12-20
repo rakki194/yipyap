@@ -116,7 +116,11 @@ export default {
     errorSavingCaption: "Error saving caption",
     emptyFolder: "This folder is empty",
     dropToUpload: "Drop files here to upload",
-    uploadProgress: ({ count }: { count: number }) => `Uploading ${count} files...`,
+    uploadProgress: (params?: { count: number }) => {
+      if (!params) return 'Uploading some files...';
+      if (typeof params.count !== 'number') return 'Uploading some files...';
+      return `Uploading ${params.count} files...`;
+    },
     processingImage: "Processing image...",
     generateTags: "Generate Tags",
     generatingTags: "Generating tags...",
@@ -134,16 +138,14 @@ export default {
     selectAll: "Select all images",
     deselectAll: "Deselect all",
     deleteSelected: "Delete {{count}} selected items",
-    confirmMultiDelete: ({ folders = 0, images = 0 }: { folders?: number; images?: number }) => {
-      if (folders && images) {
-        return `Are you sure you want to delete ${folders} folder${folders > 1 ? 's' : ''} and ${images} image${images > 1 ? 's' : ''}?`;
-      } else if (folders) {
-        return `Are you sure you want to delete ${folders} folder${folders > 1 ? 's' : ''}?`;
-      } else if (images) {
-        return `Are you sure you want to delete ${images} image${images > 1 ? 's' : ''}?`;
-      } else {
-        return 'Are you sure you want to delete these items?'; // fallback message
-      }
+    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
+      if (!params) return 'Are you sure you want to delete these items?';
+      const { folders = 0, images = 0 } = params;
+      if (folders === 0 && images === 0) return 'Are you sure you want to delete these items?';
+      if (typeof folders !== 'number' || typeof images !== 'number') return 'Are you sure you want to delete these items?';
+      if (folders > 0 && images > 0) return `Are you sure you want to delete ${folders} folders and ${images} images?`;
+      if (folders > 0) return `Are you sure you want to delete ${folders} folders?`;
+      return `Are you sure you want to delete ${images} images?`;
     },
     confirmFolderDelete: "Are you sure you want to delete {{count}} folders? This will delete all contents!",
     someFolderDeletesFailed: "Failed to delete {{count}} folders",
@@ -155,7 +157,11 @@ export default {
     folderNamePlaceholder: "Enter folder name",
     deleteConfirmation: "Confirm Deletion",
     deletedCount: ({ count }: { count: number }) => `Deleted ${count} items`,
-    selectedCount: ({ count }: { count: number }) => `${count} selected`,
+    selectedCount: (params?: { count: number }) => {
+      if (!params) return 'some selected';
+      if (typeof params.count !== 'number') return 'some selected';
+      return `${params.count} selected`;
+    },
     processingImages: ({ count }: { count: number }) => `Processing ${count} images...`,
     folderLocation: ({ name }: { name: string }) => `in ${name}`,
     moveToFolder: ({ name }: { name: string }) => `Move to ${name}`,

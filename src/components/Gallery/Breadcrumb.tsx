@@ -270,7 +270,7 @@ const MultiSelectActions = () => {
                 type="button"
                 class="icon delete-button"
                 onClick={handleDelete}
-                title={app.t('gallery.deleteSelected').replace('{{count}}', selectedCount().toString())}
+                title={app.t('gallery.deleteSelected', { count: selectedCount() })}
               >
                 {getIcon("delete")}
               </button>

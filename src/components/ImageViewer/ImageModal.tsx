@@ -337,12 +337,12 @@ const DeleteButton = (props: {
 
     if (hasMultiSelection()) {
       // Handle multi-delete
-      const message = app.t('gallery.confirmMultiDelete').replace('{{count}}', getSelectedCount().toString());
+      const message = app.t('gallery.confirmMultiDelete', { count: getSelectedCount() });
       if (confirm(message)) {
         // Handle folder deletions first if any folders are selected
         const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
         if (selectedFolders.length > 0) {
-          const folderMessage = app.t('gallery.confirmFolderDelete').replace('{{count}}', selectedFolders.length.toString());
+          const folderMessage = app.t('gallery.confirmFolderDelete', { count: selectedFolders.length });
           if (confirm(folderMessage)) {
             const folderResults = await Promise.allSettled(
               selectedFolders.map(async (idx) => {
@@ -463,11 +463,11 @@ const DeleteButton = (props: {
       onTouchEnd={cancelDelete}
       onTouchCancel={cancelDelete}
       aria-label={hasMultiSelection() 
-        ? app.t('gallery.deleteSelected').replace('{{count}}', getSelectedCount().toString())
+        ? app.t('gallery.deleteSelected', { count: getSelectedCount() })
         : "Hold to delete image"
       }
       title={hasMultiSelection()
-        ? app.t('gallery.deleteSelected').replace('{{count}}', getSelectedCount().toString())
+        ? app.t('gallery.deleteSelected', { count: getSelectedCount() })
         : "Hold to delete image"
       }
     >
