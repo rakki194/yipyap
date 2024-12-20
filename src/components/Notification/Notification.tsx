@@ -1,4 +1,4 @@
-import { Component, createSignal, onCleanup, Show } from "solid-js";
+import { Component, createSignal, onCleanup, Show, createEffect } from "solid-js";
 import getIcon from "~/icons";
 import "./Notification.css";
 
@@ -11,6 +11,7 @@ export interface NotificationProps {
 export const Notification: Component<NotificationProps> = (props) => {
   const [isVisible, setIsVisible] = createSignal(true);
   const [isExiting, setIsExiting] = createSignal(false);
+  let timeout: NodeJS.Timeout | undefined;
 
   const getIconName = () => {
     switch (props.type) {
@@ -35,11 +36,32 @@ export const Notification: Component<NotificationProps> = (props) => {
     }, 300); // Match CSS animation duration
   };
 
-  // Auto-dismiss after 3 seconds for non-error notifications
-  if (props.type !== "error") {
-    const timeout = setTimeout(handleClose, 3000);
-    onCleanup(() => clearTimeout(timeout));
-  }
+  const startTimer = () => {
+    // Clear any existing timer
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    
+    // Auto-dismiss after 3 seconds for non-error notifications
+    if (props.type !== "error") {
+      timeout = setTimeout(handleClose, 3000);
+    }
+  };
+
+  // Start timer initially
+  startTimer();
+
+  // Reset timer when message changes
+  createEffect(() => {
+    props.message; // Track message changes
+    startTimer();
+  });
+
+  onCleanup(() => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  });
 
   return (
     <Show when={isVisible()}>

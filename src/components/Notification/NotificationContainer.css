@@ -1,0 +1,16 @@
+.notification-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 100%;
+  width: 24rem;
+  pointer-events: none;
+}
+
+.notification-container > * {
+  pointer-events: auto;
+} 

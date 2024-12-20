@@ -718,6 +718,19 @@ export const Gallery = () => {
     }
   };
 
+  const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB per file
+
+  const handleDrop = async (e: DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    dragCounter = 0;
+
+    const files = e.dataTransfer?.files;
+    if (!files) return;
+
+    await uploadFiles(files);
+  };
+
   /**
    * Uploads files to the server with progress tracking
    * 
@@ -725,248 +738,122 @@ export const Gallery = () => {
    * @param url - Target URL for upload
    * @returns Promise that resolves when upload is complete
    */
-  const uploadFiles = async (formData: FormData, url: string) => {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      
-      xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          setUploadProgress({
-            current: event.loaded,
-            total: event.total
-          });
-        }
-      });
+  const uploadFiles = async (files: FileList) => {
+    const t = appContext.t;
+    const formData = new FormData();
+    let totalSize = 0;
+    let oversizedFiles = [];
 
-      xhr.addEventListener('load', () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(xhr.response);
-        } else {
-          reject(new Error(xhr.statusText));
-        }
-      });
+    // Check file sizes and add to form data
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE) {
+        oversizedFiles.push(file.name);
+        continue;
+      }
+      totalSize += file.size;
+      formData.append("files", file);
+    }
 
-      xhr.addEventListener('error', () => {
-        reject(new Error('Network error'));
-      });
+    if (oversizedFiles.length > 0) {
+      appContext.notify(
+        t("gallery.filesExceedLimit", { files: oversizedFiles.join(", ") }),
+        "error",
+        "file-upload"
+      );
+      return;
+    }
 
-      xhr.open('POST', url);
-      xhr.send(formData);
+    if (totalSize === 0) {
+      appContext.notify(
+        t("gallery.noFilesToUpload"),
+        "error",
+        "file-upload"
+      );
+      return;
+    }
 
-      // Return abort function for cleanup
-      return () => xhr.abort();
-    });
+    appContext.notify(
+      t("gallery.processingFiles"),
+      "info",
+      "file-upload"
+    );
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `/api/upload/${gallery.data()?.path}`);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const progress = Math.round((event.loaded / event.total) * 100);
+        appContext.notify(
+          t("gallery.uploadProgress", { progress }),
+          "info",
+          "file-upload"
+        );
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        appContext.notify(
+          t("gallery.uploadComplete"),
+          "success",
+          "file-upload"
+        );
+        gallery.invalidate();
+        gallery.refetch();
+      } else {
+        appContext.notify(
+          t("gallery.uploadFailed", { error: xhr.statusText }),
+          "error",
+          "file-upload"
+        );
+      }
+    };
+
+    xhr.onerror = () => {
+      appContext.notify(
+        t("gallery.uploadFailed", { error: "Network error" }),
+        "error",
+        "file-upload"
+      );
+    };
+
+    xhr.send(formData);
   };
 
-  const MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB per file
-  const MAX_REQUEST_SIZE = 500 * 1024 * 1024; // 500MB total request size
-
-  const handleDrop = async (e: DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    dragCounter = 0;
-
-    const items = e.dataTransfer?.items;
-    if (!items) return;
+  const deleteFiles = async (files: string[]) => {
+    const t = appContext.t;
+    appContext.notify(
+      t("gallery.deletingFiles", { count: files.length }),
+      "info",
+      "file-delete"
+    );
 
     try {
-      const formData = new FormData();
-      const files: File[] = [];
-      
-      // Show initial processing message
-      appContext.notify({
-        message: appContext.t('gallery.processingFiles'),
-        type: "info"
-      });
-      
-      // Process all dropped items in parallel
-      const filePromises = Array.from(items).map(item => {
-        const entry = item.webkitGetAsEntry();
-        if (entry) {
-          return traverseFileTree(entry, '', files);
-        }
-        return Promise.resolve();
+      const response = await fetch(`/api/delete/${gallery.data()?.path}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ files }),
       });
 
-      await Promise.all(filePromises);
-
-      if (files.length === 0) {
-        return;
+      if (!response.ok) {
+        throw new Error(await response.text());
       }
 
-      // Check individual file sizes and total size
-      const oversizedFiles = files.filter(file => file.size > MAX_UPLOAD_SIZE);
-      if (oversizedFiles.length > 0) {
-        const maxSizeMB = MAX_UPLOAD_SIZE / (1024 * 1024);
-        appContext.notify({
-          message: appContext.t('gallery.fileTooLarge', { 
-            count: oversizedFiles.length,
-            maxSize: maxSizeMB,
-            files: oversizedFiles.map(f => f.name).join(', ')
-          }),
-          type: "error"
-        });
-        return;
-      }
-
-      // Check total request size
-      const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-      if (totalSize > MAX_REQUEST_SIZE) {
-        const maxRequestSizeMB = MAX_REQUEST_SIZE / (1024 * 1024);
-        appContext.notify({
-          message: appContext.t('gallery.requestTooLarge', {
-            totalSize: (totalSize / (1024 * 1024)).toFixed(1),
-            maxSize: maxRequestSizeMB
-          }),
-          type: "error"
-        });
-        return;
-      }
-
-      // Update initial progress
-      setProgressInfo({
-        current: 0,
-        total: totalSize,
-        type: 'upload',
-        message: appContext.t('gallery.uploadProgress', { count: files.length })
-      });
-
-      // Add all collected files to formData
-      files.forEach(file => {
-        const relativePath = file.webkitRelativePath || file.name;
-        formData.append('files', file, relativePath);
-      });
-
-      const currentPath = gallery.data()?.path || '';
-      const uploadUrl = currentPath 
-        ? `/api/upload/${currentPath}`
-        : '/api/upload';
-      
-      // Show upload notification
-      appContext.notify({
-        message: appContext.t('gallery.uploadProgress', { count: files.length }),
-        type: "info"
-      });
-
-      try {
-        await uploadFiles(formData, uploadUrl);
-        
-        // Clear progress on success
-        setProgressInfo(null);
-        
-        // Show success notification
-        appContext.notify({
-          message: appContext.t('gallery.uploadSuccess', { count: files.length }),
-          type: "success"
-        });
-        
-        // Clear any existing selection to avoid index mismatches
-        gallery.selection.clearMultiSelect();
-        gallery.selection.clearFolderMultiSelect();
-        gallery.select(null);
-        
-        // Force a complete refresh of the gallery data
-        gallery.invalidate();
-        await gallery.refetch();
-      } catch (uploadError) {
-        console.error('Upload error:', uploadError);
-        if (uploadError instanceof Error) {
-          if (uploadError.message.includes('413')) {
-            const isRequestTooLarge = totalSize > MAX_REQUEST_SIZE;
-            appContext.notify({
-              message: appContext.t(
-                isRequestTooLarge ? 'gallery.requestTooLarge' : 'gallery.fileTooLarge',
-                isRequestTooLarge 
-                  ? {
-                      totalSize: (totalSize / (1024 * 1024)).toFixed(1),
-                      maxSize: MAX_REQUEST_SIZE / (1024 * 1024)
-                    }
-                  : {
-                      count: 1,
-                      maxSize: MAX_UPLOAD_SIZE / (1024 * 1024)
-                    }
-              ),
-              type: "error"
-            });
-          } else {
-            appContext.notify({
-              message: appContext.t('gallery.uploadError'),
-              type: "error"
-            });
-          }
-        }
-        setProgressInfo(null);
-      }
-      
+      appContext.notify(
+        t("gallery.deleteComplete", { count: files.length }),
+        "success",
+        "file-delete"
+      );
+      gallery.invalidate();
+      gallery.refetch();
     } catch (error) {
-      console.error('Error processing files:', error);
-      appContext.notify({
-        message: appContext.t('gallery.uploadError'),
-        type: "error"
-      });
-      setProgressInfo(null);
-    }
-  };
-
-  /**
-   * Recursively traverses a file system entry (file or directory)
-   * and collects all files for upload
-   * 
-   * @param item - FileSystem entry to traverse
-   * @param path - Current path in the traversal
-   * @param files - Array to collect found files
-   */
-  const traverseFileTree = async (
-    item: FileSystemEntry,
-    path: string,
-    files: File[]
-  ): Promise<void> => {
-    if (item.isFile) {
-      const fileEntry = item as FileSystemFileEntry;
-      const file = await new Promise<File>((resolve, reject) => {
-        fileEntry.file(
-          (file) => {
-            // Create a new File object with the full path
-            const newFile = new File([file], file.name, {
-              type: file.type,
-              lastModified: file.lastModified,
-            });
-            // Add the relative path information
-            Object.defineProperty(newFile, 'webkitRelativePath', {
-              value: path + file.name
-            });
-            resolve(newFile);
-          },
-          reject
-        );
-      });
-      files.push(file);
-      if (import.meta.env.DEV) {
-        console.debug('Found file:', path + file.name);
-      }
-    } else if (item.isDirectory) {
-      const dirEntry = item as FileSystemDirectoryEntry;
-      const dirReader = dirEntry.createReader();
-      
-      // Read all entries in the directory
-      const entries: FileSystemEntry[] = [];
-      let readResults;
-      do {
-        readResults = await new Promise<FileSystemEntry[]>((resolve, reject) => {
-          dirReader.readEntries(resolve, reject);
-        });
-        entries.push(...readResults);
-      } while (readResults.length > 0);
-      
-      // Process all entries in parallel
-      await Promise.all(
-        entries.map(entry => 
-          traverseFileTree(
-            entry,
-            path + item.name + '/',
-            files
-          )
-        )
+      appContext.notify(
+        t("gallery.deleteFailed", { error: error instanceof Error ? error.message : "Unknown error" }),
+        "error",
+        "file-delete"
       );
     }
   };

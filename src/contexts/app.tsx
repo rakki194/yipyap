@@ -19,7 +19,7 @@ import { AppContext } from "~/contexts/contexts";
 import { Theme, getInitialTheme } from "~/contexts/theme";
 import { Locale, getTranslationValue, translations } from "~/i18n";
 import type { Translations } from "~/i18n/types";
-import { addNotification } from "~/components/Notification/NotificationContainer";
+import { createNotification } from "~/components/Notification/NotificationContainer";
 
 /**
  * Interface defining the shape of the app context.
@@ -55,17 +55,17 @@ export interface AppContext {
   setPreserveTxt: (value: boolean) => void;
   alwaysShowCaptionEditor: boolean;
   setAlwaysShowCaptionEditor: (value: boolean) => void;
-  notify: (notification: {
-    type: 'error' | 'success' | 'info' | 'warning';
-    message: string;
-    details?: string;
-  }) => void;
+  notify: (
+    message: string,
+    type?: "error" | "success" | "info" | "warning",
+    group?: string
+  ) => void;
   setDisableNonsense: (value: boolean) => void;
   thumbnailSize: number; // Size in pixels (e.g., 250)
   setThumbnailSize: (size: number) => void;
   createNotification: (notification: {
     message: string;
-    type: 'error' | 'success' | 'info' | 'warning';
+    type: "error" | "success" | "info" | "warning";
   }) => void;
 }
 
@@ -242,11 +242,20 @@ const createAppContext = (): AppContext => {
       
     } catch (error) {
       console.error('Error updating thumbnail size:', error);
-      appContext.notify({
-        type: 'error',
-        message: getTranslationValue(translation(), 'settings.thumbnailSizeUpdateError') || 'Failed to update thumbnail size',
-      });
+      notify(
+        getTranslationValue(translation(), 'settings.thumbnailSizeUpdateError') || 'Failed to update thumbnail size',
+        'error'
+      );
     }
+  };
+
+  const notify = (
+    message: string,
+    type: "error" | "success" | "info" | "warning" = "info",
+    group?: string
+  ) => {
+    const notification = createNotification(message, type, group);
+    (window as any).__notificationContainer?.addNotification(notification);
   };
 
   const appContext = {
@@ -306,16 +315,7 @@ const createAppContext = (): AppContext => {
     setPreserveLatents,
     preserveTxt: preserveTxt(),
     setPreserveTxt,
-    notify: (notification: {
-      type: 'error' | 'success' | 'info' | 'warning';
-      message: string;
-      details?: string;
-    }) => {
-      addNotification({
-        type: notification.type,
-        message: notification.message,
-      });
-    },
+    notify,
     setDisableNonsense,
     get thumbnailSize() {
       return store.thumbnailSize;
@@ -325,9 +325,9 @@ const createAppContext = (): AppContext => {
     },
     createNotification: (notification: {
       message: string;
-      type: 'error' | 'success' | 'info' | 'warning';
+      type: "error" | "success" | "info" | "warning";
     }) => {
-      addNotification(notification);
+      notify(notification.message, notification.type);
     },
     get alwaysShowCaptionEditor() {
       return store.alwaysShowCaptionEditor;

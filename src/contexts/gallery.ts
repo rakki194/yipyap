@@ -275,11 +275,12 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     try {
-      // Show generating notification
-      app.notify({
-        message: app.t('notifications.generatingCaption'),
-        type: "info"
-      });
+      const t = app.t;
+      app.notify(
+        t("gallery.generatingCaption", { generator }),
+        "info",
+        `caption-${generator}`
+      );
 
       const response = await generateCaption(
         database.path,
@@ -303,18 +304,19 @@ export function makeGalleryState() {
           database
         );
 
-        // Show success notification
-        app.notify({
-          message: app.t('notifications.captionGenerated'),
-          type: "success"
-        });
+        app.notify(
+          t("gallery.captionGenerated", { generator }),
+          "success",
+          `caption-${generator}`
+        );
       }
     } catch (error) {
       console.error("Error generating tags:", error);
-      app.notify({
-        message: error instanceof Error ? error.message : "Failed to generate tags",
-        type: "error",
-      });
+      app.notify(
+        error instanceof Error ? error.message : "Failed to generate tags",
+        "error",
+        `caption-${generator}`
+      );
       return error;
     }
   });
