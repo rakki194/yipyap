@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { getSpanishPlural } from "./utils";
 import type { Translations } from "./types";
 
 export default {
@@ -94,8 +95,63 @@ export default {
     audioWork: "Trabajar con audio",
     deselectAll: "Deseleccionar todo",
     deleteSelected: "Eliminar seleccionados",
+    fileCount: ({ count }: { count: number }) => 
+      getSpanishPlural(count, {
+        singular: "archivo",
+        plural: "archivos"
+      }),
+      
+    imageCount: ({ count }: { count: number }) => 
+      getSpanishPlural(count, {
+        singular: "imagen",
+        plural: "imágenes"
+      }),
+      
+    foundFolders: ({ count }: { count: number }) => 
+      `${count} ${getSpanishPlural(count, {
+        singular: "carpeta encontrada",
+        plural: "carpetas encontradas"
+      })}`,  
   },
   gallery: {
+    selectedCount: ({ count }: { count: number }) => 
+      `${count} ${getSpanishPlural(count, {
+        singular: "seleccionado",
+        plural: "seleccionados"
+      })}`,
+    processingImages: ({ count }: { count: number }) => 
+      `Procesando ${count} ${getSpanishPlural(count, {
+        singular: "imagen",
+        plural: "imágenes"
+      })}...`,
+    foundImages: ({ count }: { count: number }) => 
+      `${count} ${getSpanishPlural(count, {
+        singular: "imagen encontrada",
+        plural: "imágenes encontradas"
+      })}`,
+    deletedCount: ({ count }: { count: number }) => 
+      `${count} ${getSpanishPlural(count, {
+        singular: "elemento eliminado",
+        plural: "elementos eliminados"
+      })}`,
+    fileCount: ({ count }: { count: number }) => 
+      getSpanishPlural(count, {
+        singular: "archivo",
+        plural: "archivos"
+      }),
+    imageCount: ({ count }: { count: number }) => 
+      getSpanishPlural(count, {
+        singular: "imagen",
+        plural: "imágenes"
+      }),
+    foundFolders: ({ count }: { count: number }) => 
+      `${count} ${getSpanishPlural(count, {
+        singular: "carpeta encontrada",
+        plural: "carpetas encontradas"
+      })}`,
+    selectAll: "Seleccionar todo",
+    deselectAll: "Deseleccionar todo",
+    deleteSelected: "Eliminar seleccionados",
     addTag: "Añadir etiqueta...",
     addCaption: "Añadir título...",
     quickJump: "Ir a carpeta...",
@@ -123,14 +179,6 @@ export default {
       wd: "Crear nuevo archivo .wd"
     },
     noCaptionFiles: "¡Aún no hay archivos de título!",
-    fileCount: ({ count }: { count: number }) => `${count} archivos`,
-    imageCount: ({ count }: { count: number }) => `${count} imágenes`,
-    foundFolders: ({ count }: { count: number }) => `${count} carpetas encontradas`,
-    foundImages: ({ count }: { count: number }) => `${count} imágenes encontradas`,
-    deletedCount: ({ count }: { count: number }) => `${count} elementos eliminados`,
-    selectAll: "Seleccionar todo",
-    deselectAll: "Deseleccionar todo",
-    deleteSelected: "Eliminar seleccionados",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders && images) {
         return `¿Estás seguro de que quieres eliminar ${folders} carpetas y ${images} imágenes?`;
@@ -148,8 +196,6 @@ export default {
     createFolder: "Crear carpeta",
     folderNamePlaceholder: "Nombre de la carpeta",
     deleteConfirmation: "Confirmar eliminación",
-    selectedCount: ({ count }: { count: number }) => `${count} elementos seleccionados`,
-    processingImages: ({ count }: { count: number }) => `Procesando ${count} imágenes...`,
     folderLocation: ({ name }: { name: string }) => `Ubicación: ${name}`,
     moveToFolder: ({ name }: { name: string }) => `Mover a ${name}`,
     workWithFolder: ({ name }: { name: string }) => `Trabajar con ${name}`,
