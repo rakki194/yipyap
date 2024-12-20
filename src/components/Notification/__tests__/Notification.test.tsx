@@ -91,6 +91,16 @@ describe("Notification Component", () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
+  test("does not auto-dismiss notifications with spinner icon", () => {
+    const onClose = vi.fn();
+    render(() => (
+      <Notification message="Loading..." type="info" icon="spinner" onClose={onClose} />
+    ));
+    
+    vi.advanceTimersByTime(3300);
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   test("resets timer when message changes", () => {
     const onClose = vi.fn();
     const [message, setMessage] = createSignal("Initial message");

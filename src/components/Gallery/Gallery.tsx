@@ -775,7 +775,8 @@ export const Gallery = () => {
     appContext.notify(
       t("gallery.processingFiles"),
       "info",
-      "file-upload"
+      "file-upload",
+      "spinner"
     );
 
     const xhr = new XMLHttpRequest();
@@ -784,11 +785,13 @@ export const Gallery = () => {
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
         const progress = Math.round((event.loaded / event.total) * 100);
-        appContext.notify(
-          t("gallery.uploadProgressPercent", { progress }),
-          "info",
-          "file-upload"
-        );
+        appContext.createNotification({
+          message: t("gallery.uploadProgressPercent", { progress }),
+          type: "info",
+          group: "file-upload",
+          icon: "spinner",
+          progress
+        });
       }
     };
 

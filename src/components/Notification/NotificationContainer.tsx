@@ -8,6 +8,7 @@ export interface NotificationItem {
   type: "error" | "success" | "info" | "warning";
   group?: string;
   icon?: "spinner" | "success" | "error" | "info" | "warning";
+  progress?: number;
 }
 
 let notificationId = 0;
@@ -37,12 +38,13 @@ export const NotificationContainer: Component = () => {
         if (existingIndex !== -1) {
           // Update the existing notification in place
           const updated = [...prev];
-          // Keep the same ID but update message, type and icon
+          // Keep the same ID but update all properties
           updated[existingIndex] = {
             ...prev[existingIndex],
             message: notification.message,
             type: notification.type,
-            icon: notification.icon
+            icon: notification.icon,
+            progress: notification.progress
           };
           return updated;
         }
@@ -73,6 +75,7 @@ export const NotificationContainer: Component = () => {
             type={notification.type}
             group={notification.group}
             icon={notification.icon}
+            progress={notification.progress}
             onClose={() => removeNotification(notification.id)}
           />
         )}

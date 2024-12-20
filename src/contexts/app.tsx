@@ -69,6 +69,7 @@ export interface AppContext {
     type: "error" | "success" | "info" | "warning";
     group?: string;
     icon?: "spinner" | "success" | "error" | "info" | "warning";
+    progress?: number;
   }) => void;
 }
 
@@ -341,6 +342,7 @@ const createAppContext = (): AppContext => {
       type: "error" | "success" | "info" | "warning";
       group?: string;
       icon?: "spinner" | "success" | "error" | "info" | "warning";
+      progress?: number;
     }) => {
       if (typeof window !== "undefined" && (window as any).__notificationContainer) {
         (window as any).__notificationContainer.addNotification(notification);

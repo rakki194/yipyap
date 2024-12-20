@@ -816,3 +816,94 @@ Remember to:
 - Mock time-based functions
 - Handle async operations properly
 - Clean up after each test
+
+## Common TypeScript Linting Errors and Solutions
+
+### 1. Object Literal Type Mismatch in Notifications
+
+Location: `src/components/Gallery/Gallery.tsx`
+
+```typescript
+// Error: Object literal may only specify known properties
+appContext.createNotification({
+  message: t("gallery.uploadProgressPercent", { progress }),
+  type: "info",
+  group: "file-upload",
+  progress // Error: 'progress' does not exist in type
+});
+
+// Solution: Update the notification type in the app context first
+// In src/contexts/app.tsx:
+export interface AppContext {
+  createNotification: (notification: {
+    message: string;
+    type: "error" | "success" | "info" | "warning";
+    group?: string;
+    icon?: "spinner" | "success" | "error" | "info" | "warning";
+    progress?: number; // Add the progress property to the type
+  }) => void;
+}
+```
+
+This error occurs when trying to pass properties to a function that aren't defined in its type signature. To avoid this:
+
+1. Always define the complete interface before implementing features
+2. Update types in the following order:
+   - Base interfaces/types (e.g., `NotificationItem`)
+   - Component props (e.g., `NotificationProps`)
+   - Context interfaces (e.g., `AppContext`)
+   - Implementation code
+
+3. When adding new properties:
+   - Make them optional (`?`) if they're not required
+   - Update all related interfaces consistently
+   - Add appropriate JSDoc comments explaining the property
+   - Consider the impact on existing code
+
+4. For notification-specific changes:
+   - Update `NotificationItem` in `NotificationContainer.tsx`
+   - Update `NotificationProps` in `Notification.tsx`
+   - Update the app context interface in `app.tsx`
+   - Update any related test files
+
+Example of proper type propagation:
+
+```typescript
+// 1. Base type in NotificationContainer.tsx
+export interface NotificationItem {
+  id: string;
+  message: string;
+  type: "error" | "success" | "info" | "warning";
+  group?: string;
+  icon?: "spinner" | "success" | "error" | "info" | "warning";
+  progress?: number;
+}
+
+// 2. Component props in Notification.tsx
+export interface NotificationProps {
+  message: string;
+  type: "error" | "success" | "info" | "warning";
+  group?: string;
+  icon?: "spinner" | "success" | "error" | "info" | "warning";
+  onClose?: () => void;
+  progress?: number;
+}
+
+// 3. Context interface in app.tsx
+export interface AppContext {
+  createNotification: (notification: {
+    message: string;
+    type: "error" | "success" | "info" | "warning";
+    group?: string;
+    icon?: "spinner" | "success" | "error" | "info" | "warning";
+    progress?: number;
+  }) => void;
+}
+```
+
+Remember to:
+- Keep types synchronized across files
+- Make new properties optional when possible
+- Update all related interfaces at once
+- Add appropriate documentation
+- Update tests to cover new properties

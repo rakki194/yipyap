@@ -11,6 +11,7 @@ import {
 import { routes } from "./router";
 import { AppProvider } from "./contexts/app";
 import { NotificationContainer } from "./components/Notification/NotificationContainer";
+import useConnectionStatus from "./hooks/useConnectionStatus";
 import "./styles.css";
 
 const CustomErrorBoundary: ParentComponent = (props) => {
@@ -29,12 +30,19 @@ const CustomErrorBoundary: ParentComponent = (props) => {
   );
 };
 
+// Component to monitor connection status
+const ConnectionMonitor: ParentComponent = () => {
+  useConnectionStatus();
+  return null;
+};
+
 const Layout: ParentComponent = (props) => {
   return (
     <>
       <AppProvider>
         <CustomErrorBoundary>{props.children}</CustomErrorBoundary>
         <NotificationContainer />
+        <ConnectionMonitor />
       </AppProvider>
     </>
   );

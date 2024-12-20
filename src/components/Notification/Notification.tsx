@@ -8,6 +8,7 @@ export interface NotificationProps {
   group?: string;
   icon?: "spinner" | "success" | "error" | "info" | "warning";
   onClose?: () => void;
+  progress?: number;
 }
 
 export const Notification: Component<NotificationProps> = (props) => {
@@ -49,8 +50,8 @@ export const Notification: Component<NotificationProps> = (props) => {
       clearTimeout(timeout);
     }
     
-    // Auto-dismiss after 3 seconds for non-error notifications
-    if (props.type !== "error") {
+    // Auto-dismiss after 3 seconds for non-error notifications that don't have a spinner icon
+    if (props.type !== "error" && props.icon !== "spinner") {
       timeout = setTimeout(handleClose, 3000);
     }
   };
@@ -104,6 +105,14 @@ export const Notification: Component<NotificationProps> = (props) => {
           >
             {getIcon("dismiss")}
           </button>
+        </Show>
+        <Show when={typeof props.progress === "number"}>
+          <div class="progress-bar">
+            <div 
+              class="progress-bar-fill" 
+              style={{ width: `${props.progress}%` }}
+            />
+          </div>
         </Show>
       </div>
     </Show>

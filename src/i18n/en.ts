@@ -307,5 +307,7 @@ export default {
     folderCreateError: "Failed to create folder",
     generatingCaption: "Generating caption...",
     captionGenerated: "Caption generated successfully",
+    connectionLost: "Connection lost. Please check your internet connection.",
+    connectionRestored: "Connection restored.",
   },
 } satisfies Translations;

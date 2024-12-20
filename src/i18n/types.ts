@@ -242,6 +242,8 @@ export interface NotificationsTranslations {
   folderCreateError: string;
   generatingCaption: string;
   captionGenerated: string;
+  connectionLost: string;
+  connectionRestored: string;
 }
 
 export interface Translations {
