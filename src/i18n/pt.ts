@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { getPortuguesePlural } from "./utils";
 import { Translations } from "./types";
 
 export default {
@@ -101,7 +102,10 @@ export default {
     quickJump: "Ir para pasta...",
     loadingFolders: "Carregando pastas...",
     noResults: "Nenhum resultado encontrado",
-    folderCount: (params: { count: number }) => `${params.count} pastas`,
+    folderCount: ({ count = 0 }) => getPortuguesePlural(count, {
+      singular: "pasta",
+      plural: "pastas"
+    }),
     deleteConfirm: "Tem certeza que deseja excluir esta imagem?",
     deleteSuccess: "Imagem excluída com sucesso",
     deleteError: "Erro ao excluir imagem",
@@ -123,11 +127,16 @@ export default {
       wd: "Criar novo arquivo .wd"
     },
     noCaptionFiles: "Ainda não há arquivos de legenda!",
-    fileCount: (params: { count: number }) => `${params.count} arquivos`,
-    imageCount: (params: { count: number }) => `${params.count} imagens`,
+    fileCount: ({ count = 0 }) => getPortuguesePlural(count, {
+      singular: "arquivo",
+      plural: "arquivos"
+    }),
+    imageCount: ({ count = 0 }) => getPortuguesePlural(count, {
+      singular: "imagem",
+      plural: "imagens"
+    }),
     foundFolders: (params: { count: number }) => `${params.count} pastas encontradas`,
     foundImages: (params: { count: number }) => `${params.count} imagens encontradas`,
-    selectedCount: (params: { count: number }) => `${params.count} selecionados`,
     selectAll: "Selecionar todos",
     createFolder: "Criar pasta",
     moveToFolder: (params: { name: string }) => `Mover para pasta "${params.name}"`,
@@ -155,6 +164,10 @@ export default {
     folderNamePlaceholder: "Nome da pasta",
     deleteConfirmation: "Confirmar exclusão",
     processingImages: ({ count }: { count: number }) => `Processando ${count} imagens...`,
+    selectedCount: ({ count = 0 }) => getPortuguesePlural(count, {
+      singular: "item selecionado",
+      plural: "itens selecionados"
+    })
   },
   shortcuts: {
     title: "Atalhos de teclado",
