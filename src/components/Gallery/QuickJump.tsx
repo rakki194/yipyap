@@ -92,29 +92,42 @@ export const QuickJump: Component<{
   });
 
   return (
-    <div class="quick-jump-overlay" onClick={props.onClose}>
-      <div class="quick-jump-modal card" onClick={(e) => e.stopPropagation()}>
+    <div 
+      class="quick-jump-overlay" 
+      data-testid="quick-jump-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) props.onClose();
+      }}
+    >
+      <div 
+        class="quick-jump-modal" 
+        data-testid="quick-jump-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2>{t('gallery.quickJump')}</h2>
         <input
           ref={inputRef}
           type="text"
           value={search()}
-          onInput={handleSearchInput}
+          onInput={(e) => setSearch(e.currentTarget.value)}
           onKeyDown={handleKeyDown}
           placeholder={t('common.search')}
           autofocus
+          aria-label={t('common.search')}
         />
         <Show when={folders.loading}>
-          <div class="loading">{t('gallery.loadingFolders')}</div>
+          <div class="loading" role="status">{t('gallery.loadingFolders')}</div>
         </Show>
         <Show when={!folders.loading && (!matches() || matches()?.length === 0)}>
-          <div class="no-results">{t('gallery.noResults')}</div>
+          <div class="no-results" role="status">{t('gallery.noResults')}</div>
         </Show>
         <Show when={matches().length > 0}>
-          <ul class="quick-jump-results">
+          <ul class="quick-jump-results" role="listbox">
             <For each={matches()}>
               {(folder, index) => (
                 <li
+                  role="option"
+                  aria-selected={index() === selectedIndex()}
                   onClick={() => handleSelect(folder)}
                   classList={{
                     selected: index() === selectedIndex(),

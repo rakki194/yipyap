@@ -1,11 +1,11 @@
 import { describe, test, expect } from 'vitest';
 import { createRoot, JSX, createResource } from 'solid-js';
 import { action } from '@solidjs/router';
-import { AppContext, GalleryContext } from './contexts';
-import type { AppContext as AppContextType } from './app';
-import type { GalleryContextType } from './gallery';
+import { AppContext, GalleryContext } from '../contexts';
+import type { AppContext as AppContextType } from '../app';
+import type { GalleryContextType } from '../gallery';
 import type { BrowsePagesCached, AnyItem } from '~/resources/browse';
-import type { Mode } from './selection';
+import type { Mode } from '../selection';
 
 describe('Context Creation', () => {
   test('AppContext should be defined', () => {

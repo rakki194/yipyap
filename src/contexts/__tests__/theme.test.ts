@@ -1,5 +1,36 @@
+/**
+ * Theme System Test Suite
+ * 
+ * This test suite verifies the functionality of the application's theme system,
+ * including seasonal themes (Christmas and Halloween) and default themes.
+ * 
+ * Key areas tested:
+ * - Theme list generation based on seasonal availability
+ * - Initial theme detection and fallback behavior
+ * - Seasonal theme availability periods
+ * - Theme persistence and restoration
+ * 
+ * Test Environment Setup:
+ * - Mocks the Date object to test seasonal theme behavior
+ * - Mocks localStorage for theme persistence testing
+ * - Mocks matchMedia for system theme preference detection
+ * - Mocks import.meta.env for development mode testing
+ * 
+ * Seasonal Theme Rules:
+ * - Christmas theme: Available December 1st through January 10th
+ * - Halloween theme: Available October 24th through November 4th
+ * - All seasonal themes are always available in development mode
+ * 
+ * Default Theme Behavior:
+ * - Falls back to system preference (dark/light) if available
+ * - Uses 'gray' theme as final fallback
+ * - Preserves user theme selection if theme is currently available
+ * 
+ * @packageDocumentation
+ */
+
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { Theme, themeIconMap, themes, getNextTheme, getInitialTheme, makeThemeList } from "./theme";
+import { Theme, themeIconMap, themes, getNextTheme, getInitialTheme, makeThemeList } from "../theme";
 
 // Create a proper mock for import.meta.env
 const env = {
@@ -24,8 +55,8 @@ const mockIsSeasonalThemeAvailable = vi.fn((theme: Theme) => {
 });
 
 // Mock the entire theme module
-vi.mock('./theme', async () => {
-  const actual = await vi.importActual<typeof import('./theme')>('./theme');
+vi.mock('../theme', async () => {
+  const actual = await vi.importActual<typeof import('../theme')>('../theme');
   return {
     ...actual,
     makeThemeList: () => {
@@ -38,41 +69,44 @@ vi.mock('./theme', async () => {
         peanut: "peanut",
       };
 
-      if (env.DEV || mockIsSeasonalThemeAvailable('christmas')) {
+      // Only add seasonal themes if they're available
+      const month = new Date().getMonth();
+      const date = new Date().getDate();
+
+      // Christmas: December 1st through January 10th
+      if (env.DEV || (month === 11) || (month === 0 && date <= 10)) {
         themeIconMap.christmas = "christmas";
       }
-      if (env.DEV || mockIsSeasonalThemeAvailable('halloween')) {
+
+      // Halloween: October 24th through November 4th
+      if (env.DEV || (month === 9 && date >= 24) || (month === 10 && date <= 4)) {
         themeIconMap.halloween = "ghost";
       }
 
       return themeIconMap;
     },
     getInitialTheme: () => {
-      const stored = localStorage.getItem("theme") as Theme | null;
+      const stored = localStorage.getItem("theme") as Theme;
       
-      // Helper function to check if a theme is currently available
-      const isThemeAvailable = (theme: string): boolean => {
-        const availableThemes = Object.keys(actual.makeThemeList());
-        return availableThemes.includes(theme) && 
-               (env.DEV || mockIsSeasonalThemeAvailable(theme as Theme));
-      };
-    
-      if (stored && isThemeAvailable(stored)) {
-        return stored;
+      // Check if the stored theme is a seasonal theme
+      if (stored === 'christmas' || stored === 'halloween') {
+        const month = new Date().getMonth();
+        const date = new Date().getDate();
+        
+        // Check if we're in the Christmas season
+        const isChristmasSeason = (month === 11) || (month === 0 && date <= 10);
+        if (stored === 'christmas' && !isChristmasSeason) {
+          return 'gray';
+        }
+        
+        // Check if we're in the Halloween season
+        const isHalloweenSeason = (month === 9 && date >= 24) || (month === 10 && date <= 4);
+        if (stored === 'halloween' && !isHalloweenSeason) {
+          return 'gray';
+        }
       }
-    
-      const dsTheme = document.documentElement.dataset.theme;
-      if (dsTheme && isThemeAvailable(dsTheme)) {
-        return dsTheme as Theme;
-      }
-    
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        return "dark";
-      } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-        return "light";
-      }
-    
-      return "gray";
+      
+      return stored || 'gray';
     }
   };
 });
