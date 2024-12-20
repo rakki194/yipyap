@@ -90,15 +90,26 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
     <div class="settings-panel card" onKeyDown={handleKeyDown}>
       <div class="settings-header">
         <h2>{t('settings.title')}</h2>
-        <button
-          type="button"
-          class="icon help-button"
-          onClick={toggleHelp}
-          title={t('shortcuts.title')}
-          aria-label={t('shortcuts.title')}
-        >
-          {getIcon("bookQuestionMark")}
-        </button>
+        <div class="settings-header-buttons">
+          <button
+            type="button"
+            class="icon help-button"
+            onClick={toggleHelp}
+            title={t('shortcuts.title')}
+            aria-label={t('shortcuts.title')}
+          >
+            {getIcon("bookQuestionMark")}
+          </button>
+          <button
+            type="button"
+            class="icon close-button"
+            onClick={props.onClose}
+            title={t('common.close')}
+            aria-label={t('common.close')}
+          >
+            {getIcon("dismiss")}
+          </button>
+        </div>
       </div>
 
       <Show

@@ -53,7 +53,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing);
+  margin-bottom: 1rem;
+}
+
+.settings-header-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settings-header button.icon {
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+}
+
+.settings-header button.icon:hover {
+  background-color: var(--hover-color);
 }
 
 .keyboard-shortcuts {
