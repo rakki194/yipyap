@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, fireEvent, screen } from "@solidjs/testing-library";
-import { TagBubble } from "./TagBubble";
+import { TagBubble } from "../TagBubble";
 import { Component, createRoot } from "solid-js";
 import { AppContext } from "~/contexts/contexts";
 

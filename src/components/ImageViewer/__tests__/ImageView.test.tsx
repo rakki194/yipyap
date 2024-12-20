@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, fireEvent, screen } from "@solidjs/testing-library";
-import { ImageView } from "./ImageView";
+import { ImageView } from "../ImageView";
 import { Component } from "solid-js";
 import { AppContext } from "~/contexts/contexts";
 

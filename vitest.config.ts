@@ -3,13 +3,17 @@ import solidPlugin from 'vite-plugin-solid';
 import { resolve } from 'path';
 
 export default defineConfig({
-  plugins: [solidPlugin()],
+  plugins: [solidPlugin({ dev: true })],
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     deps: {
-      inline: [/solid-js/],
+      optimizer: {
+        web: {
+          include: ['solid-js']
+        }
+      }
     },
     coverage: {
       reporter: ['text', 'json', 'html'],

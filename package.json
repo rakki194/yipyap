@@ -10,7 +10,7 @@
     "check": "tsc --noEmit",
     "types": "tsc --emitDeclarationOnly",
     "styles": "stylelint 'src/**/*.css'",
-    "test": "vitest --config ./vitest.config.ts",
+    "test": "cross-env NODE_ENV=development vitest --config ./vitest.config.ts",
     "test:coverage": "vitest run --coverage --config ./vitest.config.ts"
   },
   "dependencies": {
@@ -37,6 +37,7 @@
     "@solidjs/testing-library": "^0.8.10",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/user-event": "^14.5.2",
+    "cross-env": "^7.0.3",
     "jsdom": "^25.0.1",
     "vitest": "^2.1.8"
   }
