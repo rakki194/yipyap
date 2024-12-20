@@ -157,7 +157,7 @@ export default {
         other: "Uploading ${count} files..."
       }, "en")(params);
     },
-    uploadProgressPercent: "Uploading... {{progress}}%",
+    uploadProgressPercent: "Uploading... {progress}%",
     filesExceedLimit: "Files too large: {{files}}",
     noFilesToUpload: "No files to upload",
     processingFiles: "Processing files...",
