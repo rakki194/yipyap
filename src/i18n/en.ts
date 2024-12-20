@@ -252,8 +252,8 @@ export default {
       const name = params.name ?? "folder";
       return `Work with "${name}"`;
     },
-    generatingCaption: "Generating caption with {{generator}}...",
-    captionGenerated: "Caption generated with {{generator}}",
+    generatingCaption: "Generating caption with {generator}...",
+    captionGenerated: "Caption generated with {generator}",
   },
   shortcuts: {
     title: "Keyboard shortcuts",
