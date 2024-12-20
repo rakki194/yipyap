@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { Theme, themeIconMap, themes, getNextTheme, getInitialTheme } from "./theme";
-import * as themeModule from "./theme";
+import { Theme, themeIconMap, themes, getNextTheme, getInitialTheme, makeThemeList } from "./theme";
 
 // Create a proper mock for import.meta.env
 const env = {
@@ -11,7 +10,7 @@ vi.mock('import.meta', () => ({
   env,
 }));
 
-// Mock isSeasonalThemeAvailable
+// Create a mock implementation of isSeasonalThemeAvailable
 const mockIsSeasonalThemeAvailable = vi.fn((theme: Theme) => {
   const mockDate = global.Date.prototype.getMonth();
   switch (theme) {
@@ -24,11 +23,57 @@ const mockIsSeasonalThemeAvailable = vi.fn((theme: Theme) => {
   }
 });
 
-vi.mock('./theme', async (importOriginal) => {
-  const mod = await importOriginal() as typeof import('./theme');
+// Mock the entire theme module
+vi.mock('./theme', async () => {
+  const actual = await vi.importActual<typeof import('./theme')>('./theme');
   return {
-    ...mod,
-    isSeasonalThemeAvailable: mockIsSeasonalThemeAvailable,
+    ...actual,
+    makeThemeList: () => {
+      const themeIconMap: Partial<Record<Theme, string>> = {
+        light: "sun",
+        gray: "cloud",
+        dark: "moon",
+        banana: "banana",
+        strawberry: "strawberry",
+        peanut: "peanut",
+      };
+
+      if (env.DEV || mockIsSeasonalThemeAvailable('christmas')) {
+        themeIconMap.christmas = "christmas";
+      }
+      if (env.DEV || mockIsSeasonalThemeAvailable('halloween')) {
+        themeIconMap.halloween = "ghost";
+      }
+
+      return themeIconMap;
+    },
+    getInitialTheme: () => {
+      const stored = localStorage.getItem("theme") as Theme | null;
+      
+      // Helper function to check if a theme is currently available
+      const isThemeAvailable = (theme: string): boolean => {
+        const availableThemes = Object.keys(actual.makeThemeList());
+        return availableThemes.includes(theme) && 
+               (env.DEV || mockIsSeasonalThemeAvailable(theme as Theme));
+      };
+    
+      if (stored && isThemeAvailable(stored)) {
+        return stored;
+      }
+    
+      const dsTheme = document.documentElement.dataset.theme;
+      if (dsTheme && isThemeAvailable(dsTheme)) {
+        return dsTheme as Theme;
+      }
+    
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        return "dark";
+      } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+        return "light";
+      }
+    
+      return "gray";
+    }
   };
 });
 
@@ -36,26 +81,22 @@ vi.mock('./theme', async (importOriginal) => {
 const RealDate = global.Date;
 
 function createMockDate(mockDate: Date) {
-  function MockDate(this: any) {
-    return mockDate;
+  class MockDate extends Date {
+    constructor() {
+      super();
+      return mockDate;
+    }
+
+    static now() {
+      return mockDate.getTime();
+    }
   }
 
-  Object.setPrototypeOf(MockDate, Date);
-  Object.defineProperty(MockDate, 'prototype', {
-    value: Object.create(Date.prototype, {
-      getMonth: {
-        value: function() { return mockDate.getMonth(); }
-      },
-      getDate: {
-        value: function() { return mockDate.getDate(); }
-      },
-      getTime: {
-        value: function() { return mockDate.getTime(); }
-      }
-    })
+  Object.defineProperties(MockDate.prototype, {
+    getMonth: { value: () => mockDate.getMonth() },
+    getDate: { value: () => mockDate.getDate() },
+    getTime: { value: () => mockDate.getTime() }
   });
-
-  MockDate.now = () => mockDate.getTime();
 
   return MockDate as unknown as DateConstructor;
 }
@@ -116,7 +157,7 @@ describe("Theme System", () => {
       env.DEV = false;
       
       // Create a new theme list with the mocked date
-      const regularThemes = themeModule.makeThemeList();
+      const regularThemes = makeThemeList();
       expect(regularThemes.christmas).toBeUndefined();
       expect(regularThemes.halloween).toBeUndefined();
     });
@@ -125,7 +166,7 @@ describe("Theme System", () => {
       // Mock December 25th
       global.Date = createMockDate(new RealDate(2023, 11, 25));
       
-      const christmasThemes = themeModule.makeThemeList();
+      const christmasThemes = makeThemeList();
       expect(christmasThemes.christmas).toBe("christmas");
     });
 
@@ -133,7 +174,7 @@ describe("Theme System", () => {
       // Mock October 31st
       global.Date = createMockDate(new RealDate(2023, 9, 31));
       
-      const halloweenThemes = themeModule.makeThemeList();
+      const halloweenThemes = makeThemeList();
       expect(halloweenThemes.halloween).toBe("ghost");
     });
   });

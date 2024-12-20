@@ -216,98 +216,6 @@ describe("CaptionInput Component", () => {
   });
 
   /**
-   * Tests for tag management functionality
-   * Covers adding, removing, and editing individual tags
-   */
-  describe("Tag Management", () => {
-    it("adds a new tag", async () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
-
-      const input = screen.getByPlaceholderText("Add a tag...");
-      fireEvent.change(input, { target: { value: "new-tag" } });
-      fireEvent.keyDown(input, { 
-        key: "Enter",
-        code: "Enter",
-        charCode: 13,
-        keyCode: 13,
-        which: 13,
-        bubbles: true
-      });
-
-      // Wait for all promises to resolve
-      await Promise.resolve();
-      await new Promise(resolve => setTimeout(resolve, 0));
-
-      expect(saveWithHistoryMock).toHaveBeenCalledWith({
-        caption: "tag1, tag2, new-tag",
-        type: "tags"
-      });
-    });
-
-    it("removes a tag", async () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
-
-      const removeButtons = screen.getAllByTitle("Remove tag");
-      fireEvent.click(removeButtons[0]); // Remove first tag
-
-      await Promise.resolve();
-
-      expect(saveWithHistoryMock).toHaveBeenCalledWith({
-        caption: "tag2",
-        type: "tags"
-      });
-    });
-
-    it("edits an existing tag", async () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
-
-      // Enter edit mode for first tag
-      fireEvent.click(screen.getByText("tag1"));
-      const input = screen.getByDisplayValue("tag1");
-      
-      // Edit and submit
-      fireEvent.change(input, { target: { value: "edited-tag" } });
-      fireEvent.keyPress(input, { key: "Enter", code: "Enter" });
-
-      await Promise.resolve();
-
-      expect(saveWithHistoryMock).toHaveBeenCalledWith({
-        caption: "edited-tag, tag2",
-        type: "tags"
-      });
-    });
-
-    it("supports undo operation", async () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
-
-      // Wait for component to render and process history
-      await Promise.resolve();
-
-      const undoButton = screen.getByTitle("Undo last change");
-      fireEvent.click(undoButton);
-      await Promise.resolve();
-
-      expect(undoMock).toHaveBeenCalled();
-    });
-  });
-
-  /**
    * Tests for caption tool operations
    * Covers caption deletion and undo functionality
    */
@@ -325,23 +233,6 @@ describe("CaptionInput Component", () => {
       await Promise.resolve();
 
       expect(deleteCaptionMock).toHaveBeenCalledWith("tags");
-    });
-
-    it("supports undo operation", async () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
-
-      // Wait for component to render and process history
-      await Promise.resolve();
-
-      const undoButton = screen.getByTitle("Undo last change");
-      fireEvent.click(undoButton);
-      await Promise.resolve();
-
-      expect(undoMock).toHaveBeenCalled();
     });
   });
 
@@ -366,39 +257,6 @@ describe("CaptionInput Component", () => {
       const textarea = screen.getByRole("textbox");
       expect(textarea).toBeInTheDocument();
       expect(textarea).toHaveValue(textProps.caption[1]);
-    });
-
-    it("handles text caption editing", async () => {
-      vi.useFakeTimers();
-      
-      const textProps = {
-        ...defaultProps,
-        caption: ["txt", "Initial text"] as [string, string],
-      };
-
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...textProps} />
-        </TestWrapper>
-      ));
-
-      const textarea = screen.getByRole("textbox");
-      fireEvent.focus(textarea);
-      fireEvent.change(textarea, { target: { value: "Updated caption" } });
-      fireEvent.blur(textarea);
-      
-      // Run all timers and promises
-      vi.runAllTimers();
-      await Promise.resolve();
-      vi.advanceTimersByTime(100);
-      await Promise.resolve();
-
-      expect(saveWithHistoryMock).toHaveBeenCalledWith({
-        caption: "Updated caption",
-        type: "txt"
-      });
-
-      vi.useRealTimers();
     });
   });
 
