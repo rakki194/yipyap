@@ -3,18 +3,22 @@
  * Contains theme-related logic. Integrated in AppProvider.
  */
 
-export function makeThemeList() {
+function isSeasonalThemeAvailable(theme: Theme): boolean {
   const today = new Date();
-  const month = today.getMonth(); // 0-based (0 = January, 11 = December)
+  const month = today.getMonth();
   const date = today.getDate();
 
-  // Determines if it's Christmas season (Dec 1 to Jan 10)
-  const isChristmas =
-    (month === 11 && date >= 1) || (month === 0 && date <= 10);
-  // Determines if it's Halloween season (1 week before, during, and 4 days after)
-  const isHalloween =
-    (month === 9 && date >= 24) || (month === 10 && date <= 4);
+  switch (theme) {
+    case 'christmas':
+      return (month === 11) || (month === 0 && date <= 10);
+    case 'halloween':
+      return (month === 9 && date >= 24) || (month === 10 && date <= 4);
+    default:
+      return true;
+  }
+}
 
+export function makeThemeList() {
   const themeIconMap: Partial<Record<Theme, string>> = {
     light: "sun",
     gray: "cloud",
@@ -24,12 +28,14 @@ export function makeThemeList() {
     peanut: "peanut",
   };
 
-  if (import.meta.env.DEV || isChristmas) {
+  // Only add seasonal themes if in dev mode or during their appropriate season
+  if (import.meta.env.DEV || isSeasonalThemeAvailable('christmas')) {
     themeIconMap.christmas = "christmas";
   }
-  if (import.meta.env.DEV || isHalloween) {
+  if (import.meta.env.DEV || isSeasonalThemeAvailable('halloween')) {
     themeIconMap.halloween = "ghost";
   }
+
   return themeIconMap;
 }
 
@@ -66,16 +72,18 @@ export function getNextTheme(theme: Theme): Theme {
 }
 
 export function getInitialTheme(): Theme {
-  const stored = localStorage.getItem("theme");
+  const stored = localStorage.getItem("theme") as Theme | null;
 
   // Helper function to check if a theme is currently available
   const isThemeAvailable = (theme: string): boolean => {
-    return Object.keys(makeThemeList()).includes(theme);
+    const availableThemes = Object.keys(makeThemeList());
+    return availableThemes.includes(theme) && 
+           (import.meta.env.DEV || isSeasonalThemeAvailable(theme as Theme));
   };
 
   // Check that the theme is still valid and available for the current date
   if (stored && isThemeAvailable(stored)) {
-    return stored as Theme;
+    return stored;
   }
 
   const dsTheme = document.documentElement.dataset.theme;
