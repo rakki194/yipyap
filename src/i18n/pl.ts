@@ -95,21 +95,6 @@ export default {
     audioWork: "Praca z dźwiękiem",
     deselectAll: "Odznacz wszystkie",
     deleteSelected: "Usuń zaznaczone",
-    fileCount: ({ count = 0 }) => getPolishPlural(count, {
-      singular: "plik",
-      plural2_4: "pliki",
-      plural5_: "plików"
-    }),
-    imageCount: ({ count = 0 }) => getPolishPlural(count, {
-      singular: "obraz",
-      plural2_4: "obrazy",
-      plural5_: "obrazów"
-    }),
-    foundFolders: ({ count = 0 }) => getPolishPlural(count, {
-      singular: "Znaleziono folder",
-      plural2_4: "Znaleziono foldery",
-      plural5_: "Znaleziono folderów"
-    }),
   },
   gallery: {
     addTag: "Dodaj tag...",

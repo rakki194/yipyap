@@ -1,4 +1,5 @@
 import { getPathSeparator } from "~/i18n";
+import { getTurkishPlural } from "./utils";
 import { Translations } from "./types";
 
 export default {
@@ -123,27 +124,64 @@ export default {
       wd: "Yeni .wd dosyası oluştur"
     },
     noCaptionFiles: "Henüz altyazı dosyası yok!",
-    fileCount: (params: { count: number }) => `${params.count} dosya`,
-    imageCount: (params: { count: number }) => `${params.count} görsel`,
-    foundFolders: (params: { count: number }) => `${params.count} klasör bulundu`,
+    selectedCount: ({ count }: { count: number }) => 
+      getTurkishPlural(`${count} öğe`, {
+        singular: "1 öğe seçili",
+        pluralLar: `${count} öğe seçili`,
+        pluralLer: `${count} öğe seçili`
+      }),
+    foundFolders: ({ count }: { count: number }) => 
+      getTurkishPlural(`${count} klasör`, {
+        singular: "1 klasör bulundu",
+        pluralLar: `${count} klasör bulundu`,
+        pluralLer: `${count} klasör bulundu`
+      }),
+    deletedCount: ({ count }: { count: number }) => 
+      getTurkishPlural(`${count} öğe`, {
+        singular: "1 öğe silindi",
+        pluralLar: `${count} öğe silindi`,
+        pluralLer: `${count} öğe silindi`
+      }),
+    processingImages: ({ count }: { count: number }) => 
+      getTurkishPlural(`${count} görsel`, {
+        singular: "1 görsel işleniyor...",
+        pluralLar: `${count} görsel işleniyor...`,
+        pluralLer: `${count} görsel işleniyor...`
+      }),
     foundImages: (params: { count: number }) => `${params.count} görsel bulundu`,
-    selectedCount: (params: { count: number }) => `${params.count} seçili`,
+    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
+      if (folders && images) {
+        const folderText = getTurkishPlural(`${folders} klasör`, {
+          singular: "1 klasör",
+          pluralLar: `${folders} klasör`,
+          pluralLer: `${folders} klasör`
+        });
+        const imageText = getTurkishPlural(`${images} görsel`, {
+          singular: "1 görsel",
+          pluralLar: `${images} görsel`,
+          pluralLer: `${images} görsel`
+        });
+        return `${folderText} ve ${imageText}i silmek istediğinizden emin misiniz?`;
+      } else if (folders) {
+        return getTurkishPlural(`${folders} klasör`, {
+          singular: "1 klasörü silmek istediğinizden emin misiniz?",
+          pluralLar: `${folders} klasörü silmek istediğinizden emin misiniz?`,
+          pluralLer: `${folders} klasörü silmek istediğinizden emin misiniz?`
+        });
+      }
+      return getTurkishPlural(`${images} görsel`, {
+        singular: "1 görseli silmek istediğinizden emin misiniz?",
+        pluralLar: `${images} görseli silmek istediğinizden emin misiniz?`,
+        pluralLer: `${images} görseli silmek istediğinizden emin misiniz?`
+      });
+    },
     selectAll: "Tümünü seç",
     createFolder: "Klasör oluştur",
     moveToFolder: (params: { name: string }) => `"${params.name}" klasörüne taşı`,
-    deletedCount: (params: { count: number }) => `${params.count} öğe silindi`,
     uploadError: "Dosya yüklenirken hata oluştu",
     dropOverlay: "Dosyaları buraya bırakın",
     deselectAll: "Seçimi kaldır",
     deleteSelected: "Seçilenleri sil",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-        if (folders && images) {
-            return `${folders} klasör ve ${images} görseli silmek istediğinizden emin misiniz?`;
-        } else if (folders) {
-            return `${folders} klasörü silmek istediğinizden emin misiniz?`;
-        }
-        return `${images} görseli silmek istediğinizden emin misiniz?`;
-    },
     confirmFolderDelete: ({ name = "" }) => `"${name}" klasörünü silmek istediğinizden emin misiniz?`,
     someFolderDeletesFailed: "Bazı klasörler silinemedi",
     folderDeleteError: "Klasör silinirken hata oluştu",
@@ -154,7 +192,18 @@ export default {
     workWithFolder: ({ name }: { name: string }) => `${name} ile çalış`,
     folderNamePlaceholder: "Klasör adı",
     deleteConfirmation: "Silmeyi onayla",
-    processingImages: ({ count }: { count: number }) => `${count} görsel işleniyor...`,
+    fileCount: ({ count }: { count: number }) => 
+      getTurkishPlural(`${count} dosya`, {
+        singular: "1 dosya",
+        pluralLar: `${count} dosya`,
+        pluralLer: `${count} dosya`
+      }),
+    imageCount: ({ count }: { count: number }) => 
+      getTurkishPlural(`${count} görsel`, {
+        singular: "1 görsel",
+        pluralLar: `${count} görsel`,
+        pluralLer: `${count} görsel`
+      }),
   },
   shortcuts: {
     title: "Klavye kısayolları",

@@ -123,9 +123,6 @@ export default {
       wd: "Neue .wd-Datei erstellen"
     },
     noCaptionFiles: "Noch keine Beschriftungsdateien!",
-    fileCount: ({ count }: { count: number }) => `${count} Dateien`,
-    imageCount: ({ count }: { count: number }) => `${count} Bilder`,
-    foundFolders: ({ count }: { count: number }) => `${count} Ordner gefunden`,
     foundImages: ({ count }: { count: number }) => `${count} Bilder gefunden`,
     deletedCount: ({ count }: { count: number }) => `${count} Elemente gelöscht`,
     selectedCount: ({ count }: { count: number }) => `${count} ausgewählt`,
@@ -155,6 +152,12 @@ export default {
       }
       return `Möchten Sie wirklich ${images} Bilder löschen?`;
     },
+    fileCount: ({ count }: { count: number }) => 
+      `${count} Dateien`,
+    imageCount: ({ count }: { count: number }) => 
+      `${count} Bilder`,
+    foundFolders: ({ count }: { count: number }) => 
+      `${count} Ordner gefunden`,
   },
   shortcuts: {
     title: "Tastenkombinationen",

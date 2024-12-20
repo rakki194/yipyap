@@ -95,18 +95,6 @@ export default {
     audioWork: "Trabalhar com áudio",
     deselectAll: "Desmarcar todos",
     deleteSelected: "Excluir selecionados",
-    fileCount: ({ count = 0 }) => getPortuguesePlural(count, {
-      singular: "arquivo",
-      plural: "arquivos"
-    }),
-    imageCount: ({ count = 0 }) => getPortuguesePlural(count, {
-      singular: "imagem",
-      plural: "imagens"
-    }),
-    foundFolders: ({ count = 0 }) => getPortuguesePlural(count, {
-      singular: "pasta encontrada",
-      plural: "pastas encontradas"
-    }),
   },
   gallery: {
     addTag: "Adicionar tag...",

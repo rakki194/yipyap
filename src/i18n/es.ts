@@ -95,23 +95,6 @@ export default {
     audioWork: "Trabajar con audio",
     deselectAll: "Deseleccionar todo",
     deleteSelected: "Eliminar seleccionados",
-    fileCount: ({ count }: { count: number }) => 
-      getSpanishPlural(count, {
-        singular: "archivo",
-        plural: "archivos"
-      }),
-      
-    imageCount: ({ count }: { count: number }) => 
-      getSpanishPlural(count, {
-        singular: "imagen",
-        plural: "imágenes"
-      }),
-      
-    foundFolders: ({ count }: { count: number }) => 
-      `${count} ${getSpanishPlural(count, {
-        singular: "carpeta encontrada",
-        plural: "carpetas encontradas"
-      })}`,  
   },
   gallery: {
     selectedCount: ({ count }: { count: number }) => 

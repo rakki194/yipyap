@@ -83,14 +83,14 @@ export default {
   },
   frontPage: {
     subtitle: {
-      1: "A nagy nyelvi modellek csalnak, hazudnak és hallucinálnak. Akárcsak én!",
-      2: "Találtunk egy másik módot az imádkozásra",
-      3: "Végtelen univerzum tükröződik az üres szemekben",
-      4: "Rozsdás szív, új hajtás",
-      5: "Varázslatos hely, ahol álom és valóság keresztezi egymást",
-      6: "Ismeretlen terület, végtelen lehetőségek",
-      7: "Időtlen szerelem, mely túlmutat az idő folyásán",
-      8: "Ezért ki fognak rúgni!",
+      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+      2: "私たちは別の祈り方を見つけました",
+      3: "虚ろな瞳に映る、無限の宇宙",
+      4: "錆びた心、新たな芽吹き",
+      5: "夢と現実が交錯する、不思議な境地",
+      6: "未知の領域、無限の可能性",
+      7: "時の流れを超えた、永遠の愛",
+      8: "これで追い出されますよ！",
     },
     imageWork: "Képekkel való munka",
     audioWork: "Hanganyagokkal való munka",
@@ -143,20 +143,20 @@ export default {
     deleteSelected: "Kijelöltek törlése",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders > 0 && images > 0) {
-        return `Biztosan szeretne törölni ${folders} mappát és ${images} képet?`;
+        return `Biztosan törölni szeretné ezt a ${folders} mappát és ${images} képet?`;
       } else if (folders > 0) {
-        return `Biztosan szeretne törölni ${folders} mappát?`;
+        return `Biztosan törölni szeretné ezt a ${folders} mappát?`;
       } else {
-        return `Biztosan szeretne törölni ${images} képet?`;
+        return `Biztosan törölni szeretné ezt a ${images} képet?`;
       }
     },
     confirmFolderDelete: ({ name = "" }) => 
-      `Biztosan szeretne törölni ${name} mappát?`,
+      `Biztosan törölni szeretné ezt a ${name} mappát?`,
     someFolderDeletesFailed: "Néhány mappát nem sikerült törölni",
-    folderDeleteError: "Hiba a mappa törlésekor",
+    folderDeleteError: "Hiba történt a mappa törlése közben",
     deletingFile: "Fájl törlése...",
     fileDeleteSuccess: "Fájl sikeresen törölve",
-    fileDeleteError: "Hiba a fájl törlésekor",
+    fileDeleteError: "Hiba történt a fájl törlése közben",
     createFolder: "Mappa létrehozása",
     folderNamePlaceholder: "Mappa neve",
     deleteConfirmation: "Törlés megerősítése",

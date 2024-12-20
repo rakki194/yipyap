@@ -81,3 +81,4 @@ export { getArabicPlural } from "./utils";
 export { getPortuguesePlural } from "./utils";
 export { getPolishPlural } from "./utils";
 export { getSpanishPlural } from "./utils";
+export { getTurkishPlural } from "./utils";

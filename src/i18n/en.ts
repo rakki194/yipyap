@@ -96,6 +96,12 @@ export default {
     deleteSelected: "Delete Selected",
   },
   gallery: {
+    fileCount: ({ count }: { count: number }) => 
+      `${count} files`,
+    imageCount: ({ count }: { count: number }) => 
+      `${count} images`,
+    foundFolders: ({ count }: { count: number }) => 
+      `Found ${count} folders`,
     addTag: "Add a tag...",
     addCaption: "Add a caption...",
     quickJump: "Jump to folder...",
@@ -148,9 +154,6 @@ export default {
     createFolder: "Create Folder",
     folderNamePlaceholder: "Enter folder name",
     deleteConfirmation: "Confirm Deletion",
-    fileCount: ({ count }: { count: number }) => `${count} files`,
-    imageCount: ({ count }: { count: number }) => `${count} images`,
-    foundFolders: ({ count }: { count: number }) => `Found ${count} folders`,
     foundImages: ({ count }: { count: number }) => `Found ${count} images`,
     deletedCount: ({ count }: { count: number }) => `Deleted ${count} items`,
     selectedCount: ({ count }: { count: number }) => `${count} selected`,
