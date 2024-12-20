@@ -1,4 +1,4 @@
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 import { getPathSeparator } from "~/i18n";
 
 export default {
@@ -101,7 +101,7 @@ export default {
     quickJump: "फ़ोल्डर में जाएं...",
     loadingFolders: "फ़ोल्डर लोड हो रहे हैं...",
     noResults: "कोई परिणाम नहीं मिला",
-    folderCount: ({ count }: { count: number }) => `${count} फ़ोल्डर`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} फ़ोल्डर`,
     deleteConfirm: "क्या आप वाकई इस छवि को हटाना चाहते हैं?",
     deleteSuccess: "छवि सफलतापूर्वक हटा दी गई",
     deleteError: "छवि हटाने में त्रुटि",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "कैप्शन सहेजने में त्रुटि",
     emptyFolder: "यह फ़ोल्डर खाली है",
     dropToUpload: "अपलोड करने के लिए फ़ाइलें यहां छोड़ें",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'कुछ फ़ाइलें अपलोड हो रही हैं...';
-      if (typeof params.count !== 'number') return 'कुछ फ़ाइलें अपलोड हो रही हैं...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'कुछ फ़ाइलें अपलोड हो रही हैं...';
       return `${params.count} फ़ाइलें अपलोड हो रही हैं...`;
     },
     processingImage: "छवि प्रोसेस हो रही है...",
@@ -143,15 +142,15 @@ export default {
     deletingFile: "फ़ाइल हटा रहा है...",
     fileDeleteSuccess: "फ़ाइल सफलतापूर्वक हटा दी गई",
     fileDeleteError: "फ़ाइल हटाने में त्रुटि",
-    fileCount: ({ count }: { count: number }) => `${count} फ़ाइलें`,
-    imageCount: ({ count }: { count: number }) => `${count} छवियां`,
-    foundFolders: ({ count }: { count: number }) => `${count} फ़ोल्डर मिले`,
-    deletedCount: ({ count }: { count: number }) => `${count} आइटम हटाए गए`,
-    selectedCount: ({ count }: { count: number }) => `${count} चयनित`,
-    processingImages: ({ count }: { count: number }) => `${count} छवियां प्रोसेस हो रही हैं...`,
-    folderLocation: ({ name }: { name: string }) => `स्थान: ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `${name} में ले जाएं`,
-    workWithFolder: ({ name }: { name: string }) => `${name} के साथ काम करें`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} फ़ाइलें`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} छवियां`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} फ़ोल्डर मिले`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} आइटम हटाए गए`,
+    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} चयनित`,
+    processingImages: (params?: TranslationParams) => `${params?.count ?? 0} छवियां प्रोसेस हो रही हैं...`,
+    folderLocation: (params?: TranslationParams) => `स्थान: ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `${params?.name ?? ''} में ले जाएं`,
+    workWithFolder: (params?: TranslationParams) => `${params?.name ?? ''} के साथ काम करें`,
     createFolder: "फ़ोल्डर बनाएं",
     folderNamePlaceholder: "फ़ोल्डर का नाम",
     deleteConfirmation: "हटाने की पुष्टि",

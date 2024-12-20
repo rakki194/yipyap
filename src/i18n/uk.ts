@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Перейти до папки...",
     loadingFolders: "Завантаження папок...",
     noResults: "Нічого не знайдено",
-    folderCount: (params: { count: number }) => `${params.count} папок`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} папок`,
     deleteConfirm: "Ви впевнені, що хочете видалити це зображення?",
     deleteSuccess: "Зображення успішно видалено",
     deleteError: "Помилка при видаленні",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Помилка при збереженні підпису",
     emptyFolder: "Ця папка порожня",
     dropToUpload: "Перетягніть файли для завантаження",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Завантаження файлів...';
-      if (typeof params.count !== 'number') return 'Завантаження файлів...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Завантаження файлів...';
       return `Завантаження ${params.count} файлів...`;
     },
     processingImage: "Обробка зображення...",
@@ -127,14 +126,14 @@ export default {
       wd: "Створити новий файл .wd"
     },
     noCaptionFiles: "Поки немає файлів підписів!",
-    fileCount: (params: { count: number }) => `${params.count} файлів`,
-    imageCount: (params: { count: number }) => `${params.count} зображень`,
-    foundFolders: (params: { count: number }) => `Знайдено ${params.count} папок`,
-    selectedCount: (params: { count: number }) => `Вибрано ${params.count}`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} файлів`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} зображень`,
+    foundFolders: (params?: TranslationParams) => `Знайдено ${params?.count ?? 0} папок`,
+    selectedCount: (params?: TranslationParams) => `Вибрано ${params?.count ?? 0}`,
     selectAll: "Вибрати все",
     createFolder: "Створити папку",
-    moveToFolder: (params: { name: string }) => `Перемістити в папку "${params.name}"`,
-    deletedCount: (params: { count: number }) => `Видалено ${params.count} елементів`,
+    moveToFolder: (params?: TranslationParams) => `Перемістити в папку "${params?.name ?? ''}"`,
+    deletedCount: (params?: TranslationParams) => `Видалено ${params?.count ?? 0} елементів`,
     uploadError: "Помилка завантаження",
     dropOverlay: "Перетягніть файли сюди",
     deselectAll: "Скасувати вибір",
@@ -153,11 +152,11 @@ export default {
     deletingFile: "Видалення файлу...",
     fileDeleteSuccess: "Файл видалено",
     fileDeleteError: "Помилка видалення файлу",
-    folderLocation: ({ name }: { name: string }) => `в ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Працювати з ${name}`,
+    folderLocation: (params?: TranslationParams) => `в ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Працювати з ${params?.name ?? ''}`,
     folderNamePlaceholder: "Назва папки",
     deleteConfirmation: "Підтвердження видалення",
-    processingImages: ({ count }: { count: number }) => `Обробка ${count} зображень...`,
+    processingImages: (params?: TranslationParams) => `Обробка ${params?.count ?? 0} зображень...`,
   },
   shortcuts: {
     title: "Гарячі клавіші",

@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "קפיצה לתיקייה...",
     loadingFolders: "טוען תיקיות...",
     noResults: "לא נמצאו תוצאות",
-    folderCount: ({ count }: { count: number }) => `${count} תיקיות`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} תיקיות`,
     deleteConfirm: "האם אתה בטוח שברצונך למחוק תמונה זו?",
     deleteSuccess: "התמונה נמחקה בהצלחה",
     deleteError: "שגיאה במחיקת התמונה",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "שגיאה בשמירת הכיתוב",
     emptyFolder: "תיקייה זו ריקה",
     dropToUpload: "גרור קבצים לכאן להעלאה",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'מעלה קבצים...';
-      if (typeof params.count !== 'number') return 'מעלה קבצים...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'מעלה קבצים...';
       return `מעלה ${params.count} קבצים...`;
     },
     processingImage: "מעבד תמונה...",
@@ -146,15 +145,15 @@ export default {
     fileDeleteError: "שגיאה במחיקת קובץ",
     uploadError: "ההעלאה נכשלה",
     dropOverlay: "שחרר קבצים או תיקיות כאן",
-    fileCount: ({ count }: { count: number }) => `${count} קבצים`,
-    imageCount: ({ count }: { count: number }) => `${count} תמונות`,
-    foundFolders: ({ count }: { count: number }) => `נמצאו ${count} תיקיות`,
-    deletedCount: ({ count }: { count: number }) => `נמחקו ${count} פריטים`,
-    selectedCount: ({ count }: { count: number }) => `${count} נבחרו`,
-    processingImages: ({ count }: { count: number }) => `מעבד ${count} תמונות...`,
-    folderLocation: ({ name }: { name: string }) => `מיקום: ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `העבר ל${name}`,
-    workWithFolder: ({ name }: { name: string }) => `עבוד עם ${name}`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} קבצים`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} תמונות`,
+    foundFolders: (params?: TranslationParams) => `נמצאו ${params?.count ?? 0} תיקיות`,
+    deletedCount: (params?: TranslationParams) => `נמחקו ${params?.count ?? 0} פריטים`,
+    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} נבחרו`,
+    processingImages: (params?: TranslationParams) => `מעבד ${params?.count ?? 0} תמונות...`,
+    folderLocation: (params?: TranslationParams) => `מיקום: ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `העבר ל${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `עבוד עם ${params?.name ?? ''}`,
     createFolder: "צור תיקייה",
     folderNamePlaceholder: "שם התיקייה",
     deleteConfirmation: "אישור מחיקה",

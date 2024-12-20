@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Hoppa till mapp...",
     loadingFolders: "Laddar mappar...",
     noResults: "Inga resultat hittades",
-    folderCount: (params: { count: number }) => `${params.count} mappar`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} mappar`,
     deleteConfirm: "Är du säker på att du vill radera denna bild?",
     deleteSuccess: "Bilden har raderats",
     deleteError: "Fel vid radering av bild",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Fel vid sparande av bildtext",
     emptyFolder: "Denna mapp är tom",
     dropToUpload: "Släpp filer här för att ladda upp",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Laddar upp filer...';
-      if (typeof params.count !== 'number') return 'Laddar upp filer...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Laddar upp filer...';
       return `Laddar upp ${params.count} filer...`;
     },
     processingImage: "Bearbetar bild...",
@@ -127,14 +126,14 @@ export default {
       wd: "Skapa ny .wd-fil"
     },
     noCaptionFiles: "Inga bildtextfiler än!",
-    fileCount: (params: { count: number }) => `${params.count} filer`,
-    imageCount: (params: { count: number }) => `${params.count} bilder`,
-    foundFolders: (params: { count: number }) => `${params.count} mappar hittades`,
-    selectedCount: (params: { count: number }) => `${params.count} valda`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} filer`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} bilder`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} mappar hittades`,
+    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} valda`,
     selectAll: "Markera alla",
     createFolder: "Skapa mapp",
-    moveToFolder: (params: { name: string }) => `Flytta till mapp "${params.name}"`,
-    deletedCount: (params: { count: number }) => `${params.count} objekt raderade`,
+    moveToFolder: (params?: TranslationParams) => `Flytta till mapp "${params?.name ?? ''}"`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} objekt raderade`,
     uploadError: "Kunde inte ladda upp fil",
     dropOverlay: "Släpp filer här",
     deselectAll: "Avmarkera alla",
@@ -153,11 +152,11 @@ export default {
     deletingFile: "Raderar fil...",
     fileDeleteSuccess: "Fil raderad",
     fileDeleteError: "Kunde inte radera fil",
-    folderLocation: ({ name }: { name: string }) => `i ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Arbeta med ${name}`,
+    folderLocation: (params?: TranslationParams) => `i ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Arbeta med ${params?.name ?? ''}`,
     folderNamePlaceholder: "Mappnamn",
     deleteConfirmation: "Bekräfta radering",
-    processingImages: ({ count }: { count: number }) => `Bearbetar ${count} bilder...`,
+    processingImages: (params?: TranslationParams) => `Bearbetar ${params?.count ?? 0} bilder...`,
   },
   shortcuts: {
     title: "Kortkommandon",

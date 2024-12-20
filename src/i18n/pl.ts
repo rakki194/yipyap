@@ -1,6 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import { getPolishPlural } from "./utils";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -102,7 +102,7 @@ export default {
     quickJump: "Przejdź do folderu...",
     loadingFolders: "Ładowanie folderów...",
     noResults: "Nie znaleziono wyników",
-    folderCount: ({ count }: { count: number }) => `${count} folderów`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} folderów`,
     deleteConfirm: "Czy na pewno chcesz usunąć ten obraz?",
     deleteSuccess: "Obraz został usunięty",
     deleteError: "Błąd podczas usuwania obrazu",
@@ -111,9 +111,8 @@ export default {
     errorSavingCaption: "Błąd podczas zapisywania podpisu",
     emptyFolder: "Ten folder jest pusty",
     dropToUpload: "Upuść pliki tutaj, aby przesłać",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Przesyłanie plików...';
-      if (typeof params.count !== 'number') return 'Przesyłanie plików...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Przesyłanie plików...';
       return `Przesyłanie ${params.count} ${getPolishPlural(params.count, {
         singular: "plik",
         plural2_4: "pliki",
@@ -132,18 +131,20 @@ export default {
       wd: "Utwórz nowy plik .wd"
     },
     noCaptionFiles: "Brak plików podpisów!",
-    foundFolders: ({ count }: { count: number }) => `Znaleziono ${count} folderów`,
-    deletedCount: ({ count }: { count: number }) => `Usunięto ${count} elementów`,
-    selectedCount: ({ count }: { count: number }) => 
-      `${count} ${getPolishPlural(count, {
+    foundFolders: (params?: TranslationParams) => `Znaleziono ${params?.count ?? 0} folderów`,
+    deletedCount: (params?: TranslationParams) => `Usunięto ${params?.count ?? 0} elementów`,
+    selectedCount: (params?: TranslationParams) => {
+      if (!params?.count) return 'Nic nie wybrano';
+      return `${params.count} ${getPolishPlural(params.count, {
         singular: "element wybrany",
         plural2_4: "elementy wybrane",
         plural5_: "elementów wybranych"
-      })}`,
-    processingImages: ({ count }: { count: number }) => `Przetwarzanie ${count} obrazów...`,
-    folderLocation: ({ name }: { name: string }) => `w ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Przenieś do ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Pracuj z ${name}`,
+      })}`;
+    },
+    processingImages: (params?: TranslationParams) => `Przetwarzanie ${params?.count ?? 0} obrazów...`,
+    folderLocation: (params?: TranslationParams) => `w ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Przenieś do ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Pracuj z ${params?.name ?? ''}`,
     createFolder: "Utwórz folder",
     folderNamePlaceholder: "Nazwa folderu",
     deleteConfirmation: "Potwierdź usunięcie",
@@ -182,16 +183,22 @@ export default {
     deletingFile: "Usuwanie pliku...",
     fileDeleteSuccess: "Plik został usunięty",
     fileDeleteError: "Błąd podczas usuwania pliku",
-    fileCount: ({ count = 0 }) => getPolishPlural(count, {
-      singular: "plik",
-      plural2_4: "pliki",
-      plural5_: "plików"
-    }),
-    imageCount: ({ count = 0 }) => getPolishPlural(count, {
-      singular: "obraz",
-      plural2_4: "obrazy",
-      plural5_: "obrazów"
-    }),
+    fileCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getPolishPlural(count, {
+        singular: "plik",
+        plural2_4: "pliki",
+        plural5_: "plików"
+      });
+    },
+    imageCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getPolishPlural(count, {
+        singular: "obraz",
+        plural2_4: "obrazy",
+        plural5_: "obrazów"
+      });
+    },
   },
   shortcuts: {
     title: "Skróty klawiszowe",

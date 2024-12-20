@@ -1,6 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import { getTurkishPlural } from "./utils";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -102,7 +102,7 @@ export default {
     quickJump: "Klasöre git...",
     loadingFolders: "Klasörler yükleniyor...",
     noResults: "Sonuç bulunamadı",
-    folderCount: (params: { count: number }) => `${params.count} klasör`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} klasör`,
     deleteConfirm: "Bu görseli silmek istediğinizden emin misiniz?",
     deleteSuccess: "Görsel başarıyla silindi",
     deleteError: "Görsel silinirken hata oluştu",
@@ -111,9 +111,8 @@ export default {
     errorSavingCaption: "Altyazı kaydedilirken hata oluştu",
     emptyFolder: "Bu klasör boş",
     dropToUpload: "Yüklemek için dosyaları buraya sürükleyin",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Dosyalar yükleniyor...';
-      if (typeof params.count !== 'number') return 'Dosyalar yükleniyor...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Dosyalar yükleniyor...';
       return `${params.count} ${getTurkishPlural(`${params.count} dosya`, {
         singular: "dosya",
         pluralLar: "dosya",
@@ -132,30 +131,38 @@ export default {
       wd: "Yeni .wd dosyası oluştur"
     },
     noCaptionFiles: "Henüz altyazı dosyası yok!",
-    selectedCount: ({ count }: { count: number }) => 
-      getTurkishPlural(`${count} öğe`, {
+    selectedCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getTurkishPlural(`${count} öğe`, {
         singular: "1 öğe seçildi",
         pluralLar: `${count} öğe seçildi`,
         pluralLer: `${count} öğe seçildi`
-      }),
-    foundFolders: ({ count }: { count: number }) => 
-      getTurkishPlural(`${count} klasör`, {
+      });
+    },
+    foundFolders: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getTurkishPlural(`${count} klasör`, {
         singular: "1 klasör bulundu",
         pluralLar: `${count} klasör bulundu`,
         pluralLer: `${count} klasör bulundu`
-      }),
-    deletedCount: ({ count }: { count: number }) => 
-      getTurkishPlural(`${count} öğe`, {
+      });
+    },
+    deletedCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getTurkishPlural(`${count} öğe`, {
         singular: "1 öğe silindi",
         pluralLar: `${count} öğe silindi`,
         pluralLer: `${count} öğe silindi`
-      }),
-    processingImages: ({ count }: { count: number }) => 
-      getTurkishPlural(`${count} görsel`, {
+      });
+    },
+    processingImages: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getTurkishPlural(`${count} görsel`, {
         singular: "1 görsel işleniyor...",
         pluralLar: `${count} görsel işleniyor...`,
         pluralLer: `${count} görsel işleniyor...`
-      }),
+      });
+    },
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders > 0 && images > 0) {
         const folderText = getTurkishPlural(`${folders} klasör`, {
@@ -184,7 +191,7 @@ export default {
     },
     selectAll: "Tümünü seç",
     createFolder: "Klasör oluştur",
-    moveToFolder: (params: { name: string }) => `"${params.name}" klasörüne taşı`,
+    moveToFolder: (params?: TranslationParams) => `"${params?.name ?? ''}" klasörüne taşı`,
     uploadError: "Dosya yüklenirken hata oluştu",
     dropOverlay: "Dosyaları buraya bırakın",
     deselectAll: "Seçimi kaldır",
@@ -195,22 +202,26 @@ export default {
     deletingFile: "Dosya siliniyor...",
     fileDeleteSuccess: "Dosya silindi",
     fileDeleteError: "Dosya silinirken hata oluştu",
-    folderLocation: ({ name }: { name: string }) => `${name} içinde`,
-    workWithFolder: ({ name }: { name: string }) => `${name} ile çalış`,
+    folderLocation: (params?: TranslationParams) => `${params?.name ?? ''} içinde`,
+    workWithFolder: (params?: TranslationParams) => `${params?.name ?? ''} ile çalış`,
     folderNamePlaceholder: "Klasör adı",
     deleteConfirmation: "Silmeyi onayla",
-    fileCount: ({ count }: { count: number }) => 
-      getTurkishPlural(`${count} dosya`, {
+    fileCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getTurkishPlural(`${count} dosya`, {
         singular: "1 dosya",
         pluralLar: `${count} dosya`,
         pluralLer: `${count} dosya`
-      }),
-    imageCount: ({ count }: { count: number }) => 
-      getTurkishPlural(`${count} görsel`, {
+      });
+    },
+    imageCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getTurkishPlural(`${count} görsel`, {
         singular: "1 görsel",
         pluralLar: `${count} görsel`,
         pluralLer: `${count} görsel`
-      }),
+      });
+    },
   },
   shortcuts: {
     title: "Klavye kısayolları",

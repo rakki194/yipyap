@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "ข้ามไปยังโฟลเดอร์...",
     loadingFolders: "กำลังโหลดโฟลเดอร์...",
     noResults: "ไม่พบผลลัพธ์",
-    folderCount: (params: { count: number }) => `${params.count} โฟลเดอร์`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} โฟลเดอร์`,
     deleteConfirm: "คุณแน่ใจหรือไม่ว่าต้องการลบรูปภาพนี้?",
     deleteSuccess: "ลบรูปภาพสำเร็จ",
     deleteError: "เกิดข้อผิดพลาดในการลบรูปภาพ",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "เกิดข้อผิดพลาดในการบันทึกคำบรรยาย",
     emptyFolder: "โฟลเดอร์นี้ว่างเปล่า",
     dropToUpload: "วางไฟล์ที่นี่เพื่ออัปโหลด",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'กำลังอัปโหลดไฟล์...';
-      if (typeof params.count !== 'number') return 'กำลังอัปโหลดไฟล์...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'กำลังอัปโหลดไฟล์...';
       return `กำลังอัปโหลด ${params.count} ไฟล์...`;
     },
     processingImage: "กำลังประมวลผลรูปภาพ...",
@@ -127,14 +126,14 @@ export default {
       wd: "สร้างไฟล์ .wd ใหม่"
     },
     noCaptionFiles: "ยังไม่มีไฟล์คำบรรยาย!",
-    fileCount: (params: { count: number }) => `${params.count} ไฟล์`,
-    imageCount: (params: { count: number }) => `${params.count} รูปภาพ`,
-    foundFolders: (params: { count: number }) => `พบ ${params.count} โฟลเดอร์`,
-    selectedCount: (params: { count: number }) => `เลือก ${params.count} รายการ`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} ไฟล์`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} รูปภาพ`,
+    foundFolders: (params?: TranslationParams) => `พบ ${params?.count ?? 0} โฟลเดอร์`,
+    selectedCount: (params?: TranslationParams) => `เลือก ${params?.count ?? 0} รายการ`,
     selectAll: "เลือกทั้งหมด",
     createFolder: "สร้างโฟลเดอร์",
-    moveToFolder: (params: { name: string }) => `ย้ายไปยังโฟลเดอร์ "${params.name}"`,
-    deletedCount: (params: { count: number }) => `ลบ ${params.count} รายการแล้ว`,
+    moveToFolder: (params?: TranslationParams) => `ย้ายไปยังโฟลเดอร์ "${params?.name ?? ''}"`,
+    deletedCount: (params?: TranslationParams) => `ลบ ${params?.count ?? 0} รายการแล้ว`,
     uploadError: "ไม่สามารถอัปโหลดไฟล์",
     dropOverlay: "วางไฟล์ที่นี่",
     deselectAll: "ยกเลิกการเลือกทั้งหมด",
@@ -153,11 +152,11 @@ export default {
     deletingFile: "กำลังลบไฟล์...",
     fileDeleteSuccess: "ลบไฟล์สำเร็จ",
     fileDeleteError: "ไม่สามารถลบไฟล์",
-    folderLocation: ({ name }: { name: string }) => `ใน ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `ทำงานกับ ${name}`,
+    folderLocation: (params?: TranslationParams) => `ใน ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `ทำงานกับ ${params?.name ?? ''}`,
     folderNamePlaceholder: "ชื่อโฟลเดอร์",
     deleteConfirmation: "ยืนยันการลบ",
-    processingImages: ({ count }: { count: number }) => `กำลังประมวลผล ${count} รูปภาพ...`,
+    processingImages: (params?: TranslationParams) => `กำลังประมวลผล ${params?.count ?? 0} รูปภาพ...`,
   },
   shortcuts: {
     title: "ปุ่มลัด",

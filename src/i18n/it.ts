@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Vai alla cartella...",
     loadingFolders: "Caricamento cartelle...",
     noResults: "Nessun risultato trovato",
-    folderCount: ({ count }: { count: number }) => `${count} cartelle`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} cartelle`,
     deleteConfirm: "Sei sicuro di voler eliminare questa immagine?",
     deleteSuccess: "Immagine eliminata con successo",
     deleteError: "Errore durante l'eliminazione dell'immagine",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Errore durante il salvataggio della didascalia",
     emptyFolder: "Questa cartella è vuota",
     dropToUpload: "Trascina qui i file per caricarli",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Caricamento di alcuni file...';
-      if (typeof params.count !== 'number') return 'Caricamento di alcuni file...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Caricamento di alcuni file...';
       return `Caricamento di ${params.count} file...`;
     },
     processingImage: "Elaborazione immagine...",
@@ -127,19 +126,18 @@ export default {
       wd: "Crea nuovo file .wd"
     },
     noCaptionFiles: "Nessun file didascalia ancora!",
-    fileCount: ({ count }: { count: number }) => `${count} file`,
-    imageCount: ({ count }: { count: number }) => `${count} immagini`,
-    foundFolders: ({ count }: { count: number }) => `${count} cartelle trovate`,
-    deletedCount: ({ count }: { count: number }) => `${count} elementi eliminati`,
-    selectedCount: (params?: { count: number }) => {
-      if (!params) return 'selezionato';
-      if (typeof params.count !== 'number') return 'selezionato';
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} file`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} immagini`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} cartelle trovate`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} elementi eliminati`,
+    selectedCount: (params?: TranslationParams) => {
+      if (!params?.count) return 'selezionato';
       return `${params.count} selezionat${params.count === 1 ? 'o' : 'i'}`;
     },
-    processingImages: ({ count }: { count: number }) => `Elaborazione di ${count} immagini...`,
-    folderLocation: ({ name }: { name: string }) => `in ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Sposta in ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Lavora con ${name}`,
+    processingImages: (params?: TranslationParams) => `Elaborazione di ${params?.count ?? 0} immagini...`,
+    folderLocation: (params?: TranslationParams) => `in ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Sposta in ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Lavora con ${params?.name ?? ''}`,
     createFolder: "Crea cartella",
     folderNamePlaceholder: "Nome cartella",
     deleteConfirmation: "Conferma eliminazione",

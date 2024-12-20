@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Chuyển đến thư mục...",
     loadingFolders: "Đang tải thư mục...",
     noResults: "Không tìm thấy kết quả",
-    folderCount: (params: { count: number }) => `${params.count} thư mục`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} thư mục`,
     deleteConfirm: "Bạn có chắc chắn muốn xóa hình ảnh này?",
     deleteSuccess: "Đã xóa hình ảnh thành công",
     deleteError: "Lỗi khi xóa hình ảnh",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Lỗi khi lưu chú thích",
     emptyFolder: "Thư mục này trống",
     dropToUpload: "Kéo thả tệp vào đây để tải lên",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Đang tải lên tệp...';
-      if (typeof params.count !== 'number') return 'Đang tải lên tệp...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Đang tải lên tệp...';
       return `Đang tải lên ${params.count} tệp...`;
     },
     processingImage: "Đang xử lý hình ảnh...",
@@ -129,14 +128,14 @@ export default {
     noCaptionFiles: "Chưa có tệp chú thích!",
     uploadError: "Tải lên thất bại",
     dropOverlay: "Thả tệp hoặc thư mục vào đây",
-    fileCount: (params: { count: number }) => `${params.count} tệp`,
-    imageCount: (params: { count: number }) => `${params.count} hình ảnh`,
-    foundFolders: (params: { count: number }) => `Tìm thấy ${params.count} thư mục`,
-    selectedCount: (params: { count: number }) => `Đã chọn ${params.count}`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} tệp`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} hình ảnh`,
+    foundFolders: (params?: TranslationParams) => `Tìm thấy ${params?.count ?? 0} thư mục`,
+    selectedCount: (params?: TranslationParams) => `Đã chọn ${params?.count ?? 0}`,
     selectAll: "Chọn tất cả",
     createFolder: "Tạo thư mục",
-    moveToFolder: (params: { name: string }) => `Di chuyển đến thư mục "${params.name}"`,
-    deletedCount: (params: { count: number }) => `Đã xóa ${params.count} mục`,
+    moveToFolder: (params?: TranslationParams) => `Di chuyển đến thư mục "${params?.name ?? ''}"`,
+    deletedCount: (params?: TranslationParams) => `Đã xóa ${params?.count ?? 0} mục`,
     deselectAll: "Bỏ chọn tất cả",
     deleteSelected: "Xóa mục đã chọn",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
@@ -153,11 +152,11 @@ export default {
     deletingFile: "Đang xóa tệp...",
     fileDeleteSuccess: "Đã xóa tệp",
     fileDeleteError: "Không thể xóa tệp",
-    folderLocation: ({ name }: { name: string }) => `trong ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Làm việc với ${name}`,
+    folderLocation: (params?: TranslationParams) => `trong ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Làm việc với ${params?.name ?? ''}`,
     folderNamePlaceholder: "Tên thư mục",
     deleteConfirmation: "Xác nhận xóa",
-    processingImages: ({ count }: { count: number }) => `Đang xử lý ${count} hình ảnh...`,
+    processingImages: (params?: TranslationParams) => `Đang xử lý ${params?.count ?? 0} hình ảnh...`,
   },
   shortcuts: {
     title: "Phím tắt",

@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Hopp til mappe...",
     loadingFolders: "Laster mapper...",
     noResults: "Ingen resultater funnet",
-    folderCount: ({ count }: { count: number }) => `${count} mapper`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} mapper`,
     deleteConfirm: "Er du sikker på at du vil slette dette bildet?",
     deleteSuccess: "Bildet ble slettet",
     deleteError: "Feil ved sletting av bilde",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Feil ved lagring av bildetekst",
     emptyFolder: "Denne mappen er tom",
     dropToUpload: "Slipp filer her for å laste opp",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Laster opp noen filer...';
-      if (typeof params.count !== 'number') return 'Laster opp noen filer...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Laster opp noen filer...';
       return `Laster opp ${params.count} filer...`;
     },
     processingImage: "Behandler bilde...",
@@ -146,15 +145,15 @@ export default {
     deletingFile: "Sletter fil...",
     fileDeleteSuccess: "Fil slettet",
     fileDeleteError: "Feil ved sletting av fil",
-    fileCount: ({ count }: { count: number }) => `${count} filer`,
-    imageCount: ({ count }: { count: number }) => `${count} bilder`,
-    foundFolders: ({ count }: { count: number }) => `${count} mapper funnet`,
-    deletedCount: ({ count }: { count: number }) => `${count} elementer slettet`,
-    selectedCount: ({ count }: { count: number }) => `${count} valgt`,
-    processingImages: ({ count }: { count: number }) => `Behandler ${count} bilder...`,
-    folderLocation: ({ name }: { name: string }) => `i ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Flytt til ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Arbeid med ${name}`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} filer`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} bilder`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} mapper funnet`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} elementer slettet`,
+    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} valgt`,
+    processingImages: (params?: TranslationParams) => `Behandler ${params?.count ?? 0} bilder...`,
+    folderLocation: (params?: TranslationParams) => `i ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Flytt til ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Arbeid med ${params?.name ?? ''}`,
     createFolder: "Opprett mappe",
     folderNamePlaceholder: "Mappenavn",
     deleteConfirmation: "Bekreft sletting",

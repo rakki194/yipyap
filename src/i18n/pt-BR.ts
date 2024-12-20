@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Ir para pasta...",
     loadingFolders: "Carregando pastas...",
     noResults: "Nenhum resultado encontrado",
-    folderCount: (params: { count: number }) => `${params.count} pastas`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} pastas`,
     deleteConfirm: "Tem certeza que deseja excluir esta imagem?",
     deleteSuccess: "Imagem excluída com sucesso",
     deleteError: "Erro ao excluir imagem",
@@ -110,13 +110,12 @@ export default {
     errorSavingCaption: "Erro ao salvar legenda",
     emptyFolder: "Esta pasta está vazia",
     dropToUpload: "Solte arquivos aqui para fazer upload",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Fazendo upload de arquivos...';
-      if (typeof params.count !== 'number') return 'Fazendo upload de arquivos...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Fazendo upload de arquivos...';
       return `Fazendo upload de ${params.count} arquivos...`;
     },
     processingImage: "Processando imagem...",
-    processingImages: ({ count }: { count: number }) => `Processando ${count} imagens...`,
+    processingImages: (params?: TranslationParams) => `Processando ${params?.count ?? 0} imagens...`,
     generateTags: "Gerar tags",
     generatingTags: "Gerando tags...",
     removeTags: "Remover tags",
@@ -128,14 +127,14 @@ export default {
       wd: "Criar novo arquivo .wd"
     },
     noCaptionFiles: "Ainda não há arquivos de legenda!",
-    fileCount: (params: { count: number }) => `${params.count} arquivos`,
-    imageCount: (params: { count: number }) => `${params.count} imagens`,
-    foundFolders: (params: { count: number }) => `${params.count} pastas encontradas`,
-    selectedCount: (params: { count: number }) => `${params.count} selecionados`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} arquivos`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} imagens`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} pastas encontradas`,
+    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} selecionados`,
     selectAll: "Selecionar todos",
     createFolder: "Criar pasta",
-    moveToFolder: (params: { name: string }) => `Mover para pasta "${params.name}"`,
-    deletedCount: (params: { count: number }) => `${params.count} itens excluídos`,
+    moveToFolder: (params?: TranslationParams) => `Mover para pasta "${params?.name ?? ''}"`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} itens excluídos`,
     uploadError: "Erro ao fazer upload do arquivo",
     dropOverlay: "Solte os arquivos aqui",
     deselectAll: "Desmarcar todos",
@@ -154,8 +153,8 @@ export default {
     deletingFile: "Excluindo arquivo...",
     fileDeleteSuccess: "Arquivo excluído com sucesso",
     fileDeleteError: "Erro ao excluir arquivo",
-    folderLocation: ({ name }: { name: string }) => `em ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Trabalhar com ${name}`,
+    folderLocation: (params?: TranslationParams) => `em ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Trabalhar com ${params?.name ?? ''}`,
     folderNamePlaceholder: "Nome da pasta",
     deleteConfirmation: "Confirmar exclusão"
   },

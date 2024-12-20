@@ -1,6 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import { getSpanishPlural } from "./utils";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -97,33 +97,33 @@ export default {
     deleteSelected: "Eliminar seleccionados",
   },
   gallery: {
-    selectedCount: ({ count }: { count: number }) => 
-      `${count} ${getSpanishPlural(count, {
+    selectedCount: (params?: TranslationParams) => 
+      `${params?.count ?? 0} ${getSpanishPlural(params?.count ?? 0, {
         singular: "elemento seleccionado",
         plural: "elementos seleccionados"
       })}`,
-    processingImages: ({ count }: { count: number }) => 
-      `Procesando ${count} ${getSpanishPlural(count, {
+    processingImages: (params?: TranslationParams) => 
+      `Procesando ${params?.count ?? 0} ${getSpanishPlural(params?.count ?? 0, {
         singular: "imagen",
         plural: "imágenes"
       })}...`,
-    deletedCount: ({ count }: { count: number }) => 
-      `${count} ${getSpanishPlural(count, {
+    deletedCount: (params?: TranslationParams) => 
+      `${params?.count ?? 0} ${getSpanishPlural(params?.count ?? 0, {
         singular: "elemento eliminado",
         plural: "elementos eliminados"
       })}`,
-    fileCount: ({ count }: { count: number }) => 
-      getSpanishPlural(count, {
+    fileCount: (params?: TranslationParams) => 
+      getSpanishPlural(params?.count ?? 0, {
         singular: "archivo",
         plural: "archivos"
       }),
-    imageCount: ({ count }: { count: number }) => 
-      getSpanishPlural(count, {
+    imageCount: (params?: TranslationParams) => 
+      getSpanishPlural(params?.count ?? 0, {
         singular: "imagen",
         plural: "imágenes"
       }),
-    foundFolders: ({ count }: { count: number }) => 
-      `${count} ${getSpanishPlural(count, {
+    foundFolders: (params?: TranslationParams) => 
+      `${params?.count ?? 0} ${getSpanishPlural(params?.count ?? 0, {
         singular: "carpeta encontrada",
         plural: "carpetas encontradas"
       })}`,
@@ -135,7 +135,7 @@ export default {
     quickJump: "Ir a carpeta...",
     loadingFolders: "Cargando carpetas...",
     noResults: "No se encontraron resultados",
-    folderCount: ({ count }: { count: number }) => `${count} carpetas`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} carpetas`,
     deleteConfirm: "¿Estás seguro de que quieres eliminar esta imagen?",
     deleteSuccess: "Imagen eliminada con éxito",
     deleteError: "Error al eliminar la imagen",
@@ -144,9 +144,8 @@ export default {
     errorSavingCaption: "Error al guardar el título",
     emptyFolder: "Esta carpeta está vacía",
     dropToUpload: "Suelta archivos aquí para subir",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Subiendo archivos...';
-      if (typeof params.count !== 'number') return 'Subiendo archivos...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Subiendo archivos...';
       return `Subiendo ${params.count} ${getSpanishPlural(params.count, {
         singular: "archivo",
         plural: "archivos"
@@ -193,9 +192,9 @@ export default {
     createFolder: "Crear carpeta",
     folderNamePlaceholder: "Nombre de la carpeta",
     deleteConfirmation: "Confirmar eliminación",
-    folderLocation: ({ name }: { name: string }) => `Ubicación: ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Mover a ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Trabajar con ${name}`,
+    folderLocation: (params?: TranslationParams) => `Ubicación: ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Mover a ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Trabajar con ${params?.name ?? ''}`,
     uploadError: "Error al subir el archivo",
     dropOverlay: "Suelta archivos o carpetas aquí",
   },

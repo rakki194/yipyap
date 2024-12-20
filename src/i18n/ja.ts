@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "フォルダーへジャンプ...",
     loadingFolders: "フォルダーを読み込み中...",
     noResults: "結果が見つかりません",
-    folderCount: ({ count }: { count: number }) => `${count}個のフォルダー`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0}個のフォルダー`,
     deleteConfirm: "この画像を削除してもよろしいですか？",
     deleteSuccess: "画像を削除しました",
     deleteError: "画像の削除中にエラーが発生しました",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "キャプションの保存中にエラーが発生しました",
     emptyFolder: "このフォルダは空です",
     dropToUpload: "ファイルをドロップしてアップロード",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'ファイルをアップロード中...';
-      if (typeof params.count !== 'number') return 'ファイルをアップロード中...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'ファイルをアップロード中...';
       return `${params.count}個のファイルをアップロード中...`;
     },
     processingImage: "画像を処理中...",
@@ -127,19 +126,18 @@ export default {
       wd: "新規.wdファイルを作成"
     },
     noCaptionFiles: "キャプションファイルがまだありません！",
-    fileCount: ({ count }: { count: number }) => `${count}個のファイル`,
-    imageCount: ({ count }: { count: number }) => `${count}個の画像`,
-    foundFolders: ({ count }: { count: number }) => `${count}個のフォルダーが見つかりました`,
-    deletedCount: ({ count }: { count: number }) => `${count}個のアイテムを削除しました`,
-    selectedCount: (params?: { count: number }) => {
-      if (!params) return '選択済み';
-      if (typeof params.count !== 'number') return '選択済み';
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0}個のファイル`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0}個の画像`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0}個のフォルダーが見つかりました`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0}個のアイテムを削除しました`,
+    selectedCount: (params?: TranslationParams) => {
+      if (!params?.count) return '選択済み';
       return `${params.count}個選択済み`;
     },
-    processingImages: ({ count }: { count: number }) => `${count}個の画像を処理中...`,
-    folderLocation: ({ name }: { name: string }) => `場所: ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `${name}に移動`,
-    workWithFolder: ({ name }: { name: string }) => `${name}を操作`,
+    processingImages: (params?: TranslationParams) => `${params?.count ?? 0}個の画像を処理中...`,
+    folderLocation: (params?: TranslationParams) => `場所: ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `${params?.name ?? ''}に移動`,
+    workWithFolder: (params?: TranslationParams) => `${params?.name ?? ''}を操作`,
     createFolder: "フォルダーを作成",
     folderNamePlaceholder: "フォルダー名",
     deleteConfirmation: "削除の確認",

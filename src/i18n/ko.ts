@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "폴더로 이동...",
     loadingFolders: "폴더 로딩 중...",
     noResults: "결과 없음",
-    folderCount: ({ count }: { count: number }) => `폴더 ${count}개`,
+    folderCount: (params?: TranslationParams) => `폴더 ${params?.count ?? 0}개`,
     deleteConfirm: "이 이미지를 삭제하시겠습니까?",
     deleteSuccess: "이미지가 성공적으로 삭제되었습니다",
     deleteError: "이미지 삭제 중 오류 발생",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "캡션 저장 중 오류 발생",
     emptyFolder: "이 폴더는 비어 있습니다",
     dropToUpload: "파일을 여기에 드롭하여 업로드",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return '파일 업로드 중...';
-      if (typeof params.count !== 'number') return '파일 업로드 중...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return '파일 업로드 중...';
       return `${params.count}개의 파일 업로드 중...`;
     },
     processingImage: "이미지 처리 중...",
@@ -127,13 +126,12 @@ export default {
       wd: "새 .wd 파일 생성"
     },
     noCaptionFiles: "아직 캡션 파일이 없습니다!",
-    fileCount: ({ count }: { count: number }) => `${count}개 파일`,
-    imageCount: ({ count }: { count: number }) => `${count}개 이미지`,
-    foundFolders: ({ count }: { count: number }) => `${count}개 폴더 찾음`,
-    deletedCount: ({ count }: { count: number }) => `${count}개 항목 삭제됨`,
-    selectedCount: (params?: { count: number }) => {
-      if (!params) return '선택됨';
-      if (typeof params.count !== 'number') return '선택됨';
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0}개 파일`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0}개 이미지`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0}개 폴더 찾음`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0}개 항목 삭제됨`,
+    selectedCount: (params?: TranslationParams) => {
+      if (!params?.count) return '선택됨';
       return `${params.count}개 선택됨`;
     },
     confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
@@ -145,10 +143,10 @@ export default {
       if (folders > 0) return `${folders}개의 폴더를 삭제하시겠습니까?`;
       return `${images}개의 이미지를 삭제하시겠습니까?`;
     },
-    processingImages: ({ count }: { count: number }) => `${count}개 이미지 처리 중...`,
-    folderLocation: ({ name }: { name: string }) => `위치: ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `${name}(으)로 이동`,
-    workWithFolder: ({ name }: { name: string }) => `${name} 작업`,
+    processingImages: (params?: TranslationParams) => `${params?.count ?? 0}개 이미지 처리 중...`,
+    folderLocation: (params?: TranslationParams) => `위치: ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `${params?.name ?? ''}(으)로 이동`,
+    workWithFolder: (params?: TranslationParams) => `${params?.name ?? ''} 작업`,
     createFolder: "폴더 생성",
     folderNamePlaceholder: "폴더 이름",
     deleteConfirmation: "삭제 확인",

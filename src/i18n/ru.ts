@@ -1,5 +1,5 @@
 import { getPathSeparator, getRussianPlural } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,8 +101,10 @@ export default {
     quickJump: "Перейти к папке...",
     loadingFolders: "Загрузка папок...",
     noResults: "Ничего не найдено",
-    folderCount: ({ count = 0 }) => 
-      `${count} ${getRussianPlural(count, ['папка', 'папки', 'папок'])}`,
+    folderCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return `${count} ${getRussianPlural(count, ['папка', 'папки', 'папок'])}`;
+    },
     deleteConfirm: "Вы уверены, что хотите удалить это изображение?",
     deleteSuccess: "Изображение успешно удалено",
     deleteError: "Ошибка при удалении",
@@ -111,9 +113,8 @@ export default {
     errorSavingCaption: "Ошибка при сохранении подписи",
     emptyFolder: "Эта папка пуста",
     dropToUpload: "Перетащите файлы для загрузки",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Загрузка файлов...';
-      if (typeof params.count !== 'number') return 'Загрузка файлов...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Загрузка файлов...';
       return `Загрузка ${params.count} ${getRussianPlural(params.count, ['файла', 'файлов', 'файлов'])}...`;
     },
     processingImage: "Обработка изображения...",
@@ -166,40 +167,33 @@ export default {
     createFolder: "Создать папку",
     folderNamePlaceholder: "Имя папки",
     deleteConfirmation: "Подтверждение удаления",
-    selectedCount: ({ count = 0 }) => 
-      `${count} ${getRussianPlural(count, [
-        'элемент выбран',
-        'элемента выбрано',
-        'элементов выбрано'
-      ])}`,
-    processingImages: ({ count = 0 }) =>
-      `Обработка ${count} ${getRussianPlural(count, [
-        'изображения',
-        'изображений',
-        'изображений'
-      ])}...`,
-    foundFolders: ({ count = 0 }) =>
-      `Найдено ${count} ${getRussianPlural(count, [
-        'папка',
-        'папки',
-        'папок'
-      ])}`,
-    deletedCount: ({ count = 0 }) =>
-      `Удалено ${count} ${getRussianPlural(count, [
-        'элемент',
-        'элемента',
-        'элементов'
-      ])}`,
-    fileCount: ({ count = 0 }) => 
-      `${count} ${getRussianPlural(count, ['файл', 'файла', 'файлов'])}`,
-    imageCount: ({ count = 0 }) => 
-      `${count} ${getRussianPlural(count, ['изображение', 'изображения', 'изображений'])}`,
-    folderLocation: ({ name }: { name: string }) => 
-      `в папке ${name}`,
-    moveToFolder: ({ name }: { name: string }) => 
-      `Переместить в ${name}`,
-    workWithFolder: ({ name }: { name: string }) => 
-      `Работать с ${name}`,
+    selectedCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return `${count} ${getRussianPlural(count, ['элемент выбран', 'элемента выбрано', 'элементов выбрано'])}`;
+    },
+    processingImages: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return `Обработка ${count} ${getRussianPlural(count, ['изображения', 'изображений', 'изображений'])}...`;
+    },
+    foundFolders: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return `Найдено ${count} ${getRussianPlural(count, ['папка', 'папки', 'папок'])}`;
+    },
+    deletedCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return `Удалено ${count} ${getRussianPlural(count, ['элемент', 'элемента', 'элементов'])}`;
+    },
+    fileCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return `${count} ${getRussianPlural(count, ['файл', 'файла', 'файлов'])}`;
+    },
+    imageCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return `${count} ${getRussianPlural(count, ['изображение', 'изображения', 'изображений'])}`;
+    },
+    folderLocation: (params?: TranslationParams) => `в папке ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Переместить в ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Работать с ${params?.name ?? ''}`,
   },
   shortcuts: {
     title: "Горячие клавиши",

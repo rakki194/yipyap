@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Lompat ke folder...",
     loadingFolders: "Memuat folder...",
     noResults: "Tidak ada hasil",
-    folderCount: ({ count }: { count: number }) => `${count} folder`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} folder`,
     deleteConfirm: "Anda yakin ingin menghapus gambar ini?",
     deleteSuccess: "Gambar berhasil dihapus",
     deleteError: "Kesalahan saat menghapus gambar",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Kesalahan saat menyimpan keterangan",
     emptyFolder: "Folder ini kosong",
     dropToUpload: "Jatuhkan file di sini untuk mengunggah",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Mengunggah beberapa file...';
-      if (typeof params.count !== 'number') return 'Mengunggah beberapa file...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Mengunggah beberapa file...';
       return `Mengunggah ${params.count} file...`;
     },
     processingImage: "Memproses gambar...",
@@ -146,15 +145,15 @@ export default {
     deletingFile: "Menghapus file...",
     fileDeleteSuccess: "File berhasil dihapus",
     fileDeleteError: "Gagal menghapus file",
-    fileCount: ({ count }: { count: number }) => `${count} file`,
-    imageCount: ({ count }: { count: number }) => `${count} gambar`,
-    foundFolders: ({ count }: { count: number }) => `${count} folder ditemukan`,
-    deletedCount: ({ count }: { count: number }) => `${count} item dihapus`,
-    selectedCount: ({ count }: { count: number }) => `${count} dipilih`,
-    processingImages: ({ count }: { count: number }) => `Memproses ${count} gambar...`,
-    folderLocation: ({ name }: { name: string }) => `di ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Pindah ke ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Bekerja dengan ${name}`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} file`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} gambar`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} folder ditemukan`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} item dihapus`,
+    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} dipilih`,
+    processingImages: (params?: TranslationParams) => `Memproses ${params?.count ?? 0} gambar...`,
+    folderLocation: (params?: TranslationParams) => `di ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Pindah ke ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Bekerja dengan ${params?.name ?? ''}`,
     createFolder: "Buat Folder",
     folderNamePlaceholder: "Masukkan nama folder",
     deleteConfirmation: "Konfirmasi Penghapusan",

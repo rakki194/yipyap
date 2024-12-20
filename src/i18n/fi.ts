@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Siirry kansioon...",
     loadingFolders: "Ladataan kansioita...",
     noResults: "Ei tuloksia",
-    folderCount: ({ count }: { count: number }) => `${count} kansiota`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} kansiota`,
     deleteConfirm: "Haluatko varmasti poistaa tämän kuvan?",
     deleteSuccess: "Kuva poistettu onnistuneesti",
     deleteError: "Virhe poistettaessa kuvaa",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Virhe tallennettaessa kuvatekstiä",
     emptyFolder: "Tämä kansio on tyhjä",
     dropToUpload: "Pudota tiedostot tähän ladataksesi",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Ladataan tiedostoja...';
-      if (typeof params.count !== 'number') return 'Ladataan tiedostoja...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Ladataan tiedostoja...';
       return `Ladataan ${params.count} tiedostoa...`;
     },
     processingImage: "Käsitellään kuvaa...",
@@ -129,10 +128,10 @@ export default {
     noCaptionFiles: "Ei vielä kuvatekstitiedostoja!",
     uploadError: "Lataus epäonnistui",
     dropOverlay: "Pudota tiedostot tai kansiot tähän",
-    fileCount: ({ count }: { count: number }) => `${count} tiedostoa`,
-    imageCount: ({ count }: { count: number }) => `${count} kuvaa`,
-    foundFolders: ({ count }: { count: number }) => `${count} kansiota löydetty`,
-    deletedCount: ({ count }: { count: number }) => `${count} kohdetta poistettu`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} tiedostoa`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} kuvaa`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} kansiota löydetty`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} kohdetta poistettu`,
     selectAll: "Valitse kaikki",
     deselectAll: "Poista kaikki valinnat",
     deleteSelected: "Poista valitut",
@@ -153,11 +152,11 @@ export default {
     createFolder: "Luo kansio",
     folderNamePlaceholder: "Kansion nimi",
     deleteConfirmation: "Poiston vahvistus",
-    selectedCount: ({ count }: { count: number }) => `${count} valittu`,
-    processingImages: ({ count }: { count: number }) => `Käsitellään ${count} kuvaa...`,
-    folderLocation: ({ name }: { name: string }) => `Sijainti: ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Siirrä kansioon ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Työskentele kansion ${name} kanssa`,
+    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} valittu`,
+    processingImages: (params?: TranslationParams) => `Käsitellään ${params?.count ?? 0} kuvaa...`,
+    folderLocation: (params?: TranslationParams) => `Sijainti: ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Siirrä kansioon ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Työskentele kansion ${params?.name ?? ''} kanssa`,
   },
   shortcuts: {
     title: "Pikanäppäimet",

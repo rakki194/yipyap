@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Aller au dossier...",
     loadingFolders: "Chargement des dossiers...",
     noResults: "Aucun résultat trouvé",
-    folderCount: ({ count }: { count: number }) => `${count} dossiers`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} dossiers`,
     deleteConfirm: "Voulez-vous vraiment supprimer cette image ?",
     deleteSuccess: "Image supprimée avec succès",
     deleteError: "Erreur lors de la suppression",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Erreur lors de l'enregistrement de la légende",
     emptyFolder: "Ce dossier est vide",
     dropToUpload: "Déposez les fichiers ici pour télécharger",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Téléchargement de quelques fichiers...';
-      if (typeof params.count !== 'number') return 'Téléchargement de quelques fichiers...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Téléchargement de quelques fichiers...';
       return `Téléchargement de ${params.count} fichiers...`;
     },
     processingImage: "Traitement de l'image...",
@@ -127,10 +126,10 @@ export default {
       wd: "Créer un nouveau fichier .wd"
     },
     noCaptionFiles: "Pas encore de fichiers de légende !",
-    fileCount: ({ count }: { count: number }) => `${count} fichiers`,
-    imageCount: ({ count }: { count: number }) => `${count} images`,
-    foundFolders: ({ count }: { count: number }) => `${count} dossiers trouvés`,
-    deletedCount: ({ count }: { count: number }) => `${count} éléments supprimés`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} fichiers`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} images`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} dossiers trouvés`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} éléments supprimés`,
     selectAll: "Tout sélectionner",
     deselectAll: "Tout désélectionner",
     deleteSelected: "Supprimer la sélection",
@@ -152,15 +151,14 @@ export default {
     createFolder: "Créer un dossier",
     folderNamePlaceholder: "Nom du dossier",
     deleteConfirmation: "Confirmation de suppression",
-    selectedCount: (params?: { count: number }) => {
-      if (!params) return 'sélectionné';
-      if (typeof params.count !== 'number') return 'sélectionné';
+    selectedCount: (params?: TranslationParams) => {
+      if (!params?.count) return 'sélectionné';
       return `${params.count} sélectionné${params.count > 1 ? 's' : ''}`;
     },
-    processingImages: ({ count }: { count: number }) => `Traitement de ${count} images...`,
-    folderLocation: ({ name }: { name: string }) => `Emplacement : ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Déplacer vers ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Travailler avec ${name}`,
+    processingImages: (params?: TranslationParams) => `Traitement de ${params?.count ?? 0} images...`,
+    folderLocation: (params?: TranslationParams) => `Emplacement : ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Déplacer vers ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Travailler avec ${params?.name ?? ''}`,
     uploadError: "Erreur lors du téléchargement",
     dropOverlay: "Déposez les fichiers ou dossiers ici",
   },

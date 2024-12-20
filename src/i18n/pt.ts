@@ -1,6 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import { getPortuguesePlural } from "./utils";
-import { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -102,10 +102,13 @@ export default {
     quickJump: "Ir para pasta...",
     loadingFolders: "Carregando pastas...",
     noResults: "Nenhum resultado encontrado",
-    folderCount: ({ count = 0 }) => getPortuguesePlural(count, {
-      singular: "pasta",
-      plural: "pastas"
-    }),
+    folderCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getPortuguesePlural(count, {
+        singular: "pasta",
+        plural: "pastas"
+      });
+    },
     deleteConfirm: "Tem certeza que deseja excluir esta imagem?",
     deleteSuccess: "Imagem excluída com sucesso",
     deleteError: "Erro ao excluir imagem",
@@ -114,9 +117,8 @@ export default {
     errorSavingCaption: "Erro ao salvar legenda",
     emptyFolder: "Esta pasta está vazia",
     dropToUpload: "Solte arquivos aqui para fazer upload",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'A carregar ficheiros...';
-      if (typeof params.count !== 'number') return 'A carregar ficheiros...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'A carregar ficheiros...';
       return `A carregar ${params.count} ficheiros...`;
     },
     processingImage: "Processando imagem...",
@@ -131,19 +133,25 @@ export default {
       wd: "Criar novo arquivo .wd"
     },
     noCaptionFiles: "Ainda não há arquivos de legenda!",
-    fileCount: ({ count = 0 }) => getPortuguesePlural(count, {
-      singular: "arquivo",
-      plural: "arquivos"
-    }),
-    imageCount: ({ count = 0 }) => getPortuguesePlural(count, {
-      singular: "imagem",
-      plural: "imagens"
-    }),
-    foundFolders: (params: { count: number }) => `${params.count} pastas encontradas`,
+    fileCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getPortuguesePlural(count, {
+        singular: "arquivo",
+        plural: "arquivos"
+      });
+    },
+    imageCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getPortuguesePlural(count, {
+        singular: "imagem",
+        plural: "imagens"
+      });
+    },
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} pastas encontradas`,
     selectAll: "Selecionar todos",
     createFolder: "Criar pasta",
-    moveToFolder: (params: { name: string }) => `Mover para pasta "${params.name}"`,
-    deletedCount: (params: { count: number }) => `${params.count} itens excluídos`,
+    moveToFolder: (params?: TranslationParams) => `Mover para pasta "${params?.name ?? ''}"`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} itens excluídos`,
     uploadError: "Erro ao fazer upload do arquivo",
     dropOverlay: "Solte os arquivos aqui",
     deselectAll: "Desmarcar todos",
@@ -162,15 +170,18 @@ export default {
     deletingFile: "Excluindo arquivo...",
     fileDeleteSuccess: "Arquivo excluído com sucesso",
     fileDeleteError: "Erro ao excluir arquivo",
-    folderLocation: ({ name }: { name: string }) => `em ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Trabalhar com ${name}`,
+    folderLocation: (params?: TranslationParams) => `em ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Trabalhar com ${params?.name ?? ''}`,
     folderNamePlaceholder: "Nome da pasta",
     deleteConfirmation: "Confirmar exclusão",
-    processingImages: ({ count }: { count: number }) => `Processando ${count} imagens...`,
-    selectedCount: ({ count = 0 }) => getPortuguesePlural(count, {
-      singular: "item selecionado",
-      plural: "itens selecionados"
-    })
+    processingImages: (params?: TranslationParams) => `Processando ${params?.count ?? 0} imagens...`,
+    selectedCount: (params?: TranslationParams) => {
+      const count = params?.count ?? 0;
+      return getPortuguesePlural(count, {
+        singular: "item selecionado",
+        plural: "itens selecionados"
+      });
+    },
   },
   shortcuts: {
     title: "Atalhos de teclado",

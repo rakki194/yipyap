@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import type { Translations } from "./types";
+import type { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Salt la folder...",
     loadingFolders: "Se încarcă folderele...",
     noResults: "Nu s-au găsit rezultate",
-    folderCount: ({ count }: { count: number }) => `${count} foldere`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} foldere`,
     deleteConfirm: "Sigur doriți să ștergeți această imagine?",
     deleteSuccess: "Imagine ștearsă cu succes",
     deleteError: "Eroare la ștergerea imaginii",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Eroare la salvarea descrierii",
     emptyFolder: "Acest folder este gol",
     dropToUpload: "Trageți fișiere aici pentru încărcare",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Se încarcă fișiere...';
-      if (typeof params.count !== 'number') return 'Se încarcă fișiere...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Se încarcă fișiere...';
       return `Se încarcă ${params.count} fișiere...`;
     },
     processingImage: "Se procesează imaginea...",
@@ -146,15 +145,15 @@ export default {
     deletingFile: "Se șterge fișierul...",
     fileDeleteSuccess: "Fișier șters cu succes",
     fileDeleteError: "Eroare la ștergerea fișierului",
-    fileCount: ({ count }: { count: number }) => `${count} fișiere`,
-    imageCount: ({ count }: { count: number }) => `${count} imagini`,
-    foundFolders: ({ count }: { count: number }) => `${count} foldere găsite`,
-    deletedCount: ({ count }: { count: number }) => `${count} elemente șterse`,
-    selectedCount: ({ count }: { count: number }) => `${count} selectate`,
-    processingImages: ({ count }: { count: number }) => `Se procesează ${count} imagini...`,
-    folderLocation: ({ name }: { name: string }) => `în ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Mută în ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Lucrează cu ${name}`,
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} fișiere`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} imagini`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} foldere găsite`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} elemente șterse`,
+    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} selectate`,
+    processingImages: (params?: TranslationParams) => `Se procesează ${params?.count ?? 0} imagini...`,
+    folderLocation: (params?: TranslationParams) => `în ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Mută în ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Lucrează cu ${params?.name ?? ''}`,
     createFolder: "Creare folder",
     folderNamePlaceholder: "Nume folder",
     deleteConfirmation: "Confirmare ștergere",

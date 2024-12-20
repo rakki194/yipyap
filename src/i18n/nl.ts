@@ -1,5 +1,5 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations } from "./types";
+import { Translations, TranslationParams } from "./types";
 
 export default {
   common: {
@@ -101,7 +101,7 @@ export default {
     quickJump: "Naar map springen...",
     loadingFolders: "Mappen laden...",
     noResults: "Geen resultaten gevonden",
-    folderCount: ({ count }: { count: number }) => `${count} mappen`,
+    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} mappen`,
     deleteConfirm: "Weet je zeker dat je deze afbeelding wilt verwijderen?",
     deleteSuccess: "Afbeelding succesvol verwijderd",
     deleteError: "Fout bij verwijderen van afbeelding",
@@ -110,9 +110,8 @@ export default {
     errorSavingCaption: "Fout bij opslaan van bijschrift",
     emptyFolder: "Deze map is leeg",
     dropToUpload: "Sleep bestanden hier om te uploaden",
-    uploadProgress: (params?: { count: number }) => {
-      if (!params) return 'Bestanden uploaden...';
-      if (typeof params.count !== 'number') return 'Bestanden uploaden...';
+    uploadProgress: (params?: TranslationParams) => {
+      if (!params?.count) return 'Bestanden uploaden...';
       return `${params.count} bestanden uploaden...`;
     },
     processingImage: "Afbeelding verwerken...",
@@ -127,19 +126,18 @@ export default {
       wd: "Nieuw .wd-bestand maken"
     },
     noCaptionFiles: "Nog geen bijschriftbestanden!",
-    fileCount: ({ count }: { count: number }) => `${count} bestanden`,
-    imageCount: ({ count }: { count: number }) => `${count} afbeeldingen`,
-    foundFolders: ({ count }: { count: number }) => `${count} mappen gevonden`,
-    deletedCount: ({ count }: { count: number }) => `${count} items verwijderd`,
-    selectedCount: (params?: { count: number }) => {
-      if (!params) return 'enkele geselecteerd';
-      if (typeof params.count !== 'number') return 'enkele geselecteerd';
+    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} bestanden`,
+    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} afbeeldingen`,
+    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} mappen gevonden`,
+    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} items verwijderd`,
+    selectedCount: (params?: TranslationParams) => {
+      if (!params?.count) return 'enkele geselecteerd';
       return `${params.count} geselecteerd`;
     },
-    processingImages: ({ count }: { count: number }) => `${count} afbeeldingen verwerken...`,
-    folderLocation: ({ name }: { name: string }) => `in ${name}`,
-    moveToFolder: ({ name }: { name: string }) => `Verplaats naar ${name}`,
-    workWithFolder: ({ name }: { name: string }) => `Werk met ${name}`,
+    processingImages: (params?: TranslationParams) => `${params?.count ?? 0} afbeeldingen verwerken...`,
+    folderLocation: (params?: TranslationParams) => `in ${params?.name ?? ''}`,
+    moveToFolder: (params?: TranslationParams) => `Verplaats naar ${params?.name ?? ''}`,
+    workWithFolder: (params?: TranslationParams) => `Werk met ${params?.name ?? ''}`,
     createFolder: "Map aanmaken",
     folderNamePlaceholder: "Mapnaam",
     deleteConfirmation: "Verwijderen bevestigen",
