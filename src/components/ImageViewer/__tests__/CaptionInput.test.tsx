@@ -1,10 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, fireEvent, screen } from "@solidjs/testing-library";
+import { describe, it, expect, vi } from "vitest";
+import { fireEvent, screen, render } from "@solidjs/testing-library";
 import { CaptionInput } from "../CaptionInput";
-import { Component } from "solid-js";
-import { AppContext } from "~/contexts/contexts";
-import { GalleryProvider } from "~/contexts/GalleryContext";
-import type { BrowsePagesCached, Captions } from "~/resources/browse";
+import { useBasicTestSetup } from "~/test/test-hooks";
+import { renderWithContext, mockAppContext, createMockResource, mockBrowseData } from "~/test/test-utils";
+import { GalleryContext } from "~/contexts/contexts";
+import type { Component, JSX } from "solid-js";
+import { action } from "@solidjs/router";
 
 /**
  * Test suite for the CaptionInput component.
@@ -23,6 +24,18 @@ import type { BrowsePagesCached, Captions } from "~/resources/browse";
  * - Gallery context functions
  * - App context (translations)
  */
+
+const mockAction = <T,>(fn: () => Promise<T>) => {
+  const actionFn = action(fn);
+  return vi.fn().mockImplementation(actionFn) as unknown as typeof actionFn;
+};
+
+const mockFns = {
+  saveCaption: mockAction(async () => new Error("Mock error")),
+  deleteCaption: mockAction(async () => new Error("Mock error")),
+  saveWithHistory: mockAction(async () => new Error("Mock error")),
+  undo: mockAction(async () => new Error("Mock error")),
+};
 
 // Mock the icons
 vi.mock("~/icons", () => ({
@@ -47,126 +60,132 @@ vi.mock("@solidjs/router", () => ({
   action: (fn: Function) => fn,
 }));
 
-// Create mock functions
-const saveWithHistoryMock = vi.fn();
-const undoMock = vi.fn();
-const saveCaptionMock = vi.fn();
-const deleteCaptionMock = vi.fn();
-
-// Add mock data before the gallery context mock
-const mockBrowseData: BrowsePagesCached = {
-  items: [Object.assign(
-    () => ({
-      type: "image" as const,
-      name: "test.jpg",
-      file_name: "test.jpg",
-      size: 1024,
-      mime: "image/jpeg",
-      md5sum: "test-hash",
-      width: 1920,
-      height: 1080,
-      mtime: new Date().toISOString(),
-      captions: [["tags", "tag1, tag2"]] as Captions,
-    }),
-    {
-      type: "image" as const,
-      file_name: "test.jpg",
-    }
-  )],
-  path: "test/path",
-  total_folders: 0,
-  total_images: 1,
-  total_pages: 1,
-  mtime: new Date().toISOString(),
-  pages: {},
-  setters: {
-    "test.jpg": vi.fn(),
-  },
-};
-
-// Update mock app context with translations
-const mockAppContext = {
-  t: (key: string) => {
-    const translations: Record<string, string> = {
-      "tools.undo": "Undo",
-      "tools.removeCommas": "Remove commas",
-      "tools.replaceNewlinesWithCommas": "Replace newlines with commas",
-      "tools.replaceUnderscoresWithSpaces": "Replace underscores with spaces",
-      "Add a tag...": "Add a tag...",
-      "Remove tag": "Remove tag",
-      "Add tag": "Add tag",
-      "Delete tags caption": "Delete tags caption",
-      "Undo last change": "Undo last change",
-      "gallery.addCaption": "Add caption"
-    };
-    return translations[key] || key;
-  },
-};
-
-// Add this before the tests
-const createMockHistory = () => {
-  let history: string[] = [];
-  return {
-    history,
-    add: (caption: string) => {
-      history.push(caption);
+// Mock useAppContext
+vi.mock("~/contexts/app", () => ({
+  useAppContext: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        "tools.undo": "Undo",
+        "tools.removeCommas": "Remove commas",
+        "tools.replaceNewlinesWithCommas": "Replace newlines with commas",
+        "tools.replaceUnderscoresWithSpaces": "Replace underscores with spaces",
+        "Add a tag...": "Add a tag...",
+        "Remove tag": "Remove tag",
+        "Add tag": "Add tag",
+        "Delete tags caption": "Delete tags caption",
+        "Undo last change": "Undo last change",
+        "gallery.addCaption": "Add caption"
+      };
+      return translations[key] || key;
     },
-    get: () => history,
-    clear: () => {
-      history = [];
-    }
-  };
-};
-
-const mockHistory = createMockHistory();
-
-// Update the gallery context mock
-vi.mock("~/contexts/gallery", () => ({
-  makeGalleryState: () => ({
-    saveCaption: saveCaptionMock,
-    deleteCaption: deleteCaptionMock,
-    saveWithHistory: saveWithHistoryMock,
-    undo: undoMock,
-    selection: {
-      editedImage: mockBrowseData.items[0](),
-      selectedImage: mockBrowseData.items[0],
-    },
-    data: () => mockBrowseData,
-    captionHistory: mockHistory.get,
+    theme: "light",
   }),
-  useGallery: () => ({
-    saveCaption: saveCaptionMock,
-    deleteCaption: deleteCaptionMock,
-    saveWithHistory: saveWithHistoryMock,
-    undo: undoMock,
-    selection: {
-      editedImage: mockBrowseData.items[0](),
-      selectedImage: mockBrowseData.items[0],
-    },
-    data: () => mockBrowseData,
-    captionHistory: mockHistory.get,
-  }),
-  GalleryProvider: ({ children }: any) => children,
 }));
 
-// Create a test wrapper component that provides the context
-const TestWrapper: Component<{ context: any; children: any }> = (props) => {
+// Create a mock GalleryProvider component
+const GalleryProvider: Component<{ children: JSX.Element }> = (props) => {
+  const galleryValue = {
+    saveCaption: mockFns.saveCaption,
+    deleteCaption: mockFns.deleteCaption,
+    saveWithHistory: mockFns.saveWithHistory,
+    undo: mockFns.undo,
+    editedImage: null,
+    selection: {
+      editedImage: null,
+      selectedImage: null,
+      select: () => false,
+      selectPrev: () => false,
+      selectNext: () => false,
+      selectDown: () => false,
+      selectUp: () => false,
+      selectPageUp: () => false,
+      selectPageDown: () => false,
+      toggleEdit: () => false,
+      edit: () => false,
+      mode: 'view' as const,
+      multiSelected: new Set<number>(),
+      multiFolderSelected: new Set<number>(),
+      toggleMultiSelect: () => false,
+      selectAll: () => false,
+      clearMultiSelect: () => {},
+      toggleFolderMultiSelect: () => false,
+      selectAllFolders: () => false,
+      clearFolderMultiSelect: () => {},
+      setMode: () => true,
+      selected: null,
+      setColumns: () => {},
+    },
+    data: createMockResource(mockBrowseData),
+    setViewMode: () => {},
+    setSort: () => {},
+    setSearch: () => {},
+    setPage: async () => {},
+    state: {
+      viewMode: "grid" as const,
+      sort: "name" as const,
+      search: "",
+      page: 1,
+      path: "",
+    },
+    params: { path: "", id: "" },
+    windowSize: { width: 0, height: 0 },
+    getThumbnailSize: () => ({ width: 0, height: 0 }),
+    getPreviewSize: () => ({ width: 0, height: 0 }),
+    getImageInfo: () => null,
+    getImagePath: () => "",
+    getImageUrl: () => "",
+    getImageThumbnailUrl: () => "",
+    getImagePreviewUrl: () => "",
+    getThumbnailComputedSize: () => ({ width: 0, height: 0 }),
+    refetch: () => null,
+    invalidate: () => {},
+    clearImageCache: () => {},
+    getAllKnownFolders: async () => [],
+    generateTags: action(async () => undefined),
+    deleteImage: action(async () => new Error("Mock error")),
+    captionHistory: () => [],
+    getEditedImage: () => undefined,
+    select: () => false,
+    selectedImage: null,
+    selectPrev: () => false,
+    selectNext: () => false,
+    selectDown: () => false,
+    selectUp: () => false,
+    selectPageUp: () => false,
+    selectPageDown: () => false,
+    toggleEdit: () => false,
+    edit: () => false,
+    mode: 'view' as const,
+    multiSelected: new Set<number>(),
+    multiFolderSelected: new Set<number>(),
+    toggleMultiSelect: () => false,
+    selectAll: () => false,
+    clearMultiSelect: () => {},
+    toggleFolderMultiSelect: () => false,
+    selectAllFolders: () => false,
+    clearFolderMultiSelect: () => {},
+    setMode: () => true,
+    selected: null,
+    setColumns: () => {},
+  };
+
   return (
-    <AppContext.Provider value={props.context}>
-      <GalleryProvider>
-        {props.children}
-      </GalleryProvider>
-    </AppContext.Provider>
+    <GalleryContext.Provider value={galleryValue}>
+      {props.children}
+    </GalleryContext.Provider>
   );
 };
 
+function renderWithGalleryContext(ui: () => JSX.Element, context = mockAppContext) {
+  return render(() => (
+    <GalleryProvider>
+      {ui()}
+    </GalleryProvider>
+  ));
+}
+
 describe("CaptionInput Component", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockHistory.clear();
-    // Add a caption to history to enable undo button
-    mockHistory.add("tag1, tag2");
-  });
+  useBasicTestSetup();
 
   const defaultProps = {
     caption: ["tags", "tag1, tag2"] as [string, string],
@@ -181,11 +200,7 @@ describe("CaptionInput Component", () => {
    */
   describe("Rendering", () => {
     it("renders with basic props", () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
+      renderWithGalleryContext(() => <CaptionInput {...defaultProps} />);
 
       expect(screen.getByText("tag1")).toBeInTheDocument();
       expect(screen.getByText("tag2")).toBeInTheDocument();
@@ -193,11 +208,7 @@ describe("CaptionInput Component", () => {
     });
 
     it("renders correct icon based on caption type", () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
+      renderWithGalleryContext(() => <CaptionInput {...defaultProps} />);
 
       // Find the caption type icon specifically (first icon in the list)
       const icons = screen.getAllByTestId("mock-icon");
@@ -205,11 +216,7 @@ describe("CaptionInput Component", () => {
     });
 
     it("renders in expanded state", () => {
-      const { container } = render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
+      const { container } = renderWithGalleryContext(() => <CaptionInput {...defaultProps} />);
 
       expect(container.querySelector(".expanded")).toBeInTheDocument();
     });
@@ -221,18 +228,14 @@ describe("CaptionInput Component", () => {
    */
   describe("Caption Tools", () => {
     it("handles caption deletion", async () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
+      renderWithGalleryContext(() => <CaptionInput {...defaultProps} />);
 
       const deleteButton = screen.getByTitle(/Delete .* caption/);
       fireEvent.click(deleteButton);
 
       await Promise.resolve();
 
-      expect(deleteCaptionMock).toHaveBeenCalledWith("tags");
+      expect(mockFns.deleteCaption).toHaveBeenCalledWith("tags");
     });
   });
 
@@ -248,11 +251,7 @@ describe("CaptionInput Component", () => {
         caption: ["txt", "Initial text"] as [string, string],
       };
 
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...textProps} />
-        </TestWrapper>
-      ));
+      renderWithGalleryContext(() => <CaptionInput {...textProps} />);
 
       const textarea = screen.getByRole("textbox");
       expect(textarea).toBeInTheDocument();
@@ -267,11 +266,7 @@ describe("CaptionInput Component", () => {
    */
   describe("Keyboard Navigation", () => {
     it("supports keyboard navigation between tags", async () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
+      renderWithGalleryContext(() => <CaptionInput {...defaultProps} />);
 
       // Enter edit mode for first tag
       fireEvent.click(screen.getByText("tag1"));
@@ -285,11 +280,7 @@ describe("CaptionInput Component", () => {
     });
 
     it("handles new tag input navigation", async () => {
-      render(() => (
-        <TestWrapper context={mockAppContext}>
-          <CaptionInput {...defaultProps} />
-        </TestWrapper>
-      ));
+      renderWithGalleryContext(() => <CaptionInput {...defaultProps} />);
 
       const input = screen.getByPlaceholderText("Add a tag...");
       fireEvent.keyDown(input, { key: "ArrowUp", shiftKey: true });
