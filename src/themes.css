@@ -234,7 +234,7 @@
     background: var(--bg-color);
   }
 
-  /* Fix modal header positioning */
+  /* Fix modal header positioning and add snow effect */
   .modal-header {
     position: absolute;
     top: 0;
@@ -250,17 +250,33 @@
     justify-content: space-between;
     padding: 0 var(--spacing);
     color: var(--text-primary);
-  }
+    overflow: visible;
 
-  /* Fix modal body positioning */
-  .modal-body {
-    position: absolute;
-    top: 3rem;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: hidden;
-    background: var(--bg-color);
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      z-index: -1;
+      background-image: radial-gradient(
+          1.5px 1.5px at 20% 30%,
+          rgb(255 255 255 / 90%) 100%,
+          transparent
+        ),
+        radial-gradient(
+          2px 2px at 60% 50%,
+          rgb(255 255 255 / 80%) 100%,
+          transparent
+        ),
+        radial-gradient(
+          2.5px 2.5px at 40% 70%,
+          rgb(255 255 255 / 70%) 100%,
+          transparent
+        );
+      background-size: 300px 300px;
+      animation: snow-fall 20s linear infinite;
+      pointer-events: none;
+      opacity: 0.5;
+    }
   }
 
   /* Fix caption dropdown positioning */
@@ -273,7 +289,43 @@
     background: var(--bg-color);
     border: 1px solid var(--border);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 1090;
+    z-index: 1200;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+
+    /* Add snow effect to dropdown */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(
+          1px 1px at 35% 45%,
+          rgb(255 255 255 / 60%) 100%,
+          transparent
+        ),
+        radial-gradient(
+          1.5px 1.5px at 65% 55%,
+          rgb(255 255 255 / 50%) 100%,
+          transparent
+        );
+      background-size: 150px 150px;
+      animation: snow-fall 30s linear infinite;
+      pointer-events: none;
+      opacity: 0.2;
+    }
+  }
+
+  /* Style dropdown options */
+  .caption-type-option {
+    color: var(--text-primary);
+    background: transparent;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background: color-mix(in srgb, var(--accent) 15%, var(--bg-color));
+      color: var(--text-primary);
+    }
   }
 
   /* Fix caption creation container */
@@ -282,16 +334,71 @@
     display: inline-block;
   }
 
-  /* Remove duplicate styles */
-  .modal-header,
+  /* Add snow effect to breadcrumb */
   .breadcrumb {
-    background: linear-gradient(45deg, #c41e3aa2 0%, #0033209f 100%);
-    color: var(--text-primary);
     position: relative;
-    z-index: 10;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      z-index: -1;
+      background-image: radial-gradient(
+          2px 2px at 25% 35%,
+          rgb(255 255 255 / 60%) 100%,
+          transparent
+        ),
+        radial-gradient(
+          2.5px 2.5px at 55% 65%,
+          rgb(255 255 255 / 50%) 100%,
+          transparent
+        ),
+        radial-gradient(
+          1.5px 1.5px at 75% 45%,
+          rgb(255 255 255 / 60%) 100%,
+          transparent
+        );
+      background-size: 250px 250px;
+      animation: snow-drift 15s linear infinite;
+      pointer-events: none;
+      opacity: 0.3;
+    }
   }
 
-  /* Rest of the Christmas theme styles... */
+  /* Add snow effect to caption editor */
+  .caption-editor {
+    position: relative;
+    background: linear-gradient(45deg, #c41e3a22 0%, #00332022 100%);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(
+          1.5px 1.5px at 30% 40%,
+          rgb(255 255 255 / 70%) 100%,
+          transparent
+        ),
+        radial-gradient(
+          2px 2px at 65% 60%,
+          rgb(255 255 255 / 60%) 100%,
+          transparent
+        ),
+        radial-gradient(
+          1.5px 1.5px at 45% 55%,
+          rgb(255 255 255 / 70%) 100%,
+          transparent
+        );
+      background-size: 200px 200px;
+      animation: snow-fall 25s linear infinite;
+      pointer-events: none;
+      opacity: 0.2;
+    }
+  }
+
+  /* Rest of the existing Christmas theme styles... */
 }
 
 @keyframes christmas-lights {
@@ -310,13 +417,12 @@
   } /* Gold */
 }
 
-@keyframes snow {
+@keyframes snow-fall {
   0% {
     background-position: 0 0;
   }
-
   100% {
-    background-position: -50px 500px;
+    background-position: 150px 300px;
   }
 }
 
@@ -345,9 +451,8 @@
   0% {
     background-position: 0 0;
   }
-
   100% {
-    background-position: 50px 400px;
+    background-position: 125px 250px;
   }
 }
 

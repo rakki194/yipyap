@@ -34,26 +34,6 @@
     }
   }
 
-  /* Modal Body Container */
-  .modal-body {
-    position: absolute;
-    top: 3rem;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    container-type: inline-size;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    overflow: hidden;
-  }
-
-  /* Responsive Layout */
-  @container (min-width: 768px) {
-    .modal-body.horizontal {
-      grid-template-columns: auto minmax(min-content, 80rem);
-    }
-  }
-
   /* Modal Actions */
   .modal-actions {
     display: flex;
