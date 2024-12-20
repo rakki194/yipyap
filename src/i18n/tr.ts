@@ -148,7 +148,6 @@ export default {
         pluralLar: `${count} görsel işleniyor...`,
         pluralLer: `${count} görsel işleniyor...`
       }),
-    foundImages: (params: { count: number }) => `${params.count} görsel bulundu`,
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders && images) {
         const folderText = getTurkishPlural(`${folders} klasör`, {

@@ -107,11 +107,6 @@ export default {
         singular: "imagen",
         plural: "imágenes"
       })}...`,
-    foundImages: ({ count }: { count: number }) => 
-      `${count} ${getSpanishPlural(count, {
-        singular: "imagen encontrada",
-        plural: "imágenes encontradas"
-      })}`,
     deletedCount: ({ count }: { count: number }) => 
       `${count} ${getSpanishPlural(count, {
         singular: "elemento eliminado",

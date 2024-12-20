@@ -126,7 +126,6 @@ export default {
     fileCount: (params: { count: number }) => `${params.count}个文件`,
     imageCount: (params: { count: number }) => `${params.count}张图片`,
     foundFolders: (params: { count: number }) => `找到${params.count}个文件夹`,
-    foundImages: (params: { count: number }) => `找到${params.count}张图片`,
     selectedCount: (params: { count: number }) => `已选择${params.count}项`,
     selectAll: "全选",
     createFolder: "创建文件夹",

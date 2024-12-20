@@ -145,7 +145,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} filer`,
     imageCount: ({ count }: { count: number }) => `${count} bilder`,
     foundFolders: ({ count }: { count: number }) => `${count} mapper funnet`,
-    foundImages: ({ count }: { count: number }) => `${count} bilder funnet`,
     deletedCount: ({ count }: { count: number }) => `${count} elementer slettet`,
     selectedCount: ({ count }: { count: number }) => `${count} valgt`,
     processingImages: ({ count }: { count: number }) => `Behandler ${count} bilder...`,

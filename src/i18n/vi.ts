@@ -128,7 +128,6 @@ export default {
     fileCount: (params: { count: number }) => `${params.count} tệp`,
     imageCount: (params: { count: number }) => `${params.count} hình ảnh`,
     foundFolders: (params: { count: number }) => `Tìm thấy ${params.count} thư mục`,
-    foundImages: (params: { count: number }) => `Tìm thấy ${params.count} hình ảnh`,
     selectedCount: (params: { count: number }) => `Đã chọn ${params.count}`,
     selectAll: "Chọn tất cả",
     createFolder: "Tạo thư mục",

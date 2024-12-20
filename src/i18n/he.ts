@@ -145,7 +145,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} קבצים`,
     imageCount: ({ count }: { count: number }) => `${count} תמונות`,
     foundFolders: ({ count }: { count: number }) => `נמצאו ${count} תיקיות`,
-    foundImages: ({ count }: { count: number }) => `נמצאו ${count} תמונות`,
     deletedCount: ({ count }: { count: number }) => `נמחקו ${count} פריטים`,
     selectedCount: ({ count }: { count: number }) => `${count} נבחרו`,
     processingImages: ({ count }: { count: number }) => `מעבד ${count} תמונות...`,

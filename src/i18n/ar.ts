@@ -153,7 +153,6 @@ export default {
     deleteConfirmation: "تأكيد الحذف",
     selectedCount: ({ count }) => `${count} محدد`,
     processingImages: ({ count = 0 }) => `معالجة ${count} صور...`,
-    foundImages: ({ count = 0 }) => `تم العثور على ${count} صور`,
     foundFolders: ({ count = 0 }) => `تم العثور على ${count} مجلدات`,
     deletedCount: ({ count = 0 }) => `تم حذف ${count} عناصر`,
     fileCount: ({ count = 0 }) => getArabicPlural(count, {

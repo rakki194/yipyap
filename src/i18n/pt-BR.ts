@@ -127,7 +127,6 @@ export default {
     fileCount: (params: { count: number }) => `${params.count} arquivos`,
     imageCount: (params: { count: number }) => `${params.count} imagens`,
     foundFolders: (params: { count: number }) => `${params.count} pastas encontradas`,
-    foundImages: (params: { count: number }) => `${params.count} imagens encontradas`,
     selectedCount: (params: { count: number }) => `${params.count} selecionados`,
     selectAll: "Selecionar todos",
     createFolder: "Criar pasta",

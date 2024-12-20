@@ -126,7 +126,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} bestanden`,
     imageCount: ({ count }: { count: number }) => `${count} afbeeldingen`,
     foundFolders: ({ count }: { count: number }) => `${count} mappen gevonden`,
-    foundImages: ({ count }: { count: number }) => `${count} afbeeldingen gevonden`,
     deletedCount: ({ count }: { count: number }) => `${count} items verwijderd`,
     selectedCount: ({ count }: { count: number }) => `${count} geselecteerd`,
     processingImages: ({ count }: { count: number }) => `${count} afbeeldingen verwerken...`,

@@ -126,7 +126,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} fichiers`,
     imageCount: ({ count }: { count: number }) => `${count} images`,
     foundFolders: ({ count }: { count: number }) => `${count} dossiers trouvés`,
-    foundImages: ({ count }: { count: number }) => `${count} images trouvées`,
     deletedCount: ({ count }: { count: number }) => `${count} éléments supprimés`,
     selectAll: "Tout sélectionner",
     deselectAll: "Tout désélectionner",

@@ -145,7 +145,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} файла`,
     imageCount: ({ count }: { count: number }) => `${count} изображения`,
     foundFolders: ({ count }: { count: number }) => `Намерени ${count} папки`,
-    foundImages: ({ count }: { count: number }) => `Намерени ${count} изображения`,
     deletedCount: ({ count }: { count: number }) => `Изтрити ${count} елемента`,
     selectedCount: ({ count }: { count: number }) => `${count} избрани`,
     processingImages: ({ count }: { count: number }) => `Обработка на ${count} изображения...`,

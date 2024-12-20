@@ -154,7 +154,6 @@ export default {
     createFolder: "Create Folder",
     folderNamePlaceholder: "Enter folder name",
     deleteConfirmation: "Confirm Deletion",
-    foundImages: ({ count }: { count: number }) => `Found ${count} images`,
     deletedCount: ({ count }: { count: number }) => `Deleted ${count} items`,
     selectedCount: ({ count }: { count: number }) => `${count} selected`,
     processingImages: ({ count }: { count: number }) => `Processing ${count} images...`,

@@ -126,7 +126,6 @@ export default {
     fileCount: (params: { count: number }) => `${params.count} ไฟล์`,
     imageCount: (params: { count: number }) => `${params.count} รูปภาพ`,
     foundFolders: (params: { count: number }) => `พบ ${params.count} โฟลเดอร์`,
-    foundImages: (params: { count: number }) => `พบ ${params.count} รูปภาพ`,
     selectedCount: (params: { count: number }) => `เลือก ${params.count} รายการ`,
     selectAll: "เลือกทั้งหมด",
     createFolder: "สร้างโฟลเดอร์",

@@ -155,12 +155,6 @@ export default {
         'изображений',
         'изображений'
       ])}...`,
-    foundImages: ({ count = 0 }) =>
-      `Найдено ${count} ${getRussianPlural(count, [
-        'изображение',
-        'изображения',
-        'изображений'
-      ])}`,
     foundFolders: ({ count = 0 }) =>
       `Найдено ${count} ${getRussianPlural(count, [
         'папка',

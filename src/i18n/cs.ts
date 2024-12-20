@@ -145,7 +145,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} souborů`,
     imageCount: ({ count }: { count: number }) => `${count} obrázků`,
     foundFolders: ({ count }: { count: number }) => `Nalezeno ${count} složek`,
-    foundImages: ({ count }: { count: number }) => `Nalezeno ${count} obrázků`,
     deletedCount: ({ count }: { count: number }) => `Smazáno ${count} položek`,
     selectedCount: ({ count }: { count: number }) => `${count} vybráno`,
     processingImages: ({ count }: { count: number }) => `Zpracování ${count} obrázků...`,

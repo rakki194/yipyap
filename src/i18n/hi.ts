@@ -142,7 +142,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} फ़ाइलें`,
     imageCount: ({ count }: { count: number }) => `${count} छवियां`,
     foundFolders: ({ count }: { count: number }) => `${count} फ़ोल्डर मिले`,
-    foundImages: ({ count }: { count: number }) => `${count} छवियां मिलीं`,
     deletedCount: ({ count }: { count: number }) => `${count} आइटम हटाए गए`,
     selectedCount: ({ count }: { count: number }) => `${count} चयनित`,
     processingImages: ({ count }: { count: number }) => `${count} छवियां प्रोसेस हो रही हैं...`,

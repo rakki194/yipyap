@@ -140,7 +140,6 @@ export interface GalleryTranslations {
   fileCount: (params: { count: number }) => string;
   imageCount: (params: { count: number }) => string;
   foundFolders: (params: { count: number }) => string;
-  foundImages: (params: { count: number }) => string;
   deletedCount: (params: { count: number }) => string;
   deleteConfirm: TranslationValue;
   deleteSuccess: string;

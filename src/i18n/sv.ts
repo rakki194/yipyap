@@ -126,7 +126,6 @@ export default {
     fileCount: (params: { count: number }) => `${params.count} filer`,
     imageCount: (params: { count: number }) => `${params.count} bilder`,
     foundFolders: (params: { count: number }) => `${params.count} mappar hittades`,
-    foundImages: (params: { count: number }) => `${params.count} bilder hittades`,
     selectedCount: (params: { count: number }) => `${params.count} valda`,
     selectAll: "Markera alla",
     createFolder: "Skapa mapp",

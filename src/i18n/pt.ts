@@ -136,7 +136,6 @@ export default {
       plural: "imagens"
     }),
     foundFolders: (params: { count: number }) => `${params.count} pastas encontradas`,
-    foundImages: (params: { count: number }) => `${params.count} imagens encontradas`,
     selectAll: "Selecionar todos",
     createFolder: "Criar pasta",
     moveToFolder: (params: { name: string }) => `Mover para pasta "${params.name}"`,

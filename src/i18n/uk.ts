@@ -126,7 +126,6 @@ export default {
     fileCount: (params: { count: number }) => `${params.count} файлів`,
     imageCount: (params: { count: number }) => `${params.count} зображень`,
     foundFolders: (params: { count: number }) => `Знайдено ${params.count} папок`,
-    foundImages: (params: { count: number }) => `Знайдено ${params.count} зображень`,
     selectedCount: (params: { count: number }) => `Вибрано ${params.count}`,
     selectAll: "Вибрати все",
     createFolder: "Створити папку",

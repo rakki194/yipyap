@@ -107,7 +107,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} fájl`,
     imageCount: ({ count }: { count: number }) => `${count} kép`,
     foundFolders: ({ count }: { count: number }) => `${count} mappa található`,
-    foundImages: ({ count }: { count: number }) => `${count} kép található`,
     deletedCount: ({ count }: { count: number }) => `${count} elem törölve`,
     deleteConfirm: ({ name = "kiválasztott" }) => 
       `Biztosan törölni szeretné ${getHungarianArticleForWord(name)} ${name} képet?`,

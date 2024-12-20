@@ -145,7 +145,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} αρχεία`,
     imageCount: ({ count }: { count: number }) => `${count} εικόνες`,
     foundFolders: ({ count }: { count: number }) => `Βρέθηκαν ${count} φάκελοι`,
-    foundImages: ({ count }: { count: number }) => `Βρέθηκαν ${count} εικόνες`,
     deletedCount: ({ count }: { count: number }) => `Διαγράφηκαν ${count} στοιχεία`,
     selectedCount: ({ count }: { count: number }) => `${count} επιλεγμένα`,
     processingImages: ({ count }: { count: number }) => `Επεξεργασία ${count} εικόνων...`,

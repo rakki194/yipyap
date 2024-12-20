@@ -145,7 +145,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} file`,
     imageCount: ({ count }: { count: number }) => `${count} gambar`,
     foundFolders: ({ count }: { count: number }) => `${count} folder ditemukan`,
-    foundImages: ({ count }: { count: number }) => `${count} gambar ditemukan`,
     deletedCount: ({ count }: { count: number }) => `${count} item dihapus`,
     selectedCount: ({ count }: { count: number }) => `${count} dipilih`,
     processingImages: ({ count }: { count: number }) => `Memproses ${count} gambar...`,

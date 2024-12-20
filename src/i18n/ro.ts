@@ -145,7 +145,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} fișiere`,
     imageCount: ({ count }: { count: number }) => `${count} imagini`,
     foundFolders: ({ count }: { count: number }) => `${count} foldere găsite`,
-    foundImages: ({ count }: { count: number }) => `${count} imagini găsite`,
     deletedCount: ({ count }: { count: number }) => `${count} elemente șterse`,
     selectedCount: ({ count }: { count: number }) => `${count} selectate`,
     processingImages: ({ count }: { count: number }) => `Se procesează ${count} imagini...`,

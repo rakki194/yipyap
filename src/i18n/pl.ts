@@ -125,7 +125,6 @@ export default {
     },
     noCaptionFiles: "Brak plików podpisów!",
     foundFolders: ({ count }: { count: number }) => `Znaleziono ${count} folderów`,
-    foundImages: ({ count }: { count: number }) => `Znaleziono ${count} obrazów`,
     deletedCount: ({ count }: { count: number }) => `Usunięto ${count} elementów`,
     selectedCount: ({ count }: { count: number }) => `Wybrano ${count}`,
     processingImages: ({ count }: { count: number }) => `Przetwarzanie ${count} obrazów...`,

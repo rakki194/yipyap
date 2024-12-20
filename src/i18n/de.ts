@@ -123,7 +123,6 @@ export default {
       wd: "Neue .wd-Datei erstellen"
     },
     noCaptionFiles: "Noch keine Beschriftungsdateien!",
-    foundImages: ({ count }: { count: number }) => `${count} Bilder gefunden`,
     deletedCount: ({ count }: { count: number }) => `${count} Elemente gelöscht`,
     selectedCount: ({ count }: { count: number }) => `${count} ausgewählt`,
     processingImages: ({ count }: { count: number }) => `${count} Bilder werden verarbeitet...`,

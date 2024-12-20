@@ -128,7 +128,6 @@ export default {
     fileCount: ({ count }: { count: number }) => `${count} tiedostoa`,
     imageCount: ({ count }: { count: number }) => `${count} kuvaa`,
     foundFolders: ({ count }: { count: number }) => `${count} kansiota löydetty`,
-    foundImages: ({ count }: { count: number }) => `${count} kuvaa löydetty`,
     deletedCount: ({ count }: { count: number }) => `${count} kohdetta poistettu`,
     selectAll: "Valitse kaikki",
     deselectAll: "Poista kaikki valinnat",
