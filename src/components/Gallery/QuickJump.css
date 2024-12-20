@@ -23,6 +23,38 @@
   gap: var(--spacing);
   background: var(--bg-color);
   color: var(--text-color);
+  border-radius: var(--border-radius);
+}
+
+.quick-jump-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.quick-jump-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.quick-jump-header button.icon {
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-jump-header button.icon:hover {
+  background-color: var(--hover-color);
+}
+
+.quick-jump-header button.icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
 
 .quick-jump-modal input {

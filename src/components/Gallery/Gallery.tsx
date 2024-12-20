@@ -471,57 +471,83 @@ export const Gallery = () => {
       smoothScroll(targetY);
       gallery.selection.selectDown();
     } else if (event.key.toLowerCase() === "d" && event.shiftKey) {
+      console.log("Shift+D detected"); // Debug log
       event.preventDefault();
       const data = gallery.data();
-      if (!data || gallery.selected === null) return;
+      if (!data || gallery.selected === null) {
+        console.log("No data or no selection"); // Debug log
+        return;
+      }
 
       const selectedItem = data.items[gallery.selected];
-      if (selectedItem?.type !== 'image') return;
+      if (selectedItem?.type !== 'image') {
+        console.log("Selected item is not an image:", selectedItem); // Debug log
+        return;
+      }
 
       try {
         // First check if the Clipboard API is supported
         if (!navigator.clipboard || !window.ClipboardItem) {
+          console.log("Clipboard API not supported"); // Debug log
           throw new Error('Clipboard API not supported');
         }
 
+        // Construct the image path correctly - preserve the exact path
         const imagePath = data.path
           ? `${data.path}/${selectedItem.file_name}`
           : selectedItem.file_name;
         
-        // Use the download endpoint instead of browse
-        const response = await fetch(`/api/download/${imagePath}`, {
+        console.log("Image path:", imagePath); // Debug log
+        const requestUrl = `/api/png-download/${imagePath}`;
+        console.log("Making request to:", requestUrl); // Debug log
+        
+        // Use the PNG endpoint to get a PNG version of the image
+        const response = await fetch(requestUrl, {
           method: 'GET',
           headers: {
-            'Accept': 'image/*'
+            'Accept': 'image/png'
           }
         });
         
         if (!response.ok) {
+          console.log("Response not OK:", response.status, response.statusText); // Debug log
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const blob = await response.blob();
-        const item = new ClipboardItem({ [blob.type]: blob });
-        await navigator.clipboard.write([item]);
+        console.log("Got blob:", blob.type, blob.size, "bytes"); // Debug log
         
-        appContext.createNotification({
-          message: appContext.t('notifications.imageCopied'),
-          type: "success"
-        });
+        const item = new ClipboardItem({ 'image/png': blob });
+        console.log("Created ClipboardItem"); // Debug log
+        
+        try {
+          await navigator.clipboard.write([item]);
+          console.log("Successfully wrote to clipboard"); // Debug log
+          
+          appContext.createNotification({
+            message: appContext.t('notifications.imageCopied'),
+            type: "success"
+          });
+        } catch (clipboardError) {
+          console.error("Clipboard write failed:", clipboardError); // Detailed error
+          throw clipboardError; // Re-throw to trigger fallback
+        }
       } catch (error) {
-        console.error("Failed to copy image to clipboard:", error);
+        console.error("Primary clipboard operation failed:", error); // Detailed error
         
         // Always use PNG fallback since it has the best compatibility
         try {
+          console.log("Attempting fallback conversion"); // Debug log
+          // Construct the image path correctly for fallback - preserve the exact path
           const imagePath = data.path
             ? `${data.path}/${selectedItem.file_name}`
             : selectedItem.file_name;
           
-          // Use the download endpoint for the fallback as well
-          const response = await fetch(`/api/download/${imagePath}`, {
+          // Use the PNG endpoint for the fallback as well
+          const response = await fetch(`/api/png-download/${imagePath}`, {
             method: 'GET',
             headers: {
-              'Accept': 'image/*'
+              'Accept': 'image/png'
             }
           });
           
@@ -537,8 +563,11 @@ export const Gallery = () => {
           img.src = objectUrl;
           
           try {
-            await new Promise((resolve, reject) => {
-              img.onload = resolve;
+            await new Promise<void>((resolve, reject) => {
+              img.onload = () => {
+                console.log("Image loaded in fallback, dimensions:", img.naturalWidth, "x", img.naturalHeight); // Debug log
+                resolve();
+              };
               img.onerror = (e) => reject(new Error('Failed to load image: ' + e.toString()));
             });
             
@@ -550,20 +579,30 @@ export const Gallery = () => {
             if (!ctx) throw new Error('Failed to get canvas context');
             
             ctx.drawImage(img, 0, 0);
+            console.log("Drew image to canvas"); // Debug log
             
             // Convert to PNG blob and copy to clipboard
             const pngBlob = await new Promise<Blob>((resolve, reject) => {
               canvas.toBlob(blob => {
-                if (blob) resolve(blob);
+                if (blob) {
+                  console.log("Created PNG blob:", blob.size, "bytes"); // Debug log
+                  resolve(blob);
+                }
                 else reject(new Error('Failed to convert to PNG'));
               }, 'image/png');
             });
 
             // Try clipboard.write - if not available, throw error
             if (navigator.clipboard?.write) {
-              await navigator.clipboard.write([
-                new ClipboardItem({ 'image/png': pngBlob })
-              ]);
+              try {
+                await navigator.clipboard.write([
+                  new ClipboardItem({ 'image/png': pngBlob })
+                ]);
+                console.log("Successfully wrote to clipboard using fallback"); // Debug log
+              } catch (clipboardWriteError) {
+                console.error("Fallback clipboard write failed:", clipboardWriteError); // Detailed error
+                throw clipboardWriteError;
+              }
             } else {
               throw new Error('Clipboard write API not available');
             }
@@ -719,6 +758,9 @@ export const Gallery = () => {
     });
   };
 
+  const MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB per file
+  const MAX_REQUEST_SIZE = 500 * 1024 * 1024; // 500MB total request size
+
   const handleDrop = async (e: DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -750,8 +792,38 @@ export const Gallery = () => {
         return;
       }
 
-      // Update initial progress
+      // Check individual file sizes and total size
+      const oversizedFiles = files.filter(file => file.size > MAX_UPLOAD_SIZE);
+      if (oversizedFiles.length > 0) {
+        const maxSizeMB = MAX_UPLOAD_SIZE / (1024 * 1024);
+        appContext.createNotification({
+          message: appContext.t('gallery.fileTooLarge', { 
+            count: oversizedFiles.length,
+            maxSize: maxSizeMB,
+            files: oversizedFiles.map(f => f.name).join(', ')
+          }),
+          type: "error"
+        });
+        setCurrentFile(null);
+        return;
+      }
+
+      // Check total request size
       const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+      if (totalSize > MAX_REQUEST_SIZE) {
+        const maxRequestSizeMB = MAX_REQUEST_SIZE / (1024 * 1024);
+        appContext.createNotification({
+          message: appContext.t('gallery.requestTooLarge', {
+            totalSize: (totalSize / (1024 * 1024)).toFixed(1),
+            maxSize: maxRequestSizeMB
+          }),
+          type: "error"
+        });
+        setCurrentFile(null);
+        return;
+      }
+
+      // Update initial progress
       setProgressInfo({
         current: 0,
         total: totalSize,
@@ -773,23 +845,54 @@ export const Gallery = () => {
       // Show total files being uploaded
       setCurrentFile(appContext.t('gallery.uploadProgress').replace('{count}', files.length.toString()));
       
-      await uploadFiles(formData, uploadUrl);
-      
-      // Clear progress on success
-      setProgressInfo(null);
-      setCurrentFile(null);
-      
-      // Clear any existing selection to avoid index mismatches
-      gallery.selection.clearMultiSelect();
-      gallery.selection.clearFolderMultiSelect();
-      gallery.select(null);
-      
-      // Force a complete refresh of the gallery data
-      gallery.invalidate();
-      await gallery.refetch();
+      try {
+        await uploadFiles(formData, uploadUrl);
+        
+        // Clear progress on success
+        setProgressInfo(null);
+        setCurrentFile(null);
+        
+        // Clear any existing selection to avoid index mismatches
+        gallery.selection.clearMultiSelect();
+        gallery.selection.clearFolderMultiSelect();
+        gallery.select(null);
+        
+        // Force a complete refresh of the gallery data
+        gallery.invalidate();
+        await gallery.refetch();
+      } catch (uploadError) {
+        console.error('Upload error:', uploadError);
+        if (uploadError instanceof Error) {
+          if (uploadError.message.includes('413')) {
+            const isRequestTooLarge = totalSize > MAX_REQUEST_SIZE;
+            appContext.createNotification({
+              message: appContext.t(
+                isRequestTooLarge ? 'gallery.requestTooLarge' : 'gallery.fileTooLarge',
+                isRequestTooLarge 
+                  ? {
+                      totalSize: (totalSize / (1024 * 1024)).toFixed(1),
+                      maxSize: MAX_REQUEST_SIZE / (1024 * 1024)
+                    }
+                  : {
+                      count: 1,
+                      maxSize: MAX_UPLOAD_SIZE / (1024 * 1024)
+                    }
+              ),
+              type: "error"
+            });
+          } else {
+            appContext.createNotification({
+              message: appContext.t('gallery.uploadError'),
+              type: "error"
+            });
+          }
+        }
+        setProgressInfo(null);
+        setCurrentFile(null);
+      }
       
     } catch (error) {
-      console.error('Error uploading files:', error);
+      console.error('Error processing files:', error);
       setProgressInfo({
         current: 0,
         total: 1,
@@ -960,11 +1063,14 @@ export const Gallery = () => {
 
       <Show when={gallery.getEditedImage()}>
         {(image) => (
-          /* FIXME: this is messy, we should just pass the imageInfo,
-        but the captions might change more often */ <ImageModal
+          <ImageModal
             imageInfo={image()}
             captions={image().captions}
             onClose={() => gallery.setMode("view")}
+            generateTags={gallery.generateTags}
+            saveCaption={gallery.saveCaption}
+            deleteCaption={gallery.deleteCaption}
+            deleteImageAction={gallery.deleteImage}
           />
         )}
       </Show>

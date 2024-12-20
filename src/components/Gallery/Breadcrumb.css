@@ -117,6 +117,31 @@
   min-width: 300px;
   max-width: 90%;
   box-shadow: var(--shadow);
+  position: relative;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: var(--half-spacing);
+  right: var(--half-spacing);
+  padding: var(--half-spacing);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-button svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.modal-close-button:hover {
+  color: var(--accent);
 }
 
 .modal-dialog h2 {

@@ -597,7 +597,7 @@ async def generate_caption(
 
 
 # Add new endpoint to update model path
-@app.put("/api/config/jtp2")
+@app.put("/api/jtp2-config")
 async def update_jtp2_config(config: dict):
     """
     Update JTP2 model configuration.

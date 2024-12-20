@@ -164,6 +164,15 @@ export const Breadcrumb = () => {
       <Show when={showNewFolderDialog()}>
         <div class="modal-overlay" onClick={() => setShowNewFolderDialog(false)}>
           <div class="modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              class="icon modal-close-button"
+              onClick={() => setShowNewFolderDialog(false)}
+              title={t('common.close')}
+              aria-label={t('common.close')}
+            >
+              {getIcon("dismiss")}
+            </button>
             <h2>{t('gallery.createFolder')}</h2>
             <form
               onSubmit={(e) => {
@@ -180,13 +189,6 @@ export const Breadcrumb = () => {
                 autofocus
               />
               <div class="modal-actions">
-                <button
-                  type="button"
-                  onClick={() => setShowNewFolderDialog(false)}
-                  disabled={isCreatingFolder()}
-                >
-                  {t('common.cancel')}
-                </button>
                 <button
                   type="submit"
                   class="primary"

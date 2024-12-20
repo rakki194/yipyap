@@ -10,6 +10,7 @@ import { useNavigate } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
 import "./QuickJump.css";
 import { useAppContext } from "~/contexts/app";
+import getIcon from "~/icons";
 
 interface FolderMatch {
   name: string;
@@ -104,7 +105,18 @@ export const QuickJump: Component<{
         data-testid="quick-jump-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2>{t('gallery.quickJump')}</h2>
+        <div class="quick-jump-header">
+          <h2>{t('gallery.quickJump')}</h2>
+          <button
+            type="button"
+            class="icon close-button"
+            onClick={props.onClose}
+            title={t('common.close')}
+            aria-label={t('common.close')}
+          >
+            {getIcon("dismiss")}
+          </button>
+        </div>
         <input
           ref={inputRef}
           type="text"

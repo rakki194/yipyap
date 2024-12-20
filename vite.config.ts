@@ -67,6 +67,24 @@ const viteConfig = (env) => {
     ? {
         proxy: {
           // Proxy configuration for various API endpoints
+          // More specific routes first
+          "/api/png-download": {
+            target: BACKEND_HOST,
+            changeOrigin: true,
+          },
+          "/api/jtp2-config": {
+            target: BACKEND_HOST,
+            changeOrigin: true,
+          },
+          "/api/browse": {
+            target: BACKEND_HOST,
+            changeOrigin: true,
+          },
+          "/api/caption": {
+            target: BACKEND_HOST,
+            changeOrigin: true,
+          },
+          // General routes
           "/api": {
             target: BACKEND_HOST,
             changeOrigin: true,
@@ -88,10 +106,6 @@ const viteConfig = (env) => {
             changeOrigin: true,
           },
           "/caption": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/api/config": {
             target: BACKEND_HOST,
             changeOrigin: true,
           },

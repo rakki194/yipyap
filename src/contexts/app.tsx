@@ -176,7 +176,7 @@ const createAppContext = (): AppContext => {
     tags_path?: string;
   }) => {
     try {
-      const response = await fetch("/api/config/jtp2", {
+      const response = await fetch("/api/jtp2-config", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
