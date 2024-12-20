@@ -149,7 +149,7 @@ export interface GalleryTranslations {
   processingFiles: string;
   uploadComplete: string;
   uploadFailed: string;
-  deletingFiles: string;
+  deletingFiles: TranslationValue;
   deleteComplete: string;
   deleteFailed: string;
   processingImage: TranslationValue;

@@ -125,8 +125,8 @@ export default {
       other: "Found ${count} folders"
     }, "en"),
     deletedCount: createPluralTranslation({
-      one: "Deleted 1 item",
-      other: "Deleted ${count} items"
+      one: "Deleted 1 file",
+      other: "Deleted ${count} files"
     }, "en"),
     deleteConfirm: (params: TranslationParams) => {
       const name = params.name ?? "this item";
@@ -158,14 +158,22 @@ export default {
       }, "en")(params);
     },
     uploadProgressPercent: "Uploading... {progress}%",
-    filesExceedLimit: "Files too large: {{files}}",
+    filesExceedLimit: "Files too large: {files}",
     noFilesToUpload: "No files to upload",
     processingFiles: "Processing files...",
     uploadComplete: "Upload complete",
-    uploadFailed: "Upload failed: {{error}}",
-    deletingFiles: "Deleting {{count}} files...",
-    deleteComplete: "Deleted {{count}} files",
-    deleteFailed: "Delete failed: {{error}}",
+    uploadFailed: "Upload failed: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Deleting files...';
+      }
+      return createPluralTranslation({
+        one: "Deleting 1 file...",
+        other: "Deleting ${count} files..."
+      }, "en")(params);
+    },
+    deleteComplete: "Deleted {count} files",
+    deleteFailed: "Delete failed: {error}",
     processingImage: (params: TranslationParams) => {
       const name = params.name ?? "image";
       return `Processing "${name}"...`;
@@ -217,10 +225,10 @@ export default {
       return `Are you sure you want to delete the folder "${name}" and all its contents?`;
     },
     someFolderDeletesFailed: "Some folders could not be deleted",
-    folderDeleteError: "Failed to delete folder",
+    folderDeleteError: "Failed to delete one or more folders",
     deletingFile: "Deleting file...",
     fileDeleteSuccess: "File deleted successfully",
-    fileDeleteError: "Failed to delete file",
+    fileDeleteError: "Failed to delete one or more files",
     createFolder: "Create folder",
     folderNamePlaceholder: "Folder name",
     deleteConfirmation: "Delete confirmation",

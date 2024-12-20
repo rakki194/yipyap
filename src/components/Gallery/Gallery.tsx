@@ -978,9 +978,19 @@ export const Gallery = () => {
             const data = gallery.data();
             if (!data) return;
             
+            const t = appContext.t;
+            
             // Handle folder deletions first
             const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
+            let failedFolders = 0;
             if (selectedFolders.length > 0) {
+              appContext.notify(
+                t("gallery.deletingFiles", { count: selectedFolders.length }),
+                "info",
+                "delete-operation",
+                "spinner"
+              );
+              
               const folderResults = await Promise.allSettled(
                 selectedFolders.map(async (idx) => {
                   const item = data.items[idx];
@@ -999,18 +1009,28 @@ export const Gallery = () => {
                 })
               );
 
-              const failedFolders = folderResults.filter(r => r.status === 'rejected').length;
+              failedFolders = folderResults.filter(r => r.status === 'rejected').length;
               if (failedFolders > 0) {
-                appContext.createNotification({
-                  message: appContext.t('gallery.folderDeleteError'),
-                  type: "error"
-                });
+                appContext.notify(
+                  t('gallery.folderDeleteError'),
+                  "error",
+                  "delete-operation"
+                );
               }
             }
 
             // Handle image deletions
             const selectedImages = Array.from(gallery.selection.multiSelected);
             if (selectedImages.length > 0) {
+              if (!selectedFolders.length) { // Only show if we haven't shown folder deletion progress
+                appContext.notify(
+                  t("gallery.deletingFiles", { count: selectedImages.length }),
+                  "info",
+                  "delete-operation",
+                  "spinner"
+                );
+              }
+              
               const results = await Promise.allSettled(
                 selectedImages.map(async (idx) => {
                   const item = data.items[idx];
@@ -1038,11 +1058,26 @@ export const Gallery = () => {
 
               const failedCount = results.filter(r => r.status === 'rejected').length;
               if (failedCount > 0) {
-                appContext.createNotification({
-                  message: appContext.t('gallery.fileDeleteError'),
-                  type: "error"
-                });
+                appContext.notify(
+                  t('gallery.fileDeleteError'),
+                  "error",
+                  "delete-operation"
+                );
+              } else {
+                const totalDeleted = selectedImages.length + selectedFolders.length;
+                appContext.notify(
+                  t('gallery.deletedCount', { count: totalDeleted }),
+                  "success",
+                  "delete-operation"
+                );
               }
+            } else if (selectedFolders.length > 0 && !failedFolders) {
+              // Show success for folder deletion if no images were deleted
+              appContext.notify(
+                t('gallery.deletedCount', { count: selectedFolders.length }),
+                "success",
+                "delete-operation"
+              );
             }
 
             // Clear selection after all operations
