@@ -1040,3 +1040,112 @@ Remember to:
 - Update all related interfaces at once
 - Add appropriate documentation
 - Update tests to cover new properties
+
+### 2. Context Type Errors in Tests
+
+Location: `src/components/Gallery/__tests__/DeleteConfirmDialog.test.tsx`
+
+```typescript
+// Error: Type error when using AppContext directly as a type
+const mockAppContext: AppContext = {  // Error: 'AppContext' refers to a value, but is being used as a type
+  // ... mock context properties
+};
+
+// Solution: Use Parameters utility type to extract the correct type
+const mockAppContext: Parameters<typeof AppContext.Provider>[0]['value'] = {
+  // ... mock context properties
+};
+```
+
+This error occurs because Context objects in React/SolidJS are values, not types. To avoid this:
+1. Use TypeScript utility types to extract the correct type
+2. Remember that Context objects are values with a Provider property
+3. Use `Parameters` to get the type of the Provider's props
+4. Access the `value` property type from the Provider's props
+
+### 3. Missing Required Properties in Context Mocks
+
+Location: `src/components/Gallery/__tests__/DeleteConfirmDialog.test.tsx`
+
+```typescript
+// Error: Type is missing required properties
+const mockAppContext = {  // Error: Type is missing properties 'setdisableNonsense', 'alwaysShowCaptionEditor'
+  t: (key: string) => key,
+  theme: "light" as Theme
+  // ... other properties
+};
+
+// Solution: Add all required properties from the context
+const mockAppContext = {
+  t: (key: string) => key,
+  theme: "light" as Theme,
+  setdisableNonsense: vi.fn(),
+  alwaysShowCaptionEditor: false,
+  setAlwaysShowCaptionEditor: vi.fn(),
+  // ... other properties
+};
+```
+
+This error occurs when mocking contexts with required properties. To avoid this:
+1. Check the context interface for all required properties
+2. Mock all required properties, even if unused in the test
+3. Use `vi.fn()` for function properties
+4. Keep mock values simple but valid
+5. Consider creating a helper function to generate mock contexts
+
+### 4. Translation Parameter Type Mismatches
+
+Location: `src/components/Gallery/__tests__/DeleteConfirmDialog.test.tsx`
+
+```typescript
+// Error: Parameter 'params' implicitly has 'any' type
+const mockAppContext = {
+  t: (key: string, params) => {  // Error: Parameter 'params' implicitly has an 'any' type
+    return translations[key];
+  }
+};
+
+// Solution: Properly type the translation function parameters
+const mockAppContext = {
+  t: (key: string, params?: Record<string, unknown>) => {
+    const translations: Record<string, string> = {
+      'gallery.confirmMultiDelete': `Delete ${params?.count} items (${params?.folders} folders, ${params?.images} images)?`
+    };
+    return translations[key] || key;
+  }
+};
+```
+
+This error occurs when translation functions don't properly type their parameters. To avoid this:
+1. Always specify parameter types explicitly
+2. Use optional parameters with `?` when appropriate
+3. Use `Record<string, unknown>` for generic object parameters
+4. Consider creating type definitions for translation parameters
+5. Document expected parameter shapes in comments
+
+Best practices to avoid these TypeScript errors:
+
+1. **Context Typing**
+   - Never use Context objects directly as types
+   - Use TypeScript utility types to extract proper types
+   - Keep type definitions separate from implementations
+   - Document type structures in comments
+
+2. **Mock Completeness**
+   - Always check interface definitions for required properties
+   - Create helper functions for generating complete mocks
+   - Use TypeScript to enforce mock completeness
+   - Keep mock implementations minimal but valid
+
+3. **Translation Types**
+   - Define explicit types for translation parameters
+   - Use TypeScript template literal types when applicable
+   - Document parameter shapes and requirements
+   - Consider creating type definitions for common translation patterns
+
+Remember to:
+- Check interface definitions thoroughly
+- Use TypeScript utility types appropriately
+- Keep mocks minimal but complete
+- Document type structures and requirements
+- Use proper typing for translation functions
