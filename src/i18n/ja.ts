@@ -115,9 +115,20 @@ export default {
       if (!params?.count) return 'ファイルをアップロード中...';
       return `${params.count}個のファイルをアップロード中...`;
     },
+    uploadProgressPercent: "アップロード中... {progress}%",
+    filesExceedLimit: "ファイル数が制限を超えています",
+    noFilesToUpload: "アップロードするファイルがありません",
+    processingFiles: "ファイルを処理中...",
+    uploadComplete: "アップロードが完了しました",
+    uploadFailed: "アップロードに失敗しました",
+    deletingFiles: "ファイルを削除中...",
+    deleteComplete: "削除が完了しました",
+    deleteFailed: "削除に失敗しました",
     processingImage: "画像を処理中...",
     generateTags: "タグを生成",
     generatingTags: "タグを生成中...",
+    generatingCaption: "キャプションを生成中...",
+    captionGenerated: "キャプションを生成しました",
     removeTags: "タグを削除",
     createCaption: "キャプションを作成",
     captionTypes: {
@@ -220,5 +231,7 @@ export default {
     folderCreateError: "フォルダーの作成に失敗しました",
     generatingCaption: "キャプションを生成中...",
     captionGenerated: "キャプションを生成しました",
+    connectionLost: "接続が切断されました",
+    connectionRestored: "接続が復旧しました"
   },
 } as const satisfies Translations;

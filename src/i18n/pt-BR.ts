@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return 'Fazendo upload de arquivos...';
       return `Fazendo upload de ${params.count} arquivos...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `Fazendo upload... ${params?.progress}%`,
     processingImage: "Processando imagem...",
     processingImages: (params?: TranslationParams) => `Processando ${params?.count ?? 0} imagens...`,
     generateTags: "Gerar tags",
@@ -157,7 +158,20 @@ export default {
     folderLocation: (params?: TranslationParams) => `em ${params?.name ?? ''}`,
     workWithFolder: (params?: TranslationParams) => `Trabalhar com ${params?.name ?? ''}`,
     folderNamePlaceholder: "Nome da pasta",
-    deleteConfirmation: "Confirmar exclusão"
+    deleteConfirmation: "Confirmar exclusão",
+    filesExceedLimit: "Limite de arquivos excedido",
+    noFilesToUpload: "Nenhum arquivo para upload",
+    processingFiles: "Processando arquivos...",
+    uploadComplete: "Upload concluído",
+    uploadFailed: "Falha no upload",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'Excluindo arquivos...';
+      return `Excluindo ${params.count} arquivos...`;
+    },
+    deleteComplete: "Exclusão concluída",
+    deleteFailed: "Falha na exclusão",
+    generatingCaption: "Gerando legenda...",
+    captionGenerated: "Legenda gerada",
   },
   shortcuts: {
     title: "Atalhos do teclado",
@@ -215,6 +229,8 @@ export default {
     folderCreated: "Pasta criada com sucesso",
     folderCreateError: "Erro ao criar pasta",
     generatingCaption: "Gerando legenda...",
-    captionGenerated: "Legenda gerada com sucesso"
+    captionGenerated: "Legenda gerada com sucesso",
+    connectionLost: "Conexão perdida",
+    connectionRestored: "Conexão restaurada"
   },
 } as const satisfies Translations;

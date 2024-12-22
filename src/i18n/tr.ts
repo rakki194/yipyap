@@ -1,6 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import { getTurkishPlural } from "./utils";
 import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -98,130 +98,156 @@ export default {
     deleteSelected: "Seçilenleri sil",
   },
   gallery: {
-    addTag: "Etiket ekle...",
-    addCaption: "Altyazı ekle...",
-    quickJump: "Klasöre git...",
+    addTag: "Etiket ekle",
+    addCaption: "Başlık ekle",
+    quickJump: "Hızlı geçiş",
     loadingFolders: "Klasörler yükleniyor...",
-    noResults: "Sonuç bulunamadı",
-    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} klasör`,
-    deleteConfirm: "Bu görseli silmek istediğinizden emin misiniz?",
-    deleteSuccess: "Görsel başarıyla silindi",
-    deleteError: "Görsel silinirken hata oluştu",
-    savingCaption: "Altyazı kaydediliyor...",
-    savedCaption: "Altyazı kaydedildi",
-    errorSavingCaption: "Altyazı kaydedilirken hata oluştu",
-    emptyFolder: "Bu klasör boş",
-    dropToUpload: "Yüklemek için dosyaları buraya sürükleyin",
-    uploadProgress: (params?: TranslationParams) => {
-      if (!params?.count) return 'Dosyalar yükleniyor...';
-      return `${params.count} ${getTurkishPlural(`${params.count} dosya`, {
-        singular: "dosya",
-        pluralLar: "dosya",
-        pluralLer: "dosya"
-      })} yükleniyor...`;
+    noResults: "Sonuç yok",
+    folderCount: createPluralTranslation({
+      one: "1 klasör",
+      other: "${count} klasör"
+    }, "tr"),
+    fileCount: createPluralTranslation({
+      one: "1 dosya",
+      other: "${count} dosya"
+    }, "tr"),
+    imageCount: createPluralTranslation({
+      one: "1 resim",
+      other: "${count} resim"
+    }, "tr"),
+    foundFolders: createPluralTranslation({
+      one: "1 klasör bulundu",
+      other: "${count} klasör bulundu"
+    }, "tr"),
+    deletedCount: createPluralTranslation({
+      one: "1 öğe silindi",
+      other: "${count} öğe silindi"
+    }, "tr"),
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "bu öğe";
+      return `"${name}" öğesini silmek istediğinizden emin misiniz?`;
     },
-    processingImage: "Görsel işleniyor...",
+    deleteSuccess: "Silme tamamlandı",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "öğe";
+      return `"${name}" silinirken hata oluştu`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "öğe";
+      return `"${name}" için başlık kaydediliyor...`;
+    },
+    savedCaption: "Başlık kaydedildi",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "öğe";
+      return `"${name}" için başlık kaydedilirken hata oluştu`;
+    },
+    emptyFolder: "Bu klasör boş",
+    dropToUpload: "Yüklemek için dosyaları buraya bırakın",
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Dosyalar yükleniyor...';
+      }
+      return createPluralTranslation({
+        one: "1 dosya yükleniyor...",
+        other: "${count} dosya yükleniyor..."
+      }, "tr")(params);
+    },
+    uploadProgressPercent: "Yükleniyor... {progress}%",
+    filesExceedLimit: "Dosyalar çok büyük: {files}",
+    noFilesToUpload: "Yüklenecek dosya yok",
+    processingFiles: "Dosyalar işleniyor...",
+    uploadComplete: "Yükleme tamamlandı",
+    uploadFailed: "Yükleme başarısız: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Dosyalar siliniyor...';
+      }
+      return createPluralTranslation({
+        one: "1 dosya siliniyor...",
+        other: "${count} dosya siliniyor..."
+      }, "tr")(params);
+    },
+    deleteComplete: "Silme tamamlandı",
+    deleteFailed: "Silme başarısız",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "resim";
+      return `"${name}" işleniyor...`;
+    },
+    processingImages: createPluralTranslation({
+      one: "1 resim işleniyor...",
+      other: "${count} resim işleniyor..."
+    }, "tr"),
+    generatingCaption: "Başlık oluşturuluyor...",
+    captionGenerated: "Başlık oluşturuldu",
     generateTags: "Etiket oluştur",
     generatingTags: "Etiketler oluşturuluyor...",
     removeTags: "Etiketleri kaldır",
-    createCaption: "Altyazı oluştur",
+    createCaption: "Başlık oluştur",
     captionTypes: {
-      txt: "Yeni metin dosyası oluştur",
-      tags: "Yeni .tags dosyası oluştur",
-      caption: "Yeni .caption dosyası oluştur",
-      wd: "Yeni .wd dosyası oluştur"
+      txt: "Txt",
+      tags: "Etiketler",
+      caption: "Başlık",
+      wd: "WD",
     },
-    noCaptionFiles: "Henüz altyazı dosyası yok!",
-    selectedCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return getTurkishPlural(`${count} öğe`, {
-        singular: "1 öğe seçildi",
-        pluralLar: `${count} öğe seçildi`,
-        pluralLer: `${count} öğe seçildi`
-      });
-    },
-    foundFolders: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return getTurkishPlural(`${count} klasör`, {
-        singular: "1 klasör bulundu",
-        pluralLar: `${count} klasör bulundu`,
-        pluralLer: `${count} klasör bulundu`
-      });
-    },
-    deletedCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return getTurkishPlural(`${count} öğe`, {
-        singular: "1 öğe silindi",
-        pluralLar: `${count} öğe silindi`,
-        pluralLer: `${count} öğe silindi`
-      });
-    },
-    processingImages: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return getTurkishPlural(`${count} görsel`, {
-        singular: "1 görsel işleniyor...",
-        pluralLar: `${count} görsel işleniyor...`,
-        pluralLer: `${count} görsel işleniyor...`
-      });
-    },
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders > 0 && images > 0) {
-        const folderText = getTurkishPlural(`${folders} klasör`, {
-          singular: "1 klasör",
-          pluralLar: `${folders} klasör`,
-          pluralLer: `${folders} klasör`
-        });
-        const imageText = getTurkishPlural(`${images} görsel`, {
-          singular: "1 görsel",
-          pluralLar: `${images} görsel`,
-          pluralLer: `${images} görsel`
-        });
-        return `${folderText} ve ${imageText} silmek istediğinizden emin misiniz?`;
-      } else if (folders > 0) {
-        return getTurkishPlural(`${folders} klasör`, {
-          singular: "1 klasörü silmek istediğinizden emin misiniz?",
-          pluralLar: `${folders} klasörü silmek istediğinizden emin misiniz?`,
-          pluralLer: `${folders} klasörü silmek istediğinizden emin misiniz?`
-        });
-      }
-      return getTurkishPlural(`${images} görsel`, {
-        singular: "1 görseli silmek istediğinizden emin misiniz?",
-        pluralLar: `${images} görseli silmek istediğinizden emin misiniz?`,
-        pluralLer: `${images} görseli silmek istediğinizden emin misiniz?`
-      });
-    },
+    noCaptionFiles: "Başlık dosyası yok",
+    uploadError: "Yükleme hatası",
+    dropOverlay: "Yüklemek için bırakın",
     selectAll: "Tümünü seç",
-    createFolder: "Klasör oluştur",
-    moveToFolder: (params?: TranslationParams) => `"${params?.name ?? ''}" klasörüne taşı`,
-    uploadError: "Dosya yüklenirken hata oluştu",
-    dropOverlay: "Dosyaları buraya bırakın",
     deselectAll: "Seçimi kaldır",
     deleteSelected: "Seçilenleri sil",
-    confirmFolderDelete: ({ name = "" }) => `"${name}" klasörünü silmek istediğinizden emin misiniz?`,
-    someFolderDeletesFailed: "Bazı klasörler silinemedi",
-    folderDeleteError: "Klasör silinirken hata oluştu",
-    deletingFile: "Dosya siliniyor...",
-    fileDeleteSuccess: "Dosya silindi",
-    fileDeleteError: "Dosya silinirken hata oluştu",
-    folderLocation: (params?: TranslationParams) => `${params?.name ?? ''} içinde`,
-    workWithFolder: (params?: TranslationParams) => `${params?.name ?? ''} ile çalış`,
-    folderNamePlaceholder: "Klasör adı",
-    deleteConfirmation: "Silmeyi onayla",
-    fileCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return getTurkishPlural(`${count} dosya`, {
-        singular: "1 dosya",
-        pluralLar: `${count} dosya`,
-        pluralLer: `${count} dosya`
-      });
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Bu öğeleri silmek istediğinizden emin misiniz?';
+      }
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Bu öğeleri silmek istediğinizden emin misiniz?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 klasör",
+          other: "${count} klasör"
+        }, "tr")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 resim",
+          other: "${count} resim"
+        }, "tr")({ count: images }));
+      }
+      return `${parts.join(" ve ")} silmek istediğinizden emin misiniz?`;
     },
-    imageCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return getTurkishPlural(`${count} görsel`, {
-        singular: "1 görsel",
-        pluralLar: `${count} görsel`,
-        pluralLer: `${count} görsel`
-      });
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "klasör";
+      return `"${name}" klasörünü ve tüm içeriğini silmek istediğinizden emin misiniz?`;
+    },
+    someFolderDeletesFailed: "Bazı klasörler silinemedi",
+    folderDeleteError: "Bir veya daha fazla klasör silinirken hata oluştu",
+    deletingFile: "Dosya siliniyor...",
+    fileDeleteSuccess: "Dosya başarıyla silindi",
+    fileDeleteError: "Bir veya daha fazla dosya silinirken hata oluştu",
+    createFolder: "Klasör oluştur",
+    folderNamePlaceholder: "Klasör adı",
+    deleteConfirmation: "Silme onayı",
+    selectedCount: createPluralTranslation({
+      one: "1 öğe seçildi",
+      other: "${count} öğe seçildi"
+    }, "tr"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Konum: ${name}`;
+    },
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "klasör";
+      return `"${name}" klasörüne taşı`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "klasör";
+      return `"${name}" klasörü ile çalış`;
     },
   },
   shortcuts: {
@@ -275,10 +301,13 @@ export default {
     replaceUnderscoresWithSpaces: "Alt çizgileri boşlukla değiştir",
   },
   notifications: {
-    imageCopied: "Resim panoya kopyalandı",
-    imageCopyFailed: "Resim panoya kopyalanamadı",
-    folderCreated: "Klasör başarıyla oluşturuldu",
+    imageCopied: "Resim kopyalandı",
+    imageCopyFailed: "Kopyalama başarısız",
+    folderCreated: "Klasör oluşturuldu",
+    folderCreateError: "Klasör oluşturulurken hata oluştu",
     generatingCaption: "Başlık oluşturuluyor...",
-    captionGenerated: "Başlık oluşturuldu"
+    captionGenerated: "Başlık oluşturuldu",
+    connectionLost: "Bağlantı kesildi",
+    connectionRestored: "Bağlantı yeniden kuruldu",
   },
 } as const satisfies Translations;

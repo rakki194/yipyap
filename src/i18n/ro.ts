@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return 'Se încarcă fișiere...';
       return `Se încarcă ${params.count} fișiere...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `Se încarcă... ${params?.progress}%`,
     processingImage: "Se procesează imaginea...",
     generateTags: "Generare etichete",
     generatingTags: "Se generează etichete...",
@@ -158,6 +159,19 @@ export default {
     createFolder: "Creare folder",
     folderNamePlaceholder: "Nume folder",
     deleteConfirmation: "Confirmare ștergere",
+    filesExceedLimit: "Prea multe fișiere",
+    noFilesToUpload: "Nu există fișiere de încărcat",
+    processingFiles: "Se procesează fișierele...",
+    uploadComplete: "Încărcare finalizată",
+    uploadFailed: "Încărcare eșuată",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'Se șterg fișierele...';
+      return `Se șterg ${params.count} fișiere...`;
+    },
+    deleteComplete: "Ștergere finalizată",
+    deleteFailed: "Ștergere eșuată",
+    generatingCaption: "Se generează descrierea...",
+    captionGenerated: "Descriere generată",
   },
   shortcuts: {
     title: "Scurtături tastatură",
@@ -216,5 +230,7 @@ export default {
     folderCreateError: "Eroare la crearea folderului",
     generatingCaption: "Se generează descrierea...",
     captionGenerated: "Descriere generată cu succes",
+    connectionLost: "Conexiune pierdută",
+    connectionRestored: "Conexiune restabilită"
   },
 } as const satisfies Translations;

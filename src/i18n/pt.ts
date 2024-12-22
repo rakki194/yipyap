@@ -122,6 +122,7 @@ export default {
       if (!params?.count) return 'A carregar ficheiros...';
       return `A carregar ${params.count} ficheiros...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `A carregar... ${params?.progress}%`,
     processingImage: "Processando imagem...",
     generateTags: "Gerar tags",
     generatingTags: "Gerando tags...",
@@ -183,6 +184,19 @@ export default {
         plural: "itens selecionados"
       });
     },
+    filesExceedLimit: "Limite de ficheiros excedido",
+    noFilesToUpload: "Nenhum ficheiro para carregar",
+    processingFiles: "A processar ficheiros...",
+    uploadComplete: "Carregamento concluído",
+    uploadFailed: "Falha no carregamento",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'A eliminar ficheiros...';
+      return `A eliminar ${params.count} ficheiros...`;
+    },
+    deleteComplete: "Eliminação concluída",
+    deleteFailed: "Falha na eliminação",
+    generatingCaption: "A gerar legenda...",
+    captionGenerated: "Legenda gerada",
   },
   shortcuts: {
     title: "Atalhos de teclado",
@@ -241,5 +255,7 @@ export default {
     folderCreateError: "Erro ao criar pasta",
     generatingCaption: "Gerando legenda...",
     captionGenerated: "Legenda gerada com sucesso",
+    connectionLost: "Conexão perdida",
+    connectionRestored: "Conexão restaurada"
   },
 } as const satisfies Translations;

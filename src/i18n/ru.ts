@@ -1,5 +1,6 @@
-import { getPathSeparator, getRussianPlural } from "~/i18n";
+import { getPathSeparator } from "~/i18n";
 import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -97,104 +98,179 @@ export default {
     deleteSelected: "Удалить выбранные",
   },
   gallery: {
-    addTag: "Добавить тег...",
-    addCaption: "Добавить подпись...",
-    quickJump: "Перейти к папке...",
+    addTag: "Добавить тег",
+    addCaption: "Добавить подпись",
+    quickJump: "Быстрый переход",
     loadingFolders: "Загрузка папок...",
-    noResults: "Ничего не найдено",
-    folderCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return `${count} ${getRussianPlural(count, ['папка', 'папки', 'папок'])}`;
+    noResults: "Нет результатов",
+    folderCount: createPluralTranslation({
+      one: "1 папка",
+      few: "${count} папки",
+      many: "${count} папок",
+      other: "${count} папок"
+    }, "ru"),
+    fileCount: createPluralTranslation({
+      one: "1 файл",
+      few: "${count} файла",
+      many: "${count} файлов",
+      other: "${count} файлов"
+    }, "ru"),
+    imageCount: createPluralTranslation({
+      one: "1 изображение",
+      few: "${count} изображения",
+      many: "${count} изображений",
+      other: "${count} изображений"
+    }, "ru"),
+    foundFolders: createPluralTranslation({
+      one: "Найдена 1 папка",
+      few: "Найдено ${count} папки",
+      many: "Найдено ${count} папок",
+      other: "Найдено ${count} папок"
+    }, "ru"),
+    deletedCount: createPluralTranslation({
+      one: "Удален 1 элемент",
+      few: "Удалено ${count} элемента",
+      many: "Удалено ${count} элементов",
+      other: "Удалено ${count} элементов"
+    }, "ru"),
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "этот элемент";
+      return `Вы уверены, что хотите удалить "${name}"?`;
     },
-    deleteConfirm: "Вы уверены, что хотите удалить это изображение?",
-    deleteSuccess: "Изображение успешно удалено",
-    deleteError: "Ошибка при удалении",
-    savingCaption: "Сохранение подписи...",
+    deleteSuccess: "Удаление завершено",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "элемент";
+      return `Ошибка при удалении "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "элемент";
+      return `Сохранение подписи для "${name}"...`;
+    },
     savedCaption: "Подпись сохранена",
-    errorSavingCaption: "Ошибка при сохранении подписи",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "элемент";
+      return `Ошибка при сохранении подписи для "${name}"`;
+    },
     emptyFolder: "Эта папка пуста",
     dropToUpload: "Перетащите файлы для загрузки",
-    uploadProgress: (params?: TranslationParams) => {
-      if (!params?.count) return 'Загрузка файлов...';
-      return `Загрузка ${params.count} ${getRussianPlural(params.count, ['файла', 'файлов', 'файлов'])}...`;
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Загрузка файлов...';
+      }
+      return createPluralTranslation({
+        one: "Загрузка 1 файла...",
+        few: "Загрузка ${count} файлов...",
+        many: "Загрузка ${count} файлов...",
+        other: "Загрузка ${count} файлов..."
+      }, "ru")(params);
     },
-    processingImage: "Обработка изображения...",
+    uploadProgressPercent: "Загрузка... {progress}%",
+    filesExceedLimit: "Файлы слишком большие: {files}",
+    noFilesToUpload: "Нет файлов для загрузки",
+    processingFiles: "Обработка файлов...",
+    uploadComplete: "Загрузка завершена",
+    uploadFailed: "Ошибка загрузки: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Удаление файлов...';
+      }
+      return createPluralTranslation({
+        one: "Удаление 1 файла...",
+        few: "Удаление ${count} файлов...",
+        many: "Удаление ${count} файлов...",
+        other: "Удаление ${count} файлов..."
+      }, "ru")(params);
+    },
+    deleteComplete: "Удаление завершено",
+    deleteFailed: "Ошибка удаления",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "изображение";
+      return `Обработка изображения "${name}"...`;
+    },
+    processingImages: createPluralTranslation({
+      one: "Обработка 1 изображения...",
+      few: "Обработка ${count} изображений...",
+      many: "Обработка ${count} изображений...",
+      other: "Обработка ${count} изображений..."
+    }, "ru"),
+    generatingCaption: "Генерация подписи...",
+    captionGenerated: "Подпись сгенерирована",
     generateTags: "Сгенерировать теги",
     generatingTags: "Генерация тегов...",
     removeTags: "Удалить теги",
-    noCaptionFiles: "Пока нет файлов подписей!",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders > 0 && images > 0) {
-        return `Вы уверены, что хотите удалить ${folders} ${getRussianPlural(folders, [
-          'папку',
-          'папки',
-          'папок'
-        ])} и ${images} ${getRussianPlural(images, [
-          'изображение',
-          'изображения',
-          'изображений'
-        ])}?`;
-      } else if (folders > 0) {
-        return `Вы уверены, что хотите удалить ${folders} ${getRussianPlural(folders, [
-          'папку',
-          'папки',
-          'папок'
-        ])}?`;
-      }
-      return `Вы уверены, что хотите удалить ${images} ${getRussianPlural(images, [
-        'изображение',
-        'изображения',
-        'изображений'
-      ])}?`;
-    },
     createCaption: "Создать подпись",
     captionTypes: {
-      txt: "Создать новый текстовый файл",
-      tags: "Создать новый файл .tags",
-      caption: "Создать новый файл .caption",
-      wd: "Создать новый файл .wd"
+      txt: "Txt",
+      tags: "Теги",
+      caption: "Подпись",
+      wd: "WD",
     },
+    noCaptionFiles: "Нет файлов подписей",
     uploadError: "Ошибка загрузки",
-    dropOverlay: "Перетащите файлы или папки сюда",
+    dropOverlay: "Отпустите для загрузки",
     selectAll: "Выбрать все",
     deselectAll: "Отменить выбор",
-    deleteSelected: "Удалить выбранные",
-    confirmFolderDelete: "Вы уверены, что хотите удалить эту папку?",
+    deleteSelected: "Удалить выбранное",
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Вы уверены, что хотите удалить эти элементы?';
+      }
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Вы уверены, что хотите удалить эти элементы?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 папку",
+          few: "${count} папки",
+          many: "${count} папок",
+          other: "${count} папок"
+        }, "ru")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 изображение",
+          few: "${count} изображения",
+          many: "${count} изображений",
+          other: "${count} изображений"
+        }, "ru")({ count: images }));
+      }
+      return `Вы уверены, что хотите удалить ${parts.join(" и ")}?`;
+    },
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "папка";
+      return `Вы уверены, что хотите удалить папку "${name}" и все её содержимое?`;
+    },
     someFolderDeletesFailed: "Некоторые папки не удалось удалить",
-    folderDeleteError: "Ошибка при удалении папки",
+    folderDeleteError: "Ошибка при удалении одной или нескольких папок",
     deletingFile: "Удаление файла...",
     fileDeleteSuccess: "Файл успешно удален",
-    fileDeleteError: "Ошибка при удалении файла",
+    fileDeleteError: "Ошибка при удалении одного или нескольких файлов",
     createFolder: "Создать папку",
     folderNamePlaceholder: "Имя папки",
     deleteConfirmation: "Подтверждение удаления",
-    selectedCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return `${count} ${getRussianPlural(count, ['элемент выбран', 'элемента выбрано', 'элементов выбрано'])}`;
+    selectedCount: createPluralTranslation({
+      one: "Выбран 1 элемент",
+      few: "Выбрано ${count} элемента",
+      many: "Выбрано ${count} элементов",
+      other: "Выбрано ${count} элементов"
+    }, "ru"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Расположение: ${name}`;
     },
-    processingImages: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return `Обработка ${count} ${getRussianPlural(count, ['изображения', 'изображений', 'изображений'])}...`;
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "папка";
+      return `Переместить в "${name}"`;
     },
-    foundFolders: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return `Найдено ${count} ${getRussianPlural(count, ['папка', 'папки', 'папок'])}`;
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "папка";
+      return `Работать с папкой "${name}"`;
     },
-    deletedCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return `Удалено ${count} ${getRussianPlural(count, ['элемент', 'элемента', 'элементов'])}`;
-    },
-    fileCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return `${count} ${getRussianPlural(count, ['файл', 'файла', 'файлов'])}`;
-    },
-    imageCount: (params?: TranslationParams) => {
-      const count = params?.count ?? 0;
-      return `${count} ${getRussianPlural(count, ['изображение', 'изображения', 'изображений'])}`;
-    },
-    folderLocation: (params?: TranslationParams) => `в папке ${params?.name ?? ''}`,
-    moveToFolder: (params?: TranslationParams) => `Переместить в ${params?.name ?? ''}`,
-    workWithFolder: (params?: TranslationParams) => `Работать с ${params?.name ?? ''}`,
   },
   shortcuts: {
     title: "Горячие клавиши",
@@ -253,5 +329,7 @@ export default {
     folderCreateError: "Ошибка создания папки",
     generatingCaption: "Генерация подписи...",
     captionGenerated: "Подпись сгенерирована",
+    connectionLost: "Соединение потеряно",
+    connectionRestored: "Соединение восстановлено",
   },
 } as const satisfies Translations;

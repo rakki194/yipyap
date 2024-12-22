@@ -310,4 +310,4 @@ export default {
     connectionLost: "Connection lost. Please check your internet connection.",
     connectionRestored: "Connection restored.",
   },
-} satisfies Translations;
+} as const satisfies Translations;

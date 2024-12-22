@@ -127,9 +127,20 @@ export default {
         pluralLarge: "ملفاً"
       })}...`;
     },
-    processingImage: "جارٍ معالجة الصورة...",
+    uploadProgressPercent: "جاري التحميل... {progress}%",
+    filesExceedLimit: "تجاوز عدد الملفات الحد المسموح به",
+    noFilesToUpload: "لا توجد ملفات للتحميل",
+    processingFiles: "معالجة الملفات...",
+    uploadComplete: "اكتمل التحميل",
+    uploadFailed: "فشل التحميل",
+    deletingFiles: "جاري حذف الملفات...",
+    deleteComplete: "اكتمل الحذف",
+    deleteFailed: "فشل الحذف",
+    processingImage: "معالجة الصورة...",
     generateTags: "إنشاء وسوم",
     generatingTags: "جارٍ إنشاء الوسوم...",
+    generatingCaption: "جاري إنشاء التسمية التوضيحية...",
+    captionGenerated: "تم إنشاء التسمية التوضيحية",
     removeTags: "إزالة الوسوم",
     createCaption: "إنشاء تعليق",
     captionTypes: {
@@ -228,10 +239,7 @@ export default {
       const name = params.name ?? "المجلد";
       return `نقل إلى ${name}`;
     },
-    workWithFolder: (params: TranslationParams) => {
-      const name = params.name ?? "المجلد";
-      return `العمل مع ${name}`;
-    },
+    workWithFolder: (params: TranslationParams) => `العمل مع المجلد ${params.name}`,
   },
   shortcuts: {
     title: "اختصارات لوحة المفاتيح",
@@ -289,6 +297,8 @@ export default {
     folderCreated: "تم إنشاء المجلد",
     folderCreateError: "فشل إنشاء المجلد",
     generatingCaption: "جاري إنشاء التسمية التوضيحية...",
-    captionGenerated: "تم إنشاء التسمية التوضيحية"
+    connectionLost: "تم فقد الاتصال بالخادم",
+    connectionRestored: "تم استعادة الاتصال بالخادم",
+    captionGenerated: "تم إنشاء التسمية التوضيحية",
   },
 } as const satisfies Translations;

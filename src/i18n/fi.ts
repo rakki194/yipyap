@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -53,7 +54,7 @@ export default {
     disableAnimations: "Poista animaatiot käytöstä",
     language: "Kieli",
     disableNonsense: "Poista japaninkielinen teksti käytöstä",
-    modelSettings: "Malliasetukset",
+    modelSettings: (params: TranslationParams) => "Malliasetukset",
     jtp2ModelPath: "JTP2-mallin polku",
     jtp2TagsPath: "JTP2-tagien polku",
     downloadModel: "Lataa malli (1,8 Gt)",
@@ -103,19 +104,40 @@ export default {
     loadingFolders: "Ladataan kansioita...",
     noResults: "Ei tuloksia",
     folderCount: (params?: TranslationParams) => `${params?.count ?? 0} kansiota`,
-    deleteConfirm: "Haluatko varmasti poistaa tämän kuvan?",
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "tämä kohde";
+      return `Haluatko varmasti poistaa kohteen "${name}"?`;
+    },
     deleteSuccess: "Kuva poistettu onnistuneesti",
-    deleteError: "Virhe poistettaessa kuvaa",
-    savingCaption: "Tallennetaan kuvatekstiä...",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "kohde";
+      return `Virhe poistettaessa kohdetta "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "kohde";
+      return `Tallennetaan kuvatekstiä kohteelle "${name}"...`;
+    },
     savedCaption: "Kuvateksti tallennettu",
-    errorSavingCaption: "Virhe tallennettaessa kuvatekstiä",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "kohde";
+      return `Virhe tallennettaessa kuvatekstiä kohteelle "${name}"`;
+    },
     emptyFolder: "Tämä kansio on tyhjä",
     dropToUpload: "Pudota tiedostot tähän ladataksesi",
-    uploadProgress: (params?: TranslationParams) => {
-      if (!params?.count) return 'Ladataan tiedostoja...';
-      return `Ladataan ${params.count} tiedostoa...`;
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Ladataan tiedostoja...';
+      }
+      return createPluralTranslation({
+        one: "Ladataan 1 tiedosto...",
+        other: "Ladataan ${count} tiedostoa..."
+      }, "fi")(params);
     },
-    processingImage: "Käsitellään kuvaa...",
+    uploadProgressPercent: "Ladataan... {progress}%",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "kuva";
+      return `Käsitellään kuvaa "${name}"...`;
+    },
     generateTags: "Luo tagit",
     generatingTags: "Luodaan tageja...",
     removeTags: "Poista tagit",
@@ -136,15 +158,36 @@ export default {
     selectAll: "Valitse kaikki",
     deselectAll: "Poista kaikki valinnat",
     deleteSelected: "Poista valitut",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `Haluatko varmasti poistaa ${folders} kansiota ja ${images} kuvaa?`;
-      } else if (folders) {
-        return `Haluatko varmasti poistaa ${folders} kansiota?`;
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Haluatko varmasti poistaa nämä kohteet?';
       }
-      return `Haluatko varmasti poistaa ${images} kuvaa?`;
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Haluatko varmasti poistaa nämä kohteet?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 kansio",
+          other: "${count} kansiota"
+        }, "fi")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 kuva",
+          other: "${count} kuvaa"
+        }, "fi")({ count: images }));
+      }
+      return `Haluatko varmasti poistaa ${parts.join(" ja ")}?`;
     },
-    confirmFolderDelete: "Haluatko varmasti poistaa tämän kansion? Tämä poistaa kaiken sen sisällön!",
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "kansio";
+      return `Haluatko varmasti poistaa kansion "${name}" ja kaiken sen sisällön?`;
+    },
     someFolderDeletesFailed: "Joidenkin kansioiden poisto epäonnistui",
     folderDeleteError: "Virhe kansion poistossa",
     deletingFile: "Poistetaan tiedostoa...",
@@ -158,6 +201,24 @@ export default {
     folderLocation: (params?: TranslationParams) => `Sijainti: ${params?.name ?? ''}`,
     moveToFolder: (params?: TranslationParams) => `Siirrä kansioon ${params?.name ?? ''}`,
     workWithFolder: (params?: TranslationParams) => `Työskentele kansion ${params?.name ?? ''} kanssa`,
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Poistetaan tiedostoja...';
+      }
+      return createPluralTranslation({
+        one: "Poistetaan 1 tiedosto...",
+        other: "Poistetaan ${count} tiedostoa..."
+      }, "fi")(params);
+    },
+    processingFiles: "Käsitellään tiedostoja...",
+    uploadComplete: "Lataus valmis",
+    uploadFailed: "Lataus epäonnistui: {error}",
+    deleteComplete: "Poisto valmis",
+    deleteFailed: "Poisto epäonnistui",
+    generatingCaption: "Luodaan kuvatekstiä...",
+    captionGenerated: "Kuvateksti luotu",
+    filesExceedLimit: "Tiedostot liian suuria: {files}",
+    noFilesToUpload: "Ei tiedostoja ladattavaksi",
   },
   shortcuts: {
     title: "Pikanäppäimet",
@@ -216,6 +277,8 @@ export default {
     folderCreateError: "Virhe kansion luonnissa",
     generatingCaption: "Kuvatekstiä luodaan...",
     captionGenerated: "Kuvateksti luotu",
+    connectionLost: "Yhteys palvelimeen katkesi",
+    connectionRestored: "Yhteys palvelimeen palautettu",
   },
 } as const satisfies Translations;
  

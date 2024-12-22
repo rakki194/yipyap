@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return '파일 업로드 중...';
       return `${params.count}개의 파일 업로드 중...`;
     },
+    uploadProgressPercent: "업로드 중... {progress}%",
     processingImage: "이미지 처리 중...",
     generateTags: "태그 생성",
     generatingTags: "태그 생성 중...",
@@ -135,6 +136,21 @@ export default {
       if (!params?.count) return '선택됨';
       return `${params.count}개 선택됨`;
     },
+    filesExceedLimit: "파일이 너무 큽니다: {files}",
+    noFilesToUpload: "업로드할 파일이 없습니다",
+    processingFiles: "파일 처리 중...",
+    uploadComplete: "업로드 완료",
+    uploadFailed: "업로드 실패: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return '파일 삭제 중...';
+      }
+      return `${params.count}개의 파일 삭제 중...`;
+    },
+    deleteComplete: "삭제 완료",
+    deleteFailed: "삭제 실패",
+    generatingCaption: "캡션 생성 중...",
+    captionGenerated: "캡션이 생성되었습니다",
     confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
       if (!params) return '이 항목들을 삭제하시겠습니까?';
       const { folders = 0, images = 0 } = params;
@@ -220,5 +236,7 @@ export default {
     folderCreateError: "폴더 생성 중 오류가 발생했습니다",
     generatingCaption: "캡션 생성 중...",
     captionGenerated: "캡션이 생성되었습니다",
+    connectionLost: "연결이 끊어졌습니다",
+    connectionRestored: "연결이 복원되었습니다",
   },
 } as const satisfies Translations;

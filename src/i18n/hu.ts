@@ -100,9 +100,9 @@ export default {
     deleteSelected: "Kijelöltek törlése",
   },
   gallery: {
-    addTag: "Címke hozzáadása...",
-    addCaption: "Képaláírás hozzáadása...",
-    quickJump: "Ugrás mappához...",
+    addTag: "Címke hozzáadása",
+    addCaption: "Felirat hozzáadása",
+    quickJump: "Gyors ugrás",
     loadingFolders: "Mappák betöltése...",
     noResults: "Nincs találat",
     folderCount: createPluralTranslation({
@@ -125,107 +125,166 @@ export default {
       one: "1 elem törölve",
       other: "${count} elem törölve"
     }, "hu"),
-    deleteConfirm: ({ name = "kiválasztott" }) => 
-      `Biztosan törölni szeretné ${getHungarianArticleForWord(name)} ${name} képet?`,
-    deleteSuccess: "A kép sikeresen törölve",
-    deleteError: ({ name = "kiválasztott" }) => 
-      `Hiba történt ${getHungarianArticleForWord(name)} ${name} kép törlése közben`,
-    savingCaption: ({ name = "kiválasztott" }) => 
-      `${getHungarianArticleForWord(name)} ${name} képaláírás mentése...`,
-    savedCaption: "Képaláírás mentve",
-    errorSavingCaption: ({ name = "kiválasztott" }) => 
-      `Hiba történt ${getHungarianArticleForWord(name)} ${name} képaláírás mentése közben`,
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "ezt az elemet";
+      return `Biztosan törli ${getHungarianArticle(name)} "${name}"?`;
+    },
+    deleteSuccess: "Törlés sikeres",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "elem";
+      return `Hiba történt ${getHungarianArticle(name)} "${name}" törlésekor`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "elem";
+      return `Felirat mentése ${getHungarianArticle(name)} "${name}" elemhez...`;
+    },
+    savedCaption: "Felirat mentve",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "elem";
+      return `Hiba történt a felirat mentésekor ${getHungarianArticle(name)} "${name}" elemhez`;
+    },
     emptyFolder: "Ez a mappa üres",
     dropToUpload: "Húzza ide a fájlokat a feltöltéshez",
-    uploadProgress: createPluralTranslation({
-      one: "1 fájl feltöltése...",
-      other: "${count} fájl feltöltése..."
-    }, "hu"),
-    processingImage: ({ name = "kiválasztott" }) => 
-      `${getHungarianArticleForWord(name)} ${name} kép feldolgozása...`,
-    generateTags: "Címkék generálása",
-    generatingTags: "Címkék generálása...",
-    removeTags: "Címkék eltávolítása",
-    createCaption: "Képaláírás létrehozása",
-    captionTypes: {
-      txt: "Új szövegfájl létrehozása",
-      tags: "Új .tags fájl létrehozása",
-      caption: "Új .caption fájl létrehozása",
-      wd: "Új .wd fájl létrehozása"
-    },
-    noCaptionFiles: "Még nincsenek képaláírás fájlok!",
-    uploadError: "A feltöltés sikertelen",
-    dropOverlay: "Húzza ide a fájlokat vagy mappákat",
-    selectAll: "Összes kijelölése",
-    deselectAll: "Kijelölés megszüntetése",
-    deleteSelected: "Kijelöltek törlése",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders > 0 && images > 0) {
-        return `Biztosan törölni szeretné ezt a ${folders} mappát és ${images} képet?`;
-      } else if (folders > 0) {
-        return `Biztosan törölni szeretné ezt a ${folders} mappát?`;
-      } else {
-        return `Biztosan törölni szeretné ezt a ${images} képet?`;
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Fájlok feltöltése...';
       }
+      return createPluralTranslation({
+        one: "1 fájl feltöltése...",
+        other: "${count} fájl feltöltése..."
+      }, "hu")(params);
     },
-    confirmFolderDelete: ({ name = "" }) => 
-      `Biztosan törölni szeretné ezt a ${name} mappát?`,
-    someFolderDeletesFailed: "Néhány mappát nem sikerült törölni",
-    folderDeleteError: "Hiba történt a mappa törlése közben",
-    deletingFile: "Fájl törlése...",
-    fileDeleteSuccess: "Fájl sikeresen törölve",
-    fileDeleteError: "Hiba történt a fájl törlése közben",
-    createFolder: "Mappa létrehozása",
-    folderNamePlaceholder: "Mappa neve",
-    deleteConfirmation: "Törlés megerősítése",
-    folderLocation: ({ name = "" }) => 
-      `${name}${getHungarianSuffix(name, "ban", "ben")}`,
-    moveToFolder: ({ name = "" }) =>
-      `Áthelyezés ${name}${getHungarianSuffix(name, "ra", "re")}`,
-    workWithFolder: ({ name = "" }) =>
-      `Munka ${name}${getHungarianSuffix(name, "val", "vel")}`,
-    selectedCount: createPluralTranslation({
-      one: "1 elem kiválasztva",
-      other: "${count} elem kiválasztva"
-    }, "hu"),
+    uploadProgressPercent: "Feltöltés... {progress}%",
+    filesExceedLimit: "A fájlok túl nagyok: {files}",
+    noFilesToUpload: "Nincsenek feltöltendő fájlok",
+    processingFiles: "Fájlok feldolgozása...",
+    uploadComplete: "Feltöltés kész",
+    uploadFailed: "Feltöltés sikertelen: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Fájlok törlése...';
+      }
+      return createPluralTranslation({
+        one: "1 fájl törlése...",
+        other: "${count} fájl törlése..."
+      }, "hu")(params);
+    },
+    deleteComplete: "Törlés kész",
+    deleteFailed: "Törlés sikertelen",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "kép";
+      return `"${name}" feldolgozása...`;
+    },
     processingImages: createPluralTranslation({
       one: "1 kép feldolgozása...",
       other: "${count} kép feldolgozása..."
     }, "hu"),
+    generatingCaption: "Felirat generálása...",
+    captionGenerated: "Felirat generálva",
+    generateTags: "Címkék generálása",
+    generatingTags: "Címkék generálása...",
+    removeTags: "Címkék eltávolítása",
+    createCaption: "Felirat létrehozása",
+    captionTypes: {
+      txt: "Txt",
+      tags: "Címkék",
+      caption: "Felirat",
+      wd: "WD",
+    },
+    noCaptionFiles: "Nincsenek felirat fájlok",
+    uploadError: "Feltöltési hiba",
+    dropOverlay: "Engedje el a feltöltéshez",
+    selectAll: "Összes kijelölése",
+    deselectAll: "Kijelölés megszüntetése",
+    deleteSelected: "Kijelöltek törlése",
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Biztosan törli ezeket az elemeket?';
+      }
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Biztosan törli ezeket az elemeket?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 mappát",
+          other: "${count} mappát"
+        }, "hu")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 képet",
+          other: "${count} képet"
+        }, "hu")({ count: images }));
+      }
+      return `Biztosan törli ${parts.join(" és ")}?`;
+    },
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "mappa";
+      return `Biztosan törli ${getHungarianArticle(name)} "${name}" mappát és annak teljes tartalmát?`;
+    },
+    someFolderDeletesFailed: "Néhány mappát nem sikerült törölni",
+    folderDeleteError: "Hiba történt egy vagy több mappa törlésekor",
+    deletingFile: "Fájl törlése...",
+    fileDeleteSuccess: "Fájl sikeresen törölve",
+    fileDeleteError: "Hiba történt egy vagy több fájl törlésekor",
+    createFolder: "Mappa létrehozása",
+    folderNamePlaceholder: "Mappa neve",
+    deleteConfirmation: "Törlés megerősítése",
+    selectedCount: createPluralTranslation({
+      one: "1 elem kiválasztva",
+      other: "${count} elem kiválasztva"
+    }, "hu"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Hely: ${name}`;
+    },
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "mappa";
+      return `Áthelyezés ${name}${getHungarianSuffix(name, "ra", "re")}`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "mappa";
+      return `Munka ${name}${getHungarianSuffix(name, "val", "vel")}`;
+    },
   },
   shortcuts: {
-    title: "Billentyűparancsok",
+    title: "Gyorsbillentyűk",
     galleryNavigation: "Galéria navigáció",
     quickFolderSwitch: "Gyors mappaváltás",
     aboveImage: "Felső kép",
     belowImage: "Alsó kép",
     previousImage: "Előző kép",
     nextImage: "Következő kép",
-    togglePreview: "Előnézet kapcsolása",
+    togglePreview: "Előnézet be/ki",
     tagNavigation: "Címke navigáció",
     previousTag: "Előző címke",
     nextTag: "Következő címke",
-    switchTagBubble: "Váltás címkebuborékra",
-    switchTagInput: "Váltás címke bevitelre",
-    cycleCaptions: "Képaláírások váltogatása",
-    firstTagRow: "Első címke a sorban",
-    lastTagRow: "Utolsó címke a sorban",
+    switchTagBubble: "Címke buborék váltás",
+    switchTagInput: "Címke bevitel váltás",
+    cycleCaptions: "Feliratok váltogatása",
+    firstTagRow: "Első címke sor",
+    lastTagRow: "Utolsó címke sor",
     doubleShift: "Dupla Shift",
     shift: "Shift",
     del: "Del",
-    removeTag: "Címke eltávolítása",
+    removeTag: "Címke törlése",
     other: "Egyéb",
     esc: "Esc",
-    closePreview: "Előnézet/ablak bezárása",
+    closePreview: "Előnézet bezárása",
     deleteImage: "Kép törlése",
-    toggleImagePreview: "Kép előnézet kapcsolása",
-    copyToClipboard: "Kép másolása a vágólapra",
+    toggleImagePreview: "Kép előnézet be/ki",
+    copyToClipboard: "Vágólapra másolás",
   },
   imageViewer: {
     zoomIn: "Nagyítás",
     zoomOut: "Kicsinyítés",
     resetZoom: "Nagyítás alaphelyzetbe",
-    toggleMinimap: "Minitérkép kapcsolása",
+    toggleMinimap: "Minitérkép be/ki",
     previousImage: "Előző kép",
     nextImage: "Következő kép",
     copyPath: "Útvonal másolása",
@@ -235,7 +294,7 @@ export default {
     rotateLeft: "Forgatás balra",
     rotateRight: "Forgatás jobbra",
     downloadImage: "Kép letöltése",
-    imageInfo: "Kép információ",
+    imageInfo: "Kép információk",
     dimensions: "Méretek",
   },
   tools: {
@@ -244,11 +303,13 @@ export default {
     replaceUnderscoresWithSpaces: "Aláhúzások cseréje szóközökre",
   },
   notifications: {
-    imageCopied: "Kép másolva a vágólapra",
-    imageCopyFailed: "Nem sikerült a képet a vágólapra másolni",
+    imageCopied: "Kép másolva",
+    imageCopyFailed: "Nem sikerült másolni a képet",
     folderCreated: "Mappa létrehozva",
-    folderCreateError: "Hiba történt a mappa létrehozása közben",
-    generatingCaption: "Képaláírás generálása...",
-    captionGenerated: "Képaláírás generálva",
+    folderCreateError: "Nem sikerült létrehozni a mappát",
+    generatingCaption: "Felirat generálása...",
+    captionGenerated: "Felirat generálva",
+    connectionLost: "Megszakadt a kapcsolat",
+    connectionRestored: "Helyreállt a kapcsolat",
   },
 } as const satisfies Translations;

@@ -1,6 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import { getSpanishPlural } from "./utils";
 import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -98,106 +98,157 @@ export default {
     deleteSelected: "Eliminar seleccionados",
   },
   gallery: {
-    selectedCount: (params?: TranslationParams) => 
-      `${params?.count ?? 0} ${getSpanishPlural(params?.count ?? 0, {
-        singular: "elemento seleccionado",
-        plural: "elementos seleccionados"
-      })}`,
-    processingImages: (params?: TranslationParams) => 
-      `Procesando ${params?.count ?? 0} ${getSpanishPlural(params?.count ?? 0, {
-        singular: "imagen",
-        plural: "imágenes"
-      })}...`,
-    deletedCount: (params?: TranslationParams) => 
-      `${params?.count ?? 0} ${getSpanishPlural(params?.count ?? 0, {
-        singular: "elemento eliminado",
-        plural: "elementos eliminados"
-      })}`,
-    fileCount: (params?: TranslationParams) => 
-      getSpanishPlural(params?.count ?? 0, {
-        singular: "archivo",
-        plural: "archivos"
-      }),
-    imageCount: (params?: TranslationParams) => 
-      getSpanishPlural(params?.count ?? 0, {
-        singular: "imagen",
-        plural: "imágenes"
-      }),
-    foundFolders: (params?: TranslationParams) => 
-      `${params?.count ?? 0} ${getSpanishPlural(params?.count ?? 0, {
-        singular: "carpeta encontrada",
-        plural: "carpetas encontradas"
-      })}`,
-    selectAll: "Seleccionar todo",
-    deselectAll: "Deseleccionar todo",
-    deleteSelected: "Eliminar seleccionados",
-    addTag: "Añadir etiqueta...",
-    addCaption: "Añadir título...",
-    quickJump: "Ir a carpeta...",
+    addTag: "Añadir etiqueta",
+    addCaption: "Añadir título",
+    quickJump: "Salto rápido",
     loadingFolders: "Cargando carpetas...",
-    noResults: "No se encontraron resultados",
-    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} carpetas`,
-    deleteConfirm: "¿Estás seguro de que quieres eliminar esta imagen?",
-    deleteSuccess: "Imagen eliminada con éxito",
-    deleteError: "Error al eliminar la imagen",
-    savingCaption: "Guardando título...",
-    savedCaption: "Título guardado",
-    errorSavingCaption: "Error al guardar el título",
-    emptyFolder: "Esta carpeta está vacía",
-    dropToUpload: "Suelta archivos aquí para subir",
-    uploadProgress: (params?: TranslationParams) => {
-      if (!params?.count) return 'Subiendo archivos...';
-      return `Subiendo ${params.count} ${getSpanishPlural(params.count, {
-        singular: "archivo",
-        plural: "archivos"
-      })}...`;
+    noResults: "Sin resultados",
+    folderCount: createPluralTranslation({
+      one: "1 carpeta",
+      other: "${count} carpetas"
+    }, "es"),
+    fileCount: createPluralTranslation({
+      one: "1 archivo",
+      other: "${count} archivos"
+    }, "es"),
+    imageCount: createPluralTranslation({
+      one: "1 imagen",
+      other: "${count} imágenes"
+    }, "es"),
+    foundFolders: createPluralTranslation({
+      one: "1 carpeta encontrada",
+      other: "${count} carpetas encontradas"
+    }, "es"),
+    deletedCount: createPluralTranslation({
+      one: "1 elemento eliminado",
+      other: "${count} elementos eliminados"
+    }, "es"),
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "este elemento";
+      return `¿Estás seguro de que quieres eliminar "${name}"?`;
     },
-    processingImage: "Procesando imagen...",
+    deleteSuccess: "Eliminación completada",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "elemento";
+      return `Error al eliminar "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "elemento";
+      return `Guardando título para "${name}"...`;
+    },
+    savedCaption: "Título guardado",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "elemento";
+      return `Error al guardar el título para "${name}"`;
+    },
+    emptyFolder: "Esta carpeta está vacía",
+    dropToUpload: "Suelta archivos aquí para subirlos",
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Subiendo archivos...';
+      }
+      return createPluralTranslation({
+        one: "Subiendo 1 archivo...",
+        other: "Subiendo ${count} archivos..."
+      }, "es")(params);
+    },
+    uploadProgressPercent: "Subiendo... {progress}%",
+    filesExceedLimit: "Archivos demasiado grandes: {files}",
+    noFilesToUpload: "No hay archivos para subir",
+    processingFiles: "Procesando archivos...",
+    uploadComplete: "Subida completada",
+    uploadFailed: "Error en la subida: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Eliminando archivos...';
+      }
+      return createPluralTranslation({
+        one: "Eliminando 1 archivo...",
+        other: "Eliminando ${count} archivos..."
+      }, "es")(params);
+    },
+    deleteComplete: "Eliminación completada",
+    deleteFailed: "Error al eliminar",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "imagen";
+      return `Procesando imagen "${name}"...`;
+    },
+    processingImages: createPluralTranslation({
+      one: "Procesando 1 imagen...",
+      other: "Procesando ${count} imágenes..."
+    }, "es"),
+    generatingCaption: "Generando título...",
+    captionGenerated: "Título generado",
     generateTags: "Generar etiquetas",
     generatingTags: "Generando etiquetas...",
     removeTags: "Eliminar etiquetas",
     createCaption: "Crear título",
     captionTypes: {
-      txt: "Crear nuevo archivo de texto",
-      tags: "Crear nuevo archivo .tags",
-      caption: "Crear nuevo archivo .caption",
-      wd: "Crear nuevo archivo .wd"
+      txt: "Txt",
+      tags: "Etiquetas",
+      caption: "Título",
+      wd: "WD",
     },
-    noCaptionFiles: "¡Aún no hay archivos de título!",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders > 0 && images > 0) {
-        return `¿Estás seguro de que quieres eliminar ${folders} ${getSpanishPlural(folders, {
-          singular: "carpeta",
-          plural: "carpetas"
-        })} y ${images} ${getSpanishPlural(images, {
-          singular: "imagen",
-          plural: "imágenes"
-        })}?`;
-      } else if (folders > 0) {
-        return `¿Estás seguro de que quieres eliminar ${folders} ${getSpanishPlural(folders, {
-          singular: "carpeta",
-          plural: "carpetas"
-        })}?`;
+    noCaptionFiles: "No hay archivos de título",
+    uploadError: "Error de subida",
+    dropOverlay: "Suelta para subir",
+    selectAll: "Seleccionar todo",
+    deselectAll: "Deseleccionar todo",
+    deleteSelected: "Eliminar seleccionados",
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return '¿Estás seguro de que quieres eliminar estos elementos?';
       }
-      return `¿Estás seguro de que quieres eliminar ${images} ${getSpanishPlural(images, {
-        singular: "imagen",
-        plural: "imágenes"
-      })}?`;
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return '¿Estás seguro de que quieres eliminar estos elementos?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 carpeta",
+          other: "${count} carpetas"
+        }, "es")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 imagen",
+          other: "${count} imágenes"
+        }, "es")({ count: images }));
+      }
+      return `¿Estás seguro de que quieres eliminar ${parts.join(" y ")}?`;
     },
-    confirmFolderDelete: "¿Estás seguro de que quieres eliminar esta carpeta? ¡Esto eliminará todo su contenido!",
-    someFolderDeletesFailed: "No se pudieron eliminar algunas carpetas",
-    folderDeleteError: "Error al eliminar la carpeta",
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "carpeta";
+      return `¿Estás seguro de que quieres eliminar la carpeta "${name}" y todo su contenido?`;
+    },
+    someFolderDeletesFailed: "Algunas carpetas no se pueden eliminar",
+    folderDeleteError: "Error al eliminar una o más carpetas",
     deletingFile: "Eliminando archivo...",
-    fileDeleteSuccess: "Archivo eliminado correctamente",
-    fileDeleteError: "Error al eliminar el archivo",
+    fileDeleteSuccess: "Archivo eliminado con éxito",
+    fileDeleteError: "Error al eliminar uno o más archivos",
     createFolder: "Crear carpeta",
     folderNamePlaceholder: "Nombre de la carpeta",
     deleteConfirmation: "Confirmar eliminación",
-    folderLocation: (params?: TranslationParams) => `Ubicación: ${params?.name ?? ''}`,
-    moveToFolder: (params?: TranslationParams) => `Mover a ${params?.name ?? ''}`,
-    workWithFolder: (params?: TranslationParams) => `Trabajar con ${params?.name ?? ''}`,
-    uploadError: "Error al subir el archivo",
-    dropOverlay: "Suelta archivos o carpetas aquí",
+    selectedCount: createPluralTranslation({
+      one: "1 elemento seleccionado",
+      other: "${count} elementos seleccionados"
+    }, "es"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Ubicación: ${name}`;
+    },
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "carpeta";
+      return `Mover a "${name}"`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "carpeta";
+      return `Trabajar con la carpeta "${name}"`;
+    },
   },
   shortcuts: {
     title: "Atajos de teclado",
@@ -255,6 +306,8 @@ export default {
     folderCreated: "Carpeta creada correctamente",
     folderCreateError: "Error al crear la carpeta",
     generatingCaption: "Generando subtítulo...",
-    captionGenerated: "Subtítulo generado"
+    captionGenerated: "Subtítulo generado",
+    connectionLost: "Conexión perdida",
+    connectionRestored: "Conexión restaurada"
   },
 } as const satisfies Translations;

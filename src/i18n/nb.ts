@@ -115,6 +115,9 @@ export default {
       if (!params?.count) return 'Laster opp noen filer...';
       return `Laster opp ${params.count} filer...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => {
+      return `Laster opp... ${params?.progress}%`;
+    },
     processingImage: "Behandler bilde...",
     generateTags: "Generer tagger",
     generatingTags: "Genererer tagger...",
@@ -132,6 +135,11 @@ export default {
     selectAll: "Velg alle",
     deselectAll: "Velg ingen",
     deleteSelected: "Slett valgte",
+    filesExceedLimit: "For mange filer",
+    noFilesToUpload: "Ingen filer å laste opp",
+    processingFiles: "Behandler filer...",
+    uploadComplete: "Opplasting fullført",
+    uploadFailed: "Opplasting mislyktes",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
       if (folders && images) {
         return `Er du sikker på at du vil slette ${folders} mapper og ${images} bilder?`;
@@ -158,6 +166,14 @@ export default {
     createFolder: "Opprett mappe",
     folderNamePlaceholder: "Mappenavn",
     deleteConfirmation: "Bekreft sletting",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'Sletter filer...';
+      return `Sletter ${params.count} filer...`;
+    },
+    deleteComplete: "Sletting fullført",
+    deleteFailed: "Sletting mislyktes",
+    generatingCaption: "Genererer bildetekst...",
+    captionGenerated: "Bildetekst generert",
   },
   shortcuts: {
     title: "Hurtigtaster",
@@ -216,5 +232,7 @@ export default {
     folderCreateError: "Kunne ikke opprette mappe",
     generatingCaption: "Genererer bildetekst...",
     captionGenerated: "Bildetekst generert",
+    connectionLost: "Mistet tilkobling til serveren",
+    connectionRestored: "Tilkobling gjenopprettet"
   },
 } as const satisfies Translations;

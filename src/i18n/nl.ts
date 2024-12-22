@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations, TranslationParams } from "./types";
+import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -52,12 +53,12 @@ export default {
     },
     disableAnimations: "Animaties uitschakelen",
     language: "Taal",
-    disableNonsense: "Japanse tekst uitschakelen",
-    modelSettings: "Modelinstellingen",
-    jtp2ModelPath: "JTP2-modelpad",
-    jtp2TagsPath: "JTP2-tagpad",
-    downloadModel: "Model downloaden (1,8 GB)",
-    downloadTags: "Tags downloaden (195 KB)",
+    disableNonsense: "Onzin uitschakelen",
+    modelSettings: "Model instellingen",
+    jtp2ModelPath: "JTP2 model pad",
+    jtp2TagsPath: "JTP2 tags pad",
+    downloadModel: "Model downloaden",
+    downloadTags: "Tags downloaden",
     viewMode: "Weergavemodus",
     gridView: "Rasterweergave",
     listView: "Lijstweergave",
@@ -67,158 +68,246 @@ export default {
     sortBySize: "Sorteren op grootte",
     experimentalFeatures: "Experimentele functies",
     enableZoom: "Zoom inschakelen",
-    enableMinimap: "Minimap inschakelen bij zoom",
-    alwaysShowCaptionEditor: "Bijschrifteditor altijd weergeven",
-    instantDelete: "Direct verwijderen inschakelen (zonder bevestiging)",
+    enableMinimap: "Minimap inschakelen",
+    alwaysShowCaptionEditor: "Bijschrifteditor altijd tonen",
+    instantDelete: "Direct verwijderen",
     warning: "Waarschuwing",
     gallery: "Galerij",
-    preserveLatents: "Bevar Latents",
-    preserveLatentsTooltip: "Bevar .npz (latent) bestanden bij het verwijderen van afbeeldingen.",
-    preserveTxt: "Bevar .txt",
-    preserveTxtTooltip: "Bevar .txt-bestanden bij het verwijderen van afbeeldingen.",
+    preserveLatents: "Latents behouden",
+    preserveLatentsTooltip: "Latents behouden bij het verplaatsen van bestanden",
+    preserveTxt: "Txt behouden",
+    preserveTxtTooltip: "Txt-bestanden behouden bij het verplaatsen van bestanden",
     thumbnailSize: "Miniatuurgrootte",
-    thumbnailSizeDescription: "Grootte van miniaturen in pixels (bijv. 250)",
-    thumbnailSizeUpdateError: "Kon miniatuurgrootte niet bijwerken",
+    thumbnailSizeDescription: "De grootte van miniaturen in de galerij",
+    thumbnailSizeUpdateError: "Miniatuurgrootte bijwerken mislukt",
   },
   frontPage: {
     subtitle: {
-      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見つけました",
-      3: "虚ろな瞳に映る、無限の宇宙",
-      4: "錆びた心、新たな芽吹き",
-      5: "夢と現実が交錯する、不思議な境地",
-      6: "未知の領域、無限の可能性",
-      7: "時の流れを超えた、永遠の愛",
-      8: "これで追い出されますよ！",
+      1: "Welkom bij yipyap",
+      2: "Een eenvoudige galerij",
+      3: "Voor al je afbeeldingen",
+      4: "En meer",
+      5: "Veel meer",
+      6: "Nog veel meer",
+      7: "Bijna klaar",
+      8: "Helemaal klaar",
     },
-    imageWork: "Werken met afbeeldingen",
-    audioWork: "Werken met audio",
+    imageWork: "Afbeeldingswerk",
+    audioWork: "Audiowerk",
     deselectAll: "Alles deselecteren",
     deleteSelected: "Selectie verwijderen",
   },
   gallery: {
-    addTag: "Tag toevoegen...",
-    addCaption: "Bijschrift toevoegen...",
-    quickJump: "Naar map springen...",
+    addTag: "Tag toevoegen",
+    addCaption: "Bijschrift toevoegen",
+    quickJump: "Snel springen",
     loadingFolders: "Mappen laden...",
-    noResults: "Geen resultaten gevonden",
-    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} mappen`,
-    deleteConfirm: "Weet je zeker dat je deze afbeelding wilt verwijderen?",
-    deleteSuccess: "Afbeelding succesvol verwijderd",
-    deleteError: "Fout bij verwijderen van afbeelding",
-    savingCaption: "Bijschrift opslaan...",
+    noResults: "Geen resultaten",
+    folderCount: createPluralTranslation({
+      one: "1 map",
+      other: "${count} mappen"
+    }, "nl"),
+    fileCount: createPluralTranslation({
+      one: "1 bestand",
+      other: "${count} bestanden"
+    }, "nl"),
+    imageCount: createPluralTranslation({
+      one: "1 afbeelding",
+      other: "${count} afbeeldingen"
+    }, "nl"),
+    foundFolders: createPluralTranslation({
+      one: "1 map gevonden",
+      other: "${count} mappen gevonden"
+    }, "nl"),
+    deletedCount: createPluralTranslation({
+      one: "1 item verwijderd",
+      other: "${count} items verwijderd"
+    }, "nl"),
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "dit item";
+      return `Weet je zeker dat je "${name}" wilt verwijderen?`;
+    },
+    deleteSuccess: "Succesvol verwijderd",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "item";
+      return `Fout bij verwijderen van "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "item";
+      return `Bijschrift opslaan voor "${name}"...`;
+    },
     savedCaption: "Bijschrift opgeslagen",
-    errorSavingCaption: "Fout bij opslaan van bijschrift",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "item";
+      return `Fout bij opslaan van bijschrift voor "${name}"`;
+    },
     emptyFolder: "Deze map is leeg",
     dropToUpload: "Sleep bestanden hier om te uploaden",
-    uploadProgress: (params?: TranslationParams) => {
-      if (!params?.count) return 'Bestanden uploaden...';
-      return `${params.count} bestanden uploaden...`;
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Bestanden uploaden...';
+      }
+      return createPluralTranslation({
+        one: "1 bestand uploaden...",
+        other: "${count} bestanden uploaden..."
+      }, "nl")(params);
     },
-    processingImage: "Afbeelding verwerken...",
+    uploadProgressPercent: "Uploaden... {progress}%",
+    filesExceedLimit: "Bestanden te groot: {files}",
+    noFilesToUpload: "Geen bestanden om te uploaden",
+    processingFiles: "Bestanden verwerken...",
+    uploadComplete: "Upload voltooid",
+    uploadFailed: "Upload mislukt: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Bestanden verwijderen...';
+      }
+      return createPluralTranslation({
+        one: "1 bestand verwijderen...",
+        other: "${count} bestanden verwijderen..."
+      }, "nl")(params);
+    },
+    deleteComplete: "Verwijderen voltooid",
+    deleteFailed: "Verwijderen mislukt",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "afbeelding";
+      return `Afbeelding "${name}" verwerken...`;
+    },
+    processingImages: createPluralTranslation({
+      one: "1 afbeelding verwerken...",
+      other: "${count} afbeeldingen verwerken..."
+    }, "nl"),
+    generatingCaption: "Bijschrift genereren...",
+    captionGenerated: "Bijschrift gegenereerd",
     generateTags: "Tags genereren",
     generatingTags: "Tags genereren...",
     removeTags: "Tags verwijderen",
     createCaption: "Bijschrift maken",
     captionTypes: {
-      txt: "Nieuw tekstbestand maken",
-      tags: "Nieuw .tags-bestand maken",
-      caption: "Nieuw .caption-bestand maken",
-      wd: "Nieuw .wd-bestand maken"
+      txt: "Txt",
+      tags: "Tags",
+      caption: "Bijschrift",
+      wd: "WD",
     },
-    noCaptionFiles: "Nog geen bijschriftbestanden!",
-    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} bestanden`,
-    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} afbeeldingen`,
-    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} mappen gevonden`,
-    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} items verwijderd`,
-    selectedCount: (params?: TranslationParams) => {
-      if (!params?.count) return 'enkele geselecteerd';
-      return `${params.count} geselecteerd`;
-    },
-    processingImages: (params?: TranslationParams) => `${params?.count ?? 0} afbeeldingen verwerken...`,
-    folderLocation: (params?: TranslationParams) => `in ${params?.name ?? ''}`,
-    moveToFolder: (params?: TranslationParams) => `Verplaats naar ${params?.name ?? ''}`,
-    workWithFolder: (params?: TranslationParams) => `Werk met ${params?.name ?? ''}`,
-    createFolder: "Map aanmaken",
-    folderNamePlaceholder: "Mapnaam",
-    deleteConfirmation: "Verwijderen bevestigen",
+    noCaptionFiles: "Geen bijschriftbestanden",
+    uploadError: "Upload fout",
+    dropOverlay: "Laat los om te uploaden",
     selectAll: "Alles selecteren",
     deselectAll: "Alles deselecteren",
     deleteSelected: "Selectie verwijderen",
-    uploadError: "Upload mislukt",
-    dropOverlay: "Sleep bestanden of mappen hier",
-    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
-      if (!params) return 'Weet u zeker dat u deze items wilt verwijderen?';
-      const { folders = 0, images = 0 } = params;
-      if (folders === 0 && images === 0) return 'Weet u zeker dat u deze items wilt verwijderen?';
-      if (typeof folders !== 'number' || typeof images !== 'number') return 'Weet u zeker dat u deze items wilt verwijderen?';
-      if (folders > 0 && images > 0) return `Weet u zeker dat u ${folders} mappen en ${images} afbeeldingen wilt verwijderen?`;
-      if (folders > 0) return `Weet u zeker dat u ${folders} mappen wilt verwijderen?`;
-      return `Weet u zeker dat u ${images} afbeeldingen wilt verwijderen?`;
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Weet je zeker dat je deze items wilt verwijderen?';
+      }
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Weet je zeker dat je deze items wilt verwijderen?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 map",
+          other: "${count} mappen"
+        }, "nl")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 afbeelding",
+          other: "${count} afbeeldingen"
+        }, "nl")({ count: images }));
+      }
+      return `Weet je zeker dat je ${parts.join(" en ")} wilt verwijderen?`;
     },
-    confirmFolderDelete: ({ name = "" }) => `Weet je zeker dat je de map ${name} wilt verwijderen?`,
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "map";
+      return `Weet je zeker dat je de map "${name}" en alle inhoud wilt verwijderen?`;
+    },
     someFolderDeletesFailed: "Sommige mappen konden niet worden verwijderd",
     folderDeleteError: "Fout bij verwijderen van map",
     deletingFile: "Bestand verwijderen...",
     fileDeleteSuccess: "Bestand verwijderd",
     fileDeleteError: "Fout bij verwijderen van bestand",
+    createFolder: "Map maken",
+    folderNamePlaceholder: "Mapnaam",
+    deleteConfirmation: "Verwijderbevestiging",
+    selectedCount: createPluralTranslation({
+      one: "1 item geselecteerd",
+      other: "${count} items geselecteerd"
+    }, "nl"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Map: ${name}`;
+    },
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "map";
+      return `Verplaatsen naar "${name}"`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "map";
+      return `Werken met map "${name}"`;
+    },
   },
   shortcuts: {
     title: "Sneltoetsen",
-    galleryNavigation: "Galerijnavigatie",
+    galleryNavigation: "Galerij navigatie",
     quickFolderSwitch: "Snel van map wisselen",
-    aboveImage: "Afbeelding erboven",
-    belowImage: "Afbeelding eronder",
+    aboveImage: "Bovenste afbeelding",
+    belowImage: "Onderste afbeelding",
     previousImage: "Vorige afbeelding",
     nextImage: "Volgende afbeelding",
-    togglePreview: "Voorvertoning wisselen",
-    tagNavigation: "Tagnavigatie",
+    togglePreview: "Voorvertoning aan/uit",
+    tagNavigation: "Tag navigatie",
     previousTag: "Vorige tag",
     nextTag: "Volgende tag",
-    switchTagBubble: "Naar tagbubbels wisselen",
-    switchTagInput: "Naar taginvoer wisselen",
+    switchTagBubble: "Wissel tag bubble",
+    switchTagInput: "Wissel tag invoer",
     cycleCaptions: "Door bijschriften bladeren",
-    firstTagRow: "Eerste tag in rij",
-    lastTagRow: "Laatste tag in rij",
-    doubleShift: "Dubbele Shift",
+    firstTagRow: "Eerste tag rij",
+    lastTagRow: "Laatste tag rij",
+    doubleShift: "Dubbele shift",
     shift: "Shift",
     del: "Del",
     removeTag: "Tag verwijderen",
     other: "Overig",
     esc: "Esc",
-    closePreview: "Voorvertoning/modal sluiten",
+    closePreview: "Voorvertoning sluiten",
     deleteImage: "Afbeelding verwijderen",
-    toggleImagePreview: "Afbeeldingsvoorvertoning wisselen",
-    copyToClipboard: "Kopieer afbeelding naar klembord",
+    toggleImagePreview: "Afbeeldingsvoorvertoning aan/uit",
+    copyToClipboard: "Kopiëren naar klembord",
   },
   imageViewer: {
     zoomIn: "Inzoomen",
     zoomOut: "Uitzoomen",
-    resetZoom: "Zoom herstellen",
-    toggleMinimap: "Minimap wisselen",
+    resetZoom: "Zoom resetten",
+    toggleMinimap: "Minimap aan/uit",
     previousImage: "Vorige afbeelding",
     nextImage: "Volgende afbeelding",
     copyPath: "Pad kopiëren",
-    openInNewTab: "In nieuw tabblad openen",
-    fitToScreen: "Aan scherm aanpassen",
+    openInNewTab: "Openen in nieuw tabblad",
+    fitToScreen: "Passend op scherm",
     actualSize: "Werkelijke grootte",
-    rotateLeft: "Naar links draaien",
-    rotateRight: "Naar rechts draaien",
+    rotateLeft: "Linksom draaien",
+    rotateRight: "Rechtsom draaien",
     downloadImage: "Afbeelding downloaden",
     imageInfo: "Afbeeldingsinformatie",
     dimensions: "Afmetingen",
   },
   tools: {
     removeCommas: "Komma's verwijderen",
-    replaceNewlinesWithCommas: "Regeleindes vervangen door komma's",
+    replaceNewlinesWithCommas: "Nieuwe regels vervangen door komma's",
     replaceUnderscoresWithSpaces: "Underscores vervangen door spaties",
   },
   notifications: {
-    imageCopied: "Afbeelding gekopieerd naar klembord",
-    imageCopyFailed: "Kon afbeelding niet naar klembord kopiëren",
+    imageCopied: "Afbeelding gekopieerd",
+    imageCopyFailed: "Kopiëren mislukt",
     folderCreated: "Map aangemaakt",
-    folderCreateError: "Kon map niet aanmaken",
+    folderCreateError: "Fout bij maken van map",
     generatingCaption: "Bijschrift genereren...",
     captionGenerated: "Bijschrift gegenereerd",
+    connectionLost: "Verbinding verbroken",
+    connectionRestored: "Verbinding hersteld",
   },
 } as const satisfies Translations;

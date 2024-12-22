@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return 'Завантаження файлів...';
       return `Завантаження ${params.count} файлів...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `Завантаження... ${params?.progress}%`,
     processingImage: "Обробка зображення...",
     generateTags: "Згенерувати теги",
     generatingTags: "Генерація тегів...",
@@ -158,6 +159,19 @@ export default {
     folderNamePlaceholder: "Назва папки",
     deleteConfirmation: "Підтвердження видалення",
     processingImages: (params?: TranslationParams) => `Обробка ${params?.count ?? 0} зображень...`,
+    filesExceedLimit: "Забагато файлів",
+    noFilesToUpload: "Немає файлів для завантаження",
+    processingFiles: "Обробка файлів...",
+    uploadComplete: "Завантаження завершено",
+    uploadFailed: "Помилка завантаження",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'Видалення файлів...';
+      return `Видалення ${params.count} файлів...`;
+    },
+    deleteComplete: "Видалення завершено",
+    deleteFailed: "Помилка видалення",
+    generatingCaption: "Генерування підпису...",
+    captionGenerated: "Підпис згенеровано",
   },
   shortcuts: {
     title: "Гарячі клавіші",
@@ -215,6 +229,8 @@ export default {
     folderCreated: "Папку створено",
     folderCreateError: "Не вдалося створити папку",
     generatingCaption: "Генерування підпису...",
-    captionGenerated: "Підпис згенеровано"
+    captionGenerated: "Підпис згенеровано",
+    connectionLost: "З'єднання втрачено",
+    connectionRestored: "З'єднання відновлено"
   },
 } as const satisfies Translations;

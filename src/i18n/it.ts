@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
-import { Translations, TranslationParams } from "./types";
+import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -97,74 +98,160 @@ export default {
     deleteSelected: "Elimina selezionati",
   },
   gallery: {
-    addTag: "Aggiungi tag...",
-    addCaption: "Aggiungi didascalia...",
-    quickJump: "Vai alla cartella...",
+    addTag: "Aggiungi tag",
+    addCaption: "Aggiungi didascalia",
+    quickJump: "Salto rapido",
     loadingFolders: "Caricamento cartelle...",
-    noResults: "Nessun risultato trovato",
-    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} cartelle`,
-    deleteConfirm: "Sei sicuro di voler eliminare questa immagine?",
-    deleteSuccess: "Immagine eliminata con successo",
-    deleteError: "Errore durante l'eliminazione dell'immagine",
-    savingCaption: "Salvataggio didascalia...",
+    noResults: "Nessun risultato",
+    folderCount: createPluralTranslation({
+      one: "1 cartella",
+      other: "${count} cartelle"
+    }, "it"),
+    fileCount: createPluralTranslation({
+      one: "1 file",
+      other: "${count} file"
+    }, "it"),
+    imageCount: createPluralTranslation({
+      one: "1 immagine",
+      other: "${count} immagini"
+    }, "it"),
+    foundFolders: createPluralTranslation({
+      one: "1 cartella trovata",
+      other: "${count} cartelle trovate"
+    }, "it"),
+    deletedCount: createPluralTranslation({
+      one: "1 elemento eliminato",
+      other: "${count} elementi eliminati"
+    }, "it"),
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "questo elemento";
+      return `Sei sicuro di voler eliminare "${name}"?`;
+    },
+    deleteSuccess: "Eliminazione completata",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "elemento";
+      return `Errore durante l'eliminazione di "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "elemento";
+      return `Salvataggio didascalia per "${name}"...`;
+    },
     savedCaption: "Didascalia salvata",
-    errorSavingCaption: "Errore durante il salvataggio della didascalia",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "elemento";
+      return `Errore durante il salvataggio della didascalia per "${name}"`;
+    },
     emptyFolder: "Questa cartella è vuota",
     dropToUpload: "Trascina qui i file per caricarli",
-    uploadProgress: (params?: TranslationParams) => {
-      if (!params?.count) return 'Caricamento di alcuni file...';
-      return `Caricamento di ${params.count} file...`;
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Caricamento file...';
+      }
+      return createPluralTranslation({
+        one: "Caricamento di 1 file...",
+        other: "Caricamento di ${count} file..."
+      }, "it")(params);
     },
-    processingImage: "Elaborazione immagine...",
+    uploadProgressPercent: "Caricamento... {progress}%",
+    filesExceedLimit: "File troppo grandi: {files}",
+    noFilesToUpload: "Nessun file da caricare",
+    processingFiles: "Elaborazione file...",
+    uploadComplete: "Caricamento completato",
+    uploadFailed: "Caricamento fallito: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Eliminazione file...';
+      }
+      return createPluralTranslation({
+        one: "Eliminazione di 1 file...",
+        other: "Eliminazione di ${count} file..."
+      }, "it")(params);
+    },
+    deleteComplete: "Eliminazione completata",
+    deleteFailed: "Eliminazione fallita",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "immagine";
+      return `Elaborazione immagine "${name}"...`;
+    },
+    processingImages: createPluralTranslation({
+      one: "Elaborazione di 1 immagine...",
+      other: "Elaborazione di ${count} immagini..."
+    }, "it"),
+    generatingCaption: "Generazione didascalia...",
+    captionGenerated: "Didascalia generata",
     generateTags: "Genera tag",
     generatingTags: "Generazione tag...",
     removeTags: "Rimuovi tag",
     createCaption: "Crea didascalia",
     captionTypes: {
-      txt: "Crea nuovo file di testo",
-      tags: "Crea nuovo file .tags",
-      caption: "Crea nuovo file .caption",
-      wd: "Crea nuovo file .wd"
+      txt: "Txt",
+      tags: "Tag",
+      caption: "Didascalia",
+      wd: "WD",
     },
-    noCaptionFiles: "Nessun file didascalia ancora!",
-    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} file`,
-    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} immagini`,
-    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} cartelle trovate`,
-    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} elementi eliminati`,
-    selectedCount: (params?: TranslationParams) => {
-      if (!params?.count) return 'selezionato';
-      return `${params.count} selezionat${params.count === 1 ? 'o' : 'i'}`;
-    },
-    processingImages: (params?: TranslationParams) => `Elaborazione di ${params?.count ?? 0} immagini...`,
-    folderLocation: (params?: TranslationParams) => `in ${params?.name ?? ''}`,
-    moveToFolder: (params?: TranslationParams) => `Sposta in ${params?.name ?? ''}`,
-    workWithFolder: (params?: TranslationParams) => `Lavora con ${params?.name ?? ''}`,
-    createFolder: "Crea cartella",
-    folderNamePlaceholder: "Nome cartella",
-    deleteConfirmation: "Conferma eliminazione",
-    uploadError: "Caricamento fallito",
-    dropOverlay: "Trascina qui file o cartelle",
+    noCaptionFiles: "Nessun file didascalia",
+    uploadError: "Errore di caricamento",
+    dropOverlay: "Rilascia per caricare",
     selectAll: "Seleziona tutto",
     deselectAll: "Deseleziona tutto",
     deleteSelected: "Elimina selezionati",
-    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
-      if (!params) return 'Sei sicuro di voler eliminare questi elementi?';
-      const { folders = 0, images = 0 } = params;
-      if (folders === 0 && images === 0) return 'Sei sicuro di voler eliminare questi elementi?';
-      if (typeof folders !== 'number' || typeof images !== 'number') return 'Sei sicuro di voler eliminare questi elementi?';
-      if (folders > 0 && images > 0) return `Sei sicuro di voler eliminare ${folders} cartell${folders === 1 ? 'a' : 'e'} e ${images} immagin${images === 1 ? 'e' : 'i'}?`;
-      if (folders > 0) return `Sei sicuro di voler eliminare ${folders} cartell${folders === 1 ? 'a' : 'e'}?`;
-      return `Sei sicuro di voler eliminare ${images} immagin${images === 1 ? 'e' : 'i'}?`;
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Sei sicuro di voler eliminare questi elementi?';
+      }
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Sei sicuro di voler eliminare questi elementi?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 cartella",
+          other: "${count} cartelle"
+        }, "it")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 immagine",
+          other: "${count} immagini"
+        }, "it")({ count: images }));
+      }
+      return `Sei sicuro di voler eliminare ${parts.join(" e ")}?`;
     },
-    confirmFolderDelete: ({ name = "" }) => `Sei sicuro di voler eliminare la cartella ${name}?`,
-    someFolderDeletesFailed: "Alcune cartelle non sono state eliminate",
-    folderDeleteError: "Errore durante l'eliminazione della cartella",
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "cartella";
+      return `Sei sicuro di voler eliminare la cartella "${name}" e tutto il suo contenuto?`;
+    },
+    someFolderDeletesFailed: "Alcune cartelle non possono essere eliminate",
+    folderDeleteError: "Errore durante l'eliminazione di una o più cartelle",
     deletingFile: "Eliminazione file...",
     fileDeleteSuccess: "File eliminato con successo",
-    fileDeleteError: "Errore durante l'eliminazione del file",
+    fileDeleteError: "Errore durante l'eliminazione di uno o più file",
+    createFolder: "Crea cartella",
+    folderNamePlaceholder: "Nome cartella",
+    deleteConfirmation: "Conferma eliminazione",
+    selectedCount: createPluralTranslation({
+      one: "1 elemento selezionato",
+      other: "${count} elementi selezionati"
+    }, "it"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Posizione: ${name}`;
+    },
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "cartella";
+      return `Sposta in "${name}"`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "cartella";
+      return `Lavora con la cartella "${name}"`;
+    },
   },
   shortcuts: {
-    title: "Scorciatoie da tastiera",
+    title: "Scorciatoie",
     galleryNavigation: "Navigazione galleria",
     quickFolderSwitch: "Cambio rapido cartella",
     aboveImage: "Immagine sopra",
@@ -175,25 +262,25 @@ export default {
     tagNavigation: "Navigazione tag",
     previousTag: "Tag precedente",
     nextTag: "Tag successivo",
-    switchTagBubble: "Passa a bolle tag",
-    switchTagInput: "Passa a input tag",
+    switchTagBubble: "Cambia bolla tag",
+    switchTagInput: "Cambia input tag",
     cycleCaptions: "Cicla didascalie",
-    firstTagRow: "Primo tag della riga",
-    lastTagRow: "Ultimo tag della riga",
+    firstTagRow: "Prima riga tag",
+    lastTagRow: "Ultima riga tag",
     doubleShift: "Doppio Shift",
     shift: "Shift",
     del: "Canc",
     removeTag: "Rimuovi tag",
     other: "Altro",
     esc: "Esc",
-    closePreview: "Chiudi anteprima/modale",
+    closePreview: "Chiudi anteprima",
     deleteImage: "Elimina immagine",
     toggleImagePreview: "Attiva/disattiva anteprima immagine",
-    copyToClipboard: "Copia immagine negli appunti",
+    copyToClipboard: "Copia negli appunti",
   },
   imageViewer: {
     zoomIn: "Ingrandisci",
-    zoomOut: "Rimpicciolisci",
+    zoomOut: "Riduci",
     resetZoom: "Reimposta zoom",
     toggleMinimap: "Attiva/disattiva minimappa",
     previousImage: "Immagine precedente",
@@ -209,12 +296,14 @@ export default {
     dimensions: "Dimensioni",
   },
   notifications: {
-    imageCopied: "Immagine copiata negli appunti",
-    imageCopyFailed: "Impossibile copiare l'immagine negli appunti",
-    folderCreated: "Cartella creata con successo",
+    imageCopied: "Immagine copiata",
+    imageCopyFailed: "Errore durante la copia dell'immagine",
+    folderCreated: "Cartella creata",
     folderCreateError: "Errore durante la creazione della cartella",
-    generatingCaption: "Generazione didascalia in corso...",
-    captionGenerated: "Didascalia generata con successo",
+    generatingCaption: "Generazione didascalia...",
+    captionGenerated: "Didascalia generata",
+    connectionLost: "Connessione persa",
+    connectionRestored: "Connessione ripristinata",
   },
   tools: {
     removeCommas: "Rimuovi virgole",

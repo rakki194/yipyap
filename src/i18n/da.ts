@@ -119,6 +119,7 @@ export default {
       one: "Uploader 1 fil...",
       other: "Uploader ${count} filer..."
     }, "da"),
+    uploadProgressPercent: "Uploader {progress}%",
     processingImage: "Behandler billede...",
     generateTags: "Generer tags",
     generatingTags: "Genererer tags...",
@@ -180,6 +181,24 @@ export default {
     createFolder: "Opret mappe",
     folderNamePlaceholder: "Mappenavn",
     deleteConfirmation: "Bekræft sletning",
+    filesExceedLimit: "Filer er for store: {files}",
+    noFilesToUpload: "Ingen filer at uploade",
+    processingFiles: "Behandler filer...",
+    uploadComplete: "Upload fuldført",
+    uploadFailed: "Upload fejlede: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Sletter filer...';
+      }
+      return createPluralTranslation({
+        one: "Sletter 1 fil...",
+        other: "Sletter ${count} filer..."
+      }, "da")(params);
+    },
+    deleteComplete: "Sletning fuldført",
+    deleteFailed: "Sletning fejlede",
+    generatingCaption: "Genererer billedtekst...",
+    captionGenerated: "Billedtekst genereret",
   },
   shortcuts: {
     title: "Tastaturgenveje",
@@ -238,5 +257,7 @@ export default {
     folderCreateError: "Kunne ikke oprette mappe",
     generatingCaption: "Genererer billedtekst...",
     captionGenerated: "Billedtekst genereret",
+    connectionLost: "Forbindelse tabt",
+    connectionRestored: "Forbindelse genoprettet"
   },
 } as const satisfies Translations;

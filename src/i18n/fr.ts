@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -52,12 +53,12 @@ export default {
     },
     disableAnimations: "Désactiver les animations",
     language: "Langue",
-    disableNonsense: "Désactiver le texte japonais",
-    modelSettings: "Paramètres du modèle",
+    disableNonsense: "Désactiver le nonsense",
+    modelSettings: (params: TranslationParams) => "Paramètres du modèle",
     jtp2ModelPath: "Chemin du modèle JTP2",
     jtp2TagsPath: "Chemin des tags JTP2",
-    downloadModel: "Télécharger le modèle (1,8 Go)",
-    downloadTags: "Télécharger les tags (195 Ko)",
+    downloadModel: "Télécharger le modèle",
+    downloadTags: "Télécharger les tags",
     viewMode: "Mode d'affichage",
     gridView: "Vue en grille",
     listView: "Vue en liste",
@@ -66,105 +67,196 @@ export default {
     sortByDate: "Trier par date",
     sortBySize: "Trier par taille",
     experimentalFeatures: "Fonctionnalités expérimentales",
-    enableZoom: "Activer le zoom d'image",
-    enableMinimap: "Activer la minimap en zoom",
+    enableZoom: "Activer le zoom",
+    enableMinimap: "Activer la minimap",
     alwaysShowCaptionEditor: "Toujours afficher l'éditeur de légende",
-    instantDelete: "Activer la suppression instantanée",
+    instantDelete: "Suppression instantanée",
     warning: "Avertissement",
     gallery: "Galerie",
-    preserveLatents: "Conserver les Latents",
-    preserveLatentsTooltip: "Conservez les fichiers .npz (latent) lors de la suppression des images.",
-    preserveTxt: "Conserver les .txt",
-    preserveTxtTooltip: "Conservez les fichiers .txt lors de la suppression des images.",
+    preserveLatents: "Préserver les latents",
+    preserveLatentsTooltip: "Préserver les latents lors du déplacement des fichiers",
+    preserveTxt: "Préserver les txt",
+    preserveTxtTooltip: "Préserver les fichiers txt lors du déplacement des fichiers",
     thumbnailSize: "Taille des vignettes",
-    thumbnailSizeDescription: "Ajuster la taille des vignettes dans la galerie",
-    thumbnailSizeUpdateError: "Erreur lors de la mise à jour de la taille des vignettes",
+    thumbnailSizeDescription: "La taille des vignettes dans la galerie",
+    thumbnailSizeUpdateError: "Échec de la mise à jour de la taille des vignettes",
+  },
+  tools: {
+    removeCommas: "Supprimer les virgules",
+    replaceNewlinesWithCommas: "Remplacer les sauts de ligne par des virgules",
+    replaceUnderscoresWithSpaces: "Remplacer les tirets bas par des espaces",
   },
   frontPage: {
     subtitle: {
-      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見つけました",
-      3: "虚ろな瞳に映る、無限の宇宙",
-      4: "錆びた心、新たな芽吹き",
-      5: "夢と現実が交錯する、不思議な境地",
-      6: "未知の領域、無限の可能性",
-      7: "時の流れを超えた、永遠の愛",
-      8: "これで追い出されますよ！",
+      1: "Un visualiseur d'images simple",
+      2: "Avec un accent sur la simplicité",
+      3: "Et une touche de magie",
+      4: "Pour votre plaisir visuel",
+      5: "Et votre tranquillité d'esprit",
+      6: "Avec une pincée de fantaisie",
+      7: "Et un soupçon de joie",
+      8: "Juste pour vous",
     },
-    imageWork: "Travailler avec les images",
-    audioWork: "Travailler avec l'audio",
+    imageWork: "Travail d'image",
+    audioWork: "Travail audio",
     deselectAll: "Tout désélectionner",
     deleteSelected: "Supprimer la sélection",
   },
   gallery: {
-    addTag: "Ajouter un tag...",
-    addCaption: "Ajouter une légende...",
-    quickJump: "Aller au dossier...",
+    addTag: "Ajouter un tag",
+    addCaption: "Ajouter une légende",
+    quickJump: "Saut rapide",
     loadingFolders: "Chargement des dossiers...",
-    noResults: "Aucun résultat trouvé",
-    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} dossiers`,
-    deleteConfirm: "Voulez-vous vraiment supprimer cette image ?",
-    deleteSuccess: "Image supprimée avec succès",
-    deleteError: "Erreur lors de la suppression",
-    savingCaption: "Enregistrement de la légende...",
-    savedCaption: "Légende enregistrée",
-    errorSavingCaption: "Erreur lors de l'enregistrement de la légende",
-    emptyFolder: "Ce dossier est vide",
-    dropToUpload: "Déposez les fichiers ici pour télécharger",
-    uploadProgress: (params?: TranslationParams) => {
-      if (!params?.count) return 'Téléchargement de quelques fichiers...';
-      return `Téléchargement de ${params.count} fichiers...`;
+    noResults: "Aucun résultat",
+    folderCount: createPluralTranslation({
+      one: "1 dossier",
+      other: "${count} dossiers"
+    }, "fr"),
+    fileCount: createPluralTranslation({
+      one: "1 fichier",
+      other: "${count} fichiers"
+    }, "fr"),
+    imageCount: createPluralTranslation({
+      one: "1 image",
+      other: "${count} images"
+    }, "fr"),
+    foundFolders: createPluralTranslation({
+      one: "1 dossier trouvé",
+      other: "${count} dossiers trouvés"
+    }, "fr"),
+    deletedCount: createPluralTranslation({
+      one: "1 élément supprimé",
+      other: "${count} éléments supprimés"
+    }, "fr"),
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "cet élément";
+      return `Êtes-vous sûr de vouloir supprimer "${name}" ?`;
     },
-    processingImage: "Traitement de l'image...",
+    deleteSuccess: "Suppression réussie",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "élément";
+      return `Échec de la suppression de "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "élément";
+      return `Enregistrement de la légende pour "${name}"...`;
+    },
+    savedCaption: "Légende enregistrée",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "élément";
+      return `Échec de l'enregistrement de la légende pour "${name}"`;
+    },
+    emptyFolder: "Ce dossier est vide",
+    dropToUpload: "Déposez les fichiers ici pour les télécharger",
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Téléchargement des fichiers...';
+      }
+      return createPluralTranslation({
+        one: "Téléchargement d'1 fichier...",
+        other: "Téléchargement de ${count} fichiers..."
+      }, "fr")(params);
+    },
+    uploadProgressPercent: "Téléchargement... {progress}%",
+    filesExceedLimit: "Fichiers trop volumineux : {files}",
+    noFilesToUpload: "Aucun fichier à télécharger",
+    processingFiles: "Traitement des fichiers...",
+    uploadComplete: "Téléchargement terminé",
+    uploadFailed: "Échec du téléchargement : {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Suppression des fichiers...';
+      }
+      return createPluralTranslation({
+        one: "Suppression d'1 fichier...",
+        other: "Suppression de ${count} fichiers..."
+      }, "fr")(params);
+    },
+    deleteComplete: "Suppression terminée",
+    deleteFailed: "Échec de la suppression",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "image";
+      return `Traitement de l'image "${name}"...`;
+    },
+    processingImages: createPluralTranslation({
+      one: "Traitement d'1 image...",
+      other: "Traitement de ${count} images..."
+    }, "fr"),
+    generatingCaption: "Génération de la légende...",
+    captionGenerated: "Légende générée",
     generateTags: "Générer les tags",
     generatingTags: "Génération des tags...",
     removeTags: "Supprimer les tags",
     createCaption: "Créer une légende",
     captionTypes: {
-      txt: "Créer un nouveau fichier texte",
-      tags: "Créer un nouveau fichier .tags",
-      caption: "Créer un nouveau fichier .caption",
-      wd: "Créer un nouveau fichier .wd"
+      txt: "Txt",
+      tags: "Tags",
+      caption: "Légende",
+      wd: "WD",
     },
-    noCaptionFiles: "Pas encore de fichiers de légende !",
-    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} fichiers`,
-    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} images`,
-    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} dossiers trouvés`,
-    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} éléments supprimés`,
+    noCaptionFiles: "Aucun fichier de légende",
+    uploadError: "Erreur de téléchargement",
+    dropOverlay: "Relâchez pour télécharger",
     selectAll: "Tout sélectionner",
     deselectAll: "Tout désélectionner",
     deleteSelected: "Supprimer la sélection",
-    confirmMultiDelete: (params?: { folders?: number; images?: number }) => {
-      if (!params) return 'Êtes-vous sûr de vouloir supprimer ces éléments ?';
-      const { folders = 0, images = 0 } = params;
-      if (folders === 0 && images === 0) return 'Êtes-vous sûr de vouloir supprimer ces éléments ?';
-      if (typeof folders !== 'number' || typeof images !== 'number') return 'Êtes-vous sûr de vouloir supprimer ces éléments ?';
-      if (folders > 0 && images > 0) return `Êtes-vous sûr de vouloir supprimer ${folders} dossier${folders > 1 ? 's' : ''} et ${images} image${images > 1 ? 's' : ''} ?`;
-      if (folders > 0) return `Êtes-vous sûr de vouloir supprimer ${folders} dossier${folders > 1 ? 's' : ''} ?`;
-      return `Êtes-vous sûr de vouloir supprimer ${images} image${images > 1 ? 's' : ''} ?`;
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Êtes-vous sûr de vouloir supprimer ces éléments ?';
+      }
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Êtes-vous sûr de vouloir supprimer ces éléments ?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 dossier",
+          other: "${count} dossiers"
+        }, "fr")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 image",
+          other: "${count} images"
+        }, "fr")({ count: images }));
+      }
+      return `Êtes-vous sûr de vouloir supprimer ${parts.join(" et ")} ?`;
     },
-    confirmFolderDelete: "Voulez-vous vraiment supprimer ce dossier ? Tout son contenu sera supprimé !",
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "dossier";
+      return `Êtes-vous sûr de vouloir supprimer le dossier "${name}" et tout son contenu ?`;
+    },
     someFolderDeletesFailed: "Certains dossiers n'ont pas pu être supprimés",
-    folderDeleteError: "Erreur lors de la suppression du dossier",
+    folderDeleteError: "Échec de la suppression d'un ou plusieurs dossiers",
     deletingFile: "Suppression du fichier...",
     fileDeleteSuccess: "Fichier supprimé avec succès",
-    fileDeleteError: "Erreur lors de la suppression du fichier",
+    fileDeleteError: "Échec de la suppression d'un ou plusieurs fichiers",
     createFolder: "Créer un dossier",
     folderNamePlaceholder: "Nom du dossier",
     deleteConfirmation: "Confirmation de suppression",
-    selectedCount: (params?: TranslationParams) => {
-      if (!params?.count) return 'sélectionné';
-      return `${params.count} sélectionné${params.count > 1 ? 's' : ''}`;
+    selectedCount: createPluralTranslation({
+      one: "1 élément sélectionné",
+      other: "${count} éléments sélectionnés"
+    }, "fr"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Emplacement : ${name}`;
     },
-    processingImages: (params?: TranslationParams) => `Traitement de ${params?.count ?? 0} images...`,
-    folderLocation: (params?: TranslationParams) => `Emplacement : ${params?.name ?? ''}`,
-    moveToFolder: (params?: TranslationParams) => `Déplacer vers ${params?.name ?? ''}`,
-    workWithFolder: (params?: TranslationParams) => `Travailler avec ${params?.name ?? ''}`,
-    uploadError: "Erreur lors du téléchargement",
-    dropOverlay: "Déposez les fichiers ou dossiers ici",
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "dossier";
+      return `Déplacer vers "${name}"`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "dossier";
+      return `Travailler avec "${name}"`;
+    },
   },
   shortcuts: {
-    title: "Raccourcis clavier",
+    title: "Raccourcis",
     galleryNavigation: "Navigation dans la galerie",
     quickFolderSwitch: "Changement rapide de dossier",
     aboveImage: "Image au-dessus",
@@ -175,21 +267,21 @@ export default {
     tagNavigation: "Navigation des tags",
     previousTag: "Tag précédent",
     nextTag: "Tag suivant",
-    switchTagBubble: "Passer à l'édition des bulles de tags",
-    switchTagInput: "Passer à la saisie de tags",
-    cycleCaptions: "Parcourir les légendes",
-    firstTagRow: "Premier tag de la ligne",
-    lastTagRow: "Dernier tag de la ligne",
-    doubleShift: "Double Maj",
-    shift: "Maj",
+    switchTagBubble: "Basculer la bulle de tag",
+    switchTagInput: "Basculer l'entrée de tag",
+    cycleCaptions: "Faire défiler les légendes",
+    firstTagRow: "Première ligne de tags",
+    lastTagRow: "Dernière ligne de tags",
+    doubleShift: "Double Shift",
+    shift: "Shift",
     del: "Suppr",
     removeTag: "Supprimer le tag",
     other: "Autre",
     esc: "Échap",
-    closePreview: "Fermer l'aperçu/modal",
+    closePreview: "Fermer l'aperçu",
     deleteImage: "Supprimer l'image",
-    toggleImagePreview: "Basculer l'aperçu",
-    copyToClipboard: "Copier l'image dans le presse-papiers",
+    toggleImagePreview: "Basculer l'aperçu de l'image",
+    copyToClipboard: "Copier dans le presse-papiers",
   },
   imageViewer: {
     zoomIn: "Zoom avant",
@@ -208,17 +300,14 @@ export default {
     imageInfo: "Informations sur l'image",
     dimensions: "Dimensions",
   },
-  tools: {
-    removeCommas: "Supprimer les virgules",
-    replaceNewlinesWithCommas: "Remplacer les sauts de ligne par des virgules",
-    replaceUnderscoresWithSpaces: "Remplacer les tirets bas par des espaces",
-  },
   notifications: {
-    imageCopied: "Image copiée dans le presse-papiers",
-    imageCopyFailed: "Échec de la copie de l'image dans le presse-papiers",
-    folderCreated: "Dossier créé avec succès",
+    imageCopied: "Image copiée",
+    imageCopyFailed: "Échec de la copie de l'image",
+    folderCreated: "Dossier créé",
     folderCreateError: "Erreur lors de la création du dossier",
-    generatingCaption: "Génération de la légende en cours",
-    captionGenerated: "Légende générée avec succès"
+    generatingCaption: "Génération de la légende...",
+    captionGenerated: "Légende générée",
+    connectionLost: "Connexion perdue",
+    connectionRestored: "Connexion rétablie",
   },
 } as const satisfies Translations;

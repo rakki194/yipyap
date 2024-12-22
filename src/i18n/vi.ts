@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return 'Đang tải lên tệp...';
       return `Đang tải lên ${params.count} tệp...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `Đang tải lên ${params?.progress ?? 0}%`,
     processingImage: "Đang xử lý hình ảnh...",
     generateTags: "Tạo thẻ",
     generatingTags: "Đang tạo thẻ...",
@@ -158,6 +159,19 @@ export default {
     folderNamePlaceholder: "Tên thư mục",
     deleteConfirmation: "Xác nhận xóa",
     processingImages: (params?: TranslationParams) => `Đang xử lý ${params?.count ?? 0} hình ảnh...`,
+    filesExceedLimit: "Quá nhiều tệp",
+    noFilesToUpload: "Không có tệp để tải lên",
+    processingFiles: "Đang xử lý tệp...",
+    uploadComplete: "Tải lên hoàn tất",
+    uploadFailed: "Tải lên thất bại",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'Đang xóa tệp...';
+      return `Đang xóa ${params.count} tệp...`;
+    },
+    deleteComplete: "Xóa hoàn tất",
+    deleteFailed: "Xóa thất bại",
+    generatingCaption: "Đang tạo chú thích...",
+    captionGenerated: "Đã tạo chú thích",
   },
   shortcuts: {
     title: "Phím tắt",
@@ -215,6 +229,8 @@ export default {
     folderCreated: "Đã tạo thư mục",
     folderCreateError: "Không thể tạo thư mục",
     generatingCaption: "Đang tạo chú thích...",
-    captionGenerated: "Đã tạo chú thích"
+    captionGenerated: "Đã tạo chú thích",
+    connectionLost: "Mất kết nối với máy chủ",
+    connectionRestored: "Đã khôi phục kết nối"
   },
 } as const satisfies Translations;

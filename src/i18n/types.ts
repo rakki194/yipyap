@@ -143,7 +143,7 @@ export interface GalleryTranslations {
   emptyFolder: string;
   dropToUpload: string;
   uploadProgress: TranslationValue;
-  uploadProgressPercent: string;
+  uploadProgressPercent: TranslationValue;
   filesExceedLimit: string;
   noFilesToUpload: string;
   processingFiles: string;

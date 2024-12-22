@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return 'Mengunggah beberapa file...';
       return `Mengunggah ${params.count} file...`;
     },
+    uploadProgressPercent: "Mengunggah... {progress}%",
     processingImage: "Memproses gambar...",
     generateTags: "Buat Tag",
     generatingTags: "Membuat tag...",
@@ -158,6 +159,21 @@ export default {
     createFolder: "Buat Folder",
     folderNamePlaceholder: "Masukkan nama folder",
     deleteConfirmation: "Konfirmasi Penghapusan",
+    filesExceedLimit: "File terlalu besar: {files}",
+    noFilesToUpload: "Tidak ada file untuk diunggah",
+    processingFiles: "Memproses file...",
+    uploadComplete: "Unggahan selesai",
+    uploadFailed: "Unggahan gagal: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Menghapus file...';
+      }
+      return `Menghapus ${params.count} file...`;
+    },
+    deleteComplete: "Penghapusan selesai",
+    deleteFailed: "Penghapusan gagal",
+    generatingCaption: "Sedang menghasilkan caption...",
+    captionGenerated: "Caption berhasil dihasilkan",
   },
   shortcuts: {
     title: "Pintasan Keyboard",
@@ -216,5 +232,7 @@ export default {
     folderCreateError: "Gagal membuat folder",
     generatingCaption: "Sedang menghasilkan caption...",
     captionGenerated: "Caption berhasil dihasilkan",
+    connectionLost: "Koneksi terputus",
+    connectionRestored: "Koneksi dipulihkan"
   },
 } as const satisfies Translations;

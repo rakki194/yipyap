@@ -1,5 +1,6 @@
 import { getPathSeparator } from "~/i18n";
 import type { Translations, TranslationParams } from "./types";
+import { createPluralTranslation } from "./plurals";
 
 export default {
   common: {
@@ -53,7 +54,7 @@ export default {
     disableAnimations: "בטל אנימציות",
     language: "שפה",
     disableNonsense: "בטל טקסט ביפנית",
-    modelSettings: "הגדרות מודל",
+    modelSettings: (params: TranslationParams) => "הגדרות מודל",
     jtp2ModelPath: "נתיב מודל JTP2",
     jtp2TagsPath: "נתיב תגיות JTP2",
     downloadModel: "הורד מודל (1.8GB)",
@@ -103,19 +104,40 @@ export default {
     loadingFolders: "טוען תיקיות...",
     noResults: "לא נמצאו תוצאות",
     folderCount: (params?: TranslationParams) => `${params?.count ?? 0} תיקיות`,
-    deleteConfirm: "האם אתה בטוח שברצונך למחוק תמונה זו?",
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "פריט זה";
+      return `האם אתה בטוח שברצונך למחוק את "${name}"?`;
+    },
     deleteSuccess: "התמונה נמחקה בהצלחה",
-    deleteError: "שגיאה במחיקת התמונה",
-    savingCaption: "שומר כיתוב...",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "פריט";
+      return `שגיאה במחיקת "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "פריט";
+      return `שומר כיתוב עבור "${name}"...`;
+    },
     savedCaption: "הכיתוב נשמר",
-    errorSavingCaption: "שגיאה בשמירת הכיתוב",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "פריט";
+      return `שגיאה בשמירת הכיתוב עבור "${name}"`;
+    },
     emptyFolder: "תיקייה זו ריקה",
     dropToUpload: "גרור קבצים לכאן להעלאה",
-    uploadProgress: (params?: TranslationParams) => {
-      if (!params?.count) return 'מעלה קבצים...';
-      return `מעלה ${params.count} קבצים...`;
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'מעלה קבצים...';
+      }
+      return createPluralTranslation({
+        one: "מעלה קובץ אחד...",
+        other: "מעלה ${count} קבצים..."
+      }, "he")(params);
     },
-    processingImage: "מעבד תמונה...",
+    uploadProgressPercent: "מעלה... {progress}%",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "תמונה";
+      return `מעבד את "${name}"...`;
+    },
     generateTags: "צור תגיות",
     generatingTags: "יוצר תגיות...",
     removeTags: "הסר תגיות",
@@ -130,15 +152,36 @@ export default {
     selectAll: "בחר הכל",
     deselectAll: "בטל בחירת הכל",
     deleteSelected: "מחק נבחרים",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders && images) {
-        return `האם אתה בטוח שברצונך למחוק ${folders} תיקיות ו-${images} תמונות?`;
-      } else if (folders) {
-        return `האם אתה בטוח שברצונך למחוק ${folders} תיקיות?`;
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'האם אתה בטוח שברצונך למחוק פריטים אלה?';
       }
-      return `האם אתה בטוח שברצונך למחוק ${images} תמונות?`;
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'האם אתה בטוח שברצונך למחוק פריטים אלה?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "תיקייה אחת",
+          other: "${count} תיקיות"
+        }, "he")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "תמונה אחת",
+          other: "${count} תמונות"
+        }, "he")({ count: images }));
+      }
+      return `האם אתה בטוח שברצונך למחוק ${parts.join(" ו-")}?`;
     },
-    confirmFolderDelete: "האם אתה בטוח שברצונך למחוק את התיקייה {name}?",
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "תיקייה";
+      return `האם אתה בטוח שברצונך למחוק את התיקייה "${name}" ואת כל תוכנה?`;
+    },
     someFolderDeletesFailed: "חלק מהתיקיות לא נמחקו",
     folderDeleteError: "שגיאה במחיקת תיקייה",
     deletingFile: "מוחק קובץ...",
@@ -158,6 +201,24 @@ export default {
     createFolder: "צור תיקייה",
     folderNamePlaceholder: "שם התיקייה",
     deleteConfirmation: "אישור מחיקה",
+    filesExceedLimit: "קבצים גדולים מדי: {files}",
+    noFilesToUpload: "אין קבצים להעלאה",
+    processingFiles: "מעבד קבצים...",
+    uploadComplete: "ההעלאה הושלמה",
+    uploadFailed: "ההעלאה נכשלה: {error}",
+    deleteComplete: "המחיקה הושלמה",
+    deleteFailed: "המחיקה נכשלה",
+    generatingCaption: "מייצר כיתוב...",
+    captionGenerated: "הכיתוב נוצר",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'מוחק קבצים...';
+      }
+      return createPluralTranslation({
+        one: "מוחק קובץ אחד...",
+        other: "מוחק ${count} קבצים..."
+      }, "he")(params);
+    },
   },
   shortcuts: {
     title: "קיצורי מקלדת",
@@ -216,5 +277,7 @@ export default {
     folderCreateError: "שגיאה ביצירת התיקייה",
     generatingCaption: "מייצר כיתוב...",
     captionGenerated: "הכיתוב נוצר בהצלחה",
+    connectionLost: "החיבור לשרת אבד",
+    connectionRestored: "החיבור לשרת שוחזר",
   },
 } as const satisfies Translations;

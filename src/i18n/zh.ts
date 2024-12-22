@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return '正在上传文件...';
       return `正在上传 ${params.count} 个文件...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `正在上传...${params?.progress}%`,
     processingImage: "处理图片中...",
     generateTags: "生成标签",
     generatingTags: "生成标签中...",
@@ -162,6 +163,19 @@ export default {
     processingImages: (params?: TranslationParams) => `正在处理${params?.count ?? 0}张图片...`,
     uploadError: "上传失败",
     dropOverlay: "拖放文件到此处",
+    filesExceedLimit: "文件数量超出限制",
+    noFilesToUpload: "没有要上传的文件",
+    processingFiles: "正在处理文件...",
+    uploadComplete: "上传完成",
+    uploadFailed: "上传失败",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return '正在删除文件...';
+      return `正在删除 ${params.count} 个文件...`;
+    },
+    deleteComplete: "删除完成",
+    deleteFailed: "删除失败",
+    generatingCaption: "正在生成说明...",
+    captionGenerated: "说明已生成",
   },
   shortcuts: {
     title: "键盘快捷键",
@@ -219,6 +233,8 @@ export default {
     folderCreated: "文件夹创建成功",
     folderCreateError: "创建文件夹失败",
     generatingCaption: "正在生成图片说明...",
-    captionGenerated: "图片说明已生成"
+    captionGenerated: "图片说明已生成",
+    connectionLost: "连接已断开",
+    connectionRestored: "连接已恢复"
   },
 } as const satisfies Translations;

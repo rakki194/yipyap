@@ -98,104 +98,157 @@ export default {
     deleteSelected: "Smazat vybrané",
   },
   gallery: {
-    addTag: "Přidat tag...",
-    addCaption: "Přidat popisek...",
-    quickJump: "Přejít do složky...",
+    addTag: "Přidat štítek",
+    addCaption: "Přidat popisek",
+    quickJump: "Rychlý skok",
     loadingFolders: "Načítání složek...",
     noResults: "Žádné výsledky",
     folderCount: createPluralTranslation({
       one: "1 složka",
-      few: "${count} složky",
-      many: "${count} složek",
       other: "${count} složek"
     }, "cs"),
-    deleteConfirm: "Opravdu chcete smazat tento obrázek?",
-    deleteSuccess: "Obrázek byl úspěšně smazán",
-    deleteError: "Chyba při mazání obrázku",
-    savingCaption: "Ukládání popisku...",
-    savedCaption: "Popisek uložen",
-    errorSavingCaption: "Chyba při ukládání popisku",
-    emptyFolder: "Tato složka je prázdná",
-    dropToUpload: "Přetáhněte soubory pro nahrání",
-    uploadProgress: createPluralTranslation({
-      one: "Nahrávání 1 souboru...",
-      few: "Nahrávání ${count} souborů...",
-      many: "Nahrávání ${count} souborů...",
-      other: "Nahrávání ${count} souborů..."
-    }, "cs"),
-    processingImage: "Zpracování obrázku...",
-    generateTags: "Generovat tagy",
-    generatingTags: "Generování tagů...",
-    removeTags: "Odstranit tagy",
-    createCaption: "Vytvořit popisek",
-    captionTypes: {
-      txt: "Vytvořit nový textový soubor",
-      tags: "Vytvořit nový .tags soubor",
-      caption: "Vytvořit nový .caption soubor",
-      wd: "Vytvořit nový .wd soubor",
-    },
-    noCaptionFiles: "Zatím žádné soubory s popisky!",
-    uploadError: "Nahrávání selhalo",
-    dropOverlay: "Přetáhněte soubory nebo složky sem",
-    selectAll: "Vybrat vše",
-    deselectAll: "Zrušit výběr",
-    deleteSelected: "Smazat vybrané",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders > 0 && images > 0) {
-        return `Opravdu chcete smazat ${folders} složek a ${images} obrázků?`;
-      } else if (folders > 0) {
-        return `Opravdu chcete smazat ${folders} složek?`;
-      }
-      return `Opravdu chcete smazat ${images} obrázků?`;
-    },
-    confirmFolderDelete: "Opravdu chcete smazat složku {name}?",
-    someFolderDeletesFailed: "Některé složky se nepodařilo smazat",
-    folderDeleteError: "Chyba při mazání složky",
-    deletingFile: "Mazání souboru...",
-    fileDeleteSuccess: "Soubor byl úspěšně smazán",
-    fileDeleteError: "Chyba při mazání souboru",
     fileCount: createPluralTranslation({
       one: "1 soubor",
-      few: "${count} soubory",
-      many: "${count} souborů",
       other: "${count} souborů"
     }, "cs"),
     imageCount: createPluralTranslation({
       one: "1 obrázek",
-      few: "${count} obrázky",
-      many: "${count} obrázků",
       other: "${count} obrázků"
     }, "cs"),
     foundFolders: createPluralTranslation({
       one: "Nalezena 1 složka",
-      few: "Nalezeny ${count} složky",
-      many: "Nalezeno ${count} složek",
       other: "Nalezeno ${count} složek"
     }, "cs"),
     deletedCount: createPluralTranslation({
       one: "Smazána 1 položka",
-      few: "Smazány ${count} položky",
-      many: "Smazáno ${count} položek",
       other: "Smazáno ${count} položek"
     }, "cs"),
-    selectedCount: createPluralTranslation({
-      one: "1 vybraný",
-      few: "${count} vybrané",
-      many: "${count} vybraných",
-      other: "${count} vybraných"
-    }, "cs"),
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "tuto položku";
+      return `Opravdu chcete smazat "${name}"?`;
+    },
+    deleteSuccess: "Úspěšně smazáno",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "položku";
+      return `Chyba při mazání "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "položku";
+      return `Ukládání popisku pro "${name}"...`;
+    },
+    savedCaption: "Popisek uložen",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "položku";
+      return `Chyba při ukládání popisku pro "${name}"`;
+    },
+    emptyFolder: "Tato složka je prázdná",
+    dropToUpload: "Přetáhněte soubory pro nahrání",
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Nahrávání souborů...';
+      }
+      return createPluralTranslation({
+        one: "Nahrávání 1 souboru...",
+        other: "Nahrávání ${count} souborů..."
+      }, "cs")(params);
+    },
+    uploadProgressPercent: "Nahrávání... {progress}%",
+    filesExceedLimit: "Soubory jsou příliš velké: {files}",
+    noFilesToUpload: "Žádné soubory k nahrání",
+    processingFiles: "Zpracování souborů...",
+    uploadComplete: "Nahrávání dokončeno",
+    uploadFailed: "Nahrávání selhalo: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Mazání souborů...';
+      }
+      return createPluralTranslation({
+        one: "Mazání 1 souboru...",
+        other: "Mazání ${count} souborů..."
+      }, "cs")(params);
+    },
+    deleteComplete: "Mazání dokončeno",
+    deleteFailed: "Mazání selhalo",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "obrázek";
+      return `Zpracování "${name}"...`;
+    },
     processingImages: createPluralTranslation({
       one: "Zpracování 1 obrázku...",
-      few: "Zpracování ${count} obrázků...",
-      many: "Zpracování ${count} obrázků...",
       other: "Zpracování ${count} obrázků..."
     }, "cs"),
-    folderLocation: (params: TranslationParams) => `ve složce ${params.name ?? ""}`,
-    moveToFolder: (params: TranslationParams) => `Přesunout do ${params.name ?? ""}`,
-    workWithFolder: (params: TranslationParams) => `Pracovat s ${params.name ?? ""}`,
+    generatingCaption: "Generování popisku...",
+    captionGenerated: "Popisek vygenerován",
+    generateTags: "Generovat štítky",
+    generatingTags: "Generování štítků...",
+    removeTags: "Odstranit štítky",
+    createCaption: "Vytvořit popisek",
+    captionTypes: {
+      txt: "Txt",
+      tags: "Štítky",
+      caption: "Popisek",
+      wd: "WD",
+    },
+    noCaptionFiles: "Žádné soubory s popisky",
+    uploadError: "Chyba nahrávání",
+    dropOverlay: "Pusťte pro nahrání",
+    selectAll: "Vybrat vše",
+    deselectAll: "Zrušit výběr",
+    deleteSelected: "Smazat vybrané",
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Opravdu chcete smazat tyto položky?';
+      }
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Opravdu chcete smazat tyto položky?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 složku",
+          other: "${count} složek"
+        }, "cs")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 obrázek",
+          other: "${count} obrázků"
+        }, "cs")({ count: images }));
+      }
+      return `Opravdu chcete smazat ${parts.join(" a ")}?`;
+    },
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "složku";
+      return `Opravdu chcete smazat složku "${name}" a celý její obsah?`;
+    },
+    someFolderDeletesFailed: "Některé složky se nepodařilo smazat",
+    folderDeleteError: "Chyba při mazání jedné nebo více složek",
+    deletingFile: "Mazání souboru...",
+    fileDeleteSuccess: "Soubor úspěšně smazán",
+    fileDeleteError: "Chyba při mazání jednoho nebo více souborů",
     createFolder: "Vytvořit složku",
     folderNamePlaceholder: "Název složky",
     deleteConfirmation: "Potvrzení smazání",
+    selectedCount: createPluralTranslation({
+      one: "Vybrána 1 položka",
+      other: "Vybráno ${count} položek"
+    }, "cs"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Umístění: ${name}`;
+    },
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "složka";
+      return `Přesunout do "${name}"`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "složka";
+      return `Pracovat se složkou "${name}"`;
+    },
   },
   shortcuts: {
     title: "Klávesové zkratky",
@@ -206,24 +259,24 @@ export default {
     previousImage: "Předchozí obrázek",
     nextImage: "Další obrázek",
     togglePreview: "Přepnout náhled",
-    tagNavigation: "Navigace tagů",
-    previousTag: "Předchozí tag",
-    nextTag: "Další tag",
-    switchTagBubble: "Přepnout na editaci tagů",
-    switchTagInput: "Přepnout na vstup tagů",
+    tagNavigation: "Navigace štítků",
+    previousTag: "Předchozí štítek",
+    nextTag: "Další štítek",
+    switchTagBubble: "Přepnout bublinu štítku",
+    switchTagInput: "Přepnout vstup štítku",
     cycleCaptions: "Procházet popisky",
-    firstTagRow: "První tag v řádku",
-    lastTagRow: "Poslední tag v řádku",
+    firstTagRow: "První řádek štítků",
+    lastTagRow: "Poslední řádek štítků",
     doubleShift: "Dvojitý Shift",
     shift: "Shift",
     del: "Del",
-    removeTag: "Odstranit tag",
+    removeTag: "Odstranit štítek",
     other: "Ostatní",
     esc: "Esc",
-    closePreview: "Zavřít náhled/modální okno",
+    closePreview: "Zavřít náhled",
     deleteImage: "Smazat obrázek",
     toggleImagePreview: "Přepnout náhled obrázku",
-    copyToClipboard: "Kopírovat obrázek do schránky",
+    copyToClipboard: "Kopírovat do schránky",
   },
   imageViewer: {
     zoomIn: "Přiblížit",
@@ -248,11 +301,13 @@ export default {
     replaceUnderscoresWithSpaces: "Nahradit podtržítka mezerami",
   },
   notifications: {
-    imageCopied: "Obrázek byl zkopírován do schránky",
-    imageCopyFailed: "Nepodařilo se zkopírovat obrázek do schránky",
-    folderCreated: "Složka byla vytvořena",
+    imageCopied: "Obrázek zkopírován",
+    imageCopyFailed: "Nepodařilo se zkopírovat obrázek",
+    folderCreated: "Složka vytvořena",
     folderCreateError: "Nepodařilo se vytvořit složku",
     generatingCaption: "Generování popisku...",
-    captionGenerated: "Popisek byl vygenerován",
+    captionGenerated: "Popisek vygenerován",
+    connectionLost: "Ztráta připojení",
+    connectionRestored: "Připojení obnoveno",
   },
 } as const satisfies Translations;

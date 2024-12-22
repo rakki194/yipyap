@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return 'Laddar upp filer...';
       return `Laddar upp ${params.count} filer...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `Laddar upp... ${params?.progress}%`,
     processingImage: "Bearbetar bild...",
     generateTags: "Generera taggar",
     generatingTags: "Genererar taggar...",
@@ -158,6 +159,19 @@ export default {
     folderNamePlaceholder: "Mappnamn",
     deleteConfirmation: "Bekräfta radering",
     processingImages: (params?: TranslationParams) => `Bearbetar ${params?.count ?? 0} bilder...`,
+    filesExceedLimit: "För många filer",
+    noFilesToUpload: "Inga filer att ladda upp",
+    processingFiles: "Bearbetar filer...",
+    uploadComplete: "Uppladdning klar",
+    uploadFailed: "Uppladdning misslyckades",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'Raderar filer...';
+      return `Raderar ${params.count} filer...`;
+    },
+    deleteComplete: "Radering klar",
+    deleteFailed: "Radering misslyckades",
+    generatingCaption: "Genererar bildtext...",
+    captionGenerated: "Bildtext genererad",
   },
   shortcuts: {
     title: "Kortkommandon",
@@ -215,6 +229,8 @@ export default {
     folderCreated: "Mapp skapad",
     folderCreateError: "Kunde inte skapa mapp",
     generatingCaption: "Genererar bildtext...",
-    captionGenerated: "Bildtext genererad"
+    captionGenerated: "Bildtext genererad",
+    connectionLost: "Anslutningen förlorad",
+    connectionRestored: "Anslutningen återställd"
   },
 } as const satisfies Translations;

@@ -41,16 +41,6 @@ export default {
   settings: {
     title: "Ρυθμίσεις",
     appearance: "Εμφάνιση",
-    gallery: "Συλλογή",
-    language: "Γλώσσα",
-    modelSettings: "Ρυθμίσεις μοντέλου",
-    experimentalFeatures: "Πειραματικές λειτουργίες",
-    disableAnimations: "Απενεργοποίηση κινήσεων",
-    disableNonsense: "Απενεργοποίηση Ιαπωνικών",
-    instantDelete: "Άμεση διαγραφή (χωρίς επιβεβαίωση)",
-    enableZoom: "Ενεργοποίηση μεγέθυνσης",
-    enableMinimap: "Ενεργοποίηση μικρογραφίας",
-    alwaysShowCaptionEditor: "Εμφάνιση επεξεργαστή λεζάντας πάντα",
     theme: {
       light: "Φωτεινό",
       gray: "Γκρι",
@@ -61,18 +51,28 @@ export default {
       halloween: "Halloween",
       christmas: "Χριστούγεννα",
     },
+    disableAnimations: "Απενεργοποίηση κινήσεων",
+    language: "Γλώσσα",
+    disableNonsense: "Απενεργοποίηση Ιαπωνικών",
+    modelSettings: (params: TranslationParams) => "Ρυθμίσεις μοντέλου",
+    jtp2ModelPath: "Διαδρομή μοντέλου JTP2",
+    jtp2TagsPath: "Διαδρομή ετικετών JTP2",
+    downloadModel: "Λήψη μοντέλου (1.8GB)",
+    downloadTags: "Λήψη ετικετών (195KB)",
+    viewMode: "Τρόπος προβολής",
     gridView: "Προβολή πλέγματος",
     listView: "Προβολή λίστας",
     sortBy: "Ταξινόμηση κατά",
     sortByName: "Ταξινόμηση κατά όνομα",
     sortByDate: "Ταξινόμηση κατά ημερομηνία",
     sortBySize: "Ταξινόμηση κατά μέγεθος",
-    jtp2ModelPath: "Διαδρομή μοντέλου JTP2",
-    jtp2TagsPath: "Διαδρομή ετικετών JTP2",
-    downloadModel: "Λήψη μοντέλου (1.8GB)",
-    downloadTags: "Λήψη ετικετών (195KB)",
-    viewMode: "Τρόπος προβολής",
+    experimentalFeatures: "Πειραματικές λειτουργίες",
+    enableZoom: "Ενεργοποίηση μεγέθυνσης",
+    enableMinimap: "Ενεργοποίηση μικρογραφίας",
+    alwaysShowCaptionEditor: "Εμφάνιση επεξεργαστή λεζάντας πάντα",
+    instantDelete: "Άμεση διαγραφή (χωρίς επιβεβαίωση)",
     warning: "Προειδοποίηση",
+    gallery: "Συλλογή",
     preserveLatents: "Διατήρηση Latents",
     preserveLatentsTooltip: "Διατηρήστε τα αρχεία .npz (latent) κατά τη διαγραφή εικόνων.",
     preserveTxt: "Διατήρηση .txt",
@@ -107,19 +107,40 @@ export default {
       one: "1 φάκελος",
       other: "${count} φάκελοι"
     }, "el"),
-    deleteConfirm: "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν την εικόνα;",
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "αυτό το στοιχείο";
+      return `Είστε βέβαιοι ότι θέλετε να διαγράψετε "${name}";`;
+    },
     deleteSuccess: "Η εικόνα διαγράφηκε με επιτυχία",
-    deleteError: "Σφάλμα κατά τη διαγραφή της εικόνας",
-    savingCaption: "Αποθήκευση λεζάντας...",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "στοιχείο";
+      return `Σφάλμα κατά τη διαγραφή του "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "στοιχείο";
+      return `Αποθήκευση λεζάντας για "${name}"...`;
+    },
     savedCaption: "Η λεζάντα αποθηκεύτηκε",
-    errorSavingCaption: "Σφάλμα κατά την αποθήκευση της λεζάντας",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "στοιχείο";
+      return `Σφάλμα κατά την αποθήκευση της λεζάντας για "${name}"`;
+    },
     emptyFolder: "Αυτός ο φάκελος είναι κενός",
     dropToUpload: "Σύρετε αρχεία εδώ για μεταφόρτωση",
-    uploadProgress: createPluralTranslation({
-      one: "Μεταφόρτωση 1 αρχείου...",
-      other: "Μεταφόρτωση ${count} αρχείων..."
-    }, "el"),
-    processingImage: "Επεξεργασία εικόνας...",
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Μεταφόρτωση αρχείων...';
+      }
+      return createPluralTranslation({
+        one: "Μεταφόρτωση 1 αρχείου...",
+        other: "Μεταφόρτωση ${count} αρχείων..."
+      }, "el")(params);
+    },
+    uploadProgressPercent: "Μεταφόρτωση... {progress}%",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "εικόνα";
+      return `Επεξεργασία "${name}"...`;
+    },
     generateTags: "Δημιουργία ετικετών",
     generatingTags: "Δημιουργία ετικετών...",
     removeTags: "Αφαίρεση ετικετών",
@@ -134,18 +155,47 @@ export default {
     selectAll: "Επιλογή όλων",
     deselectAll: "Αποεπιλογή όλων",
     deleteSelected: "Διαγραφή επιλεγμένων",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders > 0 && images > 0) {
-        return `Είστε βέβαιοι ότι θέλετε να διαγράψετε ${folders} φακέλους και ${images} εικόνες;`;
-      } else if (folders > 0) {
-        return `Είστε βέβαιοι ότι θέλετε να διαγράψετε ${folders} φακέλους;`;
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτά τα στοιχεία;';
       }
-      return `Είστε βέβαιοι ότι θέλετε να διαγράψετε ${images} εικόνες;`;
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτά τα στοιχεία;';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 φάκελο",
+          other: "${count} φακέλους"
+        }, "el")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 εικόνα",
+          other: "${count} εικόνες"
+        }, "el")({ count: images }));
+      }
+      return `Είστε βέβαιοι ότι θέλετε να διαγράψετε ${parts.join(" και ")};`;
     },
-    confirmFolderDelete: "Είστε βέβαιοι ότι θέλετε να διαγράψετε τον φάκελο {name};",
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "φάκελο";
+      return `Είστε βέβαιοι ότι θέλετε να διαγράψετε τον φάκελο "${name}" και όλα τα περιεχόμενά του;`;
+    },
     someFolderDeletesFailed: "Ορισμένοι φάκελοι δεν μπόρεσαν να διαγραφούν",
     folderDeleteError: "Σφάλμα κατά τη διαγραφή του φακέλου",
-    deletingFile: "Διαγραφή αρχείου...",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Διαγραφή αρχείων...';
+      }
+      return createPluralTranslation({
+        one: "Διαγραφή 1 αρχείου...",
+        other: "Διαγραφή ${count} αρχείων..."
+      }, "el")(params);
+    },
     fileDeleteSuccess: "Το αρχείο διαγράφηκε με επιτυχία",
     fileDeleteError: "Σφάλμα κατά τη διαγραφή του αρχείου",
     uploadError: "Η μεταφόρτωση απέτυχε",
@@ -180,6 +230,16 @@ export default {
     createFolder: "Δημιουργία φακέλου",
     folderNamePlaceholder: "Όνομα φακέλου",
     deleteConfirmation: "Επιβεβαίωση διαγραφής",
+    filesExceedLimit: "Αρχεία πολύ μεγάλα: {files}",
+    noFilesToUpload: "Δεν υπάρχουν αρχεία για μεταφόρτωση",
+    processingFiles: "Επεξεργασία αρχείων...",
+    uploadComplete: "Η μεταφόρτωση ολοκληρώθηκε",
+    uploadFailed: "Η μεταφόρτωση απέτυχε: {error}",
+    deleteComplete: "Η διαγραφή ολοκληρώθηκε",
+    deleteFailed: "Η διαγραφή απέτυχε",
+    deletingFile: "Διαγραφή αρχείου...",
+    generatingCaption: "Δημιουργία λεζάντας...",
+    captionGenerated: "Η λεζάντα δημιουργήθηκε",
   },
   shortcuts: {
     title: "Συντομεύσεις πληκτρολογίου",
@@ -238,5 +298,7 @@ export default {
     folderCreateError: "Σφάλμα κατά τη δημιουργία του φακέλου",
     generatingCaption: "Δημιουργία λεζάντας...",
     captionGenerated: "Η λεζάντα δημιουργήθηκε",
+    connectionLost: "Η σύνδεση χάθηκε",
+    connectionRestored: "Η σύνδεση αποκαταστάθηκε",
   },
 } as const satisfies Translations;

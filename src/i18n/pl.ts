@@ -120,6 +120,7 @@ export default {
         plural5_: "plików"
       })}...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `Przesyłanie... ${params?.progress}%`,
     processingImage: "Przetwarzanie obrazu...",
     generateTags: "Generuj tagi",
     generatingTags: "Generowanie tagów...",
@@ -200,6 +201,19 @@ export default {
         plural5_: "obrazów"
       });
     },
+    filesExceedLimit: "Przekroczono limit plików",
+    noFilesToUpload: "Brak plików do przesłania",
+    processingFiles: "Przetwarzanie plików...",
+    uploadComplete: "Przesyłanie zakończone",
+    uploadFailed: "Przesyłanie nie powiodło się",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'Usuwanie plików...';
+      return `Usuwanie ${params.count} plików...`;
+    },
+    deleteComplete: "Usuwanie zakończone",
+    deleteFailed: "Usuwanie nie powiodło się",
+    generatingCaption: "Generowanie podpisu...",
+    captionGenerated: "Podpis wygenerowany",
   },
   shortcuts: {
     title: "Skróty klawiszowe",
@@ -253,6 +267,8 @@ export default {
     folderCreateError: "Nie udało się utworzyć folderu",
     generatingCaption: "Generowanie podpisu...",
     captionGenerated: "Podpis został wygenerowany",
+    connectionLost: "Utracono połączenie z serwerem",
+    connectionRestored: "Połączenie z serwerem zostało przywrócone"
   },
   tools: {
     removeCommas: "Usuń przecinki",

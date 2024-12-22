@@ -98,58 +98,15 @@ export default {
     deleteSelected: "Изтрий избраните",
   },
   gallery: {
-    addTag: "Добави таг...",
-    addCaption: "Добави надпис...",
-    quickJump: "Бърз преход към папка...",
+    addTag: "Добави етикет",
+    addCaption: "Добави надпис",
+    quickJump: "Бързо прескачане",
     loadingFolders: "Зареждане на папки...",
-    noResults: "Няма намерени резултати",
+    noResults: "Няма резултати",
     folderCount: createPluralTranslation({
       one: "1 папка",
       other: "${count} папки"
     }, "bg"),
-    deleteConfirm: "Сигурни ли сте, че искате да изтриете това изображение?",
-    deleteSuccess: "Изображението е изтрито успешно",
-    deleteError: "Грешка при изтриване на изображението",
-    savingCaption: "Запазване на надпис...",
-    savedCaption: "Надписът е запазен",
-    errorSavingCaption: "Грешка при запазване на надписа",
-    emptyFolder: "Тази папка е празна",
-    dropToUpload: "Пуснете файлове тук за качване",
-    uploadProgress: createPluralTranslation({
-      one: "Качване на 1 файл...",
-      other: "Качване на ${count} файла..."
-    }, "bg"),
-    processingImage: "Обработка на изображение...",
-    generateTags: "Генерирай тагове",
-    generatingTags: "Генериране на тагове...",
-    removeTags: "Премахни тагове",
-    createCaption: "Създай надпис",
-    captionTypes: {
-      txt: "Създай нов текстов файл",
-      tags: "Създай нов .tags файл",
-      caption: "Създай нов .caption файл",
-      wd: "Създай нов .wd файл"
-    },
-    noCaptionFiles: "Все още няма файлове с надписи!",
-    uploadError: "Качването се провали",
-    dropOverlay: "Пуснете файлове или папки тук",
-    selectAll: "Избери всички",
-    deselectAll: "Отмени избора на всички",
-    deleteSelected: "Изтрий избраните",
-    confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-      if (folders > 0 && images > 0) {
-        return `Сигурни ли сте, че искате да изтриете ${folders} папки и ${images} изображения?`;
-      } else if (folders > 0) {
-        return `Сигурни ли сте, че искате да изтриете ${folders} папки?`;
-      }
-      return `Сигурни ли сте, че искате да изтриете ${images} изображения?`;
-    },
-    confirmFolderDelete: "Сигурни ли сте, че искате да изтриете папката {name}?",
-    someFolderDeletesFailed: "Някои папки не можаха да бъдат изтрити",
-    folderDeleteError: "Грешка при изтриване на папката",
-    deletingFile: "Изтриване на файл...",
-    fileDeleteSuccess: "Файлът е изтрит успешно",
-    fileDeleteError: "Грешка при изтриване на файла",
     fileCount: createPluralTranslation({
       one: "1 файл",
       other: "${count} файла"
@@ -166,20 +123,132 @@ export default {
       one: "Изтрит 1 елемент",
       other: "Изтрити ${count} елемента"
     }, "bg"),
-    selectedCount: createPluralTranslation({
-      one: "1 избран",
-      other: "${count} избрани"
-    }, "bg"),
+    deleteConfirm: (params: TranslationParams) => {
+      const name = params.name ?? "този елемент";
+      return `Сигурни ли сте, че искате да изтриете "${name}"?`;
+    },
+    deleteSuccess: "Успешно изтриване",
+    deleteError: (params: TranslationParams) => {
+      const name = params.name ?? "елемент";
+      return `Грешка при изтриване на "${name}"`;
+    },
+    savingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "елемент";
+      return `Запазване на надпис за "${name}"...`;
+    },
+    savedCaption: "Надписът е запазен",
+    errorSavingCaption: (params: TranslationParams) => {
+      const name = params.name ?? "елемент";
+      return `Грешка при запазване на надпис за "${name}"`;
+    },
+    emptyFolder: "Тази папка е празна",
+    dropToUpload: "Пуснете файлове тук за качване",
+    uploadProgress: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Качване на файлове...';
+      }
+      return createPluralTranslation({
+        one: "Качване на 1 файл...",
+        other: "Качване на ${count} файла..."
+      }, "bg")(params);
+    },
+    uploadProgressPercent: "Качване... {progress}%",
+    filesExceedLimit: "Файловете са твърде големи: {files}",
+    noFilesToUpload: "Няма файлове за качване",
+    processingFiles: "Обработка на файлове...",
+    uploadComplete: "Качването завърши",
+    uploadFailed: "Качването се провали: {error}",
+    deletingFiles: (params: TranslationParams) => {
+      if (!params || typeof params.count !== 'number') {
+        return 'Изтриване на файлове...';
+      }
+      return createPluralTranslation({
+        one: "Изтриване на 1 файл...",
+        other: "Изтриване на ${count} файла..."
+      }, "bg")(params);
+    },
+    deleteComplete: "Изтриването завърши",
+    deleteFailed: "Изтриването се провали",
+    processingImage: (params: TranslationParams) => {
+      const name = params.name ?? "изображение";
+      return `Обработка на "${name}"...`;
+    },
     processingImages: createPluralTranslation({
       one: "Обработка на 1 изображение...",
       other: "Обработка на ${count} изображения..."
     }, "bg"),
-    folderLocation: (params: TranslationParams) => `в ${params.name ?? ""}`,
-    moveToFolder: (params: TranslationParams) => `Премести в ${params.name ?? ""}`,
-    workWithFolder: (params: TranslationParams) => `Работа с ${params.name ?? ""}`,
+    generatingCaption: "Генериране на надпис...",
+    captionGenerated: "Надписът е генериран",
+    generateTags: "Генерирай етикети",
+    generatingTags: "Генериране на етикети...",
+    removeTags: "Премахни етикети",
+    createCaption: "Създай надпис",
+    captionTypes: {
+      txt: "Txt",
+      tags: "Етикети",
+      caption: "Надпис",
+      wd: "WD",
+    },
+    noCaptionFiles: "Няма файлове с надписи",
+    uploadError: "Грешка при качване",
+    dropOverlay: "Пуснете за качване",
+    selectAll: "Избери всички",
+    deselectAll: "Отмени избора",
+    deleteSelected: "Изтрий избраните",
+    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
+      if (!params || typeof params !== 'object') {
+        return 'Сигурни ли сте, че искате да изтриете тези елементи?';
+      }
+      const folders = typeof params.folders === 'number' ? params.folders : 0;
+      const images = typeof params.images === 'number' ? params.images : 0;
+      
+      if (folders === 0 && images === 0) {
+        return 'Сигурни ли сте, че искате да изтриете тези елементи?';
+      }
+
+      const parts = [];
+      if (folders > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 папка",
+          other: "${count} папки"
+        }, "bg")({ count: folders }));
+      }
+      if (images > 0) {
+        parts.push(createPluralTranslation({
+          one: "1 изображение",
+          other: "${count} изображения"
+        }, "bg")({ count: images }));
+      }
+      return `Сигурни ли сте, че искате да изтриете ${parts.join(" и ")}?`;
+    },
+    confirmFolderDelete: (params: TranslationParams) => {
+      const name = params.name ?? "папка";
+      return `Сигурни ли сте, че искате да изтриете папката "${name}" и цялото ѝ съдържание?`;
+    },
+    someFolderDeletesFailed: "Някои папки не можаха да бъдат изтрити",
+    folderDeleteError: "Грешка при изтриване на една или повече папки",
+    deletingFile: "Изтриване на файл...",
+    fileDeleteSuccess: "Файлът е изтрит успешно",
+    fileDeleteError: "Грешка при изтриване на един или повече файла",
     createFolder: "Създай папка",
-    folderNamePlaceholder: "Име на папката",
+    folderNamePlaceholder: "Име на папка",
     deleteConfirmation: "Потвърждение за изтриване",
+    selectedCount: createPluralTranslation({
+      one: "Избран 1 елемент",
+      other: "Избрани ${count} елемента"
+    }, "bg"),
+    folderLocation: (params: TranslationParams) => {
+      const name = params.name ?? "";
+      return `Местоположение: ${name}`;
+    },
+    moveToFolder: (params: TranslationParams) => {
+      const name = params.name ?? "папка";
+      return `Премести в "${name}"`;
+    },
+    workWithFolder: (params: TranslationParams) => {
+      const name = params.name ?? "папка";
+      return `Работа с "${name}"`;
+    },
   },
   shortcuts: {
     title: "Клавишни комбинации",
@@ -190,24 +259,24 @@ export default {
     previousImage: "Предишно изображение",
     nextImage: "Следващо изображение",
     togglePreview: "Превключи преглед",
-    tagNavigation: "Навигация на тагове",
-    previousTag: "Предишен таг",
-    nextTag: "Следващ таг",
-    switchTagBubble: "Превключи към балони с тагове",
-    switchTagInput: "Превключи към въвеждане на тагове",
+    tagNavigation: "Навигация на етикети",
+    previousTag: "Предишен етикет",
+    nextTag: "Следващ етикет",
+    switchTagBubble: "Превключи етикет балон",
+    switchTagInput: "Превключи въвеждане на етикет",
     cycleCaptions: "Превърти надписите",
-    firstTagRow: "Първи таг в реда",
-    lastTagRow: "Последен таг в реда",
+    firstTagRow: "Първи ред етикети",
+    lastTagRow: "Последен ред етикети",
     doubleShift: "Двоен Shift",
     shift: "Shift",
     del: "Del",
-    removeTag: "Премахни таг",
+    removeTag: "Премахни етикет",
     other: "Други",
     esc: "Esc",
-    closePreview: "Затвори преглед/прозорец",
+    closePreview: "Затвори преглед",
     deleteImage: "Изтрий изображение",
     toggleImagePreview: "Превключи преглед на изображение",
-    copyToClipboard: "Копирай изображението в клипборда",
+    copyToClipboard: "Копирай в клипборда",
   },
   imageViewer: {
     zoomIn: "Увеличи",
@@ -232,11 +301,13 @@ export default {
     replaceUnderscoresWithSpaces: "Замени долните черти с интервали",
   },
   notifications: {
-    imageCopied: "Изображението е копирано в клипборда",
-    imageCopyFailed: "Неуспешно копиране на изображението в клипборда",
+    imageCopied: "Изображението е копирано",
+    imageCopyFailed: "Грешка при копиране на изображението",
     folderCreated: "Папката е създадена",
     folderCreateError: "Грешка при създаване на папката",
     generatingCaption: "Генериране на надпис...",
     captionGenerated: "Надписът е генериран",
+    connectionLost: "Връзката е изгубена",
+    connectionRestored: "Връзката е възстановена",
   },
 } as const satisfies Translations;

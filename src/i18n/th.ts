@@ -115,6 +115,7 @@ export default {
       if (!params?.count) return 'กำลังอัปโหลดไฟล์...';
       return `กำลังอัปโหลด ${params.count} ไฟล์...`;
     },
+    uploadProgressPercent: (params?: TranslationParams) => `กำลังอัปโหลด... ${params?.progress}%`,
     processingImage: "กำลังประมวลผลรูปภาพ...",
     generateTags: "สร้างแท็ก",
     generatingTags: "กำลังสร้างแท็ก...",
@@ -158,6 +159,19 @@ export default {
     folderNamePlaceholder: "ชื่อโฟลเดอร์",
     deleteConfirmation: "ยืนยันการลบ",
     processingImages: (params?: TranslationParams) => `กำลังประมวลผล ${params?.count ?? 0} รูปภาพ...`,
+    filesExceedLimit: "มีไฟล์มากเกินไป",
+    noFilesToUpload: "ไม่มีไฟล์ที่จะอัปโหลด",
+    processingFiles: "กำลังประมวลผลไฟล์...",
+    uploadComplete: "อัปโหลดเสร็จสิ้น",
+    uploadFailed: "อัปโหลดล้มเหลว",
+    deletingFiles: (params?: TranslationParams) => {
+      if (!params?.count) return 'กำลังลบไฟล์...';
+      return `กำลังลบ ${params.count} ไฟล์...`;
+    },
+    deleteComplete: "ลบเสร็จสิ้น",
+    deleteFailed: "ลบล้มเหลว",
+    generatingCaption: "กำลังสร้างคำบรรยาย...",
+    captionGenerated: "สร้างคำบรรยายเสร็จสิ้น",
   },
   shortcuts: {
     title: "ปุ่มลัด",
@@ -215,6 +229,8 @@ export default {
     folderCreated: "สร้างโฟลเดอร์สำเร็จ",
     folderCreateError: "ไม่สามารถสร้างโฟลเดอร์",
     generatingCaption: "กำลังสร้างคำบรรยาย",
-    captionGenerated: "สร้างคำบรรยายเสร็จสิ้น"
+    captionGenerated: "สร้างคำบรรยายเสร็จสิ้น",
+    connectionLost: "การเชื่อมต่อขาดหาย",
+    connectionRestored: "การเชื่อมต่อกลับมาแล้ว"
   },
 } as const satisfies Translations;
