@@ -52,7 +52,10 @@
     box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.4);
 
     & > img {
-      filter: brightness(1.1);
+      filter: var(--focus-pop);
+      /*
+      filter: saturate(1.2) contrast(1.3);
+      */
     }
   }
 

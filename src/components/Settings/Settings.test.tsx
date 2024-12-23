@@ -50,7 +50,6 @@ const mockAppContext = {
   setDisableAnimations: vi.fn(),
   disableNonsense: false,
   setDisableNonsense: vi.fn(),
-  setdisableNonsense: vi.fn(),
   enableZoom: false,
   setEnableZoom: vi.fn(),
   enableMinimap: false,
@@ -78,6 +77,8 @@ const mockAppContext = {
   setPreserveLatents: vi.fn(),
   preserveTxt: false,
   setPreserveTxt: vi.fn(),
+  alwaysShowCaptionEditor: false,
+  setAlwaysShowCaptionEditor: vi.fn(),
   notify: vi.fn(),
   createNotification: vi.fn()
 };

@@ -63,6 +63,14 @@
   --info-text: var(--info);
   --warning-bg: color-mix(in srgb, var(--warning) 10%, var(--card-bg));
   --warning-text: var(--warning);
+
+  /* Focus effect filters */
+  --focus-dramatic: contrast(120%) brightness(105%) saturate(110%);
+  --focus-sharp: contrast(110%) brightness(102%) saturate(105%) drop-shadow(0 0 8px rgba(0,0,0,0.3));
+  --focus-pop: brightness(105%) saturate(110%) drop-shadow(0 0 12px var(--shadow-accent));
+  --focus-glow: brightness(102%) saturate(105%) drop-shadow(0 0 15px color-mix(in srgb, var(--accent) 70%, transparent));
+  --focus-subtle: contrast(105%) brightness(102%) saturate(102%);
+  --focus-blur-others: none; /* Applied to non-selected items: blur(2px) brightness(0.7) saturate(0.8) */
 }
 
 .no-animations {

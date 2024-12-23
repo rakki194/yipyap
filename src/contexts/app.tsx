@@ -37,7 +37,7 @@ export interface AppContext {
   readonly disableAnimations: boolean;
   setDisableAnimations: (value: boolean) => void;
   readonly disableNonsense: boolean;
-  setdisableNonsense: (value: boolean) => void;
+  setDisableNonsense: (value: boolean) => void;
   readonly jtp2ModelPath: string;
   readonly jtp2TagsPath: string;
   setJtp2ModelPath: (value: string) => void;
@@ -61,7 +61,6 @@ export interface AppContext {
     group?: string,
     icon?: "spinner" | "success" | "error" | "info" | "warning"
   ) => void;
-  setDisableNonsense: (value: boolean) => void;
   thumbnailSize: number; // Size in pixels (e.g., 250)
   setThumbnailSize: (size: number) => void;
   createNotification: (notification: {
@@ -227,8 +226,6 @@ const createAppContext = (): AppContext => {
   const [preserveLatents, setPreserveLatents] = createSignal(false);
   const [preserveTxt, setPreserveTxt] = createSignal(false);
 
-  const [disableNonsense, setDisableNonsense] = createSignal(false);
-
   const setThumbnailSize = async (size: number) => {
     try {
       const response = await fetch('/api/config/thumbnail_size', {
@@ -297,7 +294,7 @@ const createAppContext = (): AppContext => {
     get disableNonsense() {
       return store.disableNonsense;
     },
-    setdisableNonsense(value: boolean) {
+    setDisableNonsense(value: boolean) {
       setStore("disableNonsense", value);
     },
     get jtp2ModelPath() {
@@ -330,7 +327,6 @@ const createAppContext = (): AppContext => {
     preserveTxt: preserveTxt(),
     setPreserveTxt,
     notify,
-    setDisableNonsense,
     get thumbnailSize() {
       return store.thumbnailSize;
     },

@@ -32,7 +32,6 @@ const mockAppContext: Parameters<typeof AppContext.Provider>[0]['value'] = {
   setDisableAnimations: vi.fn(),
   disableNonsense: false,
   setDisableNonsense: vi.fn(),
-  setdisableNonsense: vi.fn(),
   enableZoom: false,
   setEnableZoom: vi.fn(),
   enableMinimap: false,

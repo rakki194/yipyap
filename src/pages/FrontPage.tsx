@@ -14,10 +14,23 @@ const FrontPage: Component = () => {
   const t = app.t;
   const [isVisible, setIsVisible] = createSignal(true);
 
+  const getAppTitle = () => {
+    if (app.disableNonsense || app.locale === 'ja') {
+      return "yipyap";
+    }
+    
+    const random = Math.random();
+    if (random < 0.001) { // 0.1% chance
+      return Math.random() < 0.5 ? "yipyap, only in Ohio!" : "skibidi yipyap";
+    }
+    return "~yipyap";
+  };
+
+  const [appTitle] = createSignal(getAppTitle());
+
   onMount(() => {
     document.body.classList.add('on-front-page');
-    const title = getAppTitle();
-    document.title = title;
+    document.title = appTitle();
     
     onCleanup(() => {
       document.body.classList.remove('on-front-page');
@@ -44,18 +57,6 @@ const FrontPage: Component = () => {
     }, 300); // Duration should match the CSS transition duration
   };
 
-  const getAppTitle = () => {
-    if (app.disableNonsense || app.locale === 'ja') {
-      return "~yipyap";
-    }
-    
-    const random = Math.random();
-    if (random < 0.001) { // 0.1% chance
-      return Math.random() < 0.5 ? "yipyap, only in Ohio!" : "skibidi yipyap";
-    }
-    return "~yipyap";
-  };
-
   return (
     <>
       <div class={`front-page fade-in ${isVisible() ? "visible" : "hidden"}`}>
@@ -63,7 +64,7 @@ const FrontPage: Component = () => {
           <span class="icon" title="app logo">
             {getIcon("yipyap")}
           </span>
-          <br /> {getAppTitle()}
+          <br /> {appTitle()}
           <br />{" "}
           <span class="subtitle">{getRandomSubtitle()}</span>
         </h1>

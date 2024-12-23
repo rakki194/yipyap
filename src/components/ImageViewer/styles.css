@@ -20,7 +20,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 var(--spacing);
+    padding: 0;
     color: var(--accent);
     z-index: 1100;
     font-size: 1rem;
@@ -170,6 +170,7 @@
     gap: var(--spacing);
     flex: 1;
     overflow: hidden;
+    padding-top: var(--quad-spacing);
 
     /* Caption Input Wrapper */
     & > .caption-input-wrapper {
