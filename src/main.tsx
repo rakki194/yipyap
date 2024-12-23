@@ -1,13 +1,6 @@
 import { render, ErrorBoundary } from "solid-js/web";
-import { createSignal, type ParentComponent } from "solid-js";
-import {
-  Location,
-  Router,
-  useResolvedPath,
-  useNavigate,
-  useBeforeLeave,
-  BeforeLeaveEventArgs,
-} from "@solidjs/router";
+import { type ParentComponent } from "solid-js";
+import { Router } from "@solidjs/router";
 import { routes } from "./router";
 import { AppProvider } from "./contexts/app";
 import { NotificationContainer } from "./components/Notification/NotificationContainer";
