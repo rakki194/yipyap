@@ -1149,3 +1149,61 @@ Remember to:
 - Keep mocks minimal but complete
 - Document type structures and requirements
 - Use proper typing for translation functions
+
+## Select Element Labeling
+
+Select elements must be programmatically associated with labels to ensure accessibility. Follow these guidelines:
+
+### Preferred Methods (in order of preference)
+
+1. **Explicit Label with `for` Attribute** (Most Recommended):
+   ```html
+   <label for="selectId">Label Text:</label>
+   <select id="selectId"></select>
+   ```
+   - Use unique IDs for each select element
+   - Ensure the `for` attribute matches the select's `id`
+   - Label text should be clear and descriptive
+
+2. **Implicit Label** (Wrapping):
+   ```html
+   <label>Label Text: <select></select></label>
+   ```
+   - Useful for simple forms
+   - Maintains visual and programmatic association
+
+3. **ARIA Label** (When visual label exists elsewhere):
+   ```html
+   <select aria-label="Label Text"></select>
+   ```
+   - Use when adding `<label>` would break layout/functionality
+   - Ensure label text is descriptive for screen readers
+
+4. **ARIA Labelledby** (For complex labeling):
+   ```html
+   <div id="labelId">Label Text:</div>
+   <select aria-labelledby="labelId"></select>
+   ```
+   - Useful for multiple labels or complex layouts
+   - Ensure referenced IDs exist and are unique
+
+### Requirements
+
+- Every `<select>` element must have exactly one label
+- Label text must be meaningful and descriptive
+- IDs must be unique across the page
+- Avoid unlabeled selects with adjacent text
+- Labels should clearly indicate the required input
+
+### Testing
+
+- Test with screen readers to verify label associations
+- Verify unique IDs across the page
+- Check that labels make sense when read in isolation
+- Ensure complex forms maintain clear label relationships
+
+Remember that proper labeling:
+- Makes forms accessible to screen reader users
+- Reduces input errors and user confusion
+- Improves overall form usability
+- Maintains compliance with accessibility standards

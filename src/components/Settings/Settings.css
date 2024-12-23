@@ -3,10 +3,7 @@
 .settings-overlay {
   font-size: var(--font-size);
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: var(--overlay-bg);
   backdrop-filter: var(--overlay-backdrop);
   z-index: 1000;
@@ -17,7 +14,17 @@
 }
 
 .settings-panel {
-  padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 5);
+  padding: 0;
+  position: relative;
+  min-height: 600px;
+  height: 80vh;
+  width: 1000px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
 }
 
 .warning-section {
@@ -53,7 +60,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-color);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  position: relative;
+  z-index: 2;
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .settings-header-buttons {
@@ -75,7 +95,7 @@
   background: var(--card-bg);
   border-radius: 0.5rem;
   overflow: hidden;
-  transition-property: height;
+  transition: height 0.3s ease;
   margin-top: calc(var(--spacing) * -0.5);
 }
 
@@ -116,16 +136,13 @@ kbd {
 .settings-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--double-spacing);
-  margin-bottom: var(--double-spacing);
+  gap: calc(var(--spacing) * 2);
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 .settings-column {
   width: 100%;
-}
-
-.setting-group {
-  margin-bottom: var(--spacing);
+  padding: var(--spacing) 0;
 }
 
 .icon-buttons {
@@ -201,15 +218,39 @@ kbd {
   margin-top: 0;
 }
 
+.settings-content-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+}
+
 .settings-content,
 .help-content {
   opacity: 1;
-  transition-property: opacity;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: absolute;
+  inset: 0;
+  padding: calc(var(--spacing) * 2);
+  overflow-y: auto;
+  background: var(--bg-color);
+  height: 100%;
+  width: 100%;
 }
 
-.settings-content.closing,
+.settings-content.closing {
+  opacity: 0;
+  transform: translateX(-20px);
+  pointer-events: none;
+}
+
 .help-content.closing {
   opacity: 0;
+  transform: translateX(20px);
+  pointer-events: none;
 }
 
 .shortcuts-section {
@@ -410,8 +451,162 @@ kbd {
 
 /* Add responsive layout for mobile */
 @media (max-width: 768px) {
+  .settings-overlay {
+    padding: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .settings-panel {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .settings-header {
+    padding: var(--spacing);
+    position: sticky;
+    top: 0;
+    background: var(--bg-color);
+    z-index: 3;
+    border-radius: 0;
+    width: 100%;
+  }
+
+  .settings-content-wrapper {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    border-radius: 0;
+    width: 100vw;
+  }
+
+  .settings-content,
+  .help-content {
+    padding: var(--spacing);
+    -webkit-overflow-scrolling: touch;
+    height: calc(100vh - 60px);
+    width: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    overflow-x: hidden;
+  }
+
+  .settings-content > *,
+  .help-content > * {
+    max-width: 100%;
+  }
+
   .settings-row {
     grid-template-columns: 1fr;
+    gap: var(--spacing);
+    margin-bottom: var(--spacing);
+    padding-bottom: env(safe-area-inset-bottom); /* iOS safe area */
+    width: 100%;
+  }
+
+  /* Improve touch targets */
+  .theme-buttons {
+    gap: var(--spacing);
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .theme-buttons button {
+    padding: var(--spacing);
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 24px;
+    height: 24px;
+    margin-right: var(--spacing);
+  }
+
+  label {
+    padding: var(--half-spacing) 0;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Improve scrolling */
+  .settings-content,
+  .help-content {
+    overscroll-behavior: contain;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: calc(var(--spacing) * 2 + env(safe-area-inset-bottom));
+  }
+
+  /* Adjust spacing for better mobile layout */
+  .setting-group {
+    margin-bottom: var(--double-spacing);
+  }
+
+  .warning-section {
+    margin: var(--spacing) 0;
+  }
+
+  .shortcuts-grid {
+    gap: var(--double-spacing);
+  }
+
+  kbd {
+    min-width: 32px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .setting-group {
+    width: 100%;
+  }
+
+  .setting-group input[type="text"],
+  .setting-group input[type="range"],
+  .language-select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .theme-buttons,
+  .icon-buttons {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .shortcuts-grid {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Remove small screen adjustments since we're using full screen */
+@media (max-width: 480px) {
+  .settings-content,
+  .help-content {
+    padding: var(--spacing);
+  }
+
+  .shortcut {
+    flex-wrap: wrap;
+    gap: var(--half-spacing);
   }
 }
 

@@ -37,6 +37,7 @@ export default {
     openSettings: "Open settings",
     create: "Create",
     creating: "Creating...",
+    language: "Interface language",
   },
   settings: {
     title: "Settings",

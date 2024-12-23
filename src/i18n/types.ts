@@ -52,6 +52,7 @@ export interface CommonTranslations {
   openSettings: string;
   create: string;
   creating: string;
+  language: string;
 }
 
 export interface ThemeTranslations {
