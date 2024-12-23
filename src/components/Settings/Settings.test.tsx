@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@solidjs/testing-library';
 import { Settings } from './Settings';
 import { AppProvider } from '~/contexts/app';
@@ -20,6 +20,28 @@ const mockAppContext = {
       'settings.title': 'Settings',
       'shortcuts.title': 'Keyboard Shortcuts',
       'shortcuts.galleryNavigation': 'Gallery Navigation',
+      'shortcuts.tagNavigation': 'Tag Navigation',
+      'shortcuts.other': 'Other',
+      'shortcuts.quickFolderSwitch': 'Quick Folder Switch',
+      'shortcuts.aboveImage': 'Above Image',
+      'shortcuts.belowImage': 'Below Image',
+      'shortcuts.previousImage': 'Previous Image',
+      'shortcuts.nextImage': 'Next Image',
+      'shortcuts.togglePreview': 'Toggle Preview',
+      'shortcuts.previousTag': 'Previous Tag',
+      'shortcuts.nextTag': 'Next Tag',
+      'shortcuts.switchTagBubble': 'Switch Tag Bubble',
+      'shortcuts.switchTagInput': 'Switch Tag Input',
+      'shortcuts.cycleCaptions': 'Cycle Captions',
+      'shortcuts.firstTagRow': 'First Tag Row',
+      'shortcuts.lastTagRow': 'Last Tag Row',
+      'shortcuts.removeTag': 'Remove Tag',
+      'shortcuts.closePreview': 'Close Preview',
+      'shortcuts.deleteImage': 'Delete Image',
+      'shortcuts.doubleShift': 'Double Shift',
+      'shortcuts.shift': 'Shift',
+      'shortcuts.del': 'Del',
+      'shortcuts.esc': 'Esc',
       'settings.appearance': 'Appearance',
       'settings.gallery': 'Gallery',
       'settings.language': 'Language',
@@ -31,6 +53,8 @@ const mockAppContext = {
       'settings.thumbnailSize': 'Thumbnail Size',
       'settings.thumbnailSizeDescription': 'Change the size of thumbnails in the gallery',
       'common.theme': 'Theme',
+      'common.close': 'Close',
+      'common.language': 'Language',
       'settings.theme.dark': 'Dark Theme',
       'settings.theme.light': 'Light Theme',
       'settings.theme.gray': 'Gray Theme',
@@ -38,7 +62,18 @@ const mockAppContext = {
       'settings.theme.strawberry': 'Strawberry Theme',
       'settings.theme.peanut': 'Peanut Theme',
       'settings.theme.christmas': 'Christmas Theme',
-      // Add other translations as needed
+      'settings.theme.halloween': 'Halloween Theme',
+      'settings.disableNonsense': 'Disable Nonsense',
+      'settings.instantDelete': 'Instant Delete',
+      'settings.preserveLatents': 'Preserve Latents',
+      'settings.preserveLatentsTooltip': 'Preserve latents tooltip',
+      'settings.preserveTxt': 'Preserve TXT',
+      'settings.preserveTxtTooltip': 'Preserve TXT tooltip',
+      'settings.alwaysShowCaptionEditor': 'Always Show Caption Editor',
+      'settings.jtp2ModelPath': 'JTP2 Model Path',
+      'settings.jtp2TagsPath': 'JTP2 Tags Path',
+      'settings.downloadModel': 'Download Model',
+      'settings.downloadTags': 'Download Tags'
     };
     return translations[key] || key;
   },
@@ -125,6 +160,11 @@ describe('Settings Component', () => {
 
   beforeEach(() => {
     mockOnClose.mockClear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   const renderSettings = () => {
@@ -158,12 +198,21 @@ describe('Settings Component', () => {
     
     // Click to show help
     fireEvent.click(helpButton);
-    expect(await screen.findByText('Gallery Navigation')).toBeInTheDocument();
+    
+    // Wait for the closing animation to complete
+    vi.advanceTimersByTime(300);
+    
+    // Now we should see the help content
+    expect(screen.getByRole('heading', { name: 'Gallery Navigation', level: 4 })).toBeInTheDocument();
     
     // Click to hide help
     fireEvent.click(helpButton);
-    await new Promise(resolve => setTimeout(resolve, 300));
-    expect(screen.queryByText('Gallery Navigation')).not.toBeInTheDocument();
+    
+    // Wait for the closing animation
+    vi.advanceTimersByTime(300);
+    
+    // Help content should be gone
+    expect(screen.queryByRole('heading', { name: 'Gallery Navigation' })).not.toBeInTheDocument();
   });
 
   it('changes theme when theme button is clicked', () => {
