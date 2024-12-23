@@ -3,7 +3,33 @@
  * Contains theme-related logic. Integrated in AppProvider.
  */
 
+/** Available theme options for the application */
+export type Theme =
+  | "light"
+  | "gray"
+  | "dark"
+  | "banana"
+  | "strawberry"
+  | "peanut"
+  | "christmas"
+  | "halloween";
+
+/** Base themes that are always available */
+const baseThemes: Record<string, string> = {
+  light: "sun",
+  gray: "cloud",
+  dark: "moon",
+  banana: "banana",
+  strawberry: "strawberry",
+  peanut: "peanut",
+};
+
 function isSeasonalThemeAvailable(theme: Theme): boolean {
+  // Non-seasonal themes are always available
+  if (theme !== 'christmas' && theme !== 'halloween') {
+    return true;
+  }
+
   const today = new Date();
   const month = today.getMonth();
   const date = today.getDate();
@@ -18,44 +44,25 @@ function isSeasonalThemeAvailable(theme: Theme): boolean {
   }
 }
 
-export function makeThemeList() {
-  const themeIconMap: Partial<Record<Theme, string>> = {
-    light: "sun",
-    gray: "cloud",
-    dark: "moon",
-    banana: "banana",
-    strawberry: "strawberry",
-    peanut: "peanut",
-  };
+export function makeThemeList(): Partial<Record<Theme, string>> {
+  const themeIconMap = { ...baseThemes };
 
-  // Only add seasonal themes if in dev mode or during their appropriate season
-  if (import.meta.env.DEV || isSeasonalThemeAvailable('christmas')) {
+  // Only add seasonal themes if they're available
+  if (isSeasonalThemeAvailable('christmas' as Theme)) {
     themeIconMap.christmas = "christmas";
   }
-  if (import.meta.env.DEV || isSeasonalThemeAvailable('halloween')) {
+  if (isSeasonalThemeAvailable('halloween' as Theme)) {
     themeIconMap.halloween = "ghost";
   }
 
   return themeIconMap;
 }
 
-/** Available theme options for the application */
-export type Theme =
-  | "light"
-  | "gray"
-  | "dark"
-  | "banana"
-  | "strawberry"
-  | "peanut"
-  | "christmas"
-  | "halloween";
-
 /**
  * Maps theme names to their corresponding icon identifiers.
  * Used for theme switching UI elements.
  */
-export const themeIconMap: Readonly<Partial<Record<Theme, string>>> =
-  makeThemeList();
+export const themeIconMap: Readonly<Partial<Record<Theme, string>>> = makeThemeList();
 export const themes = Object.keys(themeIconMap) as Readonly<Theme[]>;
 
 /**
@@ -76,9 +83,17 @@ export function getInitialTheme(): Theme {
 
   // Helper function to check if a theme is currently available
   const isThemeAvailable = (theme: string): boolean => {
-    const availableThemes = Object.keys(makeThemeList());
-    return availableThemes.includes(theme) && 
-           (import.meta.env.DEV || isSeasonalThemeAvailable(theme as Theme));
+    if (!theme) return false;
+    
+    // Check if it's a base theme
+    if (theme in baseThemes) return true;
+    
+    // Check if it's a seasonal theme and available
+    if (theme === 'christmas' || theme === 'halloween') {
+      return isSeasonalThemeAvailable(theme as Theme);
+    }
+    
+    return false;
   };
 
   // Check that the theme is still valid and available for the current date

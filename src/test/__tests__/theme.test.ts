@@ -41,76 +41,6 @@ vi.mock('import.meta', () => ({
   env,
 }));
 
-// Create a mock implementation of isSeasonalThemeAvailable
-const mockIsSeasonalThemeAvailable = vi.fn((theme: Theme) => {
-  const mockDate = global.Date.prototype.getMonth();
-  switch (theme) {
-    case 'christmas':
-      return mockDate === 11 || (mockDate === 0);
-    case 'halloween':
-      return mockDate === 9 || (mockDate === 10 && global.Date.prototype.getDate() <= 4);
-    default:
-      return true;
-  }
-});
-
-// Mock the entire theme module
-vi.mock('../theme', async () => {
-  const actual = await vi.importActual<typeof import('../../contexts/theme')>('../theme');
-  return {
-    ...actual,
-    makeThemeList: () => {
-      const themeIconMap: Partial<Record<Theme, string>> = {
-        light: "sun",
-        gray: "cloud",
-        dark: "moon",
-        banana: "banana",
-        strawberry: "strawberry",
-        peanut: "peanut",
-      };
-
-      // Only add seasonal themes if they're available
-      const month = new Date().getMonth();
-      const date = new Date().getDate();
-
-      // Christmas: December 1st through January 10th
-      if (env.DEV || (month === 11) || (month === 0 && date <= 10)) {
-        themeIconMap.christmas = "christmas";
-      }
-
-      // Halloween: October 24th through November 4th
-      if (env.DEV || (month === 9 && date >= 24) || (month === 10 && date <= 4)) {
-        themeIconMap.halloween = "ghost";
-      }
-
-      return themeIconMap;
-    },
-    getInitialTheme: () => {
-      const stored = localStorage.getItem("theme") as Theme;
-      
-      // Check if the stored theme is a seasonal theme
-      if (stored === 'christmas' || stored === 'halloween') {
-        const month = new Date().getMonth();
-        const date = new Date().getDate();
-        
-        // Check if we're in the Christmas season
-        const isChristmasSeason = (month === 11) || (month === 0 && date <= 10);
-        if (stored === 'christmas' && !isChristmasSeason) {
-          return 'gray';
-        }
-        
-        // Check if we're in the Halloween season
-        const isHalloweenSeason = (month === 9 && date >= 24) || (month === 10 && date <= 4);
-        if (stored === 'halloween' && !isHalloweenSeason) {
-          return 'gray';
-        }
-      }
-      
-      return stored || 'gray';
-    }
-  };
-});
-
 // Store reference to real Date constructor
 const RealDate = global.Date;
 
@@ -148,7 +78,8 @@ describe("Theme System", () => {
     const defaultDate = new RealDate(2023, 6, 1);
     global.Date = createMockDate(defaultDate);
 
-    window.matchMedia = vi.fn().mockImplementation(query => ({
+    // Mock matchMedia to return no preference by default
+    window.matchMedia = vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -160,24 +91,21 @@ describe("Theme System", () => {
     }));
 
     // Mock localStorage
-    const localStorageMock = {
-      getItem: vi.fn(),
-      setItem: vi.fn(),
-      clear: vi.fn(),
-      removeItem: vi.fn(),
-      length: 0,
-      key: vi.fn(),
+    const mockStorage: Record<string, string> = {};
+    window.localStorage = {
+      getItem: vi.fn((key) => mockStorage[key] || null),
+      setItem: vi.fn((key, value) => { mockStorage[key] = value.toString(); }),
+      removeItem: vi.fn((key) => delete mockStorage[key]),
+      clear: vi.fn(() => { Object.keys(mockStorage).forEach(key => delete mockStorage[key]); }),
+      key: vi.fn((index) => Object.keys(mockStorage)[index] || null),
+      length: Object.keys(mockStorage).length,
     };
-    Object.defineProperty(window, 'localStorage', {
-      value: localStorageMock,
-    });
   });
 
   afterEach(() => {
+    // Restore original implementations
     window.matchMedia = originalMatchMedia;
-    Object.defineProperty(window, 'localStorage', {
-      value: originalLocalStorage,
-    });
+    window.localStorage = originalLocalStorage;
     global.Date = RealDate;
     vi.restoreAllMocks();
   });
