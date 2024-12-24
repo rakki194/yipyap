@@ -4,20 +4,18 @@ This document covers common issues, solutions, and best practices for working wi
 
 ## Common Issues and Solutions
 
-### 1. Timing Issues
+### Timing Issues
 
 #### Problem: Tooltip appears too quickly/slowly
 ```typescript
-// Default behavior is 1.5s delay
+// Default behavior is 0.5s delay
 const showTooltip = () => {
-  timeoutId = setTimeout(() => setIsVisible(true), 1500);
+  timeoutId = setTimeout(() => setIsVisible(true), 500);
 };
 ```
 
 **Solution:**
-- The 1.5s delay is intentional for user experience
-- Ensure no conflicting timeouts
-- Clear timeouts properly on cleanup
+The 0.5 second delay is intentionally designed to provide an optimal user experience. When implementing tooltips, it's important to ensure there are no conflicting timeouts that could interfere with this delay. Additionally, proper cleanup of timeouts should be performed when components unmount to prevent memory leaks and unexpected behavior.
 
 #### Problem: Animation feels abrupt
 ```css
@@ -27,12 +25,9 @@ const showTooltip = () => {
 ```
 
 **Solution:**
-- Use 0.4s for fade-in
-- Use 0.2s for fade-out
-- Include transform in transitions
-- Use ease-out timing function
+For optimal tooltip animations, use a 0.4 second duration for the fade-in transition to ensure a smooth appearance that doesn't feel rushed. The fade-out transition should be slightly faster at 0.2 seconds to provide quick visual feedback when the tooltip is dismissed. Always include transform properties in the transition to enable hardware acceleration and smoother animations. The ease-out timing function should be used to create natural-feeling motion that starts quickly and gently decelerates.
 
-### 2. Visibility Issues
+### Visibility Issues
 
 #### Problem: Tooltip doesn't fade smoothly
 ```typescript
@@ -43,9 +38,8 @@ const showTooltip = () => {
 ```
 
 **Solution:**
-- Use CSS visibility and opacity
-- Keep element mounted
-- Use aria-hidden for accessibility
+To properly handle tooltip visibility, use CSS visibility and opacity properties together. The tooltip element should remain mounted in the DOM rather than being conditionally rendered. This allows for smooth transitions and animations. Additionally, use the aria-hidden attribute to ensure proper accessibility by hiding the tooltip from screen readers when it is not visible.
+
 ```typescript
 // Correct approach
 <div 
@@ -57,6 +51,7 @@ const showTooltip = () => {
 ```
 
 #### Problem: Blur effect not working
+
 ```css
 .tooltip-content {
   background: rgba(0, 0, 0, 0.5);  /* Missing blur */
@@ -64,8 +59,8 @@ const showTooltip = () => {
 ```
 
 **Solution:**
-- Add backdrop-filter
-- Provide fallback for older browsers
+To implement proper blur effects, add a backdrop-filter property to create a frosted glass effect behind the tooltip content. For browsers that don't support backdrop-filter, provide a fallback by using a darker background color with higher opacity to maintain readability.
+
 ```css
 .tooltip-content {
   background: rgba(0, 0, 0, 0.5);
@@ -77,7 +72,7 @@ const showTooltip = () => {
 }
 ```
 
-### 3. Accessibility Issues
+### Accessibility Issues
 
 #### Problem: Screen reader announces tooltip too early
 ```typescript
@@ -87,13 +82,12 @@ const showTooltip = () => {
 ```
 
 **Solution:**
-- Use proper aria-hidden state
-- Ensure role="tooltip"
-- Manage focus appropriately
+Proper accessibility requires setting the aria-hidden attribute to control when screen readers announce the tooltip content. The tooltip element should have role="tooltip" to indicate its purpose to assistive technologies. Focus management is also critical - the tooltip should only be announced when the triggering element receives focus, and focus should return to the trigger when the tooltip is dismissed.
 
-### 4. Performance Issues
+### Performance Issues
 
 #### Problem: Janky animations
+
 ```css
 .tooltip-content {
   transition: all 0.3s;  /* Too generic */
@@ -101,9 +95,8 @@ const showTooltip = () => {
 ```
 
 **Solution:**
-- Specify exact properties to animate
-- Use transform and opacity
-- Enable hardware acceleration
+For optimal animation performance, it's important to be specific about which properties are being animated. Rather than using a catch-all transition, explicitly target transform and opacity properties which are optimized for smooth animations.
+
 ```css
 .tooltip-content {
   transform: scale(0.98);
@@ -115,7 +108,7 @@ const showTooltip = () => {
 
 ## Best Practices
 
-### 1. Content Guidelines
+### Content Guidelines
 
 ```typescript
 // Good
@@ -134,7 +127,7 @@ const showTooltip = () => {
 - Use clear, actionable text
 - Support internationalization
 
-### 2. Interaction Guidelines
+### Interaction Guidelines
 
 ```typescript
 // Good: Clear hover target
@@ -153,7 +146,7 @@ const showTooltip = () => {
 - Test with keyboard navigation
 - Ensure proper focus states
 
-### 3. Performance Guidelines
+### Performance Guidelines
 
 ```typescript
 // Good: Static content
@@ -172,7 +165,7 @@ const showTooltip = () => {
 - Minimize DOM updates
 - Use hardware acceleration
 
-### 4. Accessibility Guidelines
+### Accessibility Guidelines
 
 ```typescript
 // Good
@@ -236,20 +229,3 @@ test("tooltip transitions properly", async () => {
   expect(tooltip).toHaveStyle({ opacity: "1" });
 });
 ```
-
-## Future Considerations
-
-1. **Enhanced Interaction**
-   - Optional delay configuration
-   - Click to pin functionality
-   - Touch-specific behaviors
-
-2. **Visual Enhancements**
-   - Dynamic backdrop blur strength
-   - Transition variations
-   - Theme-specific styling
-
-3. **Accessibility**
-   - Enhanced screen reader support
-   - Focus management improvements
-   - High contrast support 

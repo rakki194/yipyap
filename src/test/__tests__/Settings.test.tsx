@@ -237,13 +237,37 @@ describe('Settings Component', () => {
   });
 
   it('updates thumbnail size when slider is moved', () => {
+    // Mock getBoundingClientRect
+    const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({
+      width: 400,
+      height: 20,
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 400,
+      x: 0,
+      y: 0,
+      toJSON: () => {}
+    }));
+
     renderSettings();
     const slider = screen.getByRole('slider');
-    fireEvent.change(slider, { target: { value: '200' } });
+    
+    // Calculate the x position for value 200 (middle of the slider)
+    // The slider goes from 100 to 500, so 200 is 25% of the way
+    const x = 100; // 25% of 400px width
+    
+    // Simulate mouse events for dragging
+    fireEvent.mouseDown(slider, { clientX: x });
+    fireEvent.mouseMove(slider, { clientX: x });
+    fireEvent.mouseUp(slider);
     
     // Look for the span containing the size value
     const sizeValue = screen.getByTestId('thumbnail-size-value');
     expect(sizeValue.textContent).toMatch(/200\s*px/);
+
+    // Clean up the mock
+    getBoundingClientRectMock.mockRestore();
   });
 
   it('updates model paths when input values change', () => {

@@ -34,6 +34,11 @@ function isSeasonalThemeAvailable(theme: Theme): boolean {
     return true;
   }
 
+  // Always show seasonal themes in development mode
+  if (import.meta.env.DEV) {
+    return true;
+  }
+
   const today = new Date();
   const month = today.getMonth();
   const date = today.getDate();

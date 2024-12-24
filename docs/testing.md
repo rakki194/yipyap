@@ -17,6 +17,7 @@
 - [Common Testing Errors and Solutions](#common-testing-errors-and-solutions)
   - [Timer-Based Test Failures](#1-timer-based-test-failures)
   - [Hover State Test Failures](#2-hover-state-test-failures)
+  - [Theme System Testing Challenges](#6-theme-system-testing-challenges)
 
 The project uses Vitest with SolidJS testing utilities. All tests are centralized in the `/src/test/__tests__/` directory and organized by functionality:
 
@@ -55,11 +56,7 @@ The project uses Vitest with SolidJS testing utilities. All tests are centralize
 
 ## Test Environment Setup
 
-The test environment is configured in `/src/test/setup.ts` and includes:
-- DOM environment with jsdom
-- Global mocks for browser APIs
-- Automatic cleanup after each test
-- SolidJS testing utilities setup
+The test environment is configured in `/src/test/setup.ts`. This configuration provides a DOM environment powered by jsdom for simulating browser behavior. Global mocks are included for various browser APIs to enable testing of browser-dependent functionality. The environment is set up to automatically clean up after each test to prevent state leakage between test cases. Additionally, it includes the necessary SolidJS testing utilities setup to enable proper testing of SolidJS components and reactivity.
 
 ## Test Utilities
 
@@ -190,11 +187,7 @@ vi.mock("@solidjs/router", () => ({
 
 ## Test Documentation
 
-Each test suite should include a JSDoc comment describing:
-- Purpose of the test suite
-- Key areas being tested
-- Test environment setup
-- Any special considerations or rules
+Each test suite should be thoroughly documented with JSDoc comments. The documentation should provide a clear description of the test suite's purpose and what functionality it aims to verify. The key areas and scenarios being tested should be outlined to give other developers context about the test coverage. Important details about the test environment setup should be included, such as any mocked dependencies or special configuration required. Additionally, any special considerations, rules, or assumptions that other developers should be aware of when maintaining or extending the tests should be documented.
 
 Example:
 
@@ -217,7 +210,7 @@ Example:
 
 ## Common Testing Errors and Solutions
 
-### 1. Timer-Based Test Failures
+### Timer-Based Test Failures
 
 Location: `src/components/Notification/__tests__/Notification.test.tsx`
 
@@ -242,7 +235,7 @@ test("auto-dismisses after timeout", () => {
 
 This error occurred because we weren't accounting for the animation duration in our timer-based tests.
 
-### 2. Hover State Test Failures
+### Hover State Test Failures
 
 Location: `src/components/Notification/__tests__/Notification.test.tsx`
 
@@ -268,7 +261,7 @@ test("pauses on hover", async () => {
 
 This error occurred because the auto-dismiss timer was starting before we could establish the hover state.
 
-### 3. Translation Mock Issues
+### Translation Mock Issues
 
 Location: `src/contexts/__tests__/app.test.tsx`
 
@@ -287,7 +280,7 @@ vi.mock("~/i18n", () => ({
 
 This error occurred because we were trying to mock translations at the component level instead of the module level.
 
-### 4. Event Timing Issues
+### Event Timing Issues
 
 Location: `src/components/Notification/__tests__/Notification.test.tsx`
 
@@ -307,7 +300,7 @@ test("handles multiple events", async () => {
 
 This error occurred because we weren't properly awaiting event handlers.
 
-### 5. Component State Timing
+### Component State Timing
 
 Location: Various test files
 
@@ -328,45 +321,117 @@ test("updates state", async () => {
 
 This error occurred because we weren't waiting for SolidJS's reactive system to update.
 
+### Theme System Testing Challenges
+
+Location: `src/test/__tests__/theme.test.tsx`
+
+```typescript
+// Error 1: Module initialization order with vi.mock
+// Problem: Using variables in mock factory that haven't been initialized
+vi.mock('../../contexts/theme', () => {
+  const mockImportMeta = { env: { DEV: false } }; // Error: Cannot access before initialization
+  return {
+    isSeasonalThemeAvailable: () => mockImportMeta.env.DEV
+  };
+});
+
+// Solution: Use module-level variable for state that needs to be modified
+let isDev = false; // Declare before mock
+vi.mock('../../contexts/theme', () => ({
+  isSeasonalThemeAvailable: () => isDev
+}));
+```
+
+```typescript
+// Error 2: Trying to modify import.meta.env directly
+// Problem: import.meta.env is read-only in the actual module
+it("should work in dev mode", () => {
+  import.meta.env.DEV = true; // Error: Cannot assign to read-only property
+});
+
+// Solution: Use a separate variable for controlling dev mode
+it("should work in dev mode", () => {
+  isDev = true;
+});
+```
+
+```typescript
+// Error 3: Inconsistent localStorage mocking
+// Problem: Trying to restore original localStorage causes errors
+afterEach(() => {
+  window.localStorage = originalLocalStorage; // Error: Cannot assign to read-only property
+});
+
+// Solution: Use a mutable object for mock storage
+let mockStorage: Record<string, string> = {};
+beforeEach(() => {
+  mockStorage = {}; // Reset the storage
+  Object.defineProperty(window, 'localStorage', {
+    value: {
+      getItem: (key: string) => mockStorage[key] || null,
+      setItem: (key: string, value: string) => { mockStorage[key] = value; }
+    },
+    writable: true
+  });
+});
+```
+
+```typescript
+// Error 4: Type issues with theme objects
+// Problem: Missing type definitions for seasonal themes
+const baseThemes = {
+  light: "sun",
+  dark: "moon"
+}; // Error: Property 'christmas' does not exist
+
+// Solution: Define proper types with optional seasonal themes
+type ThemeIconMap = {
+  light: string;
+  dark: string;
+  christmas?: string;
+  halloween?: string;
+};
+```
+
+#### Best Practices for Theme Testing
+
+Theme testing requires careful consideration of module mocking patterns. State variables should always be declared before any `vi.mock` calls, and module-level variables should be used for state that needs modification during tests. Mock implementations should remain simple and focused, with their behavior clearly documented in test descriptions.
+
+When dealing with environment variables, direct modification of import.meta.env should be avoided. Instead, separate variables should be used to control environment-dependent behavior. Environment variables should be mocked at the module level and their state reset in beforeEach blocks to maintain test isolation.
+
+Storage mocking presents its own challenges that require specific patterns. A mutable object should be used for mock storage, with its state reset in beforeEach blocks. Attempting to restore the original localStorage should be avoided. Instead, Object.defineProperty should be used for window object mocks to ensure proper behavior.
+
+Type safety is crucial for maintaining reliable tests. Theme objects need proper type definitions with optional properties for seasonal themes. TypeScript should be leveraged to catch potential issues early, and types must be kept in sync with the implementation to prevent runtime errors.
+
+Date mocking requires special attention when testing seasonal themes. A proper Date mock should be used, with the mock being reset in afterEach blocks. Tests should account for timezone implications and include edge cases around season boundaries to ensure robust coverage.
+
+#### Common Pitfalls to Avoid
+
+Module initialization requires careful attention to avoid common issues. Variables used in mock factories must be initialized before use, and import order should not be relied upon for mock behavior. Dynamic and static mock data should not be mixed, and mocked modules should remain unmodified after initialization.
+
+State management demands careful consideration to maintain test isolation. State should not be shared between tests without explicit reset mechanisms. Initial state should never be assumed, and state changes must not leak between tests. Direct modification of global objects should be avoided to prevent unexpected side effects.
+
+Environment handling requires careful consideration of system constraints. Read-only properties should not be modified, and development mode should not be assumed. Environment and feature flags should remain separate concerns. Environment values should be configurable rather than hardcoded.
+
+Type definitions must be handled with precision. Incomplete types should be avoided, and TypeScript errors should not be ignored. Theme type definitions should remain consistent throughout the codebase, and type casting should only be done with proper validation.
+
+Testing should maintain isolation and independence between test cases. All mocked state should be reset between tests to prevent interference. Proper TypeScript types should be used consistently. Complex mock setups require clear documentation. Both development and production modes need testing coverage. Seasonal theme logic should account for edge cases. A consistent mocking approach should be maintained across the test suite.
+
 ## Best Practices
 
-1. **Timer Management**:
-   - Always account for animation durations
-   - Use separate `vi.advanceTimersByTime()` calls for clarity
-   - Consider breaking down long timeouts into logical chunks
+Timer management in tests requires careful attention to timing details. Animation durations must be accounted for in test timing. Separate `vi.advanceTimersByTime()` calls should be used to maintain clarity. Long timeouts should be broken down into logical chunks for better test comprehension.
 
-2. **Event Handling**:
-   - Always `await` fireEvent calls
-   - Handle events in sequence, not simultaneously
-   - Consider the natural timing of user interactions
+Event handling requires proper asynchronous patterns. All `fireEvent` calls should be awaited to ensure proper sequencing. Events should be handled in sequence rather than simultaneously. The natural timing of user interactions should be considered when structuring tests.
 
-3. **State Changes**:
-   - Wait for the next tick after state changes
-   - Use `Promise.resolve()` or `queueMicrotask()`
-   - Consider batched updates
+State changes need careful handling of timing and updates. Tests should wait for the next tick after state changes using `Promise.resolve()` or `queueMicrotask()`. Batched updates must be considered to ensure proper test behavior.
 
-4. **Mocking**:
-   - Mock at module level, not component level
-   - Use `vi.mock()` before tests
-   - Be consistent with mock implementations
+Mocking should be implemented at the module level rather than the component level. The `vi.mock()` function should be called before tests begin. Mock implementations should maintain consistency throughout the test suite.
 
-5. **Async Testing**:
-   - Make tests async when dealing with events
-   - Use proper async/await patterns
-   - Handle all promises appropriately
+Asynchronous testing requires proper handling of promises and timing. Tests should be made async when dealing with events. Proper async/await patterns should be used consistently. All promises must be handled appropriately to prevent test flakiness.
 
-6. **Component Lifecycle**:
-   - Consider mounting/unmounting timing
-   - Account for cleanup effects
-   - Test both mount and update scenarios
+Component lifecycle testing requires attention to timing details. Mount and unmount timing must be considered. Cleanup effects should be properly tested. Both initial mount and subsequent update scenarios require test coverage.
 
-Remember to:
-- Write tests before fixing bugs
-- Test edge cases and error conditions
-- Keep tests focused and isolated
-- Use meaningful test descriptions
-- Document complex test setups
-- Update tests when modifying functionality 
+Testing should begin before bug fixes are implemented. Edge cases and error conditions require thorough coverage. Tests should remain focused and isolated. Test descriptions should clearly convey their purpose. Complex test setups need proper documentation. Test updates should accompany functionality modifications.
 
 ## Case Study: UploadOverlay Component Testing
 
@@ -426,29 +491,13 @@ const overlay = getByTestId("upload-overlay"); // Reliable and explicit
 
 ### Key Lessons Learned
 
-1. **Testing Styling and Themes**:
-   - Avoid testing computed styles in jsdom environment
-   - Focus on testing structure and functionality instead
-   - Use data attributes for element selection
-   - Consider visual regression testing for style verification
+When testing styling and themes, it's important to avoid testing computed styles in the jsdom environment, as these tests can be unreliable. Instead, focus on testing the structure and functionality of components. Use data attributes for element selection to ensure reliable test targeting. Consider implementing visual regression testing for comprehensive style verification.
 
-2. **Component State Management**:
-   - Use SolidJS's reactive primitives (`createSignal`) for state changes
-   - Maintain component references through state updates
-   - Test both initial state and state transitions
-   - Consider the reactive nature of the framework
+Component state management requires careful consideration of SolidJS's reactive nature. Use SolidJS's reactive primitives like `createSignal` to properly handle state changes in tests. Maintain component references through state updates to prevent losing track of components. Test both the initial state and state transitions thoroughly to ensure components behave correctly through their lifecycle. Always keep in mind the reactive nature of the framework when writing tests.
 
-3. **Element Selection Strategy**:
-   - Prefer `data-testid` attributes over class names
-   - Use `getByTestId` for elements that should exist
-   - Use `queryByTestId` for elements that might not exist
-   - Keep selectors independent of styling implementation
+For element selection strategy, prefer using `data-testid` attributes over class names since they provide more reliable and explicit targeting. Use `getByTestId` when testing for elements that should definitely exist in the DOM, and `queryByTestId` for elements that may or may not be present. Keep your selectors independent of the styling implementation to prevent brittle tests that break when styles change.
 
-4. **Test Structure and Organization**:
-   - Group related tests logically
-   - Test both positive and negative cases
-   - Include accessibility checks
-   - Verify component structure separately from behavior
+Test structure and organization should follow logical groupings that make the test suite easy to understand and maintain. Write tests for both positive and negative cases to ensure comprehensive coverage. Include accessibility checks to verify ARIA attributes and roles are correctly implemented. Keep component structure verification separate from behavior testing to maintain clear separation of concerns.
 
 ### Best Practices Derived
 
@@ -485,53 +534,22 @@ const overlay = getByTestId("upload-overlay"); // Reliable and explicit
 
 ### Common Pitfalls to Avoid
 
-1. **Style Testing**:
-   - Don't test computed styles in jsdom
-   - Don't rely on CSS module class names
-   - Don't test implementation details of styling
+When writing tests, there are several important pitfalls to avoid regarding style testing. Testing computed styles in jsdom should be avoided, as should relying on CSS module class names or testing implementation details of styling.
 
-2. **State Management**:
-   - Don't use cleanup/re-render for state changes
-   - Don't test internal state, test observable behavior
-   - Don't assume immediate state updates
+For state management, avoid using cleanup/re-render for state changes. Focus on testing observable behavior rather than internal state, and don't make assumptions about immediate state updates. The reactive nature of SolidJS requires careful consideration of state timing.
 
-3. **Element Selection**:
-   - Don't use class names for element selection
-   - Don't rely on DOM structure that might change
-   - Don't mix styling and testing concerns
+Element selection requires thoughtful approaches. Class names should not be used for element selection, and tests should not rely on DOM structure that might change. Keep styling and testing concerns separate to maintain test reliability.
 
-4. **Test Isolation**:
-   - Don't share state between tests
-   - Don't assume test order
-   - Don't leave cleanup to other tests
+Test isolation is critical for maintaining a robust test suite. State should not be shared between tests, and no assumptions should be made about test order. Each test should handle its own cleanup rather than relying on other tests.
 
 ### Recommendations for Similar Components
 
-When testing overlay or modal-like components:
+When testing overlay or modal-like components, visibility testing is a key consideration. Tests should verify both visible and hidden states, ensure proper cleanup occurs on hide, and check transition states where relevant.
 
-1. **Visibility Testing**:
-   - Test both visible and hidden states
-   - Verify proper cleanup on hide
-   - Check transition states if relevant
+Accessibility testing is essential for any component. This includes verifying ARIA attributes are correctly implemented, testing keyboard navigation functionality, and ensuring proper screen reader compatibility.
 
-2. **Accessibility**:
-   - Include ARIA attribute checks
-   - Verify keyboard navigation
-   - Test screen reader compatibility
+The component structure must be thoroughly validated. Tests should verify the proper component hierarchy is maintained, check that all required child elements are present, and validate that content renders as expected.
 
-3. **Structure**:
-   - Verify proper component hierarchy
-   - Check for required child elements
-   - Validate content rendering
+Integration testing verifies how components work together. This includes testing interactions between parent and child components, verifying event handling works correctly, and checking that state changes propagate appropriately through the component tree.
 
-4. **Integration**:
-   - Test interaction with parent components
-   - Verify event handling
-   - Check state propagation
-
-Remember to:
-- Keep tests focused and isolated
-- Use appropriate selectors and queries
-- Test both success and failure cases
-- Include accessibility checks
-- Document test assumptions and requirements 
+When writing tests, maintain focus and isolation between test cases. Use appropriate selectors and queries for reliable element targeting. Include both success and failure test cases to ensure comprehensive coverage. Accessibility checks should be a standard part of the test suite. Document any assumptions and requirements clearly to help future maintenance.

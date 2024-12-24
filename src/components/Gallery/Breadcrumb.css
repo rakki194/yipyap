@@ -15,6 +15,11 @@
     color: var(--accent);
     text-decoration: none;
     padding: calc(var(--spacing) * 0.5);
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+  & a:hover {
+    color: color-mix(in srgb, var(--accent) 85%, white);
   }
 
   & > .breadcrumb-content {
@@ -123,4 +128,37 @@
 .breadcrumb .delete-folder svg {
   width: 1rem;
   height: 1rem;
+}
+
+[data-theme="strawberry"] .breadcrumb a:hover {
+  color: #ff3366;
+  background-color: rgba(255, 51, 102, 0.1);
+}
+
+[data-theme="strawberry"] .breadcrumb a:hover svg {
+  fill: #ff3366;
+}
+
+[data-theme="banana"] .breadcrumb a:hover {
+  color: #ffb700;
+}
+
+[data-theme="banana"] .breadcrumb a:hover svg {
+  fill: #ffb700;
+}
+
+[data-theme="strawberry"] .breadcrumb .icon:hover {
+  background-color: rgba(255, 51, 102, 0.1);
+}
+
+[data-theme="strawberry"] .breadcrumb .icon:hover svg {
+  fill: #ff3366;
+}
+
+[data-theme="banana"] .breadcrumb .icon:hover {
+  background-color: rgba(128, 62, 0, 0.1);
+}
+
+[data-theme="banana"] .breadcrumb .icon:hover svg {
+  fill: #ffb700;
 }

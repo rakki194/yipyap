@@ -211,48 +211,22 @@ Example:
 ## Special Theme Variants
 
 ### Holiday Themes
-- Christmas theme with festive colors and snow effects
-- Halloween theme with spooky colors and animations
+The Christmas theme incorporates festive colors and delightful snow effects to create a seasonal atmosphere. The Halloween theme features spooky colors and animations that enhance the holiday experience.
 
 ### Colorful Themes
-- Banana theme with yellow accents
-- Strawberry theme with red accents
-- Peanut theme with brown accents
+The Banana theme utilizes cheerful yellow accents throughout the interface. The Strawberry theme employs vibrant red accents for a bold look. The Peanut theme incorporates warm brown accents for an earthy feel.
 
 ### High Contrast Themes
-- Enhanced contrast for accessibility
-- Simplified animations
-- Clear focus indicators
+High contrast themes prioritize accessibility with enhanced contrast ratios. These themes feature simplified animations to reduce visual noise and clear focus indicators to aid navigation.
 
 ## Best Practices
 
-1. **Color Usage**:
-   - Use semantic color variables
-   - Ensure sufficient contrast ratios
-   - Support dark and light modes
-   - Consider color blindness
+The color usage system relies on semantic color variables to maintain consistency. All colors must meet sufficient contrast ratios and support both dark and light modes. Color choices take into account color blindness considerations to ensure accessibility for all users.
 
-2. **Animation Consistency**:
-   - Use standard timing variables
-   - Maintain consistent motion patterns
-   - Respect reduced-motion preferences
-   - Keep animations subtle
+Animation consistency is maintained through standard timing variables across the application. Motion patterns follow established conventions while respecting user preferences for reduced motion. All animations are kept subtle to avoid distraction.
 
-3. **Theme Switching**:
-   - Handle transitions smoothly
-   - Persist theme preferences
-   - Support system preferences
-   - Provide clear theme controls
+Theme switching is implemented with smooth transitions between states. The system persists user theme preferences and respects system-level preferences. Clear theme controls are provided to users for easy customization.
 
-4. **Maintenance**:
-   - Document color usage patterns
-   - Keep theme variables organized
-   - Test across all themes
-   - Update theme documentation
+Proper maintenance requires thorough documentation of color usage patterns and organized theme variables. All changes must be tested across the full range of themes. Theme documentation should be kept up to date as the system evolves.
 
-Remember to:
-- Test changes in all themes
-- Consider accessibility implications
-- Document significant changes
-- Update theme documentation
-- Consider performance impact 
+When making theme changes, thoroughly test across all themes and consider the accessibility implications. Document any significant changes made to the system. Keep theme documentation current and evaluate the performance impact of changes.
