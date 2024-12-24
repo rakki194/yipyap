@@ -2,6 +2,48 @@
 
 The application implements a robust theming system with multiple built-in themes (light, dark, gray, strawberry, peanut, christmas, halloween, etc.) that affect not just colors but also animations, visual effects, and component-specific behaviors. Each theme provides custom scrollbar styling, keyboard shortcut visual indicators, and consistent contrast ratios for accessibility. Theme changes are persisted across sessions and can be toggled via keyboard shortcuts or the theme switcher in the settings panel.
 
+## Project Structure
+
+The frontend of yipyap is built with SolidJS and follows this structure:
+
+### Core Files
+- `/src/main.tsx`: Application entry point, sets up routing and error boundaries
+- `/src/contexts/app.tsx`: Global state management for app settings and preferences
+- `/src/router.ts`: Route definitions and navigation logic
+- `/src/styles.css`: Global styles and CSS reset
+- `/src/themes.css`: Theme-specific styles and variables
+
+### Directory Organization
+- `/src/components/`: Feature-based components
+  - `Gallery/`: Image gallery and related components
+  - `ImageViewer/`: Image viewing and manipulation
+  - `Notification/`: Toast notifications system
+  - `Settings/`: Application settings UI
+  - `UploadOverlay/`: File upload interface
+  - Shared components: `FadeIn`, `reactive-utils`
+- `/src/contexts/`: State management and context providers
+- `/src/hooks/`: Reusable custom hooks
+- `/src/i18n/`: Internationalization support
+- `/src/icons/`: SVG icons and related components
+- `/src/pages/`: Route-specific page components
+- `/src/resources/`: Static resources and assets
+- `/src/theme/`: Theme-related utilities
+- `/src/utils/`: Shared utility functions
+
+### State Management
+The application uses a combination of:
+- App Context (`/src/contexts/app.tsx`): Global settings and preferences
+- Component-local state: Feature-specific state using SolidJS primitives
+- URL state: Route parameters and query strings for shareable state
+
+## Theme Implementation
+
+Themes are managed through the app context (`/src/contexts/app.tsx`) which:
+- Persists theme selection in localStorage
+- Updates the document's data-theme attribute
+- Handles RTL support for specific locales
+- Manages animation preferences
+
 ## Making Style Changes
 
 To make style changes to the application, follow these steps:

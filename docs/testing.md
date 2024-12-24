@@ -1,99 +1,93 @@
 # Writing Tests
 
-The project uses Vitest with SolidJS testing utilities. Tests are placed in `__tests__` directories alongside the code they're testing. Each test file should follow the pattern `*.test.ts` or `*.test.tsx`.
+The project uses Vitest with SolidJS testing utilities. All tests are centralized in the `/src/test/__tests__/` directory and organized by functionality:
+
+## Test Organization
+
+1. **Component Tests**:
+   - `ImageView.test.tsx` (6.3KB): Image viewer component
+   - `TagBubble.test.tsx` (7.6KB): Tag component
+   - `CaptionInput.test.tsx` (8.9KB): Caption input component
+   - `ImageInfo.test.tsx` (3.0KB): Image information display
+   - `Notification.test.tsx` (4.8KB): Notification system
+   - `Settings.test.tsx` (9.3KB): Settings panel
+   - `DeleteConfirmDialog.test.tsx` (5.7KB): Delete confirmation dialog
+
+2. **Context and State Tests**:
+   - `app.test.tsx` (5.9KB): App context tests
+   - `contexts.test.ts` (5.7KB): Other contexts
+   - `gallery.test.ts` (9.1KB): Gallery state
+   - `selection.test.ts` (9.6KB): Selection management
+
+3. **Utility Tests**:
+   - `reactive-utils.test.tsx` (5.0KB): Reactive utility functions
+   - `theme.test.ts` (5.6KB): Theme management
+
+4. **i18n Tests**:
+   - `translations.test.ts` (4.9KB): Core translation system
+   - Language-specific tests:
+     - `arabic-plural.test.ts` (2.5KB)
+     - `czech-plural.test.ts` (2.1KB)
+     - `hungarian-article.test.ts` (3.6KB)
+     - `polish-plural.test.ts` (2.0KB)
+     - And more...
+
+5. **Hook Tests**:
+   - `useConnectionStatus.test.tsx` (4.2KB): Connection status hook
 
 ## Test Environment Setup
 
-The global test environment is configured in `src/test/setup.ts` and includes:
+The test environment is configured in `/src/test/setup.ts` and includes:
 - DOM environment with jsdom
-- Global mocks for browser APIs (matchMedia, ResizeObserver, etc.)
+- Global mocks for browser APIs
 - Automatic cleanup after each test
 - SolidJS testing utilities setup
 
-```typescript
-import "@testing-library/jest-dom";
-import { vi } from "vitest";
-import { cleanup } from "@solidjs/testing-library";
-
-beforeAll(() => {
-  setupGlobalMocks();
-});
-
-afterEach(() => {
-  cleanup();
-  vi.clearAllMocks();
-});
-```
-
 ## Test Utilities
 
-Common test utilities are provided in `src/test/test-utils.ts` and `src/test/test-hooks.ts`:
+The project provides comprehensive test utilities in three files:
 
-1. Standard test wrapper components:
+1. `/src/test/test-utils.ts`: Core test utilities and helper functions (6.4KB)
+2. `/src/test/test-hooks.ts`: Custom hooks for test setup and teardown (1.5KB)
+3. `/src/test/setup.ts`: Global test environment configuration (1.7KB)
 
-```typescript
-export const TestWrapper: Component<{ context: any; children: any }> = (props) => {
-  return (
-    <AppContext.Provider value={props.context}>
-      {props.children}
-    </AppContext.Provider>
-  );
-};
-```
+### Configuration
 
-2. Test hooks for common setup patterns:
-
-```typescript
-export function useBasicTestSetup() {
-  beforeEach(() => {
-    cleanup();
-    vi.clearAllMocks();
-  });
-}
-
-export function useResourceTestSetup() {
-  useBasicTestSetup();
-  // Additional resource-specific setup...
-}
-```
+A dedicated `tsconfig.json` in the `/src/test` directory ensures proper TypeScript configuration for the test environment.
 
 ## Component Testing
 
-Component tests should use `@solidjs/testing-library` and follow these patterns:
+When writing component tests, follow these guidelines:
 
-1. Basic component testing:
+1. Add your test file to `/src/test/__tests__/` with the naming pattern `ComponentName.test.tsx`
+2. Use the provided test utilities from `/src/test/test-utils.ts`
+3. Follow the established patterns for setup and teardown
+4. Group related tests in the same file
+5. Keep file sizes manageable (most component tests are 3-9KB)
+
+Example component test structure:
 
 ```typescript
-describe("Component Name", () => {
+import { describe, it, expect } from "vitest";
+import { render, fireEvent } from "@solidjs/testing-library";
+import { useTestSetup } from "~/test/test-hooks";
+import { createTestWrapper } from "~/test/test-utils";
+import { ComponentName } from "~/components/ComponentName";
+
+describe("ComponentName", () => {
+  useTestSetup();
+
   it("should render correctly", () => {
-    const { container } = render(() => <Component prop={value} />);
+    const { container } = render(() => <ComponentName />);
     expect(container).toMatchSnapshot();
   });
 
-  it("should handle user interactions", async () => {
-    const { getByRole } = render(() => <Component />);
-    const button = getByRole("button");
-    await fireEvent.click(button);
-    expect(result).toBe(expectedValue);
-  });
-});
-```
-
-2. Testing with context:
-
-```typescript
-describe("Component with Context", () => {
-  const mockContext = {
-    // Mock context values...
-  };
-
-  it("should use context correctly", () => {
-    const { container } = render(() => (
-      <TestWrapper context={mockContext}>
-        <Component />
-      </TestWrapper>
-    ));
-    // Assertions...
+  // Group related tests
+  describe("interactions", () => {
+    it("should handle user input", async () => {
+      const { getByRole } = render(() => <ComponentName />);
+      // Test implementation...
+    });
   });
 });
 ```
