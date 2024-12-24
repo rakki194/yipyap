@@ -151,3 +151,7 @@ For detailed information about ARIA labeling best practices and accessibility re
 ## Adding New Settings
 
 For detailed information about adding new settings to the application, including step-by-step instructions and best practices, please refer to the [Settings Documentation](docs/settings.md).
+
+## Reading Documentation
+
+Always read the whole documentation on the related topic before writing code.

@@ -1,5 +1,25 @@
 # Translation System
 
+## Table of Contents
+- [Directory Structure](#directory-structure)
+- [Type System](#type-system)
+  - [Translation Interfaces](#translation-interfaces)
+  - [Type-Safe Translation Access](#type-safe-translation-access)
+- [Language Support](#language-support)
+  - [Adding New Languages](#adding-new-languages)
+  - [Pluralization Support](#pluralization-support)
+- [RTL Support](#rtl-support)
+- [Dynamic Loading](#dynamic-loading)
+- [Best Practices](#best-practices)
+  - [Translation Keys](#1-translation-keys)
+  - [Translation Content](#2-translation-content)
+  - [Interpolation](#3-interpolation)
+  - [Maintenance](#4-maintenance)
+- [Testing](#testing)
+  - [Translation Key Tests](#translation-key-tests)
+  - [Pluralization Tests](#pluralization-tests)
+  - [RTL Tests](#rtl-tests)
+
 The translation system in yipyap provides comprehensive internationalization support with type-safe translations, pluralization rules, and RTL language support.
 
 ## Directory Structure

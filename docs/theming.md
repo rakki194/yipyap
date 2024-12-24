@@ -1,5 +1,28 @@
 # Theming System
 
+## Table of Contents
+- [Project Structure](#project-structure)
+  - [Core Files](#core-files)
+  - [Directory Organization](#directory-organization)
+  - [State Management](#state-management)
+- [Theme Implementation](#theme-implementation)
+- [Making Style Changes](#making-style-changes)
+- [Theme Variables](#theme-variables)
+  - [Core Colors](#core-colors)
+  - [Component-Specific Variables](#component-specific-variables)
+  - [Animation Variables](#animation-variables)
+- [Example Usage](#example-usage)
+  - [Basic Theme-Aware Styling](#basic-theme-aware-styling)
+  - [Advanced Color Mixing](#advanced-color-mixing)
+- [Theme Integration](#theme-integration)
+  - [Component Level](#1-component-level)
+  - [Global Level](#2-global-level)
+- [Special Theme Variants](#special-theme-variants)
+  - [Holiday Themes](#1-holiday-themes)
+  - [Brand Themes](#2-brand-themes)
+  - [High Contrast Themes](#3-high-contrast-themes)
+- [Best Practices](#best-practices)
+
 The application implements a robust theming system with multiple built-in themes (light, dark, gray, strawberry, peanut, christmas, halloween, etc.) that affect not just colors but also animations, visual effects, and component-specific behaviors. Each theme provides custom scrollbar styling, keyboard shortcut visual indicators, and consistent contrast ratios for accessibility. Theme changes are persisted across sessions and can be toggled via keyboard shortcuts or the theme switcher in the settings panel.
 
 ## Project Structure

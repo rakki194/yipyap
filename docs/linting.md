@@ -1,5 +1,16 @@
 # Common TypeScript Linting Errors and Solutions
 
+## Table of Contents
+- [Object Literal Type Mismatch in Notifications](#1-object-literal-type-mismatch-in-notifications)
+- [Context Type Errors in Tests](#2-context-type-errors-in-tests)
+- [Missing Required Properties in Context Mocks](#3-missing-required-properties-in-context-mocks)
+- [Translation Parameter Type Mismatches](#4-translation-parameter-type-mismatches)
+- [Import Resolution and Module Not Found Errors](#5-import-resolution-and-module-not-found-errors)
+  - [Unused or Commented Out Imports](#1-unused-or-commented-out-imports)
+  - [Incorrect Import Paths](#2-incorrect-import-paths)
+  - [Missing Files](#3-missing-files)
+  - [Best Practices to Avoid Import Errors](#best-practices-to-avoid-import-errors)
+
 This document outlines common TypeScript linting errors encountered in the yipyap project and their solutions.
 
 ## 1. Object Literal Type Mismatch in Notifications

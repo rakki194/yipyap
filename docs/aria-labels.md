@@ -1,5 +1,29 @@
 # Select Element ARIA Labeling Guide
 
+## Table of Contents
+- [Preferred Methods](#preferred-methods)
+  - [Explicit Label with `for` Attribute](#1-explicit-label-with-for-attribute-most-recommended)
+  - [Implicit Label](#2-implicit-label-wrapping)
+  - [ARIA Label](#3-aria-label-when-visual-label-exists-elsewhere)
+  - [ARIA Labelledby](#4-aria-labelledby-for-complex-labeling)
+- [Requirements](#requirements)
+  - [Core Requirements](#core-requirements)
+  - [Label Text Guidelines](#label-text-guidelines)
+  - [ID Requirements](#id-requirements)
+- [Testing](#testing)
+  - [Manual Testing](#manual-testing)
+  - [Automated Testing](#automated-testing)
+  - [Test Cases to Cover](#test-cases-to-cover)
+- [Benefits](#benefits)
+  - [Accessibility](#accessibility)
+  - [Usability](#usability)
+  - [Compliance](#compliance)
+- [Common Pitfalls to Avoid](#common-pitfalls-to-avoid)
+- [Implementation Examples](#implementation-examples)
+  - [Basic Select](#basic-select)
+  - [Required Select](#required-select)
+  - [Complex Label with Description](#complex-label-with-description)
+
 This document outlines best practices for programmatically associating labels with select elements to ensure accessibility in the yipyap project.
 
 ## Preferred Methods

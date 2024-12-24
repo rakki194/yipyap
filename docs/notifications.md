@@ -1,5 +1,21 @@
 # Notification System
 
+## Table of Contents
+- [Components](#components)
+  - [NotificationContainer](#notificationcontainer-notificationcontainertsx)
+  - [Notification](#notification-notificationtsx)
+- [Styling](#styling)
+- [Usage](#usage)
+- [Features](#features)
+  - [Notification Types](#notification-types)
+  - [Progress Tracking](#progress-tracking)
+  - [Grouping](#grouping)
+  - [Accessibility](#accessibility)
+  - [Animations](#animations)
+- [Best Practices](#best-practices)
+- [Implementation Details](#implementation-details)
+- [Customization](#customization)
+
 The notification system in yipyap provides a flexible and accessible way to display toast notifications. It consists of two main components:
 
 ## Components

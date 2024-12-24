@@ -1,5 +1,23 @@
 # Writing Tests
 
+## Table of Contents
+- [Test Organization](#test-organization)
+  - [Component Tests](#component-tests)
+  - [Context and State Tests](#context-and-state-tests)
+  - [Utility Tests](#utility-tests)
+  - [i18n Tests](#i18n-tests)
+  - [Hook Tests](#hook-tests)
+- [Test Environment Setup](#test-environment-setup)
+- [Test Utilities](#test-utilities)
+  - [Configuration](#configuration)
+- [Component Testing](#component-testing)
+- [Testing Patterns](#testing-patterns)
+- [Mocking](#mocking)
+- [Test Documentation](#test-documentation)
+- [Common Testing Errors and Solutions](#common-testing-errors-and-solutions)
+  - [Timer-Based Test Failures](#1-timer-based-test-failures)
+  - [Hover State Test Failures](#2-hover-state-test-failures)
+
 The project uses Vitest with SolidJS testing utilities. All tests are centralized in the `/src/test/__tests__/` directory and organized by functionality:
 
 ## Test Organization
@@ -355,3 +373,171 @@ Remember to:
 - Use meaningful test descriptions
 - Document complex test setups
 - Update tests when modifying functionality 
+
+## Case Study: UploadOverlay Component Testing
+
+This case study demonstrates common testing challenges and their solutions through the implementation of the UploadOverlay component tests.
+
+### Initial Approach and Challenges
+
+1. **CSS Module Testing Issues**
+
+```typescript
+// Initial attempt: Testing CSS module classes directly
+it("should have proper theme-aware styles", () => {
+  const { container } = render(() => <UploadOverlay isVisible={true} />);
+  const overlay = container.firstChild as HTMLElement;
+  const styles = window.getComputedStyle(overlay);
+  expect(styles.background).toContain("var(--card-bg)"); // Failed
+});
+
+// Problem: CSS modules generate unique class names, and styles aren't computed in jsdom
+// Solution: Use data-testid attributes instead
+it("should render correctly", () => {
+  const { getByTestId } = render(() => <UploadOverlay isVisible={true} />);
+  expect(getByTestId("upload-overlay")).toBeInTheDocument();
+});
+```
+
+2. **Visibility State Changes**
+
+```typescript
+// Initial attempt: Using cleanup and re-render
+it("should handle visibility changes", () => {
+  const { container } = render(() => <UploadOverlay isVisible={false} />);
+  cleanup();
+  render(() => <UploadOverlay isVisible={true} />); // Lost component reference
+});
+
+// Solution: Use SolidJS createSignal for reactive state changes
+it("should handle visibility changes correctly", () => {
+  const [isVisible, setIsVisible] = createSignal(false);
+  const TestWrapper = () => <UploadOverlay isVisible={isVisible()} />;
+  const { queryByTestId } = render(TestWrapper);
+  
+  setIsVisible(true);
+  expect(queryByTestId("upload-overlay")).toBeInTheDocument();
+});
+```
+
+3. **Element Querying Strategy**
+
+```typescript
+// Initial attempt: Using querySelector with class names
+const overlay = container.querySelector('.overlay'); // Unreliable with CSS modules
+
+// Solution: Using data-testid attributes
+const overlay = getByTestId("upload-overlay"); // Reliable and explicit
+```
+
+### Key Lessons Learned
+
+1. **Testing Styling and Themes**:
+   - Avoid testing computed styles in jsdom environment
+   - Focus on testing structure and functionality instead
+   - Use data attributes for element selection
+   - Consider visual regression testing for style verification
+
+2. **Component State Management**:
+   - Use SolidJS's reactive primitives (`createSignal`) for state changes
+   - Maintain component references through state updates
+   - Test both initial state and state transitions
+   - Consider the reactive nature of the framework
+
+3. **Element Selection Strategy**:
+   - Prefer `data-testid` attributes over class names
+   - Use `getByTestId` for elements that should exist
+   - Use `queryByTestId` for elements that might not exist
+   - Keep selectors independent of styling implementation
+
+4. **Test Structure and Organization**:
+   - Group related tests logically
+   - Test both positive and negative cases
+   - Include accessibility checks
+   - Verify component structure separately from behavior
+
+### Best Practices Derived
+
+1. **Component Setup**:
+   ```typescript
+   // Add data-testid attributes to testable elements
+   <div 
+     class={styles.overlay} 
+     data-testid="upload-overlay"
+     role="dialog"
+   >
+   ```
+
+2. **State Testing**:
+   ```typescript
+   // Use createSignal for reactive state changes
+   const [isVisible, setIsVisible] = createSignal(false);
+   const TestWrapper = () => <UploadOverlay isVisible={isVisible()} />;
+   ```
+
+3. **Element Queries**:
+   ```typescript
+   // Use appropriate query methods based on expectations
+   expect(queryByTestId("upload-overlay")).not.toBeInTheDocument(); // For absent elements
+   expect(getByTestId("upload-overlay")).toBeInTheDocument(); // For present elements
+   ```
+
+4. **Accessibility Testing**:
+   ```typescript
+   // Include ARIA attribute checks
+   expect(overlay).toHaveAttribute('role', 'dialog');
+   expect(overlay).toHaveAttribute('aria-label', 'Drop files to upload');
+   ```
+
+### Common Pitfalls to Avoid
+
+1. **Style Testing**:
+   - Don't test computed styles in jsdom
+   - Don't rely on CSS module class names
+   - Don't test implementation details of styling
+
+2. **State Management**:
+   - Don't use cleanup/re-render for state changes
+   - Don't test internal state, test observable behavior
+   - Don't assume immediate state updates
+
+3. **Element Selection**:
+   - Don't use class names for element selection
+   - Don't rely on DOM structure that might change
+   - Don't mix styling and testing concerns
+
+4. **Test Isolation**:
+   - Don't share state between tests
+   - Don't assume test order
+   - Don't leave cleanup to other tests
+
+### Recommendations for Similar Components
+
+When testing overlay or modal-like components:
+
+1. **Visibility Testing**:
+   - Test both visible and hidden states
+   - Verify proper cleanup on hide
+   - Check transition states if relevant
+
+2. **Accessibility**:
+   - Include ARIA attribute checks
+   - Verify keyboard navigation
+   - Test screen reader compatibility
+
+3. **Structure**:
+   - Verify proper component hierarchy
+   - Check for required child elements
+   - Validate content rendering
+
+4. **Integration**:
+   - Test interaction with parent components
+   - Verify event handling
+   - Check state propagation
+
+Remember to:
+- Keep tests focused and isolated
+- Use appropriate selectors and queries
+- Test both success and failure cases
+- Include accessibility checks
+- Document test assumptions and requirements 
