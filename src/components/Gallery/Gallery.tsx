@@ -99,8 +99,6 @@ export const Gallery = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   const [isDragging, setIsDragging] = createSignal(false);
   let dragCounter = 0;
-  const [uploadProgress, setUploadProgress] = createSignal<{current: number, total: number} | null>(null);
-  const [currentFile, setCurrentFile] = createSignal<string | null>(null);
   const [progressInfo, setProgressInfo] = createSignal<{
     current: number;
     total: number;

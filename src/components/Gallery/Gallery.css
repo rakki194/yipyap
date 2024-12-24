@@ -215,7 +215,7 @@
   opacity: 0;
 }
 
-.gallery-dropzone {
+.upload-progress-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -223,36 +223,8 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-}
-
-.gallery-dropzone.dragging {
-  pointer-events: auto;
-  background-color: transparent;
-}
-
-.drop-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  border: 2px dashed white;
-  border-radius: var(--border-radius);
-}
-
-.upload-progress-overlay {
-  position: fixed;
-  bottom: var(--spacing);
-  right: var(--spacing);
-  z-index: 1100;
-  pointer-events: none;
 }
 
 .upload-progress-container {
