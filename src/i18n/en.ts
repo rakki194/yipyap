@@ -51,6 +51,8 @@ export default {
       peanut: "Peanut",
       christmas: "Christmas",
       halloween: "Halloween",
+      "high-contrast-black": "High Contrast Dark",
+      "high-contrast-inverse": "High Contrast Light",
     },
     disableAnimations: "Disable animations",
     language: "Language",

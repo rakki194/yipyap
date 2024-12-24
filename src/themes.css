@@ -660,3 +660,105 @@
     background-position: 100px 0;
   }
 }
+
+/* High Contrast Black theme */
+:root[data-theme="high-contrast-black"] {
+  --accent: #ffff00;
+  --bg-color: #000000;
+  --secondary-bg: #0a0a0a;
+  --card-bg: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #f0f0f0;
+  --border: #ffffff;
+  --border-secondary: #ffff00;
+  --placeholder-color: #ffffff;
+  --preview-bg: rgb(0 0 0 / 95%);
+  --shadow-color: rgb(255 255 255 / 40%);
+  --shadow-accent: #ffffff;
+
+  /* Enhanced focus indicators */
+  *:focus {
+    outline: 3px solid var(--accent) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Ensure buttons have strong contrast */
+  button {
+    border: 2px solid var(--border);
+  }
+
+  button:hover {
+    background-color: var(--text-primary);
+    color: var(--bg-color);
+  }
+
+  /* Make selected items very distinct */
+  .item.selected {
+    outline: 3px solid var(--accent);
+    background-color: var(--card-bg);
+  }
+
+  /* Enhance text readability */
+  kbd {
+    --kbd-bg: #000000;
+    --kbd-border: #ffffff;
+    --kbd-text: #ffffff;
+    border: 2px solid var(--kbd-border);
+  }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--bg-color);
+  --scrollbar-thumb: var(--text-primary);
+  --scrollbar-thumb-hover: var(--accent);
+}
+
+/* High Contrast Inverse theme */
+:root[data-theme="high-contrast-inverse"] {
+  --accent: #0000ff;
+  --bg-color: #ffffff;
+  --secondary-bg: #f5f5f5;
+  --card-bg: #e5e5e5;
+  --text-primary: #000000;
+  --text-secondary: #0a0a0a;
+  --border: #000000;
+  --border-secondary: #0000ff;
+  --placeholder-color: #000000;
+  --preview-bg: rgb(255 255 255 / 95%);
+  --shadow-color: rgb(0 0 0 / 40%);
+  --shadow-accent: #000000;
+
+  /* Enhanced focus indicators */
+  *:focus {
+    outline: 3px solid var(--accent) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Ensure buttons have strong contrast */
+  button {
+    border: 2px solid var(--border);
+  }
+
+  button:hover {
+    background-color: var(--text-primary);
+    color: var(--bg-color);
+  }
+
+  /* Make selected items very distinct */
+  .item.selected {
+    outline: 3px solid var(--accent);
+    background-color: var(--card-bg);
+  }
+
+  /* Enhance text readability */
+  kbd {
+    --kbd-bg: #ffffff;
+    --kbd-border: #000000;
+    --kbd-text: #000000;
+    border: 2px solid var(--kbd-border);
+  }
+
+  /* Scrollbar styles */
+  --scrollbar-track: var(--bg-color);
+  --scrollbar-thumb: var(--text-primary);
+  --scrollbar-thumb-hover: var(--accent);
+}

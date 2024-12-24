@@ -64,6 +64,8 @@ export interface ThemeTranslations {
   peanut: string;
   christmas: string;
   halloween: string;
+  "high-contrast-black": string;
+  "high-contrast-inverse": string;
 }
 
 export interface SettingsTranslations {

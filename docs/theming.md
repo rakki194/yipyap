@@ -53,19 +53,13 @@ The frontend of yipyap is built with SolidJS and follows this structure:
 - `/src/theme/`: Theme-related utilities
 - `/src/utils/`: Shared utility functions
 
-### State Management
-The application uses a combination of:
-- App Context (`/src/contexts/app.tsx`): Global settings and preferences
-- Component-local state: Feature-specific state using SolidJS primitives
-- URL state: Route parameters and query strings for shareable state
+## State Management
+
+The application implements state management through multiple complementary approaches. At the global level, the App Context defined in `/src/contexts/app.tsx` handles application-wide settings and user preferences. For more focused functionality, components maintain their own local state using SolidJS primitives to manage feature-specific data and UI states. Additionally, certain application states are preserved in the URL through route parameters and query strings, enabling shareable and bookmarkable states across sessions.
 
 ## Theme Implementation
 
-Themes are managed through the app context (`/src/contexts/app.tsx`) which:
-- Persists theme selection in localStorage
-- Updates the document's data-theme attribute
-- Handles RTL support for specific locales
-- Manages animation preferences
+Theme management is centralized through the app context defined in `/src/contexts/app.tsx`. This context provides comprehensive theme handling by persisting the user's theme selection in localStorage to maintain preferences across sessions. When themes change, it automatically updates the document's data-theme attribute to apply the new styles. The context also provides built-in support for RTL (right-to-left) layouts when using locales that require it, ensuring proper text and layout direction. Beyond basic theme switching, it manages animation preferences to respect user settings for reduced motion and other accessibility considerations.
 
 ## Making Style Changes
 

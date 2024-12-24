@@ -12,7 +12,9 @@ export type Theme =
   | "strawberry"
   | "peanut"
   | "christmas"
-  | "halloween";
+  | "halloween"
+  | "high-contrast-black"
+  | "high-contrast-inverse";
 
 /** Base themes that are always available */
 const baseThemes: Record<string, string> = {
@@ -22,6 +24,8 @@ const baseThemes: Record<string, string> = {
   banana: "banana",
   strawberry: "strawberry",
   peanut: "peanut",
+  "high-contrast-black": "contrast",
+  "high-contrast-inverse": "contrast-inverse",
 };
 
 function isSeasonalThemeAvailable(theme: Theme): boolean {

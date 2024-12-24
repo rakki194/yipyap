@@ -1,4 +1,5 @@
 // Import all icons
+import DeleteRegular from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
 import PeanutIcon from "./peanut.svg?raw";
 import BananaIcon from "./banana.svg?raw";
 import YipYap from "./favicon.svg?raw";
@@ -6,6 +7,8 @@ import HomeIcon from "@fluentui/svg-icons/icons/home_24_regular.svg?raw";
 import SunIcon from "@fluentui/svg-icons/icons/weather_sunny_24_regular.svg?raw";
 import CloudIcon from "@fluentui/svg-icons/icons/weather_cloudy_24_regular.svg?raw";
 import MoonIcon from "@fluentui/svg-icons/icons/weather_moon_24_regular.svg?raw";
+import AccessibilityFilled from "@fluentui/svg-icons/icons/accessibility_24_filled.svg?raw";
+import AccessibilityRegular from "@fluentui/svg-icons/icons/accessibility_24_regular.svg?raw";
 import FolderIcon from "@fluentui/svg-icons/icons/folder_24_regular.svg?raw";
 import UpIcon from "@fluentui/svg-icons/icons/location_arrow_up_20_regular.svg?raw";
 import TagIcon from "@fluentui/svg-icons/icons/tag_24_regular.svg?raw";
@@ -76,9 +79,12 @@ export const themeIconMap = {
   peanut: "peanut",
   christmas: "christmas",
   halloween: "ghost",
+  "high-contrast-black": "contrast",
+  "high-contrast-inverse": "contrast-inverse",
 };
 
 const iconMap: Readonly<Record<string, string>> = {
+  trash: DeleteRegular,
   upload: FolderArrowUpIcon,
   folderAdd: FolderAddIcon,
   checkAll: CheckAllIcon,
@@ -91,6 +97,8 @@ const iconMap: Readonly<Record<string, string>> = {
   sun: SunIcon,
   cloud: CloudIcon,
   moon: MoonIcon,
+  contrast: AccessibilityFilled,
+  "contrast-inverse": AccessibilityRegular,
   folder: FolderIcon,
   up: UpIcon,
   tag: TagIcon,

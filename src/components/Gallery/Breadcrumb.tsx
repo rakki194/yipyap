@@ -101,37 +101,9 @@ export const Breadcrumb = () => {
     xhr.send(formData);
   };
 
-  const Crumbs = () => {
-    const segments = () => data()?.path.split("/").filter(Boolean) || [];
-    const crumbs = () =>
-      segments().reduce<{ children: string; href: string }[]>(
-        (acc, segment) => {
-          const last = acc[acc.length - 1];
-          acc.push({
-            children: segment,
-            href: last ? `${last.href}/${segment}` : `/gallery/${segment}`,
-          });
-          return acc;
-        },
-        []
-      );
-    return (
-      <For each={crumbs()}>
-        {(crumb) => {
-          const path = crumb.href;
-          return (
-            <>
-              {t('common.pathSeparator')}
-              <A href={crumb.href}>{crumb.children}</A>
-            </>
-          );
-        }}
-      </For>
-    );
-  };
-
   const [showSettings, setShowSettings] = createSignal(false);
   const [showNewFolderDialog, setShowNewFolderDialog] = createSignal(false);
+  const [showDeleteDialog, setShowDeleteDialog] = createSignal(false);
   const [newFolderName, setNewFolderName] = createSignal("");
   const [isCreatingFolder, setIsCreatingFolder] = createSignal(false);
 
@@ -180,6 +152,76 @@ export const Breadcrumb = () => {
     } finally {
       setIsCreatingFolder(false);
     }
+  };
+
+  const handleDeleteCurrentFolder = async () => {
+    const currentPath = data()?.path;
+    if (!currentPath) return;
+
+    try {
+      const params = new URLSearchParams();
+      params.append("confirm", "true");
+      
+      const response = await fetch(`/api/browse/${currentPath}?${params.toString()}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      // Navigate to parent folder
+      const parentPath = currentPath.split("/").slice(0, -1).join("/");
+      window.location.href = parentPath ? `/gallery/${parentPath}` : "/gallery";
+
+      app.notify(
+        t('notifications.folderDeleted'),
+        "success"
+      );
+    } catch (error) {
+      console.error("Error deleting folder:", error);
+      app.notify(
+        t('notifications.folderDeleteError'),
+        "error"
+      );
+    }
+  };
+
+  const Crumbs = () => {
+    const segments = () => data()?.path.split("/").filter(Boolean) || [];
+    const crumbs = () =>
+      segments().reduce<{ children: string; href: string }[]>(
+        (acc, segment) => {
+          const last = acc[acc.length - 1];
+          acc.push({
+            children: segment,
+            href: last ? `${last.href}/${segment}` : `/gallery/${segment}`,
+          });
+          return acc;
+        },
+        []
+      );
+    
+    return (
+      <>
+        <For each={crumbs()}>
+          {(crumb) => {
+            const path = crumb.href;
+            return (
+              <>
+                {t('common.pathSeparator')}
+                <A href={crumb.href}>{crumb.children}</A>
+              </>
+            );
+          }}
+        </For>
+      </>
+    );
+  };
+
+  const isInSubfolder = () => {
+    const segments = data()?.path.split("/").filter(Boolean) || [];
+    return segments.length > 0;
   };
 
   return (
@@ -249,6 +291,17 @@ export const Breadcrumb = () => {
                 }
               }}
             />
+            <Show when={isInSubfolder()}>
+              <button
+                type="button"
+                class="icon delete-button"
+                onClick={() => setShowDeleteDialog(true)}
+                title={t('gallery.deleteCurrentFolder')}
+                aria-label={t('gallery.deleteCurrentFolder')}
+              >
+                {getIcon("trash")}
+              </button>
+            </Show>
             <MultiSelectActions />
             <ThemeToggle />
             <button
@@ -309,6 +362,17 @@ export const Breadcrumb = () => {
             </form>
           </div>
         </div>
+      </Show>
+      <Show when={showDeleteDialog()}>
+        <DeleteConfirmDialog
+          imageCount={0}
+          folderCount={1}
+          onConfirm={() => {
+            setShowDeleteDialog(false);
+            handleDeleteCurrentFolder();
+          }}
+          onCancel={() => setShowDeleteDialog(false)}
+        />
       </Show>
     </>
   );
