@@ -1,8 +1,9 @@
 // Import all icons
-import DeleteRegular from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
 import PeanutIcon from "./peanut.svg?raw";
 import BananaIcon from "./banana.svg?raw";
 import YipYap from "./favicon.svg?raw";
+import DeleteDataset from "./delete_dataset.svg?raw";
+import DeleteRegular from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
 import HomeIcon from "@fluentui/svg-icons/icons/home_24_regular.svg?raw";
 import SunIcon from "@fluentui/svg-icons/icons/weather_sunny_24_regular.svg?raw";
 import CloudIcon from "@fluentui/svg-icons/icons/weather_cloudy_24_regular.svg?raw";
@@ -84,7 +85,7 @@ export const themeIconMap = {
 };
 
 const iconMap: Readonly<Record<string, string>> = {
-  trash: DeleteRegular,
+  trash: DeleteDataset,
   upload: FolderArrowUpIcon,
   folderAdd: FolderAddIcon,
   checkAll: CheckAllIcon,

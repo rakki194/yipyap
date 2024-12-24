@@ -631,44 +631,6 @@ kbd {
   color: var(--text-color);
 }
 
-/* Hide tooltips by default */
-.tooltip {
-  display: none;
-  /* Add your tooltip styling here */
-  position: absolute;
-  background-color: #333;
-  color: #fff;
-  padding: 5px;
-  border-radius: 4px;
-  /* Adjust positioning as needed */
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  z-index: 10;
-}
-
-/* Show tooltip on hover */
-.tooltip-container:hover .tooltip {
-  display: block;
-}
-
-/* Optional: Add some transition for smoother appearance */
-.tooltip {
-  transition: opacity 0.3s;
-  opacity: 0;
-}
-
-.tooltip-container:hover .tooltip {
-  opacity: 1;
-}
-
-/* Ensure tooltip containers have positioning context */
-.tooltip-container {
-  position: relative;
-  display: inline-block;
-}
-
 .thumbnail-size-controls {
   display: flex;
   align-items: center;

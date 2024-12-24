@@ -5,6 +5,7 @@ import { useGallery } from "~/contexts/GalleryContext";
 import { useAppContext } from "~/contexts/app";
 import { Theme, themeIconMap, themes } from "~/contexts/theme";
 import getIcon from "~/icons";
+import { Tooltip } from "~/components/Tooltip/Tooltip";
 import "./Settings.css";
 import { languages } from "~/i18n";
 
@@ -254,16 +255,18 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
 
                 <div class="setting-group">
                   <div class="icon-buttons">
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={app.disableAnimations}
-                        onChange={(e) =>
-                          app.setDisableAnimations(e.currentTarget.checked)
-                        }
-                      />
-                      {t('settings.disableAnimations')}
-                    </label>
+                    <Tooltip content={t('settings.disableAnimationsTooltip')} position="top">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={app.disableAnimations}
+                          onChange={(e) =>
+                            app.setDisableAnimations(e.currentTarget.checked)
+                          }
+                        />
+                        {t('settings.disableAnimations')}
+                      </label>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
@@ -271,7 +274,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               <div class="settings-column">
                 <h3>{t('settings.language')}</h3>
                 <div class="setting-group">
-                  <label for="language-select">{t('common.language')}</label>
+                  <Tooltip content={t('settings.languageTooltip')} position="top">
+                    <label for="language-select">{t('common.language')}</label>
+                  </Tooltip>
                   <select
                     id="language-select"
                     class="language-select"
@@ -286,14 +291,16 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   </select>
                   <Show when={app.locale !== 'ja'}>
                     <div class="setting-item">
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={app.disableNonsense}
-                          onChange={(e) => app.setDisableNonsense(e.currentTarget.checked)}
-                        />
-                        {t('settings.disableNonsense')}
-                      </label>
+                      <Tooltip content={t('settings.disableNonsenseTooltip')} position="top">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={app.disableNonsense}
+                            onChange={(e) => app.setDisableNonsense(e.currentTarget.checked)}
+                          />
+                          {t('settings.disableNonsense')}
+                        </label>
+                      </Tooltip>
                     </div>
                   </Show>
                 </div>
@@ -302,7 +309,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               <div class="settings-column">
                 <h3>{t('settings.modelSettings')}</h3>
                 <div class="setting-group">
-                  <label>{t('settings.jtp2ModelPath')}</label>
+                  <Tooltip content={t('settings.jtp2ModelPathTooltip')} position="top">
+                    <label>{t('settings.jtp2ModelPath')}</label>
+                  </Tooltip>
                   <input
                     type="text"
                     value={app.jtp2ModelPath}
@@ -322,7 +331,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   </div>
                 </div>
                 <div class="setting-group">
-                  <label>{t('settings.jtp2TagsPath')}</label>
+                  <Tooltip content={t('settings.jtp2TagsPathTooltip')} position="top">
+                    <label>{t('settings.jtp2TagsPath')}</label>
+                  </Tooltip>
                   <input
                     type="text"
                     value={app.jtp2TagsPath}
@@ -354,70 +365,82 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   </span>
                 </p>
               </Show>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={app.instantDelete}
-                  onChange={(e) => app.setInstantDelete(e.currentTarget.checked)}
-                />
-                {t('settings.instantDelete')}
-              </label>
-              
-              <div class="setting-item">
-                <label class="tooltip-container">
+              <Tooltip content={t('settings.instantDeleteTooltip')} position="top">
+                <label>
                   <input
                     type="checkbox"
-                    checked={app.preserveLatents}
-                    onChange={(e) => app.setPreserveLatents(e.currentTarget.checked)}
+                    checked={app.instantDelete}
+                    onChange={(e) => app.setInstantDelete(e.currentTarget.checked)}
                   />
-                  {t('settings.preserveLatents')}
-                  <span class="tooltip">{t('settings.preserveLatentsTooltip')}</span>
+                  {t('settings.instantDelete')}
                 </label>
+              </Tooltip>
+              
+              <div class="setting-item">
+                <Tooltip content={t('settings.preserveLatentsTooltip')} position="top">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={app.preserveLatents}
+                      onChange={(e) => app.setPreserveLatents(e.currentTarget.checked)}
+                    />
+                    {t('settings.preserveLatents')}
+                  </label>
+                </Tooltip>
               </div>
 
               <div class="setting-item">
-                <label class="tooltip-container">
-                  <input
-                    type="checkbox"
-                    checked={app.preserveTxt}
-                    onChange={(e) => app.setPreserveTxt(e.currentTarget.checked)}
-                  />
-                  {t('settings.preserveTxt')}
-                  <span class="tooltip">{t('settings.preserveTxtTooltip')}</span>
-                </label>
+                <Tooltip content={t('settings.preserveTxtTooltip')} position="top">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={app.preserveTxt}
+                      onChange={(e) => app.setPreserveTxt(e.currentTarget.checked)}
+                    />
+                    {t('settings.preserveTxt')}
+                  </label>
+                </Tooltip>
               </div>
 
               <h4 class="experimental-header">{t('settings.experimentalFeatures')}</h4>
               <div class="experimental-options">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={app.enableZoom}
-                    onChange={(e) => app.setEnableZoom(e.currentTarget.checked)}
-                  />
-                  {t('settings.enableZoom')}
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={app.enableMinimap}
-                    onChange={(e) => app.setEnableMinimap(e.currentTarget.checked)}
-                  />
-                  {t('settings.enableMinimap')}
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={app.alwaysShowCaptionEditor}
-                    onChange={(e) => app.setAlwaysShowCaptionEditor(e.currentTarget.checked)}
-                  />
-                  {t('settings.alwaysShowCaptionEditor')}
-                </label>
+                <Tooltip content={t('settings.enableZoomTooltip')} position="top">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={app.enableZoom}
+                      onChange={(e) => app.setEnableZoom(e.currentTarget.checked)}
+                    />
+                    {t('settings.enableZoom')}
+                  </label>
+                </Tooltip>
+                <Tooltip content={t('settings.enableMinimapTooltip')} position="top">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={app.enableMinimap}
+                      onChange={(e) => app.setEnableMinimap(e.currentTarget.checked)}
+                    />
+                    {t('settings.enableMinimap')}
+                  </label>
+                </Tooltip>
+                <Tooltip content={t('settings.alwaysShowCaptionEditorTooltip')} position="top">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={app.alwaysShowCaptionEditor}
+                      onChange={(e) => app.setAlwaysShowCaptionEditor(e.currentTarget.checked)}
+                    />
+                    {t('settings.alwaysShowCaptionEditor')}
+                  </label>
+                </Tooltip>
               </div>
             </section>
 
             <div class="setting-group">
-              <label>{t('settings.thumbnailSize')}</label>
+              <Tooltip content={t('settings.thumbnailSizeDescription')} position="top">
+                <label>{t('settings.thumbnailSize')}</label>
+              </Tooltip>
               <div class="thumbnail-size-controls">
                 <input
                   type="range"
@@ -431,9 +454,6 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   {app.thumbnailSize}px
                 </span>
               </div>
-              <small class="setting-description">
-                {t('settings.thumbnailSizeDescription')}
-              </small>
             </div>
           </div>
         </Show>

@@ -99,100 +99,6 @@
   transition: width 0.2s ease-out;
 }
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-dialog {
-  background: var(--bg-color);
-  padding: var(--spacing);
-  border-radius: var(--border-radius);
-  min-width: 300px;
-  max-width: 90%;
-  box-shadow: var(--shadow);
-  position: relative;
-}
-
-.modal-close-button {
-  position: absolute;
-  top: var(--half-spacing);
-  right: var(--half-spacing);
-  padding: var(--half-spacing);
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-close-button svg {
-  width: var(--icon-size);
-  height: var(--icon-size);
-}
-
-.modal-close-button:hover {
-  color: var(--accent);
-}
-
-.modal-dialog h2 {
-  margin: 0 0 var(--spacing);
-}
-
-.modal-dialog form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing);
-}
-
-.modal-dialog input {
-  width: 100%;
-  padding: var(--half-spacing);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  background: var(--input-bg);
-  color: var(--text-primary);
-}
-
-.modal-dialog input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-.modal-dialog .modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing);
-}
-
-.modal-dialog button {
-  padding: var(--half-spacing) var(--spacing);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  background: var(--button-bg);
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.modal-dialog button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.modal-dialog button.primary {
-  background: var(--accent);
-  color: var(--text-on-accent);
-  border-color: var(--accent);
-}
-
 .breadcrumb .delete-folder {
   display: inline-flex;
   align-items: center;
@@ -201,17 +107,17 @@
   margin-left: 0.25rem;
   border: none;
   background: none;
-  color: var(--text-color);
+  color: var(--error);
   opacity: 0.6;
   cursor: pointer;
   border-radius: var(--radius-sm);
-  transition: opacity 0.2s ease, background-color 0.2s ease;
+  transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .breadcrumb .delete-folder:hover {
   opacity: 1;
   background-color: var(--danger-bg);
-  color: var(--danger-fg);
+  color: color-mix(in srgb, var(--error) 85%, black);
 }
 
 .breadcrumb .delete-folder svg {

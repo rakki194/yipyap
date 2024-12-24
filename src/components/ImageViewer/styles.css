@@ -259,6 +259,8 @@
 .delete-button {
   position: relative;
   overflow: hidden;
+  color: var(--error);
+  transition: color 0.2s ease;
 
   &::before {
     content: "";
@@ -287,6 +289,10 @@
       fill: var(--accent);
     }
   }
+}
+
+.delete-button:hover {
+  color: color-mix(in srgb, var(--error) 85%, black);
 }
 
 @keyframes pulse {

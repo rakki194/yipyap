@@ -402,14 +402,97 @@
 
 .modal-dialog {
   background: var(--bg-color);
-  border-radius: var(--border-radius);
-  padding: var(--spacing);
+  border-radius: 8px;
+  padding: var(--double-spacing);
   box-shadow: var(--shadow-default);
   max-width: 90%;
   width: 400px;
+  min-width: 300px;
+  position: relative;
 }
 
 .modal-dialog h2 {
   margin: 0 0 var(--spacing) 0;
   color: var(--text-primary);
+}
+
+.modal-dialog p {
+  margin: var(--spacing) 0;
+  color: var(--text-secondary);
+}
+
+.modal-dialog .delete {
+  background: var(--error);
+  border-color: var(--error);
+  color: white;
+}
+
+.modal-dialog .delete:hover {
+  background: color-mix(in srgb, var(--error) 85%, black);
+}
+
+/* Additional modal styles */
+.modal-close-button {
+  position: absolute;
+  top: var(--half-spacing);
+  right: var(--half-spacing);
+  padding: var(--half-spacing);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-button:hover {
+  color: var(--accent);
+}
+
+.modal-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.modal-dialog input {
+  width: 100%;
+  padding: var(--half-spacing);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--input-bg);
+  color: var(--text-primary);
+}
+
+.modal-dialog input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.modal-dialog .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing);
+}
+
+.modal-dialog button {
+  padding: var(--half-spacing) var(--spacing);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--button-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.modal-dialog button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-dialog button.primary {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: var(--accent);
 }
