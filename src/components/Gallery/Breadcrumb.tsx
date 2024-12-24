@@ -264,6 +264,7 @@ export const Breadcrumb = () => {
             </Suspense>
           </small>
           <div class="breadcrumb-actions">
+            <MultiSelectActions />
             <button
               type="button"
               class="icon"
@@ -307,7 +308,6 @@ export const Breadcrumb = () => {
                 {getIcon("trash")}
               </button>
             </Show>
-            <MultiSelectActions />
             <ThemeToggle />
             <button
               type="button"
@@ -428,20 +428,6 @@ const MultiSelectActions = () => {
     <>
       <Show when={hasSelection() || gallery.data()?.items.some(item => item.type === "image" || item.type === "directory")}>
         <div class="multi-select-actions">
-          <button
-            type="button"
-            class="icon"
-            onClick={() => {
-              if (hasSelection()) {
-                selection.clearMultiSelect();
-              } else {
-                selection.selectAll();
-              }
-            }}
-            title={hasSelection() ? app.t('gallery.deselectAll') : app.t('gallery.selectAll')}
-          >
-            {getIcon(hasSelection() ? "dismiss" : "checkAll")}
-          </button>
           <Show when={hasSelection()}>
             <div class="delete-button-container">
               <button
@@ -464,6 +450,20 @@ const MultiSelectActions = () => {
               </Show>
             </div>
           </Show>
+          <button
+            type="button"
+            class="icon"
+            onClick={() => {
+              if (hasSelection()) {
+                selection.clearMultiSelect();
+              } else {
+                selection.selectAll();
+              }
+            }}
+            title={hasSelection() ? app.t('gallery.deselectAll') : app.t('gallery.selectAll')}
+          >
+            {getIcon(hasSelection() ? "dismiss" : "checkAll")}
+          </button>
         </div>
       </Show>
 
