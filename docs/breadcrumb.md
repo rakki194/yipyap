@@ -6,46 +6,78 @@ The Breadcrumb component is a crucial navigation element in the yipyap gallery i
 
 The Breadcrumb component is located at `src/components/Gallery/Breadcrumb.tsx` and consists of several key sections:
 
-### 1. Navigation Section
-- Root navigation with the yipyap logo
-- Gallery root navigation with dimensions icon
-- Dynamic path segments showing the current directory hierarchy
-- Each segment is clickable for quick navigation
+### Navigation Section
 
-### 2. Statistics Section
-- Shows total folder count with folder icon
-- Shows total image count with dimensions icon
-- Uses Suspense for loading state
+The navigation section features root navigation through the yipyap logo, providing quick access to the gallery root with a dimensions icon. It displays dynamic path segments that show the current directory hierarchy, with each segment being clickable to enable quick navigation to any point in the path.
 
-### 3. Action Buttons Section
-- Create folder button (`folderAdd` icon)
-- Upload files button (`upload` icon)
-- Delete current folder button (`trash` icon, only in subfolders)
-- Multi-select actions
-- Theme toggle
-- Settings button
+### Statistics Section
+
+The statistics section provides an overview of the current directory contents. It displays the total folder count accompanied by a folder icon, as well as the total image count with a dimensions icon. This section utilizes Suspense for handling loading states smoothly.
+
+### Action Buttons Section
+
+The action buttons section contains several important controls. Users can create new folders using the folderAdd icon button, upload files via the upload button, and delete the current folder using the trash icon button (which only appears in subfolders). This section also includes multi-select action controls, a theme toggle, and a settings button for accessing application preferences.
+
+## Context Integration
+
+### AppContext
+
+The Breadcrumb component integrates with the AppContext (`src/contexts/app.tsx`) to access global application state and functionality:
+
+- **Theme Management**: 
+  ```typescript
+  const app = useAppContext();
+  // Access current theme
+  const currentTheme = app.theme;
+  // Toggle theme
+  app.setTheme(nextTheme());
+  ```
+
+- **Translations**: 
+  ```typescript
+  const t = app.t;
+  // Usage in component
+  title={t('gallery.deleteCurrentFolder')}
+  ```
+
+- **Notifications**: 
+  ```typescript
+  // Success notification
+  app.notify(
+    t('notifications.folderDeleted'),
+    "success"
+  );
+  // Error notification
+  app.notify(
+    t('notifications.folderDeleteError'),
+    "error"
+  );
+  ```
+
+The AppContext provides several core application features. It handles theme management with persistence across sessions, enabling consistent theming throughout the application. The context also manages internationalization (i18n) support for multiple languages and locales. A comprehensive notification system is included for displaying alerts and messages to users. User preferences are stored and managed through the context to maintain application settings. Error boundaries are provided to gracefully handle and display errors. The context also tracks routing information to manage navigation state.
+
+### GalleryContext
+
+The component integrates with the GalleryContext to access gallery-specific functionality. This includes managing the current path data for navigation, handling selection state for multi-select operations, and providing methods for data invalidation and refetching when gallery contents change.
 
 ## Key Features
 
 ### File Upload
-- Handles multiple file uploads
-- Validates file sizes (max 100MB per file)
-- Shows upload progress
-- Provides error notifications for oversized files
+
+The file upload system supports handling multiple files simultaneously. It performs validation on file sizes, enforcing a maximum limit of 100MB per file. Users can monitor upload progress through visual indicators, and the system provides clear error notifications if files exceed the size limit.
 
 ### Folder Management
-- Create new folders with a modal dialog
-- Delete current folder with confirmation
-- Navigate through folder hierarchy
+
+Folder management capabilities include creating new folders through an intuitive modal dialog interface. Users can delete the current folder with a confirmation step to prevent accidental deletions. The system enables smooth navigation through the folder hierarchy.
 
 ### Theme Integration
-- Special decoration for "strawberry" theme
-- Theme-aware styling
-- Dynamic theme toggle
+
+The theming system includes special decorative elements for the "strawberry" theme variant. All components feature theme-aware styling that responds to the current theme selection. Users can easily switch between themes using the dynamic theme toggle.
 
 ## Implementation Journey: Delete Folder Feature
 
 ### Initial Implementation
+
 1. Added delete button in breadcrumb trail
    ```tsx
    <Show when={isLastCrumb && isInSubfolder()}>
@@ -69,6 +101,7 @@ The Breadcrumb component is located at `src/components/Gallery/Breadcrumb.tsx` a
    ```
 
 ### API Integration
+
 1. Initially used incorrect endpoint:
    ```tsx
    fetch(`/api/folder/${currentPath}`, {
@@ -87,14 +120,12 @@ The Breadcrumb component is located at `src/components/Gallery/Breadcrumb.tsx` a
    ```
 
 ### Error Handling
-- Added error notifications
-- Proper error message display
-- Console logging for debugging
 
-### Navigation
-- Automatic navigation to parent folder after deletion
-- URL construction for proper routing
-- Fallback to gallery root if in top-level folder
+The error handling system was enhanced with comprehensive error notifications to provide clear feedback to users. A proper error message display system ensures users understand any issues that occur during folder operations. Console logging was also added to assist with debugging and troubleshooting.
+
+### Navigation 
+
+After successful folder deletion, the system automatically navigates to the parent folder to maintain a smooth user experience. The URL construction was carefully implemented to ensure proper routing throughout the application. When deleting a top-level folder, the system includes a fallback mechanism to return users to the gallery root.
 
 ## Styling
 
@@ -128,54 +159,20 @@ The component uses CSS modules for styling (`Breadcrumb.css`):
 }
 ```
 
-## Usage
-
-The Breadcrumb component is automatically rendered at the top of the gallery view. It requires the following context:
-
-- AppContext for:
-  - Translations (`t`)
-  - Theme management
-  - Notifications
-- GalleryContext for:
-  - Current path data
-  - Selection state
-  - Data invalidation/refetch
-
 ## Best Practices
 
-1. **Error Handling**
-   - Always show user-friendly error messages
-   - Log errors to console for debugging
-   - Handle network errors gracefully
+Error handling is a critical aspect of the Breadcrumb component. The system should always display user-friendly error messages that clearly communicate any issues to users. Errors should be logged to the console to assist with debugging, and network errors need to be handled gracefully to maintain a smooth user experience.
 
-2. **State Management**
-   - Use signals for local state
-   - Leverage context for global state
-   - Clear state after operations
+Proper state management is essential for reliable operation. The component should use signals for managing local state, leverage context providers for global state management, and ensure state is properly cleared after operations complete to prevent stale data.
 
-3. **User Feedback**
-   - Show loading states
-   - Provide clear success/error messages
-   - Use consistent notification patterns
+User feedback helps create an intuitive interface. The component should display appropriate loading states during operations, provide clear success and error messages to communicate outcomes, and maintain consistent notification patterns that align with the rest of the application.
 
-4. **Accessibility**
-   - Include ARIA labels
-   - Provide keyboard navigation
-   - Use semantic HTML
+Accessibility cannot be overlooked. The component must include proper ARIA labels to support screen readers, implement complete keyboard navigation support, and use semantic HTML elements to maintain an accessible structure.
 
 ## Future Improvements
 
-1. **Performance**
-   - Consider debouncing rapid operations
-   - Optimize re-renders
-   - Cache frequently accessed data
+Performance optimizations could enhance the component's responsiveness. This includes implementing debouncing for rapid operations, optimizing component re-renders to reduce unnecessary updates, and caching frequently accessed data to improve load times.
 
-2. **Features**
-   - Drag and drop file upload
-   - Keyboard shortcuts
-   - Batch operations
+Additional features could expand functionality. Adding drag and drop file upload support would streamline the user experience. Implementing keyboard shortcuts would improve power user efficiency. Supporting batch operations would allow users to work with multiple items simultaneously.
 
-3. **UX**
-   - Path copy functionality
-   - Breadcrumb overflow handling
-   - Mobile-friendly improvements 
+The user experience could be further refined. Adding the ability to copy the current path would help users share locations. Implementing proper breadcrumb overflow handling would improve navigation on smaller screens. Making the interface more mobile-friendly would ensure a better experience across all devices.

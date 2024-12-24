@@ -152,6 +152,8 @@ For detailed information about ARIA labeling best practices and accessibility re
 
 For detailed information about adding new settings to the application, including step-by-step instructions and best practices, please refer to the [Settings Documentation](docs/settings.md).
 
-## Reading Documentation
+## Reading and Writing Documentation
 
 Always read the whole documentation on the related topic before writing code.
+
+Instead of using lists while writing documentation, use paragraphs. Only use lists when listing files and do not include the file size in the list.

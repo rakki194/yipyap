@@ -58,7 +58,24 @@ export const ImageGrid = (props: {
   }));
 
   return (
-    <div class="responsive-grid" style={gridStyle()} use:measure_columns={setColumns}>
+    <div 
+      class="responsive-grid" 
+      style={gridStyle()} 
+      use:measure_columns={setColumns}
+      role="grid"
+      aria-label="Image gallery grid"
+      aria-describedby="gallery-description"
+    >
+      <div id="gallery-description" class="sr-only">
+        Grid of images and folders. Use arrow keys to navigate, space to select, and enter to open.
+      </div>
+      <div 
+        role="status" 
+        aria-live="polite" 
+        class="sr-only"
+      >
+        {props.items.length} items loaded
+      </div>
       <Show when={props.path}>
         <DirectoryItem
           name=".."
@@ -185,7 +202,10 @@ export const ImageItem = (props: {
         "multi-selected": isMultiSelected()
       }}
       onClick={handleClick}
-      role="link"
+      role="gridcell"
+      aria-selected={props.selected || isMultiSelected()}
+      aria-label={`Image: ${props.item.file_name}`}
+      aria-describedby={`image-details-${props.idx}`}
     >
       <Show when={props.item()} keyed>
         {(item) => {
@@ -212,17 +232,20 @@ export const ImageItem = (props: {
                 }}
                 classList={{ loaded: !isLoading() }}
                 onLoad={() => setIsLoading(false)}
+                alt={`Thumbnail of ${item.name}`}
+                aria-busy={isLoading()}
               />
               <Show when={isLoading()}>
-                <div class="spin-icon">
-                  <span class="icon">{getIcon("spinner")}</span>
+                <div class="spin-icon" role="status" aria-live="polite">
+                  <span class="icon" aria-hidden="true">{getIcon("spinner")}</span>
+                  <span class="sr-only">Loading image...</span>
                 </div>
               </Show>
             </>
           );
         }}
       </Show>
-      <div class="overlay">
+      <div class="overlay" id={`image-details-${props.idx}`}>
         <p>{props.item.file_name}</p>
         <Show when={props.item()} keyed>
           {(item) => (
@@ -233,7 +256,7 @@ export const ImageItem = (props: {
               <p>
                 <For each={item.captions.map((c) => c[0]).toSorted()}>
                   {(c) => (
-                    <span class="icon" title={c}>
+                    <span class="icon" title={c} role="img" aria-label={c}>
                       {getIcon(
                         captionIconsMap[c as keyof typeof captionIconsMap]
                       )}
@@ -246,7 +269,7 @@ export const ImageItem = (props: {
         </Show>
       </div>
       <Show when={isMultiSelected()}>
-        <div class="multi-select-indicator">
+        <div class="multi-select-indicator" aria-hidden="true">
           <span class="icon">{getIcon("check")}</span>
         </div>
       </Show>
@@ -271,6 +294,9 @@ export const DirectoryItem = (props: {
     }
   };
 
+  const isParentDir = props.name === "..";
+  const dirName = isParentDir ? "Parent Directory" : props.name;
+
   return (
     <A
       ref={props.ref}
@@ -281,16 +307,20 @@ export const DirectoryItem = (props: {
       }}
       onClick={handleClick}
       href={joinUrlParts("/gallery", props.path, props.name)}
+      role="gridcell"
+      aria-selected={props.selected || isMultiSelected()}
+      aria-label={`Folder: ${dirName}`}
+      aria-describedby={`dir-details-${props.idx}`}
     >
       <Show when={isMultiSelected()}>
-        <div class="multi-select-indicator">
+        <div class="multi-select-indicator" aria-hidden="true">
           <span class="icon">{getIcon("check")}</span>
         </div>
       </Show>
-      <span class="icon directory-icon">
-        {getIcon(props.name === ".." ? "folderArrowUp" : "folder")}
+      <span class="icon directory-icon" aria-hidden="true">
+        {getIcon(isParentDir ? "folderArrowUp" : "folder")}
       </span>
-      <span class="directory-name">
+      <span class="directory-name" id={`dir-details-${props.idx}`}>
         {props.name}
       </span>
     </A>

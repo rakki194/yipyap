@@ -36,7 +36,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       padding: calc(var(--spacing) * 0.5);
-      flex-grow: 0.618;
       font-size: 0.9rem;
       font-weight: 500;
       color: var(--text-primary);
