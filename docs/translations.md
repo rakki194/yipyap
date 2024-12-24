@@ -177,29 +177,21 @@ const translations = Object.fromEntries(
 
 ## Best Practices
 
-### 1. Translation Keys
-- Use consistent naming patterns
-- Group related translations
-- Keep keys descriptive but concise
-- Use dot notation for hierarchy
+### Translation Keys
 
-### 2. Translation Content
-- Keep messages clear and concise
-- Use sentence case consistently
-- Avoid technical jargon
-- Include context comments when needed
+When creating translation keys, it's important to follow consistent naming patterns throughout the codebase. Related translations should be grouped together logically to maintain organization. Keys should be descriptive enough to understand their purpose while remaining concise and avoiding unnecessary verbosity. Using dot notation helps establish clear hierarchical relationships between translations.
 
-### 3. Interpolation
-- Use named parameters
-- Document required parameters
-- Consider word order differences
-- Handle plural forms appropriately
+### Translation Content
 
-### 4. Maintenance
-- Keep translations in sync
-- Document missing translations
-- Update type definitions
-- Test with different languages
+Translation content should be written in clear, concise language that users can easily understand. Maintain consistent sentence casing across all translations to provide a polished user experience. Technical jargon should be avoided unless absolutely necessary for the target audience. When the meaning or usage of a translation may not be immediately obvious, include context comments to help other developers and translators understand how the text is used.
+
+### Interpolation 
+
+The interpolation system relies on named parameters to provide clarity and prevent errors from parameter order changes. All required parameters should be clearly documented so translators understand what values will be inserted. Special attention must be paid to how word order differences between languages affect interpolated values. The system needs to appropriately handle plural forms based on the grammatical rules of each target language.
+
+### Maintenance
+
+Regular maintenance is crucial for keeping translations synchronized across all supported languages. Missing translations should be documented to ensure they get addressed. Type definitions must be updated whenever new translations are added to maintain type safety. Testing translations with different languages helps catch issues early and ensures a consistent experience for all users.
 
 ## Testing
 
@@ -245,10 +237,4 @@ describe("RTL Support", () => {
 });
 ```
 
-Remember to:
-- Keep translations synchronized across languages
-- Test with various language contexts
-- Consider word order differences
-- Handle pluralization rules correctly
-- Support RTL languages properly
-- Document translation requirements 
+When working with translations, it's important to keep all translations synchronized across the supported languages to maintain consistency. Testing should be performed with various language contexts to ensure proper functionality in different locales. Special attention must be paid to word order differences between languages, as sentence structure can vary significantly. The system needs to properly handle pluralization rules according to each language's grammatical requirements. RTL language support should be maintained throughout the application to provide a seamless experience for users of those languages. Finally, translation requirements should be thoroughly documented to help translators understand the context and parameters needed for each string.

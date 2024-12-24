@@ -50,6 +50,7 @@ import WdIcon from "./wd.svg?raw";
 import CheckIcon from "@fluentui/svg-icons/icons/checkmark_circle_24_regular.svg?raw";
 import CheckAllIcon from "@fluentui/svg-icons/icons/multiselect_rtl_24_regular.svg?raw";
 import FolderAddIcon from "@fluentui/svg-icons/icons/folder_add_24_regular.svg?raw";
+import FolderArrowUpIcon from "@fluentui/svg-icons/icons/folder_arrow_up_24_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -78,6 +79,7 @@ export const themeIconMap = {
 };
 
 const iconMap: Readonly<Record<string, string>> = {
+  upload: FolderArrowUpIcon,
   folderAdd: FolderAddIcon,
   checkAll: CheckAllIcon,
   check: CheckIcon,

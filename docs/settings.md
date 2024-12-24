@@ -118,35 +118,25 @@ settings: {
 
 ## Best Practices
 
-### 1. Type Safety
-- Always define proper types for settings
-- Use appropriate TypeScript types for values
-- Keep interfaces up to date
-- Document type constraints
+### Type Safety
 
-### 2. State Management
-- Use consistent naming patterns
-- Follow the existing store structure
-- Handle state updates atomically
-- Consider side effects
+Type safety is crucial when implementing settings. All settings should have properly defined TypeScript types that accurately represent their possible values and constraints. Interfaces need to be kept up to date as settings evolve, with any changes properly documented. Type constraints should be clearly documented to help other developers understand the valid ranges and formats for setting values.
 
-### 3. Persistence
-- Use localStorage appropriately
-- Handle missing/invalid values
-- Consider migration strategies
-- Clean up old settings
+### State Management
 
-### 4. UI/UX
-- Group related settings
-- Provide clear labels
-- Add helpful tooltips
-- Consider keyboard accessibility
+When managing settings state, use consistent naming patterns that align with the existing codebase. The store structure should be followed to maintain consistency and predictability. State updates should be handled atomically to prevent race conditions or invalid intermediate states. Consider any side effects that may occur when settings change and handle them appropriately.
 
-### 5. Translations
-- Add translations for all languages
-- Use clear, descriptive keys
-- Include tooltips when needed
-- Consider RTL languages
+### Persistence
+
+Settings persistence requires careful handling of localStorage. Missing or invalid values should be gracefully handled with appropriate fallbacks. As settings evolve, consider migration strategies for handling outdated stored values. Regularly clean up old or deprecated settings to prevent localStorage bloat. The persistence layer should be robust and handle edge cases gracefully.
+
+### UI/UX
+
+The settings interface should be thoughtfully designed with related settings grouped together logically. Each setting needs a clear, descriptive label that helps users understand its purpose. Tooltips should be added to provide additional context and explanation where needed. Keyboard accessibility must be considered to ensure all users can effectively navigate and modify settings.
+
+### Translations
+
+All settings must include translations for every supported language in the application. Translation keys should be clear and descriptive to help maintain the codebase. Include tooltip translations when additional context is needed. Special consideration should be given to RTL languages to ensure proper display and functionality of the settings interface in those language contexts.
 
 ## Testing
 
@@ -188,10 +178,6 @@ describe("Settings Translations", () => {
 });
 ```
 
-Remember to:
-- Update documentation when adding settings
-- Test all aspects of new settings
-- Consider backward compatibility
-- Follow existing patterns
-- Keep settings organized
-- Consider performance implications 
+When adding new settings to the application, it's crucial to maintain comprehensive documentation that reflects all changes. Every aspect of new settings should be thoroughly tested to ensure reliability and proper functionality. Backward compatibility must be carefully considered to prevent disruption for existing users.
+
+Always follow the established patterns in the codebase to maintain consistency and make the code easier to understand for other developers. Settings should be organized in a logical manner that makes sense to both developers and users. Finally, consider the performance implications of any new settings, especially those that might affect the application's responsiveness or resource usage.

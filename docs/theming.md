@@ -163,13 +163,11 @@ To make style changes to the application, follow these steps:
 
 ## Theme Integration
 
-### 1. Component Level
+### Component Level
 
-Components should:
-- Use theme variables for all colors and animations
-- Implement dark/light mode variants
-- Support RTL layout when necessary
-- Handle theme transitions smoothly
+When building components, proper theme integration is essential. All colors and animations should utilize the theme variables rather than hard-coded values to maintain consistency across the application. Components need to implement both dark and light mode variants to ensure a cohesive experience regardless of the user's theme preference. Right-to-left (RTL) layout support should be incorporated when necessary to accommodate languages that read from right to left.
+
+sFinally, components must handle theme transitions smoothly to avoid jarring visual changes when the theme is switched.
 
 Example:
 ```css
@@ -189,7 +187,7 @@ Example:
 }
 ```
 
-### 2. Global Level
+### Global Level
 
 Global styles should:
 - Define theme-specific root variables
@@ -218,17 +216,16 @@ Example:
 
 ## Special Theme Variants
 
-### 1. Holiday Themes
+### Holiday Themes
 - Christmas theme with festive colors and snow effects
 - Halloween theme with spooky colors and animations
-- Special event themes with unique visual effects
 
-### 2. Brand Themes
+### Colorful Themes
 - Banana theme with yellow accents
 - Strawberry theme with red accents
 - Peanut theme with brown accents
 
-### 3. High Contrast Themes
+### High Contrast Themes
 - Enhanced contrast for accessibility
 - Simplified animations
 - Clear focus indicators

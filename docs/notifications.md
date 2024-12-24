@@ -21,16 +21,12 @@ The notification system in yipyap provides a flexible and accessible way to disp
 ## Components
 
 ### NotificationContainer (`NotificationContainer.tsx`)
-- Global container for all notifications
-- Manages notification stacking and positioning
-- Handles notification lifecycle and animations
-- Size: 2.4KB, 85 lines
 
-### Notification (`Notification.tsx`)
-- Individual notification component
-- Supports different types: error, success, info, warning
-- Includes progress indicators and icons
-- Size: 3.1KB, 120 lines
+The `NotificationContainer` serves as a global container component that manages all notifications in the application. It handles the stacking and positioning of notifications as they appear and disappear. The container is responsible for managing the full lifecycle of notifications, including their entrance and exit animations.
+
+### Notification (`Notification.tsx`) 
+
+The `Notification` component represents an individual notification element that can be displayed to the user. It provides support for different notification types including error, success, info, and warning messages. Each notification includes appropriate progress indicators and icons based on its type and state.
 
 ## Styling
 
@@ -63,53 +59,25 @@ createNotification({
 
 ## Features
 
-1. **Notification Types**
-   - Error: For error messages
-   - Success: For successful operations
-   - Info: For general information
-   - Warning: For warnings and cautions
+The notification system supports several notification types including error messages for failures, success notifications for completed operations, info messages for general updates, and warning notifications for cautionary alerts. Each type is visually distinct and appropriately styled.
 
-2. **Progress Tracking**
-   - Support for progress indicators
-   - Automatic updates
-   - Cancel operations
+Progress tracking is a key feature, allowing notifications to display progress indicators that automatically update as operations proceed. Users can cancel in-progress operations when supported.
 
-3. **Grouping**
-   - Group related notifications
-   - Replace or update existing notifications
-   - Batch dismissal
+Notifications can be grouped together logically, with the ability to replace or update existing notifications in a group. This enables batch operations like dismissing all related notifications at once.
 
-4. **Accessibility**
-   - ARIA roles and labels
-   - Keyboard navigation
-   - Screen reader support
+The system is built with accessibility in mind, implementing proper ARIA roles and labels for screen readers. Notifications can be navigated and dismissed using the keyboard for full accessibility support.
 
-5. **Animations**
-   - Smooth enter/exit transitions
-   - Progress animations
-   - Hover effects
+Smooth animations enhance the user experience, with enter/exit transitions, progress indicator animations, and subtle hover effects that provide visual feedback without being distracting.
 
 ## Best Practices
 
-1. **Message Content**
-   - Keep messages concise
-   - Use appropriate notification type
-   - Include actionable information
+When creating notification messages, keep the content concise while ensuring it provides actionable information. Choose the appropriate notification type to match the message severity and purpose.
 
-2. **Duration**
-   - Success/info: 3 seconds
-   - Error/warning: 5 seconds
-   - Progress: Until completion
+Different notification types have recommended display durations - success and info messages typically show for 3 seconds, while errors and warnings remain visible for 5 seconds. Progress notifications stay until the operation completes.
 
-3. **Grouping**
-   - Group related operations
-   - Update existing notifications
-   - Avoid notification spam
+Use notification grouping judiciously to organize related operations together. Update existing notifications rather than creating new ones when possible, and avoid spamming users with too many notifications at once.
 
-4. **Progress Updates**
-   - Show progress for long operations
-   - Update frequently
-   - Allow cancellation
+For long-running operations, show progress indicators that update frequently to keep users informed. Ensure progress notifications can be cancelled when the underlying operation supports cancellation.
 
 ## Implementation Details
 
@@ -139,7 +107,4 @@ export const removeNotification = (id: string) => {
 
 ## Customization
 
-The notification system can be customized through:
-1. CSS variables for styling
-2. Component props for behavior
-3. App context settings for global defaults 
+The notification system offers several customization options. The visual appearance can be adjusted using CSS variables to match the application's theme and styling needs. Component props provide control over notification behavior and interactions. Global defaults for the notification system can be configured through the app context settings to ensure consistent behavior across the application.
