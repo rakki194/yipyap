@@ -6,7 +6,8 @@ import { Component } from "solid-js";
 import { Gallery } from "~/components/Gallery/Gallery";
 import { Breadcrumb } from "~/components/Gallery/Breadcrumb";
 import { GalleryProvider } from "~/contexts/GalleryContext";
-import FadeIn from "~/components/FadeIn"; // Importing the FadeIn component
+import { TransformationsProvider } from "~/contexts/transformations";
+import FadeIn from "~/components/FadeIn";
 
 /**
  * Main Gallery page component that provides the gallery context and renders
@@ -19,8 +20,10 @@ const GalleryPage: Component = () => {
   return (
     <FadeIn duration={800}>
       <GalleryProvider>
-        <Breadcrumb />
-        <Gallery />
+        <TransformationsProvider>
+          <Breadcrumb />
+          <Gallery />
+        </TransformationsProvider>
       </GalleryProvider>
     </FadeIn>
   );

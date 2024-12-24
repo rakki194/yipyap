@@ -1,0 +1,76 @@
+.transformation-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  padding: var(--spacing);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--spacing);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.close-button {
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: var(--text-primary);
+}
+
+.transformations-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--half-spacing);
+  margin-top: var(--spacing);
+}
+
+.transformation-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  padding: var(--half-spacing);
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s;
+}
+
+.transformation-item:hover {
+  background: var(--hover-bg);
+}
+
+.transformation-item .icon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.transformation-item .name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.transformation-item .description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-left: auto;
+}
+
+.apply-button {
+  color: var(--text-secondary);
+  transition: color 0.2s;
+  margin-left: var(--spacing);
+}
+
+.apply-button:hover {
+  color: var(--success);
+} 

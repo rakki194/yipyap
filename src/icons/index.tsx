@@ -55,6 +55,7 @@ import CheckIcon from "@fluentui/svg-icons/icons/checkmark_circle_24_regular.svg
 import CheckAllIcon from "@fluentui/svg-icons/icons/multiselect_rtl_24_regular.svg?raw";
 import FolderAddIcon from "@fluentui/svg-icons/icons/folder_add_24_regular.svg?raw";
 import FolderArrowUpIcon from "@fluentui/svg-icons/icons/folder_arrow_up_24_regular.svg?raw";
+import BeakerRegular from "@fluentui/svg-icons/icons/beaker_24_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -139,6 +140,7 @@ const iconMap: Readonly<Record<string, string>> = {
   chevronDown: ChevronDownIcon,
   christmas: ChristmasTreeIcon,
   ghost: GhostIcon,
+  beakerRegular: BeakerRegular,
 };
 
 /* Returns a SVGElement from the icon map */

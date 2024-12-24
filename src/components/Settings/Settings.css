@@ -228,7 +228,9 @@ kbd {
 }
 
 .settings-content,
-.help-content {
+.help-content,
+.experimental-content,
+.transformations-content {
   opacity: 1;
   transform: translateX(0);
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -241,16 +243,22 @@ kbd {
   width: 100%;
 }
 
-.settings-content.closing {
+.transitioning .settings-content,
+.transitioning .help-content,
+.transitioning .experimental-content,
+.transitioning .transformations-content {
   opacity: 0;
   transform: translateX(-20px);
   pointer-events: none;
 }
 
-.help-content.closing {
-  opacity: 0;
-  transform: translateX(20px);
-  pointer-events: none;
+.settings-header button.icon.active {
+  background-color: var(--accent);
+  color: var(--bg-color);
+}
+
+.settings-header button.icon.active svg {
+  fill: var(--bg-color);
 }
 
 .shortcuts-section {
@@ -653,4 +661,25 @@ kbd {
   color: var(--text-secondary);
   font-size: 0.9em;
   margin-top: var(--half-spacing);
+}
+
+.transformations-content {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.transformations-content.closing {
+  opacity: 0;
+  transform: translateX(20px);
+  pointer-events: none;
+}
+
+.transformations-button {
+  color: var(--text-secondary);
+  transition: color 0.2s;
+}
+
+.transformations-button:hover {
+  color: var(--text-primary);
 }

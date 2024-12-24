@@ -6,10 +6,11 @@
 - [Missing Required Properties in Context Mocks](#3-missing-required-properties-in-context-mocks)
 - [Translation Parameter Type Mismatches](#4-translation-parameter-type-mismatches)
 - [Import Resolution and Module Not Found Errors](#5-import-resolution-and-module-not-found-errors)
-  - [Unused or Commented Out Imports](#1-unused-or-commented-out-imports)
-  - [Incorrect Import Paths](#2-incorrect-import-paths)
-  - [Missing Files](#3-missing-files)
-  - [Best Practices to Avoid Import Errors](#best-practices-to-avoid-import-errors)
+- [Icon Name Resolution Errors](#6-icon-name-resolution-errors)
+  - [Incorrect Icon Names](#1-incorrect-icon-names)
+  - [Icon Name Constants](#2-icon-name-constants)
+  - [Icon Type Safety](#3-icon-type-safety)
+  - [Best Practices for Icon Usage](#best-practices-for-icon-usage)
 
 This document outlines common TypeScript linting errors encountered in the yipyap project and their solutions.
 
@@ -39,26 +40,13 @@ export interface AppContext {
 }
 ```
 
-This error occurs when trying to pass properties to a function that aren't defined in its type signature. To avoid this:
+This error occurs when trying to pass properties to a function that aren't defined in its type signature. To avoid this, it's important to follow a structured approach to type definitions and updates.
 
-1. Always define the complete interface before implementing features
-2. Update types in the following order:
-   - Base interfaces/types (e.g., `NotificationItem`)
-   - Component props (e.g., `NotificationProps`)
-   - Context interfaces (e.g., `AppContext`)
-   - Implementation code
+The first step is to always define the complete interface before implementing any features. This ensures type safety from the start and prevents issues down the line. When updating types, follow a specific order starting with base interfaces and types like `NotificationItem`, then moving to component props such as `NotificationProps`, followed by context interfaces like `AppContext`, and finally the implementation code itself.
 
-3. When adding new properties:
-   - Make them optional (`?`) if they're not required
-   - Update all related interfaces consistently
-   - Add appropriate JSDoc comments explaining the property
-   - Consider the impact on existing code
+When adding new properties to existing types, several considerations must be taken into account. Properties should be made optional using the `?` modifier if they aren't strictly required. All related interfaces need to be updated consistently to maintain type safety across the codebase. Appropriate JSDoc comments should be added to explain the purpose and usage of the property. It's also important to carefully consider the impact on existing code that may be affected by the changes.
 
-4. For notification-specific changes:
-   - Update `NotificationItem` in `NotificationContainer.tsx`
-   - Update `NotificationProps` in `Notification.tsx`
-   - Update the app context interface in `app.tsx`
-   - Update any related test files
+For notification-specific changes in particular, updates need to be made systematically across several files. This includes updating the `NotificationItem` interface in `NotificationContainer.tsx`, the `NotificationProps` interface in `Notification.tsx`, the app context interface in `app.tsx`, and any related test files to ensure complete test coverage of the new functionality.
 
 Example of proper type propagation:
 
@@ -95,12 +83,7 @@ export interface AppContext {
 }
 ```
 
-Remember to:
-- Keep types synchronized across files
-- Make new properties optional when possible
-- Update all related interfaces at once
-- Add appropriate documentation
-- Update tests to cover new properties
+When making changes to types and interfaces, it's important to maintain synchronization across all related files. Any new properties should be made optional whenever possible to minimize breaking changes. All interfaces that reference the modified types need to be updated together to maintain consistency. Proper documentation should be added to explain the purpose and usage of any new properties. Finally, test coverage should be expanded to verify the behavior of the new properties and ensure type safety is maintained.
 
 ## 2. Context Type Errors in Tests
 
@@ -118,11 +101,7 @@ const mockAppContext: Parameters<typeof AppContext.Provider>[0]['value'] = {
 };
 ```
 
-This error occurs because Context objects in React/SolidJS are values, not types. To avoid this:
-1. Use TypeScript utility types to extract the correct type
-2. Remember that Context objects are values with a Provider property
-3. Use `Parameters` to get the type of the Provider's props
-4. Access the `value` property type from the Provider's props
+This error occurs because Context objects in SolidJS are values, not types. When working with contexts in TypeScript, you'll need to use utility types to extract the correct type information. Context objects themselves are values that contain a Provider property, so we can't use them directly as types. Instead, we can use the TypeScript Parameters utility type to get the type of the Provider's props, and then access the value property type from those props. This gives us the proper type information for the context value while maintaining type safety.
 
 ## 3. Missing Required Properties in Context Mocks
 
@@ -147,12 +126,9 @@ const mockAppContext = {
 };
 ```
 
-This error occurs when mocking contexts with required properties. To avoid this:
-1. Check the context interface for all required properties
-2. Mock all required properties, even if unused in the test
-3. Use `vi.fn()` for function properties
-4. Keep mock values simple but valid
-5. Consider creating a helper function to generate mock contexts
+This error occurs when mocking contexts with required properties. When mocking a context, it's important to first check the context interface to identify all required properties that need to be included. Every required property must be mocked, even if it won't be directly used in the test, to satisfy TypeScript's type checking. For function properties, use `vi.fn()` to create mock functions that can be tracked for calls and responses.
+
+The mock values should be kept simple while still being valid according to the type definitions. To make context mocking more maintainable, consider creating a dedicated helper function that generates properly typed mock contexts with all required properties.
 
 ## 4. Translation Parameter Type Mismatches
 
@@ -177,12 +153,9 @@ const mockAppContext = {
 };
 ```
 
-This error occurs when translation functions don't properly type their parameters. To avoid this:
-1. Always specify parameter types explicitly
-2. Use optional parameters with `?` when appropriate
-3. Use `Record<string, unknown>` for generic object parameters
-4. Consider creating type definitions for translation parameters
-5. Document expected parameter shapes in comments
+This error occurs when translation functions don't properly type their parameters. When implementing translation functions, it's important to specify parameter types explicitly to maintain type safety throughout the application. Optional parameters should be marked with the `?` operator when they aren't required for every translation. For generic object parameters, using `Record<string, unknown>` provides good type safety while maintaining flexibility.
+
+Creating dedicated type definitions for translation parameters helps enforce consistency and makes the code more maintainable. Additionally, documenting the expected parameter shapes in comments helps other developers understand how to properly use the translation functions.
 
 ## 5. Import Resolution and Module Not Found Errors
 
@@ -208,23 +181,17 @@ This error occurs when TypeScript cannot resolve an imported module. Common caus
 ### 1. Unused or Commented Out Imports
 - **Problem**: Leaving imports for components that are no longer used or are commented out
 - **Solution**: 
-  - Remove unused imports completely
-  - Don't leave commented-out imports in the code
-  - Use version control to track historical changes instead
+  Unused imports should be removed completely from the codebase rather than being left in place. Commented-out imports have no place in production code and should be deleted. Instead of keeping old imports around as comments, developers should rely on version control systems to track historical changes to the codebase. This keeps the code clean and maintainable while still preserving the history of changes.
 
 ### 2. Incorrect Import Paths
 - **Problem**: Import paths don't match the actual file structure
 - **Solution**:
-  - Double-check file paths relative to the importing file
-  - Use path aliases (like `~`) consistently
-  - Consider using absolute imports for better maintainability
+  When working with imports, it's important to carefully verify that file paths are correct relative to the importing file's location. Path aliases like `~` should be used consistently throughout the codebase to maintain a standard import style. For improved maintainability, consider using absolute imports rather than complex relative paths, as this makes the code more resilient to file moves and refactoring.
 
 ### 3. Missing Files
 - **Problem**: Trying to import from files that don't exist
 - **Solution**:
-  - Create the missing files if needed
-  - Update import paths to point to existing files
-  - Remove imports for components that are no longer needed
+When encountering missing files, first check if the file needs to be created based on the component requirements. If the component is still needed, create the missing file in the appropriate location with the necessary code. For files that exist but have incorrect import paths, update the paths to correctly point to the existing file locations. During this process, take the opportunity to remove any imports for components that are no longer used or needed in the codebase. This helps maintain a clean and efficient import structure.
 
 ### Best Practices to Avoid Import Errors
 
@@ -254,41 +221,174 @@ This error occurs when TypeScript cannot resolve an imported module. Common caus
    import { Controls } from './Controls';
    ```
 
-4. **Import Type Checking**:
-   - Use TypeScript's `--noUnusedLocals` flag
-   - Enable ESLint rules for import checking
-   - Regularly run type checking on the entire project
+4. **Import Type Checking**
 
-Remember to:
-- Keep imports clean and organized
-- Remove unused imports promptly
-- Use consistent import patterns
-- Leverage TypeScript and ESLint for early detection
-- Document path aliases in the project configuration
+Import type checking is an essential part of maintaining code quality. TypeScript's `--noUnusedLocals` flag helps catch unused imports during compilation. Additionally, enabling ESLint rules specifically for import checking provides another layer of validation. Regular type checking of the entire project helps catch import-related issues early in development.
+
+It's important to maintain clean and organized imports throughout the codebase. Unused imports should be removed promptly when they are no longer needed. Following consistent import patterns makes the code more maintainable and easier to understand. TypeScript and ESLint are valuable tools for early detection of import issues. The project configuration should include clear documentation of path aliases to help developers use them correctly.
+
+## 6. Icon Name Resolution Errors
+
+Location: `src/components/Settings/TransformationSettings.tsx`
+
+```typescript
+// Error: Icon name not found
+{getIcon("close")}  // Error: Icon close not found
+
+// Solution: Use the correct icon name from the available set
+{getIcon("dismiss")}  // "dismiss" is the correct icon name for close/cancel actions
+```
+
+This error occurs when using an icon name that doesn't exist in the icon set. Common causes and solutions:
+
+### Incorrect Icon Names
+
+- **Problem**: Using icon names that don't match the available icons in the system
+- **Solution**: 
+When encountering icon name issues, first verify that the icon exists in the available icon set. It's important to maintain consistency in icon naming across the entire application to avoid confusion and errors. The available icon names should be documented in a central location that all developers can easily reference.
+
+### Icon Name Constants
+
+- **Problem**: Hardcoding icon names as strings can lead to typos
+- **Solution**:
+  ```typescript
+  // Bad
+  getIcon("textAlignDistributed")
+  
+  // Good
+  const ICON_NAMES = {
+    TRANSFORM: "textAlignDistributed",
+    CLOSE: "dismiss",
+    CHECK: "check"
+  } as const;
+  
+  getIcon(ICON_NAMES.TRANSFORM)
+  ```
+
+### Icon Type Safety
+
+- **Problem**: TypeScript doesn't catch invalid icon names at compile time
+- **Solution**:
+  ```typescript
+  // Define a type for valid icon names
+  type IconName = "dismiss" | "check" | "textAlignDistributed" | /* other valid names */;
+  
+  // Type the getIcon function
+  function getIcon(name: IconName): JSX.Element;
+  ```
+
+### Best Practices for Icon Usage
+
+1. **Centralize Icon Names**:
+   ```typescript
+   // src/icons/constants.ts
+   export const IconNames = {
+     CLOSE: "dismiss",
+     APPLY: "check",
+     TRANSFORM: "textAlignDistributed",
+     // ... other icon names
+   } as const;
+   
+   export type IconName = typeof IconNames[keyof typeof IconNames];
+   ```
+
+2. **Use Type-Safe Icon Components**:
+   ```typescript
+   // src/components/Icon.tsx
+   interface IconProps {
+     name: IconName;
+     size?: "small" | "medium" | "large";
+     className?: string;
+   }
+   
+   export const Icon: Component<IconProps> = (props) => {
+     return <span class={`icon ${props.className || ""}`}>{getIcon(props.name)}</span>;
+   };
+   ```
+
+3. **Document Icon Usage**:
+   ```typescript
+   /**
+    * Gets an icon component by name
+    * @param name - The name of the icon to retrieve
+    * @throws {Error} If the icon name is not found
+    * @returns JSX.Element The icon component
+    */
+   function getIcon(name: IconName): JSX.Element
+   ```
+
+4. **Handle Missing Icons Gracefully**:
+   ```typescript
+   function getIcon(name: IconName): JSX.Element {
+     const icon = icons[name];
+     if (!icon) {
+       console.warn(`Icon "${name}" not found`);
+       return icons.placeholder || null;
+     }
+     return icon;
+   }
+   ```
+
+When working with icons in the application, there are several important practices to follow. First, maintain a centralized list of icon names to ensure consistency across the codebase. TypeScript should be used to enforce valid icon names through proper type checking. All available icons and their intended usage should be thoroughly documented to help other developers use them correctly. The system should handle missing icons gracefully by providing appropriate fallbacks or warnings. 
+
+Finally, consider implementing a type-safe Icon component to encapsulate all icon-related logic and provide a clean interface for icon usage throughout the application.
+
+### Common Icon-Related Errors
+
+1. **Runtime Icon Not Found**:
+   ```typescript
+   // Error: Icon "close" not found at runtime
+   getIcon("close")
+   
+   // Solution: Use correct icon name
+   getIcon("dismiss")
+   ```
+
+2. **Type Mismatch in Icon Props**:
+   ```typescript
+   // Error: Type '"huge"' is not assignable to type '"small" | "medium" | "large"'
+   <Icon name="dismiss" size="huge" />
+   
+   // Solution: Use correct size value
+   <Icon name="dismiss" size="large" />
+   ```
+
+3. **Missing Icon Import**:
+   ```typescript
+   // Error: Cannot find module '~/icons'
+   import getIcon from './icons';
+   
+   // Solution: Use correct import path
+   import getIcon from '~/icons';
+   ```
+
+4. **Invalid Icon Type**:
+   ```typescript
+   // Error: Argument of type 'string' is not assignable to parameter of type 'IconName'
+   const iconName = "someIcon";
+   getIcon(iconName);
+   
+   // Solution: Use type assertion or ensure string is valid icon name
+   getIcon(iconName as IconName);
+   // Or better:
+   const iconName: IconName = "dismiss";
+   getIcon(iconName);
+   ```
+
+These patterns help maintain consistency and type safety when working with icons throughout the application.
 
 ## Best Practices
 
-### 1. Context Typing
-   - Never use Context objects directly as types
-   - Use TypeScript utility types to extract proper types
-   - Keep type definitions separate from implementations
-   - Document type structures in comments
+### Context Typing
 
-### 2. Mock Completeness
-   - Always check interface definitions for required properties
-   - Create helper functions for generating complete mocks
-   - Use TypeScript to enforce mock completeness
-   - Keep mock implementations minimal but valid
+When working with context objects, it's important to avoid using them directly as types. Instead, leverage TypeScript utility types to extract proper type definitions. Type definitions should be kept separate from their implementations to maintain clean separation of concerns. All type structures should be thoroughly documented in comments to help other developers understand their purpose and usage.
 
-### 3. Translation Types
-   - Define explicit types for translation parameters
-   - Use TypeScript template literal types when applicable
-   - Document parameter shapes and requirements
-   - Consider creating type definitions for common translation patterns
+### Mock Completeness
 
-Remember to:
-- Check interface definitions thoroughly
-- Use TypeScript utility types appropriately
-- Keep mocks minimal but complete
-- Document type structures and requirements
-- Use proper typing for translation functions
+Interface definitions must be carefully checked to ensure all required properties are properly defined. Helper functions should be created to generate complete mocks that satisfy the full interface requirements. TypeScript should be used to enforce mock completeness through strict type checking. While mocks should be kept minimal, they must still represent valid implementations of the interfaces they mock.
+
+### Translation Types 
+
+Translation parameters require explicit type definitions to ensure type safety. TypeScript template literal types should be used when they provide additional type safety for translation strings. The shapes and requirements of translation parameters must be clearly documented. Common translation patterns should have dedicated type definitions to promote consistency and reusability.
+
+When implementing these practices, thorough interface definition checking is essential. TypeScript utility types should be used appropriately to maintain type safety. Mocks should be kept minimal while still being complete. Type structures and requirements need clear documentation. Translation functions must be properly typed to catch errors early in development.

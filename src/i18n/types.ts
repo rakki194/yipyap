@@ -116,6 +116,20 @@ export interface ToolsTranslations {
   removeCommas: string;
   replaceNewlinesWithCommas: string;
   replaceUnderscoresWithSpaces: string;
+  transformations: string;
+  transformationTypes: {
+    singleFile: string;
+    currentFolder: string;
+    recursive: string;
+  };
+  fileTypes: {
+    all: string;
+    tags: string;
+    captions: string;
+    text: string;
+  };
+  applyTo: string;
+  scope: string;
 }
 
 export interface FrontPageTranslations {

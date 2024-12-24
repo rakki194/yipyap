@@ -7,49 +7,44 @@ import { Theme, themeIconMap, themes } from "~/contexts/theme";
 import getIcon from "~/icons";
 import { Tooltip } from "~/components/Tooltip/Tooltip";
 import { Slider } from "~/components/Slider/Slider";
+import { TransformationSettings } from "./TransformationSettings";
 import "./Settings.css";
 import { languages } from "~/i18n";
 
 export const Settings: Component<{ onClose: () => void }> = (props) => {
   const app = useAppContext();
-  const [showHelp, setShowHelp] = createSignal(false);
-  const [showShortcuts, setShowShortcuts] = createSignal(false);
-  const [isClosing, setIsClosing] = createSignal(false);
-  const [isHelpClosing, setIsHelpClosing] = createSignal(false);
+  const [activeView, setActiveView] = createSignal<'main' | 'help' | 'transformations' | 'experimental'>('main');
+  const [isTransitioning, setIsTransitioning] = createSignal(false);
   const t = app.t;
 
-  const toggleShortcuts = () => {
-    if (showShortcuts()) {
-      // Start closing animation
-      setIsClosing(true);
-      setTimeout(() => {
-        setShowShortcuts(false);
-        setIsClosing(false);
-      }, 300); // Match transition duration from CSS
-    } else {
-      setShowShortcuts(true);
+  const switchView = (view: 'main' | 'help' | 'transformations' | 'experimental') => {
+    if (isTransitioning()) return;
+    
+    if (activeView() === view) {
+      if (view !== 'main') {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setActiveView('main');
+          setIsTransitioning(false);
+        }, 300);
+      }
+      return;
     }
-  };
 
-  const toggleHelp = () => {
-    if (showHelp()) {
-      setIsHelpClosing(true);
-      setTimeout(() => {
-        setShowHelp(false);
-        setIsHelpClosing(false);
-      }, 300); // Match transition duration
-    } else {
-      setIsClosing(true); // Start closing animation for settings
-      setTimeout(() => {
-        setShowHelp(true);
-        setIsClosing(false);
-      }, 300);
-    }
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setActiveView(view);
+      setIsTransitioning(false);
+    }, 300);
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
-      props.onClose();
+      if (activeView() !== 'main') {
+        switchView('main');
+      } else {
+        props.onClose();
+      }
     }
   };
 
@@ -60,8 +55,29 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
         <div class="settings-header-buttons">
           <button
             type="button"
+            class="icon transformations-button"
+            classList={{ active: activeView() === 'transformations' }}
+            onClick={() => switchView('transformations')}
+            title={t('tools.transformations')}
+            aria-label={t('tools.transformations')}
+          >
+            {getIcon("textAlignDistributed")}
+          </button>
+          <button
+            type="button"
+            class="icon experimental-button"
+            classList={{ active: activeView() === 'experimental' }}
+            onClick={() => switchView('experimental')}
+            title={t('settings.experimentalFeatures')}
+            aria-label={t('settings.experimentalFeatures')}
+          >
+            {getIcon("beakerRegular")}
+          </button>
+          <button
+            type="button"
             class="icon help-button"
-            onClick={toggleHelp}
+            classList={{ active: activeView() === 'help' }}
+            onClick={() => switchView('help')}
             title={t('shortcuts.title')}
             aria-label={t('shortcuts.title')}
           >
@@ -78,94 +94,146 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
           </button>
         </div>
       </div>
-
+      
       <div class="settings-content-wrapper">
         <Show
-          when={!showHelp()}
+          when={activeView() === 'main'}
           fallback={
-            <div class="help-content" classList={{ closing: isHelpClosing() }}>
-              <h3>{t('shortcuts.title')}</h3>
-              <div class="shortcuts-grid">
-                <div class="shortcuts-section">
-                  <h4>{t('shortcuts.galleryNavigation')}</h4>
-                  <div class="shortcut">
-                    <kbd>q</kbd>
-                    <span>{t('shortcuts.quickFolderSwitch')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>↑</kbd>
-                    <span>{t('shortcuts.aboveImage')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>↓</kbd>
-                    <span>{t('shortcuts.belowImage')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>←</kbd>
-                    <span>{t('shortcuts.previousImage')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>→</kbd>
-                    <span>{t('shortcuts.nextImage')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>Enter</kbd>
-                    <span>{t('shortcuts.togglePreview')}</span>
-                  </div>
-                </div>
+            <div classList={{ transitioning: isTransitioning() }}>
+              <Show
+                when={activeView() === 'transformations'}
+                fallback={
+                  <Show
+                    when={activeView() === 'experimental'}
+                    fallback={
+                      <div class="help-content">
+                        <h3>{t('shortcuts.title')}</h3>
+                        <div class="shortcuts-grid">
+                          <div class="shortcuts-section">
+                            <h4>{t('shortcuts.galleryNavigation')}</h4>
+                            <div class="shortcut">
+                              <kbd>q</kbd>
+                              <span>{t('shortcuts.quickFolderSwitch')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>↑</kbd>
+                              <span>{t('shortcuts.aboveImage')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>↓</kbd>
+                              <span>{t('shortcuts.belowImage')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>←</kbd>
+                              <span>{t('shortcuts.previousImage')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>→</kbd>
+                              <span>{t('shortcuts.nextImage')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>Enter</kbd>
+                              <span>{t('shortcuts.togglePreview')}</span>
+                            </div>
+                          </div>
 
-                <div class="shortcuts-section">
-                  <h4>{t('shortcuts.tagNavigation')}</h4>
-                  <div class="shortcut">
-                    <kbd>Shift</kbd> + <kbd>←</kbd>
-                    <span>{t('shortcuts.previousTag')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>Shift</kbd> + <kbd>→</kbd>
-                    <span>{t('shortcuts.nextTag')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>Shift</kbd> + <kbd>↑</kbd>
-                    <span>{t('shortcuts.switchTagBubble')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>Shift</kbd> + <kbd>↓</kbd>
-                    <span>{t('shortcuts.switchTagInput')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>{t('shortcuts.doubleShift')}</kbd>
-                    <span>{t('shortcuts.cycleCaptions')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>←</kbd>
-                    <span>{t('shortcuts.firstTagRow')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>→</kbd>
-                    <span>{t('shortcuts.lastTagRow')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>{t('shortcuts.shift')}</kbd> + <kbd>{t('shortcuts.del')}</kbd>
-                    <span>{t('shortcuts.removeTag')}</span>
-                  </div>
-                </div>
+                          <div class="shortcuts-section">
+                            <h4>{t('shortcuts.tagNavigation')}</h4>
+                            <div class="shortcut">
+                              <kbd>Shift</kbd> + <kbd>←</kbd>
+                              <span>{t('shortcuts.previousTag')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>Shift</kbd> + <kbd>→</kbd>
+                              <span>{t('shortcuts.nextTag')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>Shift</kbd> + <kbd>↑</kbd>
+                              <span>{t('shortcuts.switchTagBubble')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>Shift</kbd> + <kbd>↓</kbd>
+                              <span>{t('shortcuts.switchTagInput')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>{t('shortcuts.doubleShift')}</kbd>
+                              <span>{t('shortcuts.cycleCaptions')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>←</kbd>
+                              <span>{t('shortcuts.firstTagRow')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>→</kbd>
+                              <span>{t('shortcuts.lastTagRow')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>{t('shortcuts.shift')}</kbd> + <kbd>{t('shortcuts.del')}</kbd>
+                              <span>{t('shortcuts.removeTag')}</span>
+                            </div>
+                          </div>
 
-                <div class="shortcuts-section full-width">
-                  <h4>{t('shortcuts.other')}</h4>
-                  <div class="shortcut">
-                    <kbd>{t('shortcuts.esc')}</kbd>
-                    <span>{t('shortcuts.closePreview')}</span>
-                  </div>
-                  <div class="shortcut">
-                    <kbd>{t('shortcuts.del')}</kbd>
-                    <span>{t('shortcuts.deleteImage')}</span>
-                  </div>
+                          <div class="shortcuts-section full-width">
+                            <h4>{t('shortcuts.other')}</h4>
+                            <div class="shortcut">
+                              <kbd>{t('shortcuts.esc')}</kbd>
+                              <span>{t('shortcuts.closePreview')}</span>
+                            </div>
+                            <div class="shortcut">
+                              <kbd>{t('shortcuts.del')}</kbd>
+                              <span>{t('shortcuts.deleteImage')}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  >
+                    <div class="experimental-content">
+                      <h3>{t('settings.experimentalFeatures')}</h3>
+                      <div class="experimental-options">
+                        <Tooltip content={t('settings.enableZoomTooltip')} position="top">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={app.enableZoom}
+                              onChange={(e) => app.setEnableZoom(e.currentTarget.checked)}
+                            />
+                            {t('settings.enableZoom')}
+                          </label>
+                        </Tooltip>
+                        <Tooltip content={t('settings.enableMinimapTooltip')} position="top">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={app.enableMinimap}
+                              onChange={(e) => app.setEnableMinimap(e.currentTarget.checked)}
+                            />
+                            {t('settings.enableMinimap')}
+                          </label>
+                        </Tooltip>
+                        <Tooltip content={t('settings.alwaysShowCaptionEditorTooltip')} position="top">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={app.alwaysShowCaptionEditor}
+                              onChange={(e) => app.setAlwaysShowCaptionEditor(e.currentTarget.checked)}
+                            />
+                            {t('settings.alwaysShowCaptionEditor')}
+                          </label>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  </Show>
+                }
+              >
+                <div class="transformations-content">
+                  <TransformationSettings onClose={() => switchView('main')} />
                 </div>
-              </div>
+              </Show>
             </div>
           }
         >
-          <div class="settings-content" classList={{ closing: isClosing() }}>
+          <div class="settings-content" classList={{ transitioning: isTransitioning() }}>
             <div class="settings-row">
               <div class="settings-column">
                 <h3>{t('settings.appearance')}</h3>
@@ -356,6 +424,25 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               </div>
             </div>
 
+            <div class="setting-group">
+              <Tooltip content={t('settings.thumbnailSizeDescription')} position="top">
+                <h3>{t('settings.thumbnailSize')}</h3>
+              </Tooltip>
+              <div class="thumbnail-size-controls">
+                <Slider
+                  min={100}
+                  max={500}
+                  step={50}
+                  value={app.thumbnailSize}
+                  onChange={(value) => app.setThumbnailSize(value)}
+                  aria-label={t('settings.thumbnailSize')}
+                />
+                <span class="thumbnail-size-value" data-testid="thumbnail-size-value">
+                  {app.thumbnailSize}px
+                </span>
+              </div>
+            </div>
+
             <section class="warning-section">
               <Show when={!app.disableNonsense}>
                 <p class="warning-text">
@@ -402,60 +489,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   </label>
                 </Tooltip>
               </div>
-
-              <h4 class="experimental-header">{t('settings.experimentalFeatures')}</h4>
-              <div class="experimental-options">
-                <Tooltip content={t('settings.enableZoomTooltip')} position="top">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={app.enableZoom}
-                      onChange={(e) => app.setEnableZoom(e.currentTarget.checked)}
-                    />
-                    {t('settings.enableZoom')}
-                  </label>
-                </Tooltip>
-                <Tooltip content={t('settings.enableMinimapTooltip')} position="top">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={app.enableMinimap}
-                      onChange={(e) => app.setEnableMinimap(e.currentTarget.checked)}
-                    />
-                    {t('settings.enableMinimap')}
-                  </label>
-                </Tooltip>
-                <Tooltip content={t('settings.alwaysShowCaptionEditorTooltip')} position="top">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={app.alwaysShowCaptionEditor}
-                      onChange={(e) => app.setAlwaysShowCaptionEditor(e.currentTarget.checked)}
-                    />
-                    {t('settings.alwaysShowCaptionEditor')}
-                  </label>
-                </Tooltip>
-              </div>
             </section>
-
-            <div class="setting-group">
-              <Tooltip content={t('settings.thumbnailSizeDescription')} position="top">
-                <label>{t('settings.thumbnailSize')}</label>
-              </Tooltip>
-              <div class="thumbnail-size-controls">
-                <Slider
-                  min={100}
-                  max={500}
-                  step={50}
-                  value={app.thumbnailSize}
-                  onChange={(value) => app.setThumbnailSize(value)}
-                  aria-label={t('settings.thumbnailSize')}
-                />
-                <span class="thumbnail-size-value" data-testid="thumbnail-size-value">
-                  {app.thumbnailSize}px
-                </span>
-              </div>
-            </div>
           </div>
         </Show>
       </div>

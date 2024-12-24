@@ -97,6 +97,20 @@ export default {
     removeCommas: "Remove commas",
     replaceNewlinesWithCommas: "Replace newlines with commas",
     replaceUnderscoresWithSpaces: "Replace underscores with spaces",
+    transformations: "Text Transformations",
+    transformationTypes: {
+      singleFile: "Current file only",
+      currentFolder: "All files in current folder",
+      recursive: "All files in current folder and subfolders",
+    },
+    fileTypes: {
+      all: "All caption files",
+      tags: "Tag files (.tags)",
+      captions: "Caption files (.caption)",
+      text: "Text files (.txt)",
+    },
+    applyTo: "Apply to",
+    scope: "Transformation scope",
   },
   frontPage: {
     subtitle: {
