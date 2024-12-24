@@ -635,9 +635,10 @@ kbd {
   display: flex;
   align-items: center;
   gap: var(--spacing);
+  padding: var(--half-spacing) 0;
 }
 
-.thumbnail-size-controls input[type="range"] {
+.thumbnail-size-controls .slider {
   flex: 1;
 }
 
@@ -645,6 +646,7 @@ kbd {
   min-width: 4em;
   text-align: right;
   font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
 }
 
 .setting-description {

@@ -112,6 +112,10 @@
   }
 }
 
+label {
+  padding: var(--half-spacing);
+}
+
 code {
   background-color: var(--secondary-bg);
   color: var(--text-primary);

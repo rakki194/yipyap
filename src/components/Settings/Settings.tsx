@@ -6,6 +6,7 @@ import { useAppContext } from "~/contexts/app";
 import { Theme, themeIconMap, themes } from "~/contexts/theme";
 import getIcon from "~/icons";
 import { Tooltip } from "~/components/Tooltip/Tooltip";
+import { Slider } from "~/components/Slider/Slider";
 import "./Settings.css";
 import { languages } from "~/i18n";
 
@@ -442,13 +443,13 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 <label>{t('settings.thumbnailSize')}</label>
               </Tooltip>
               <div class="thumbnail-size-controls">
-                <input
-                  type="range"
-                  min="100"
-                  max="500"
-                  step="50"
+                <Slider
+                  min={100}
+                  max={500}
+                  step={50}
                   value={app.thumbnailSize}
-                  onInput={(e) => app.setThumbnailSize(parseInt(e.currentTarget.value))}
+                  onChange={(value) => app.setThumbnailSize(value)}
+                  aria-label={t('settings.thumbnailSize')}
                 />
                 <span class="thumbnail-size-value" data-testid="thumbnail-size-value">
                   {app.thumbnailSize}px
