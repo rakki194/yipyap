@@ -1,6 +1,5 @@
 // src/components/Gallery/Gallery.tsx
 import { Show, onMount, onCleanup, createSignal, createMemo, createEffect } from "solid-js";
-import { Controls } from "./Controls";
 import { ImageGrid } from "./ImageGrid";
 import { ImageModal } from "../ImageViewer/ImageModal";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -9,6 +8,7 @@ import "./Gallery.css";
 import { QuickJump } from "./QuickJump";
 import { useAppContext } from "~/contexts/app";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { UploadOverlay } from '../UploadOverlay/UploadOverlay';
 
 // Add new ScrollManager class to handle scroll logic
 class ScrollManager {
@@ -692,6 +692,19 @@ export const Gallery = () => {
       
       scrollManager.cleanup();
     });
+
+    // Add document-level drag event listeners
+    document.addEventListener('dragenter', handleDragEnter);
+    document.addEventListener('dragleave', handleDragLeave);
+    document.addEventListener('dragover', handleDragOver);
+    document.addEventListener('drop', handleDrop);
+
+    onCleanup(() => {
+      document.removeEventListener('dragenter', handleDragEnter);
+      document.removeEventListener('dragleave', handleDragLeave);
+      document.removeEventListener('dragover', handleDragOver);
+      document.removeEventListener('drop', handleDrop);
+    });
   });
 
   const handleDragEnter = (e: DragEvent) => {
@@ -899,15 +912,10 @@ export const Gallery = () => {
 
   return (
     <>
-      {/* <Controls /> */}
-
+      <UploadOverlay isVisible={isDragging()} />
       <div
         id="gallery"
         class="gallery"
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
       >
         <Show when={gallery.data()}>
           {(data) => (
@@ -920,7 +928,6 @@ export const Gallery = () => {
           )}
         </Show>
 
-        {/* Update progress overlay */}
         <Show when={progressInfo()}>
           {(progress) => (
             <div class="upload-progress-overlay">
@@ -946,14 +953,6 @@ export const Gallery = () => {
             </div>
           )}
         </Show>
-
-        {/* Dropzone Overlay */}
-        <div
-          class="gallery-dropzone"
-          classList={{ dragging: isDragging() }}
-        >
-          {isDragging() && <div class="drop-overlay">{appContext.t('gallery.dropOverlay')}</div>}
-        </div>
       </div>
 
       <Show when={gallery.getEditedImage()}>

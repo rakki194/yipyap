@@ -114,7 +114,7 @@ The system is built with performance and extensibility in mind, using SolidJS's 
 
 ## Theming System
 
-For detailed information about the theming system, including theme variables, style changes, and best practices, please refer to the [Theming Documentation](docs/theming.md).
+For detailed information about the theming system, including theme variables, style changes, and best practices, please refer to the [Theming Documentation](docs/theming.md) when writing CSS.
 
 Maintain consistency with existing code by following established naming conventions and reusing components and styles where appropriate. When writing CSS, ensure compatibility with the global styles defined in `/src/styles.css`.
 

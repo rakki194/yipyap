@@ -173,6 +173,88 @@ This error occurs when translation functions don't properly type their parameter
 4. Consider creating type definitions for translation parameters
 5. Document expected parameter shapes in comments
 
+## 5. Import Resolution and Module Not Found Errors
+
+Location: `src/components/Gallery/Gallery.tsx`
+
+```typescript
+// Error: Cannot find module './Controls' or its corresponding type declarations
+import { Controls } from './Controls';  // Error: Module not found
+
+// Solution 1: Remove unused imports
+// Simply remove the import if the module is not used
+
+// Solution 2: If the module is needed but missing
+// Create the module in the correct location:
+// src/components/Gallery/Controls.tsx
+
+// Solution 3: If the import path is wrong
+import { Controls } from '../Controls';  // Fix the import path
+```
+
+This error occurs when TypeScript cannot resolve an imported module. Common causes and solutions:
+
+### 1. Unused or Commented Out Imports
+- **Problem**: Leaving imports for components that are no longer used or are commented out
+- **Solution**: 
+  - Remove unused imports completely
+  - Don't leave commented-out imports in the code
+  - Use version control to track historical changes instead
+
+### 2. Incorrect Import Paths
+- **Problem**: Import paths don't match the actual file structure
+- **Solution**:
+  - Double-check file paths relative to the importing file
+  - Use path aliases (like `~`) consistently
+  - Consider using absolute imports for better maintainability
+
+### 3. Missing Files
+- **Problem**: Trying to import from files that don't exist
+- **Solution**:
+  - Create the missing files if needed
+  - Update import paths to point to existing files
+  - Remove imports for components that are no longer needed
+
+### Best Practices to Avoid Import Errors
+
+1. **Clean Up During Refactoring**:
+   - Remove unused imports immediately
+   - Update import paths when moving files
+   - Don't leave commented-out code in production
+
+2. **Use Path Aliases**:
+   ```typescript
+   // Bad
+   import { Something } from '../../../components/Something';
+   
+   // Good
+   import { Something } from '~/components/Something';
+   ```
+
+3. **Organize Imports**:
+   ```typescript
+   // External imports first
+   import { Component, Show } from 'solid-js';
+   
+   // Internal aliases/paths next
+   import { useAppContext } from '~/contexts/app';
+   
+   // Relative imports last
+   import { Controls } from './Controls';
+   ```
+
+4. **Import Type Checking**:
+   - Use TypeScript's `--noUnusedLocals` flag
+   - Enable ESLint rules for import checking
+   - Regularly run type checking on the entire project
+
+Remember to:
+- Keep imports clean and organized
+- Remove unused imports promptly
+- Use consistent import patterns
+- Leverage TypeScript and ESLint for early detection
+- Document path aliases in the project configuration
+
 ## Best Practices
 
 ### 1. Context Typing
