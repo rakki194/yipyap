@@ -496,3 +496,32 @@
   color: var(--text-on-accent);
   border-color: var(--accent);
 }
+
+.gallery {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  padding: var(--spacing);
+}
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: var(--overlay-backdrop);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-overlay:focus {
+  outline: none;
+}
+
+/* When settings is open, prevent gallery interaction */
+.gallery.settings-open {
+  pointer-events: none;
+  user-select: none;
+}

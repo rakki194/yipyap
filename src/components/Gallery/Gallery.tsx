@@ -306,7 +306,14 @@ export const Gallery = () => {
     }
   };
 
+  // Add ref for settings focus trap
+  let settingsRef: HTMLDivElement | undefined;
+
+  // Update keyDownHandler to not handle events when settings is open
   const keyDownHandler = async (event: KeyboardEvent) => {
+    // Don't handle keyboard events when settings is open
+    if (showSettings()) return;
+
     // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
     if (!event) return;
 
@@ -680,6 +687,34 @@ export const Gallery = () => {
     }, 500); // Check every 500ms
   };
 
+  // Add settings keyboard handler
+  const handleSettingsKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setShowSettings(false);
+    }
+  };
+
+  // Add effect to manage focus and keyboard events for settings
+  createEffect(() => {
+    if (showSettings()) {
+      // Store the previously focused element
+      const previouslyFocused = document.activeElement as HTMLElement;
+      
+      // Focus the settings container
+      settingsRef?.focus();
+
+      // Add keyboard event listener
+      window.addEventListener('keydown', handleSettingsKeyDown);
+
+      // Cleanup function
+      onCleanup(() => {
+        window.removeEventListener('keydown', handleSettingsKeyDown);
+        // Restore focus when settings closes
+        previouslyFocused?.focus();
+      });
+    }
+  });
+
   onMount(() => {
     window.addEventListener("keydown", keyDownHandler);
     window.addEventListener("keyup", keyUpHandler);
@@ -973,6 +1008,9 @@ export const Gallery = () => {
       <div
         id="gallery"
         class="gallery"
+        classList={{
+          'settings-open': showSettings()
+        }}
       >
         <Show when={gallery.data()}>
           {(data) => (
@@ -1087,8 +1125,30 @@ export const Gallery = () => {
       </Show>
 
       <Show when={showSettings()}>
-        <div class="settings-overlay" onClick={() => setShowSettings(false)}>
-          <div onClick={(e) => e.stopPropagation()}>
+        <div 
+          class="settings-overlay" 
+          onClick={() => setShowSettings(false)}
+          onKeyDown={handleSettingsKeyDown}
+          ref={settingsRef}
+          tabIndex={-1}
+          style={{
+            "z-index": "1000",
+            position: "fixed",
+            inset: "0",
+            "background-color": "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            "align-items": "center",
+            "justify-content": "center"
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "relative",
+              "max-height": "90vh",
+              overflow: "auto"
+            }}
+          >
             <Settings onClose={() => setShowSettings(false)} />
           </div>
         </div>
