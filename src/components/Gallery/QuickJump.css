@@ -7,7 +7,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(0 0 0 / 50%);
 }
 
 .quick-jump-overlay[data-theme="light"] {
@@ -64,6 +63,7 @@
   background: var(--input-background-color);
   color: var(--text-color);
   border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
 }
 
 .quick-jump-modal input:focus {
@@ -84,7 +84,7 @@
   cursor: pointer;
   border-radius: var(--border-radius);
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: calc(var(--spacing) * 0.5);
   transition-property: background-color;
 }
@@ -94,9 +94,35 @@
   background-color: var(--accent-color, rgb(125 125 125 / 20%));
 }
 
+.quick-jump-results li.action {
+  font-weight: 500;
+}
+
+.quick-jump-results .action-icon,
+.quick-jump-results .folder-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.quick-jump-results .action-icon svg,
+.quick-jump-results .folder-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.quick-jump-results .action-name {
+  flex-grow: 1;
+}
+
 .quick-jump-results .folder-name {
   font-weight: bold;
   color: var(--text-color);
+  flex-grow: 1;
 }
 
 .quick-jump-results .folder-path {
@@ -109,4 +135,121 @@
   text-align: center;
   padding: var(--spacing);
   color: var(--text-secondary);
+}
+
+.quick-jump-modal .no-results {
+  text-align: center;
+  padding: var(--spacing);
+  color: var(--text-secondary);
+}
+
+/* Modal overlay for new folder dialog */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: var(--overlay-backdrop);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dialog {
+  position: relative;
+  width: 90%;
+  max-width: 400px;
+  padding: var(--spacing);
+  background: var(--bg-color);
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-dialog h2 {
+  margin: 0 0 var(--spacing) 0;
+  font-size: 1.25rem;
+}
+
+.modal-dialog input {
+  width: 100%;
+  font-size: 1rem;
+  padding: var(--spacing);
+  background: var(--input-background-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing);
+}
+
+.modal-dialog input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing);
+}
+
+.modal-close-button {
+  position: absolute;
+  top: var(--spacing);
+  right: var(--spacing);
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-button:hover {
+  background-color: var(--hover-color);
+}
+
+.modal-close-button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.modal-dialog button.primary {
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  background-color: var(--accent-color);
+  color: var(--accent-text);
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.modal-dialog button.primary:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--accent-color) 85%, black);
+}
+
+.modal-dialog button.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Theme-specific styles */
+[data-theme="strawberry"] .quick-jump-results li:hover,
+[data-theme="strawberry"] .quick-jump-results li.selected {
+  background-color: rgba(255, 51, 102, 0.1);
+}
+
+[data-theme="strawberry"] .quick-jump-results li:hover svg,
+[data-theme="strawberry"] .quick-jump-results li.selected svg {
+  fill: #ff3366;
+}
+
+[data-theme="banana"] .quick-jump-results li:hover,
+[data-theme="banana"] .quick-jump-results li.selected {
+  background-color: rgba(128, 62, 0, 0.1);
+}
+
+[data-theme="banana"] .quick-jump-results li:hover svg,
+[data-theme="banana"] .quick-jump-results li.selected svg {
+  fill: #ffb700;
 }

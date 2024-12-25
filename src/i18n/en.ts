@@ -29,6 +29,7 @@ export default {
     selected: "Selected",
     all: "All",
     none: "None",
+    // The character used to separate parts of a file path (e.g., "/" on Unix, "\" on Windows)
     pathSeparator: getPathSeparator("en"),
     toggleTheme: "Toggle theme",
     theme: "Theme",
@@ -59,11 +60,14 @@ export default {
     disableAnimationsTooltip: "Turn off all animations for improved performance",
     language: "Language",
     languageTooltip: "Change the interface language",
+    // Controls whether to show Japanese text and other playful UI elements
     disableNonsense: "Disable nonsense",
     disableNonsenseTooltip: "Hide Japanese text and other nonsensical elements",
     modelSettings: "Model settings",
+    // Path to the JTP2 machine learning model file used for image analysis
     jtp2ModelPath: "JTP2 model path",
     jtp2ModelPathTooltip: "Path to the JTP2 model file (.safetensors)",
+    // Path to the tags file containing vocabulary for the JTP2 model
     jtp2TagsPath: "JTP2 tags path",
     jtp2TagsPathTooltip: "Path to the JTP2 tags file (.json)",
     downloadModel: "Download model",
@@ -86,6 +90,7 @@ export default {
     instantDeleteTooltip: "Delete files without confirmation dialog",
     warning: "Warning",
     gallery: "Gallery",
+    // When enabled, keeps latent vector files when moving/deleting images
     preserveLatents: "Preserve latents",
     preserveLatentsTooltip: "Preserve latents when moving or deleting files",
     preserveTxt: "Preserve txt",
@@ -158,6 +163,7 @@ export default {
   gallery: {
     addTag: "Add tag",
     addCaption: "Add caption",
+    // Quick navigation between folders using keyboard shortcuts
     quickJump: "Quick jump",
     loadingFolders: "Loading folders...",
     noResults: "No results found",
@@ -236,10 +242,14 @@ export default {
     removeTags: "Remove tags",
     createCaption: "Create caption",
     captionTypes: {
+      // Plain text file containing usually the concatenated tags and caption.
       txt: "Text file",
-      tags: "Tags",
-      caption: "Caption",
-      wd: "WebUI",
+      // Comma-separated tags describing the image in the e621 format.
+      tags: "JTP2 generated tags file",
+      // Natural language description of the image
+      caption: "Caption file",
+      // Comma-separated tags describing the image in the danbooru format.
+      wd: "WDv3 generated tags file",
     },
     noCaptionFiles: "No caption files found",
     uploadError: "Failed to upload file",

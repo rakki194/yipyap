@@ -1,14 +1,26 @@
 // src/components/Gallery/Gallery.tsx
-import { Show, onMount, onCleanup, createSignal, createMemo, createEffect } from "solid-js";
+import {
+  Component,
+  createSignal,
+  For,
+  Show,
+  createResource,
+  onMount,
+  onCleanup,
+  createEffect,
+  createMemo,
+} from "solid-js";
+import { useNavigate, useAction } from "@solidjs/router";
+import { useGallery } from "~/contexts/GalleryContext";
+import { useAppContext } from "~/contexts/app";
 import { ImageGrid } from "./ImageGrid";
 import { ImageModal } from "../ImageViewer/ImageModal";
-import { useGallery } from "~/contexts/GalleryContext";
-import { useAction, useNavigate } from "@solidjs/router";
-import "./Gallery.css";
 import { QuickJump } from "./QuickJump";
-import { useAppContext } from "~/contexts/app";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { UploadOverlay } from '../UploadOverlay/UploadOverlay';
+import { Settings } from '../Settings/Settings';
+import getIcon from "~/icons";
+import "./Gallery.css";
 
 // Add new ScrollManager class to handle scroll logic
 class ScrollManager {
@@ -98,7 +110,11 @@ export const Gallery = () => {
   const [showQuickJump, setShowQuickJump] = createSignal(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   const [isDragging, setIsDragging] = createSignal(false);
-  let dragCounter = 0;
+  const [showSettings, setShowSettings] = createSignal(false);
+  const [showNewFolderDialog, setShowNewFolderDialog] = createSignal(false);
+  const [newFolderName, setNewFolderName] = createSignal("");
+  const [isCreatingFolder, setIsCreatingFolder] = createSignal(false);
+  let newFolderInputRef: HTMLInputElement | undefined;
   const [progressInfo, setProgressInfo] = createSignal<{
     current: number;
     total: number;
@@ -908,6 +924,49 @@ export const Gallery = () => {
     });
   });
 
+  // Add handleCreateFolder function
+  const handleCreateFolder = async () => {
+    const folderName = newFolderName().trim();
+    if (!folderName) return;
+
+    try {
+      setIsCreatingFolder(true);
+      const currentPath = gallery.data()?.path || "";
+      const folderPath = currentPath ? `${currentPath}/${folderName}` : folderName;
+
+      const response = await fetch(`/api/folder/${folderPath}`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      gallery.selection.clearMultiSelect();
+      gallery.selection.clearFolderMultiSelect();
+      gallery.select(null);
+      gallery.invalidate();
+      await gallery.refetch();
+
+      setShowNewFolderDialog(false);
+      setNewFolderName("");
+
+      appContext.notify(
+        appContext.t('notifications.folderCreated'),
+        "success"
+      );
+
+    } catch (error) {
+      console.error("Error creating folder:", error);
+      appContext.notify(
+        appContext.t('notifications.folderCreateError'),
+        "error"
+      );
+    } finally {
+      setIsCreatingFolder(false);
+    }
+  };
+
   return (
     <>
       <UploadOverlay isVisible={isDragging()} />
@@ -954,20 +1013,85 @@ export const Gallery = () => {
       </div>
 
       <Show when={gallery.getEditedImage()}>
-        {(image) => (
-          <ImageModal
-            imageInfo={image()}
-            captions={image().captions}
-            onClose={() => gallery.setMode("view")}
-            generateTags={gallery.generateTags}
-            saveCaption={gallery.saveCaption}
-            deleteCaption={gallery.deleteCaption}
-            deleteImageAction={gallery.deleteImage}
-          />
-        )}
+        <ImageModal
+          imageInfo={image()}
+          captions={image().captions}
+          onClose={() => gallery.setMode("view")}
+          generateTags={gallery.generateTags}
+          saveCaption={gallery.saveCaption}
+          deleteCaption={gallery.deleteCaption}
+          deleteImageAction={gallery.deleteImage}
+        />
       </Show>
+
       <Show when={showQuickJump()}>
-        <QuickJump onClose={() => setShowQuickJump(false)} />
+        <QuickJump 
+          onClose={() => setShowQuickJump(false)} 
+          onShowSettings={() => {
+            setShowQuickJump(false);
+            // Use setTimeout to ensure QuickJump is unmounted before showing settings
+            setTimeout(() => {
+              setShowSettings(true);
+            }, 0);
+          }}
+          onShowNewFolder={() => {
+            setShowQuickJump(false);
+            // Use setTimeout to ensure QuickJump is unmounted before showing new folder dialog
+            setTimeout(() => {
+              setShowNewFolderDialog(true);
+            }, 0);
+          }}
+        />
+      </Show>
+
+      <Show when={showNewFolderDialog()}>
+        <div class="modal-overlay" onClick={() => setShowNewFolderDialog(false)}>
+          <div class="modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              class="icon modal-close-button"
+              onClick={() => setShowNewFolderDialog(false)}
+              title={t('common.close')}
+              aria-label={t('common.close')}
+            >
+              {getIcon("dismiss")}
+            </button>
+            <h2>{t('gallery.createFolder')}</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleCreateFolder();
+              }}
+            >
+              <input
+                ref={newFolderInputRef}
+                type="text"
+                value={newFolderName()}
+                onInput={(e) => setNewFolderName(e.currentTarget.value)}
+                placeholder={t('gallery.folderNamePlaceholder')}
+                disabled={isCreatingFolder()}
+                autofocus
+              />
+              <div class="modal-actions">
+                <button
+                  type="submit"
+                  class="primary"
+                  disabled={!newFolderName().trim() || isCreatingFolder()}
+                >
+                  {isCreatingFolder() ? t('common.creating') : t('common.create')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Show>
+
+      <Show when={showSettings()}>
+        <div class="settings-overlay" onClick={() => setShowSettings(false)}>
+          <div onClick={(e) => e.stopPropagation()}>
+            <Settings onClose={() => setShowSettings(false)} />
+          </div>
+        </div>
       </Show>
 
       <Show when={showDeleteConfirm()}>
