@@ -36,7 +36,9 @@ export default {
     openSettings: "सेटिंग्स खोलें",
     create: "बनाएं",
     creating: "बना रहे हैं...",
-    theme: "थीम"
+    theme: "थीम",
+    language: "भाषा",
+    description: "विवरण"
   },
   settings: {
     appearance: "दिखावट",
@@ -48,21 +50,32 @@ export default {
       strawberry: "स्ट्रॉबेरी",
       peanut: "मूंगफली",
       christmas: "क्रिसमस",
-      halloween: "हैलोवीन"
+      halloween: "हैलोवीन",
+      "high-contrast-black": "उच्च कंट्रास्ट काला",
+      "high-contrast-inverse": "उच्च कंट्रास्ट विपरीत"
     },
     enableZoom: "ज़ूम सक्षम करें",
+    enableZoomTooltip: "छवि व्यूअर में ज़ूम और पैन सक्षम करें",
     enableMinimap: "मिनीमैप सक्षम करें",
+    enableMinimapTooltip: "आसान नेविगेशन के लिए ज़ूम करते समय मिनीमैप दिखाएं",
     alwaysShowCaptionEditor: "कैप्शन एडिटर हमेशा दिखाएं",
+    alwaysShowCaptionEditorTooltip: "कैप्शन एडिटर को हमेशा खुला रखें",
     instantDelete: "तुरंत हटाएं",
+    instantDeleteTooltip: "पुष्टि डायलॉग के बिना फ़ाइलें हटाएं",
     disableAnimations: "एनिमेशन बंद करें",
+    disableAnimationsTooltip: "बेहतर प्रदर्शन के लिए सभी एनिमेशन बंद करें",
     disableNonsense: "जापानी बंद करें",
+    disableNonsenseTooltip: "जापानी टेक्स्ट और अन्य अनावश्यक तत्वों को छिपाएं",
     modelSettings: (params: TranslationParams) => "मॉडल सेटिंग्स",
     jtp2ModelPath: "JTP2 मॉडल पथ",
+    jtp2ModelPathTooltip: "JTP2 मॉडल फ़ाइल (.safetensors) का पथ",
+    jtp2TagsPath: "JTP2 टैग पथ",
+    jtp2TagsPathTooltip: "JTP2 टैग फ़ाइल (.json) का पथ",
     gallery: "गैलरी",
     title: "सेटिंग्स",
     experimentalFeatures: "प्रायोगिक सुविधाएं",
     language: "भाषा",
-    jtp2TagsPath: "JTP2 टैग पथ",
+    languageTooltip: "इंटरफ़ेस की भाषा बदलें",
     downloadModel: "मॉडल डाउनलोड करें (1.8 GB)",
     downloadTags: "टैग डाउनलोड करें (195 KB)",
     viewMode: "व्यू मोड",
@@ -74,9 +87,9 @@ export default {
     sortBySize: "आकार के अनुसार क्रमबद्ध करें",
     warning: "चेतावनी",
     preserveLatents: "लेटेंट्स संरक्षित रखें",
-    preserveLatentsTooltip: "छवियां हटाते समय .npz (latent) फ़ाइलें रखें।",
+    preserveLatentsTooltip: "छवियों को स्थानांतरित या हटाते समय .npz (latent) फ़ाइलें रखें।",
     preserveTxt: ".txt संरक्षित रखें",
-    preserveTxtTooltip: "छवियां हटाते समय .txt फ़ाइलें रखें।",
+    preserveTxtTooltip: "छवियों को स्थानांतरित या हटाते समय .txt फ़ाइलें रखें।",
     thumbnailSize: "थंबनेल आकार",
     thumbnailSizeDescription: "पिक्सेल में थंबनेल का आकार (उदाहरण: 250)",
     thumbnailSizeUpdateError: "थंबनेल आकार अपडेट करने में विफल"
@@ -266,9 +279,49 @@ export default {
     rotateRight: "दाएं घुमाएं",
     downloadImage: "छवि डाउनलोड करें",
     imageInfo: "छवि की जानकारी",
-    dimensions: "आयाम"
+    dimensions: "आयात"
   },
   tools: {
+    transformations: "परिवर्तन",
+    addTransformation: "परिवर्तन जोड़ें",
+    transformationType: "परिवर्तन का प्रकार",
+    transformationTypes: {
+      searchReplace: "खोजें और बदलें",
+      case: "केस",
+      trim: "ट्रिम",
+      wrap: "रैप",
+      number: "संख्या"
+    },
+    caseTypes: {
+      upper: "अपर",
+      lower: "लोअर",
+      title: "टाइटल",
+      sentence: "वाक्य"
+    },
+    trimTypes: {
+      all: "सभी",
+      start: "शुरुआत",
+      end: "अंत",
+      duplicates: "डुप्लिकेट"
+    },
+    numberActions: {
+      remove: "हटाएं",
+      format: "प्रारूप",
+      extract: "निकालें"
+    },
+    numberFormat: "संख्या प्रारूप",
+    numberFormatPlaceholder: "संख्या प्रारूप दर्ज करें",
+    searchPattern: "खोज पैटर्न",
+    searchPatternPlaceholder: "खोजने के लिए टेक्स्ट दर्ज करें",
+    replacement: "प्रतिस्थापन",
+    replacementPlaceholder: "प्रतिस्थापन टेक्स्ट दर्ज करें",
+    prefix: "उपसर्ग",
+    suffix: "प्रत्यय",
+    prefixPlaceholder: "उपसर्ग दर्ज करें",
+    suffixPlaceholder: "प्रत्यय दर्ज करें",
+    transformationNamePlaceholder: "परिवर्तन का नाम दर्ज करें",
+    transformationDescriptionPlaceholder: "परिवर्तन का विवरण दर्ज करें",
+    selectIcon: "आइकन चुनें",
     removeCommas: "कॉमा हटाएं",
     replaceNewlinesWithCommas: "नई लाइनों को कॉमा से बदलें",
     replaceUnderscoresWithSpaces: "अंडरस्कोर को स्पेस से बदलें"

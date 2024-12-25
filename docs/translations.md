@@ -108,57 +108,206 @@ export const languages = [
 
 ### Pluralization Support
 
-The system supports complex pluralization rules through language-specific plural functions:
+The system provides comprehensive pluralization support for different language families through a flexible rule-based system. Each language can define its own plural forms and rules for selecting the appropriate form based on the number.
+
+#### Plural Forms
 
 ```typescript
-// Russian pluralization example
-export function getRussianPlural(count: number, forms: {
-  one: string;
-  few: string;
-  many: string;
-}): string {
-  const lastDigit = count % 10;
-  const lastTwoDigits = count % 100;
+type PluralForms = {
+  zero?: string;    // Optional, for languages that have a special zero form (e.g., Arabic)
+  one: string;      // Required, singular form (e.g., "1 book")
+  two?: string;     // Optional, dual form (e.g., Arabic: "كتابان")
+  few?: string;     // Optional, for languages with special few form (e.g., Polish: "2 książki")
+  many?: string;    // Optional, for languages with special many form (e.g., Polish: "5 książek")
+  other: string;    // Required, default plural form (e.g., "books")
+};
+```
 
-  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-    return forms.many;
+#### Language-Specific Rules
+
+The system includes specialized plural rules for different language families:
+
+1. **Default (English-like)**:
+   - Two forms: singular (one) and plural (other)
+   - Example: "1 book" vs "2 books"
+   ```typescript
+   default: (n: number, forms: PluralForms) => 
+     n === 1 ? forms.one : forms.other
+   ```
+
+2. **Slavic Languages (Russian, Ukrainian, Bulgarian)**:
+   - Three forms based on the last digit(s)
+   - Example (Russian):
+     - 1: книга (one)
+     - 2-4: книги (few)
+     - 5-20: книг (many)
+   ```typescript
+   ru: (n: number, forms: PluralForms) => {
+     const lastDigit = n % 10;
+     const lastTwoDigits = n % 100;
+     if (lastTwoDigits >= 11 && lastTwoDigits <= 19) return forms.many;
+     if (lastDigit === 1) return forms.one;
+     if (lastDigit >= 2 && lastDigit <= 4) return forms.few;
+     return forms.many;
+   }
+   ```
+
+3. **Arabic**:
+   - Complex system with singular, dual, and multiple plural forms
+   - Example:
+     - 0: كتب (zero/plural)
+     - 1: كتاب (singular)
+     - 2: كتابان (dual)
+     - 3-10: كتب (plural)
+     - 11+: كتابًا (plural large)
+   ```typescript
+   ar: (n: number, forms: PluralForms) => {
+     if (n === 0) return forms.zero || forms.other;
+     if (n === 1) return forms.one;
+     if (n === 2) return forms.two;
+     if (n >= 3 && n <= 10) return forms.few;
+     return forms.many || forms.other;
+   }
+   ```
+
+4. **East Asian Languages (Japanese, Chinese, Korean, Vietnamese)**:
+   - No grammatical plurals, always use the base form
+   ```typescript
+   ja: (_n: number, forms: PluralForms) => forms.other
+   ```
+
+#### Usage in Translations
+
+1. **Define Plural Forms**:
+```typescript
+const bookTranslations = {
+  en: {
+    one: "${count} book",
+    other: "${count} books"
+  },
+  ru: {
+    one: "${count} книга",
+    few: "${count} книги",
+    many: "${count} книг"
+  },
+  ar: {
+    zero: "لا كتب",
+    one: "كتاب واحد",
+    two: "كتابان",
+    few: "${count} كتب",
+    many: "${count} كتابًا"
   }
+};
+```
 
-  if (lastDigit === 1) {
-    return forms.one;
-  }
+2. **Use in Components**:
+```typescript
+const message = t("books.count", { count: 5 });
+```
 
-  if (lastDigit >= 2 && lastDigit <= 4) {
-    return forms.few;
-  }
+#### Helper Functions
 
-  return forms.many;
-}
+The system provides helper functions for creating plural-aware translations:
+
+```typescript
+const pluralTranslation = createPluralTranslation(forms, lang);
+const message = pluralTranslation({ count: 5 });
+```
+
+#### Testing Pluralization
+
+```typescript
+describe("Pluralization", () => {
+  it("should handle Russian plural forms", () => {
+    const forms = {
+      one: "${count} книга",
+      few: "${count} книги",
+      many: "${count} книг"
+    };
+    expect(getPlural(1, forms, "ru")).toBe("1 книга");
+    expect(getPlural(2, forms, "ru")).toBe("2 книги");
+    expect(getPlural(5, forms, "ru")).toBe("5 книг");
+    expect(getPlural(11, forms, "ru")).toBe("11 книг");
+    expect(getPlural(21, forms, "ru")).toBe("21 книга");
+  });
+});
 ```
 
 ## RTL Support
 
-The system includes RTL (right-to-left) support for languages like Arabic and Hebrew:
+The system provides comprehensive RTL (right-to-left) support for languages like Arabic (ar), Hebrew (he), and Persian (fa). This is implemented through several layers:
 
-1. Automatic direction switching:
+1. Automatic Direction Setting:
 ```typescript
-export function getLanguageDirection(code: string): "ltr" | "rtl" {
-  return ["ar", "he"].includes(code) ? "rtl" : "ltr";
+// In app context
+createRenderEffect(() => {
+  document.documentElement.lang = store.locale;
+  document.documentElement.dir = ["ar", "he", "fa"].includes(store.locale) ? "rtl" : "ltr";
+});
+```
+
+2. CSS Logical Properties:
+```css
+:root[dir="rtl"] {
+  --start: right;
+  --end: left;
+  --font-family-base: "Noto Sans Arabic", -apple-system, BlinkMacSystemFont, 
+    "Segoe UI", Roboto, sans-serif;
+}
+
+:root[dir="ltr"] {
+  --start: left;
+  --end: right;
 }
 ```
 
-2. Layout adjustments:
+3. Language-Specific Font Support:
 ```css
-[dir="rtl"] {
-  .gallery-item {
-    margin-left: 0;
-    margin-right: var(--spacing);
-  }
-  
-  .icon {
-    transform: scaleX(-1);
-  }
+body:lang(he) {
+  font-family: "Noto Sans Hebrew", var(--font-family-base);
+  line-height: 1.7;
 }
+
+body:lang(ar) {
+  font-family: "Noto Sans Arabic", var(--font-family-base);
+  line-height: 1.8;
+}
+
+body:lang(fa) {
+  font-family: "Noto Sans Arabic", var(--font-family-base);
+  line-height: 1.8;
+}
+```
+
+4. Font Loading:
+```css
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew&display=swap');
+```
+
+### Best Practices for RTL Support
+
+When working with RTL languages, it's important to use CSS logical properties like `margin-inline-start` and `padding-inline-end` instead of directional properties like `margin-left` and `padding-right`. The `--start` and `--end` CSS variables should be used for positioning elements that need to flip in RTL layouts. Special attention must be paid to text alignment and icon direction in RTL layouts. All layouts should be thoroughly tested with both LTR and RTL content to ensure proper display. Different scripts require appropriate line heights - Hebrew text works best with 1.7 while Arabic and Persian scripts need 1.8 for optimal readability.
+
+### RTL-Aware Components
+
+Components should be designed to handle both LTR and RTL layouts:
+
+```typescript
+// Example of RTL-aware component styling
+const Gallery = styled.div`
+  display: grid;
+  grid-auto-flow: row;
+  gap: var(--spacing);
+  padding-inline-start: var(--spacing);
+  text-align: start;
+
+  [dir="rtl"] & {
+    .icon {
+      transform: scaleX(-1);
+    }
+  }
+`;
 ```
 
 ## Dynamic Loading
@@ -179,7 +328,7 @@ const translations = Object.fromEntries(
 
 ### Translation Keys
 
-When creating translation keys, it's important to follow consistent naming patterns throughout the codebase. Related translations should be grouped together logically to maintain organization. Keys should be descriptive enough to understand their purpose while remaining concise and avoiding unnecessary verbosity. Using dot notation helps establish clear hierarchical relationships between translations.
+When creating translation keys, it's important to follow consistent naming patterns throughout the codebase. Related translations should be grouped together logically to maintain organization. Keys should be descriptive enough to understand their purpose while remaining concise and avoiding unnecessary verbosity. Using dot notation helps establish clear hierarchical relationships between translations. Dot notation refers to using periods to separate hierarchical levels in translation keys, such as `settings.appearance.theme` or `gallery.images.count`. This creates a clear nested structure that makes it easy to organize and access translations.
 
 ### Translation Content
 
