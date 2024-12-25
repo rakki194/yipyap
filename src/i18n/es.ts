@@ -115,6 +115,8 @@ export default {
     addCaption: "Añadir título",
     quickJump: "Salto rápido",
     loadingFolders: "Cargando carpetas...",
+    uploadFiles: "Subir archivos",
+    deleteCurrentFolder: "Eliminar carpeta actual",
     noResults: "Sin resultados",
     folderCount: createPluralTranslation({
       one: "1 carpeta",

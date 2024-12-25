@@ -115,6 +115,8 @@ export default {
     addCaption: "Lisää kuvateksti...",
     quickJump: "Siirry kansioon...",
     loadingFolders: "Ladataan kansioita...",
+    uploadFiles: "Lataa tiedostoja",
+    deleteCurrentFolder: "Poista nykyinen kansio",
     noResults: "Ei tuloksia",
     folderCount: (params?: TranslationParams) => `${params?.count ?? 0} kansiota`,
     deleteConfirm: (params: TranslationParams) => {

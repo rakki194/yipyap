@@ -116,6 +116,8 @@ export default {
     quickJump: "Rychlý skok",
     loadingFolders: "Načítání složek...",
     noResults: "Žádné výsledky",
+    uploadFiles: "Nahrát soubory",
+    deleteCurrentFolder: "Smazat aktuální složku",
     folderCount: createPluralTranslation({
       one: "1 složka",
       other: "${count} složek"

@@ -160,6 +160,8 @@ export default {
     addCaption: "Ajouter une légende",
     quickJump: "Saut rapide",
     loadingFolders: "Chargement des dossiers...",
+    uploadFiles: "Télécharger des fichiers",
+    deleteCurrentFolder: "Supprimer le dossier actuel",
     noResults: "Aucun résultat",
     folderCount: createPluralTranslation({
       one: "1 dossier",

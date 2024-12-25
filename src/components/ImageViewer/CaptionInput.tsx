@@ -163,6 +163,17 @@ export const CaptionInput: Component<
 
   const handleNewTagKeyDown = (e: KeyboardEvent) => {
     if (!containerRef) return;
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      if (newTag()) {
+        setNewTag("");
+      } else {
+        props.onClick(); // This will collapse the input
+      }
+      return;
+    }
+
     if (e.shiftKey && e.key === "ArrowUp") {
       e.preventDefault();
       const lastTag = lastEditedTag();

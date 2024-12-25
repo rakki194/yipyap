@@ -9,6 +9,7 @@ import {
   Component,
   Show,
   For,
+  onMount,
 } from "solid-js";
 import { ImageView } from "./ImageView";
 import { ImageInfo } from "./ImageInfo";
@@ -20,6 +21,7 @@ import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions, SaveCaption } from "~/types";
 import { useAppContext } from "~/contexts/app";
 import { captionIconsMap } from "~/icons";
+import { useGlobalKeyboard } from "~/hooks/useGlobalKeyboard";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -46,25 +48,45 @@ export const ImageModal = (props: ImageModalProps) => {
     computeLayout(props.imageInfo, windowSize)
   );
   const [showMetadata, setShowMetadata] = createSignal(false);
+  const { registerCloseHandler, setKeyboardState } = useGlobalKeyboard();
+
+  onMount(() => {
+    // Register escape handler
+    setKeyboardState("modalOpen", true);
+    const unregister = registerCloseHandler("modalOpen", props.onClose);
+
+    onCleanup(() => {
+      setKeyboardState("modalOpen", false);
+      unregister();
+    });
+  });
 
   return (
-    <div class="modal-content">
-      <ModalHeader 
-        imageInfo={props.imageInfo} 
-        onClose={props.onClose}
-        showMetadata={showMetadata()}
-        setShowMetadata={setShowMetadata}
-      />
-      <ModelBody
-        imageInfo={props.imageInfo}
-        captions={props.captions}
-        layout={getLayout()}
-      />
-      <Show when={showMetadata()}>
-        <div class="metadata-panel">
-          <ImageInfo imageInfo={props.imageInfo} />
-        </div>
-      </Show>
+    <div 
+      class="modal-overlay"
+      onClick={props.onClose}
+    >
+      <div 
+        class="modal-content"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <ModalHeader 
+          imageInfo={props.imageInfo} 
+          onClose={props.onClose}
+          showMetadata={showMetadata()}
+          setShowMetadata={setShowMetadata}
+        />
+        <ModelBody
+          imageInfo={props.imageInfo}
+          captions={props.captions}
+          layout={getLayout()}
+        />
+        <Show when={showMetadata()}>
+          <div class="metadata-panel">
+            <ImageInfo imageInfo={props.imageInfo} />
+          </div>
+        </Show>
+      </div>
     </div>
   );
 };

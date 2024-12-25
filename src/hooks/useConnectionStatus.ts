@@ -1,3 +1,28 @@
+/**
+ * A reactive hook that monitors and manages the browser's online/offline connection status.
+ * 
+ * This hook provides real-time connection status monitoring and notification handling:
+ * - Returns a signal getter function that indicates the current online status (true = online, false = offline)
+ * - Automatically shows notifications when connection status changes
+ * - Handles both initial state and subsequent changes
+ * - Server-side safe (always returns true when running on server)
+ * 
+ * Notifications are shown in these scenarios:
+ * - When connection is lost (error notification)
+ * - When connection is restored (success notification)
+ * - On initial load if starting in offline state
+ * 
+ * @example
+ * ```tsx
+ * const isOnline = useConnectionStatus();
+ * 
+ * // Use in JSX
+ * <div>Status: {isOnline() ? 'Connected' : 'Offline'}</div>
+ * ```
+ * 
+ * @returns {() => boolean} A signal getter function that returns true if online, false if offline
+ */
+
 import { createEffect, createSignal, onCleanup } from 'solid-js';
 import { isServer } from 'solid-js/web';
 import { useAppContext } from '~/contexts/app';

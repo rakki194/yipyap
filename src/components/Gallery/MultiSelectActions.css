@@ -1,0 +1,41 @@
+.multi-select-actions {
+  display: flex;
+  gap: var(--spacing);
+  align-items: center;
+}
+
+.delete-button-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.delete-progress-bar {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--border-color);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.delete-progress-fill {
+  height: 100%;
+  background: var(--error);
+  transition: width 0.2s ease-out;
+}
+
+.delete-button {
+  color: var(--error);
+  opacity: 0.6;
+  transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.delete-button:hover {
+  opacity: 1;
+  background-color: var(--danger-bg);
+  color: color-mix(in srgb, var(--error) 85%, black);
+} 

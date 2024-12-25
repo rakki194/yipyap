@@ -1,0 +1,19 @@
+.breadcrumb-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.breadcrumb-stats-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumb-stats-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+} 

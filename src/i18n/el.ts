@@ -115,6 +115,8 @@ export default {
     addCaption: "Προσθήκη λεζάντας...",
     quickJump: "Μετάβαση σε φάκελο...",
     loadingFolders: "Φόρτωση φακέλων...",
+    uploadFiles: "Μεταφόρτωση αρχείων",
+    deleteCurrentFolder: "Διαγραφή τρέχοντος φακέλου",
     noResults: "Δεν βρέθηκαν αποτελέσματα",
     folderCount: createPluralTranslation({
       one: "1 φάκελος",

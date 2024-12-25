@@ -115,6 +115,8 @@ export default {
     addCaption: "Beschriftung hinzufügen",
     quickJump: "Schnellsprung",
     loadingFolders: "Ordner werden geladen...",
+    uploadFiles: "Dateien hochladen",
+    deleteCurrentFolder: "Aktuellen Ordner löschen",
     noResults: "Keine Ergebnisse",
     folderCount: createPluralTranslation({
       one: "1 Ordner",

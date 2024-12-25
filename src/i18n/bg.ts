@@ -116,6 +116,8 @@ export default {
     quickJump: "Бързо прескачане",
     loadingFolders: "Зареждане на папки...",
     noResults: "Няма резултати",
+    uploadFiles: "Качи файлове",
+    deleteCurrentFolder: "Изтрий текущата папка",
     folderCount: createPluralTranslation({
       one: "1 папка",
       other: "${count} папки"

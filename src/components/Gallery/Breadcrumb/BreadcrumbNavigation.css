@@ -1,0 +1,33 @@
+.breadcrumb-links {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.breadcrumb-links a {
+  color: var(--accent);
+  text-decoration: none;
+  padding: calc(var(--spacing) * 0.5);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.breadcrumb-links a:hover {
+  color: color-mix(in srgb, var(--accent) 85%, white);
+}
+
+[data-theme="strawberry"] .breadcrumb-links a:hover {
+  color: #ff3366;
+  background-color: rgba(255, 51, 102, 0.1);
+}
+
+[data-theme="strawberry"] .breadcrumb-links a:hover svg {
+  fill: #ff3366;
+}
+
+[data-theme="banana"] .breadcrumb-links a:hover {
+  color: #ffb700;
+}
+
+[data-theme="banana"] .breadcrumb-links a:hover svg {
+  fill: #ffb700;
+} 

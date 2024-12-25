@@ -10,10 +10,10 @@ type IconOption = {
 };
 
 const availableIcons: IconOption[] = [
-  { id: "speaker", label: "Speaker" },
-  { id: "arrowUndo", label: "Undo Arrow" },
-  { id: "edit", label: "Edit" },
-  { id: "tag", label: "Tag" },
+  { id: "rocket", label: "Rocket" },
+  { id: "dog", label: "Dog" },
+  { id: "cat", label: "Cat" },
+  { id: "turtle", label: "Turtle" },
   { id: "notepad", label: "Notepad" },
   { id: "subtitles", label: "Subtitles" },
   { id: "textSortAscending", label: "Text Sort" },

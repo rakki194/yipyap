@@ -1,0 +1,26 @@
+/* src/components/Gallery/Breadcrumb.css */
+
+.breadcrumb {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: calc(var(--spacing) * 0.5);
+  margin-bottom: var(--spacing);
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  border-radius: 0;
+  font-size: 1.2rem;
+}
+
+.breadcrumb-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+[data-theme="strawberry"] .breadcrumb {
+  background-color: #e4ffeb;
+}

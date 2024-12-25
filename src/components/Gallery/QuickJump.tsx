@@ -46,6 +46,20 @@ export const QuickJump: Component<{
 
   onMount(() => {
     inputRef?.focus();
+    
+    // Add global keyboard event listener
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        props.onClose();
+      }
+    };
+    
+    document.addEventListener("keydown", handleGlobalKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleGlobalKeyDown);
+    };
   });
 
   const isInSubfolder = () => {
@@ -198,9 +212,23 @@ export const QuickJump: Component<{
       setSelectedIndex((prev) =>
         prev < totalItems - 1 ? prev + 1 : prev
       );
+      // Scroll the selected item into view
+      requestAnimationFrame(() => {
+        const selectedItem = document.querySelector('.quick-jump-results li.selected');
+        if (selectedItem) {
+          selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      });
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+      // Scroll the selected item into view
+      requestAnimationFrame(() => {
+        const selectedItem = document.querySelector('.quick-jump-results li.selected');
+        if (selectedItem) {
+          selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      });
     }
   };
 
@@ -224,6 +252,14 @@ export const QuickJump: Component<{
         class="quick-jump-modal" 
         data-testid="quick-jump-modal"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            e.stopPropagation();
+            props.onClose();
+          }
+        }}
+        tabIndex={0}
       >
         <div class="quick-jump-header">
           <h2>{t('gallery.quickJump')}</h2>
@@ -234,18 +270,18 @@ export const QuickJump: Component<{
             title={t('common.close')}
             aria-label={t('common.close')}
           >
-            {getIcon("dismiss")}
+            {getIcon('dismiss')}
           </button>
         </div>
         <input
           ref={inputRef}
           type="text"
           value={search()}
-          onInput={handleSearchInput}
-          onKeyDown={handleKeyDown}
           placeholder={t('common.search')}
           autofocus
           aria-label={t('common.search')}
+          onInput={handleSearchInput}
+          onKeyDown={handleKeyDown}
         />
         <Show when={folders.loading}>
           <div class="loading" role="status">{t('gallery.loadingFolders')}</div>

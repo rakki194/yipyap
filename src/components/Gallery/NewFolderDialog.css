@@ -1,0 +1,66 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: var(--overlay-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.modal-dialog {
+  background: var(--bg-color);
+  border-radius: 8px;
+  padding: var(--double-spacing);
+  box-shadow: var(--shadow-default);
+  max-width: 90%;
+  width: 400px;
+  min-width: 300px;
+  position: relative;
+}
+
+.modal-dialog h2 {
+  margin: 0 0 var(--spacing) 0;
+  color: var(--text-primary);
+}
+
+.modal-dialog input {
+  width: 100%;
+  padding: var(--spacing);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing);
+}
+
+.modal-dialog input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing);
+}
+
+.modal-close-button {
+  position: absolute;
+  top: var(--half-spacing);
+  right: var(--half-spacing);
+  padding: var(--half-spacing);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-button:hover {
+  color: var(--accent);
+} 

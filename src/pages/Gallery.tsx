@@ -4,7 +4,7 @@
 
 import { Component } from "solid-js";
 import { Gallery } from "~/components/Gallery/Gallery";
-import { Breadcrumb } from "~/components/Gallery/Breadcrumb";
+import { Breadcrumb } from "~/components/Gallery/Breadcrumb/Breadcrumb";
 import { GalleryProvider } from "~/contexts/GalleryContext";
 import { TransformationsProvider } from "~/contexts/transformations";
 import FadeIn from "~/components/FadeIn";
