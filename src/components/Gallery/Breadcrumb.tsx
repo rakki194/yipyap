@@ -131,6 +131,7 @@ export const Breadcrumb = () => {
 
       // Force a complete refresh of the gallery data
       gallery.invalidate();
+      gallery.invalidateFolderCache();
       await gallery.refetch();
 
       // Close dialog and reset input
@@ -169,6 +170,9 @@ export const Breadcrumb = () => {
       if (!response.ok) {
         throw new Error(await response.text());
       }
+
+      // Invalidate folder cache
+      gallery.invalidateFolderCache();
 
       // Navigate to parent folder
       const parentPath = currentPath.split("/").slice(0, -1).join("/");
@@ -585,6 +589,7 @@ const MultiSelectActions = () => {
               // Clear selection and refresh
               selection.clearMultiSelect();
               gallery.invalidate();
+              gallery.invalidateFolderCache();
               await gallery.refetch();
               
             } catch (error) {

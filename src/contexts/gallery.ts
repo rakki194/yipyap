@@ -109,6 +109,8 @@ export interface FolderInfo {
 // Call in reactive contexts only
 export function makeGalleryState() {
   const app = useAppContext();
+  let folderCache: FolderInfo[] | null = null;
+  let folderCachePromise: Promise<FolderInfo[]> | null = null;
 
   // State part of the URL
   // FIXME: Most of these are unused, but eventually we want to have some search params in the URL
@@ -408,6 +410,43 @@ export function makeGalleryState() {
     setData(undefined);
   };
 
+  const getAllKnownFolders = async () => {
+    // Return cache if available
+    if (folderCache) {
+      return folderCache;
+    }
+
+    // Return existing promise if one is in flight
+    if (folderCachePromise) {
+      return folderCachePromise;
+    }
+
+    // Create new promise and cache it
+    folderCachePromise = (async () => {
+      try {
+        const response = await fetch("/api/folders");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch folders: ${response.statusText}`);
+        }
+        const data = await response.json();
+        folderCache = data.folders as FolderInfo[];
+        return folderCache;
+      } catch (error) {
+        console.error("Error fetching folders:", error);
+        return [];
+      } finally {
+        folderCachePromise = null;
+      }
+    })();
+
+    return folderCachePromise;
+  };
+
+  const invalidateFolderCache = () => {
+    folderCache = null;
+    folderCachePromise = null;
+  };
+
   // Gallery actions and getters
   const gallery = {
     setViewMode: (mode: "grid" | "list") => {
@@ -438,19 +477,8 @@ export function makeGalleryState() {
     selection,
     getEditedImage,
     clearImageCache,
-    getAllKnownFolders: async () => {
-      try {
-        const response = await fetch("/api/folders");
-        if (!response.ok) {
-          throw new Error(`Failed to fetch folders: ${response.statusText}`);
-        }
-        const data = await response.json();
-        return data.folders as FolderInfo[];
-      } catch (error) {
-        console.error("Error fetching folders:", error);
-        return [];
-      }
-    },
+    getAllKnownFolders,
+    invalidateFolderCache,
     generateTags,
     refetch,
     invalidate,

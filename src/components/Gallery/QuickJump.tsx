@@ -5,7 +5,6 @@ import {
   Show,
   createResource,
   onMount,
-  onCleanup,
 } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -32,6 +31,8 @@ export const QuickJump: Component<{
   onClose: () => void;
   onShowSettings: () => void;
   onShowNewFolder: () => void;
+  onUploadFiles: (files: FileList) => void;
+  onDeleteCurrentFolder: () => void;
 }> = (props) => {
   const { t } = useAppContext();
   const app = useAppContext();
@@ -43,125 +44,9 @@ export const QuickJump: Component<{
 
   const [folders] = createResource(gallery.getAllKnownFolders);
 
-  const handleDeleteCurrentFolder = async () => {
-    const currentPath = gallery.data()?.path;
-    if (!currentPath) return;
-
-    try {
-      const params = new URLSearchParams();
-      params.append("confirm", "true");
-      
-      const response = await fetch(`/api/browse/${currentPath}?${params.toString()}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const parentPath = currentPath.split("/").slice(0, -1).join("/");
-      window.location.href = parentPath ? `/gallery/${parentPath}` : "/gallery";
-      props.onClose();
-
-      app.notify(
-        t('notifications.folderDeleted'),
-        "success"
-      );
-    } catch (error) {
-      console.error("Error deleting folder:", error);
-      app.notify(
-        t('notifications.folderDeleteError'),
-        "error"
-      );
-    }
-  };
-
-  const uploadFiles = async (files: FileList) => {
-    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
-    const formData = new FormData();
-    let totalSize = 0;
-    let oversizedFiles = [];
-
-    for (const file of files) {
-      if (file.size > MAX_FILE_SIZE) {
-        oversizedFiles.push(file.name);
-        continue;
-      }
-      totalSize += file.size;
-      formData.append("files", file);
-    }
-
-    if (oversizedFiles.length > 0) {
-      app.notify(
-        t("gallery.filesExceedLimit", { files: oversizedFiles.join(", ") }),
-        "error",
-        "file-upload"
-      );
-      return;
-    }
-
-    if (totalSize === 0) {
-      app.notify(
-        t("gallery.noFilesToUpload"),
-        "error",
-        "file-upload"
-      );
-      return;
-    }
-
-    props.onClose();
-
-    app.notify(
-      t("gallery.processingFiles"),
-      "info",
-      "file-upload",
-      "spinner"
-    );
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", `/api/upload/${gallery.data()?.path}`);
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const progress = Math.round((event.loaded / event.total) * 100);
-        app.createNotification({
-          message: t("gallery.uploadProgressPercent", { progress }),
-          type: "info",
-          group: "file-upload",
-          icon: "spinner",
-          progress
-        });
-      }
-    };
-
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        app.notify(
-          t("gallery.uploadComplete"),
-          "success",
-          "file-upload"
-        );
-        gallery.invalidate();
-        gallery.refetch();
-      } else {
-        app.notify(
-          t("gallery.uploadFailed", { error: xhr.statusText }),
-          "error",
-          "file-upload"
-        );
-      }
-    };
-
-    xhr.onerror = () => {
-      app.notify(
-        t("gallery.uploadFailed", { error: "Network error" }),
-        "error",
-        "file-upload"
-      );
-    };
-
-    xhr.send(formData);
-  };
+  onMount(() => {
+    inputRef?.focus();
+  });
 
   const isInSubfolder = () => {
     const segments = gallery.data()?.path.split("/").filter(Boolean) || [];
@@ -189,7 +74,7 @@ export const QuickJump: Component<{
           input.onchange = (e) => {
             const files = (e.target as HTMLInputElement).files;
             if (files && files.length > 0) {
-              uploadFiles(files);
+              props.onUploadFiles(files);
             }
           };
           input.click();
@@ -234,7 +119,7 @@ export const QuickJump: Component<{
         name: t('gallery.deleteCurrentFolder'),
         icon: 'trash',
         action: () => {
-          handleDeleteCurrentFolder();
+          props.onDeleteCurrentFolder();
         }
       });
     }
@@ -294,9 +179,14 @@ export const QuickJump: Component<{
     const currentMatches = matches();
     const totalItems = currentMatches.actions.length + currentMatches.folders.length;
 
+    // Prevent event propagation for all keyboard events
+    e.stopPropagation();
+
     if (e.key === "Escape") {
+      e.preventDefault(); // Add this to prevent double handling
       props.onClose();
     } else if (e.key === "Enter" && totalItems > 0) {
+      e.preventDefault();
       const idx = selectedIndex();
       if (idx < currentMatches.actions.length) {
         currentMatches.actions[idx].action();
@@ -321,10 +211,6 @@ export const QuickJump: Component<{
     setSearch(e.currentTarget.value);
     setSelectedIndex(0);
   };
-
-  onMount(() => {
-    inputRef?.focus();
-  });
 
   return (
     <div 

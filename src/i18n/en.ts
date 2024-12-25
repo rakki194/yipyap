@@ -163,10 +163,11 @@ export default {
   gallery: {
     addTag: "Add tag",
     addCaption: "Add caption",
-    // Quick navigation between folders using keyboard shortcuts
     quickJump: "Quick jump",
     loadingFolders: "Loading folders...",
     noResults: "No results found",
+    uploadFiles: "Upload files",
+    deleteCurrentFolder: "Delete current folder",
     folderCount: createPluralTranslation({
       one: "1 folder",
       other: "${count} folders"

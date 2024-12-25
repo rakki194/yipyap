@@ -182,6 +182,8 @@ export interface GalleryTranslations {
   quickJump: string;
   loadingFolders: string;
   noResults: string;
+  uploadFiles: string;
+  deleteCurrentFolder: string;
   folderCount: TranslationValue;
   fileCount: TranslationValue;
   imageCount: TranslationValue;

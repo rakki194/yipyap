@@ -114,6 +114,7 @@ export const Gallery = () => {
   const [showNewFolderDialog, setShowNewFolderDialog] = createSignal(false);
   const [newFolderName, setNewFolderName] = createSignal("");
   const [isCreatingFolder, setIsCreatingFolder] = createSignal(false);
+  let dragCounter = 0;
   let newFolderInputRef: HTMLInputElement | undefined;
   const [progressInfo, setProgressInfo] = createSignal<{
     current: number;
@@ -309,10 +310,10 @@ export const Gallery = () => {
   // Add ref for settings focus trap
   let settingsRef: HTMLDivElement | undefined;
 
-  // Update keyDownHandler to not handle events when settings is open
+  // Update keyDownHandler to not handle events when settings or quickjump is open
   const keyDownHandler = async (event: KeyboardEvent) => {
-    // Don't handle keyboard events when settings is open
-    if (showSettings()) return;
+    // Don't handle keyboard events when settings or quickjump is open
+    if (showSettings() || showQuickJump()) return;
 
     // Returns when we don't act on the event, preventDefault for acted-upon event, present in the epilogue.
     if (!event) return;
@@ -1052,8 +1053,8 @@ export const Gallery = () => {
 
       <Show when={gallery.getEditedImage()}>
         <ImageModal
-          imageInfo={image()}
-          captions={image().captions}
+          imageInfo={gallery.getEditedImage()!}
+          captions={gallery.getEditedImage()!.captions}
           onClose={() => gallery.setMode("view")}
           generateTags={gallery.generateTags}
           saveCaption={gallery.saveCaption}
@@ -1079,6 +1080,22 @@ export const Gallery = () => {
               setShowNewFolderDialog(true);
             }, 0);
           }}
+          onUploadFiles={(files) => {
+            setShowQuickJump(false);
+            const input = document.getElementById('file-upload-input') as HTMLInputElement;
+            if (input) {
+              const dataTransfer = new DataTransfer();
+              for (const file of files) {
+                dataTransfer.items.add(file);
+              }
+              input.files = dataTransfer.files;
+              input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          }}
+          onDeleteCurrentFolder={() => {
+            setShowQuickJump(false);
+            setShowDeleteConfirm(true);
+          }}
         />
       </Show>
 
@@ -1089,12 +1106,12 @@ export const Gallery = () => {
               type="button"
               class="icon modal-close-button"
               onClick={() => setShowNewFolderDialog(false)}
-              title={t('common.close')}
-              aria-label={t('common.close')}
+              title={app.t('common.close')}
+              aria-label={app.t('common.close')}
             >
               {getIcon("dismiss")}
             </button>
-            <h2>{t('gallery.createFolder')}</h2>
+            <h2>{app.t('gallery.createFolder')}</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -1106,7 +1123,7 @@ export const Gallery = () => {
                 type="text"
                 value={newFolderName()}
                 onInput={(e) => setNewFolderName(e.currentTarget.value)}
-                placeholder={t('gallery.folderNamePlaceholder')}
+                placeholder={app.t('gallery.folderNamePlaceholder')}
                 disabled={isCreatingFolder()}
                 autofocus
               />
@@ -1116,7 +1133,7 @@ export const Gallery = () => {
                   class="primary"
                   disabled={!newFolderName().trim() || isCreatingFolder()}
                 >
-                  {isCreatingFolder() ? t('common.creating') : t('common.create')}
+                  {isCreatingFolder() ? app.t('common.creating') : app.t('common.create')}
                 </button>
               </div>
             </form>
