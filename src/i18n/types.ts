@@ -53,6 +53,7 @@ export interface CommonTranslations {
   create: string;
   creating: string;
   language: string;
+  description: string;
 }
 
 export interface ThemeTranslations {
@@ -117,19 +118,45 @@ export interface ToolsTranslations {
   replaceNewlinesWithCommas: string;
   replaceUnderscoresWithSpaces: string;
   transformations: string;
+  transformationType: string;
   transformationTypes: {
-    singleFile: string;
-    currentFolder: string;
-    recursive: string;
+    searchReplace: string;
+    case: string;
+    trim: string;
+    wrap: string;
+    number: string;
   };
-  fileTypes: {
+  caseTypes: {
+    upper: string;
+    lower: string;
+    title: string;
+    sentence: string;
+  };
+  trimTypes: {
     all: string;
-    tags: string;
-    captions: string;
-    text: string;
+    start: string;
+    end: string;
+    duplicates: string;
   };
-  applyTo: string;
-  scope: string;
+  numberActions: {
+    remove: string;
+    format: string;
+    extract: string;
+  };
+  prefix: string;
+  suffix: string;
+  prefixPlaceholder: string;
+  suffixPlaceholder: string;
+  numberFormat: string;
+  numberFormatPlaceholder: string;
+  addTransformation: string;
+  transformationNamePlaceholder: string;
+  transformationDescriptionPlaceholder: string;
+  searchPattern: string;
+  searchPatternPlaceholder: string;
+  replacement: string;
+  replacementPlaceholder: string;
+  selectIcon: string;
 }
 
 export interface FrontPageTranslations {

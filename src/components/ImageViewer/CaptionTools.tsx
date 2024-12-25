@@ -1,4 +1,4 @@
-import { Component, For } from "solid-js";
+import { Component, For, Show } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import { useTransformations } from "~/contexts/transformations";
 import getIcon from "~/icons";
@@ -14,15 +14,17 @@ export const CaptionTools: Component<{
   return (
     <>
       <For each={state.transformations}>
-        {(tool) => (
-          <button
-            type="button"
-            class="icon"
-            onClick={() => props.onInput(applyTransformation(tool.id, props.caption))}
-            title={t(tool.name)}
-          >
-            {getIcon(tool.icon)}
-          </button>
+        {(transformation) => (
+          <Show when={transformation.enabled}>
+            <button
+              type="button"
+              class="icon"
+              onClick={() => props.onInput(applyTransformation(transformation.id, props.caption))}
+              title={t(transformation.name)}
+            >
+              {getIcon(transformation.icon)}
+            </button>
+          </Show>
         )}
       </For>
     </>

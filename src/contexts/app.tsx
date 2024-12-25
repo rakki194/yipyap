@@ -20,6 +20,7 @@ import { Theme, getInitialTheme } from "~/contexts/theme";
 import { Locale, getTranslationValue, translations } from "~/i18n";
 import type { Translations } from "~/i18n/types";
 import { createNotification } from "~/components/Notification/NotificationContainer";
+import { TransformationsProvider } from "./transformations";
 
 /**
  * Interface defining the shape of the app context.
@@ -380,7 +381,11 @@ export const AppProvider: ParentComponent<{ children: any }> = (props) => {
   const value = createAppContext();
   return (
     <CustomErrorBoundary>
-      <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+      <AppContext.Provider value={value}>
+        <TransformationsProvider>
+          {props.children}
+        </TransformationsProvider>
+      </AppContext.Provider>
     </CustomErrorBoundary>
   );
 };

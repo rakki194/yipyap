@@ -19,12 +19,19 @@
   color: var(--text-primary);
 }
 
-.close-button {
+.header-buttons {
+  display: flex;
+  gap: var(--half-spacing);
+}
+
+.close-button,
+.add-button {
   color: var(--text-secondary);
   transition: color 0.2s;
 }
 
-.close-button:hover {
+.close-button:hover,
+.add-button:hover {
   color: var(--text-primary);
 }
 
@@ -65,12 +72,190 @@
   margin-left: auto;
 }
 
-.apply-button {
-  color: var(--text-secondary);
-  transition: color 0.2s;
+.item-actions {
+  display: flex;
+  gap: var(--half-spacing);
   margin-left: var(--spacing);
 }
 
-.apply-button:hover {
-  color: var(--success);
+.toggle-button {
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  border-radius: var(--border-radius);
+  padding: var(--half-spacing);
+}
+
+.toggle-button:hover {
+  color: var(--text-primary);
+  background: var(--hover-bg);
+}
+
+.toggle-button.active {
+  color: var(--bg-color);
+  background: var(--accent);
+}
+
+.toggle-button.active:hover {
+  background: var(--accent-hover);
+  color: var(--bg-color);
+}
+
+.delete-button {
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.delete-button:hover {
+  color: var(--error);
+}
+
+.add-transformation-form-container {
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  max-height: 0;
+}
+
+.add-transformation-form-container.expanded {
+  max-height: 800px; /* Increased to accommodate new form fields */
+}
+
+.add-transformation-form {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  padding: var(--spacing);
+  margin-top: var(--spacing);
+  transform-origin: top;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.add-transformation-form.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.add-transformation-form h4 {
+  margin: 0 0 var(--spacing) 0;
+  color: var(--text-primary);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--half-spacing);
+  margin-bottom: var(--spacing);
+}
+
+.form-group label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--half-spacing);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group select option {
+  background: var(--bg-color);
+  color: var(--text-primary);
+}
+
+.icon-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--half-spacing);
+  padding: var(--half-spacing);
+  background: var(--bg-color);
+  border-radius: var(--border-radius);
+}
+
+.icon-selection button {
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  padding: var(--half-spacing);
+  border-radius: var(--border-radius);
+}
+
+.icon-selection button:hover {
+  color: var(--text-primary);
+  background: var(--hover-bg);
+}
+
+.icon-selection button.active {
+  color: var(--bg-color);
+  background: var(--accent);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing);
+  margin-top: var(--spacing);
+}
+
+.form-actions button {
+  padding: var(--half-spacing) var(--spacing);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.form-actions button.secondary {
+  background: var(--bg-color);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.form-actions button.secondary:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.form-actions button.primary {
+  background: var(--accent);
+  color: var(--bg-color);
+  border: none;
+}
+
+.form-actions button.primary:hover {
+  background: var(--accent-hover);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .add-transformation-form-container.expanded {
+    max-height: 1000px; /* Even more space for mobile */
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 16px; /* Better for mobile touch */
+    padding: var(--spacing);
+  }
+
+  .icon-selection {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .icon-selection button {
+    padding: var(--spacing);
+  }
 } 
