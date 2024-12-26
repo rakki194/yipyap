@@ -22,6 +22,11 @@
   background-color: var(--hover-bg);
 }
 
+.breadcrumb-actions .icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .breadcrumb-actions .icon svg {
   width: 1rem;
   height: 1rem;
@@ -36,6 +41,187 @@
   align-items: center;
   justify-content: center;
   z-index: 1100;
+}
+
+.dialog-content {
+  background: var(--bg-color);
+  border-radius: var(--radius);
+  padding: var(--spacing-lg);
+  max-width: 500px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+}
+
+.dialog-content h2 {
+  margin: 0 0 var(--spacing) 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.dialog-content h3 {
+  margin: var(--spacing) 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.dialog-body {
+  margin: var(--spacing) 0;
+}
+
+.transform-info {
+  background: var(--bg-alt);
+  border-radius: var(--radius);
+  padding: var(--spacing);
+  margin: var(--spacing) 0;
+}
+
+.transform-list,
+.caption-types {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+/* Base styles for both transform and caption items */
+.transform-item,
+.caption-type {
+  width: 100%;
+  background: var(--bg-color);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.transform-item:hover,
+.caption-type:hover {
+  background: var(--hover-bg);
+}
+
+/* Label styles */
+.transform-item,
+.caption-type label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  padding: var(--half-spacing) var(--spacing);
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Icon styles */
+.transform-item .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--text-2);
+}
+
+/* Text styles */
+.transform-item .transform-name,
+.caption-type label span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transform-name {
+  cursor: help;
+}
+
+/* Toggle switch styles */
+.transform-item input[type="checkbox"],
+.caption-type input[type="checkbox"] {
+  position: relative;
+  width: 3em;
+  height: 1.5em;
+  margin-left: auto;
+  appearance: none;
+  background: var(--secondary-bg);
+  border-radius: 1.5em;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.transform-item input[type="checkbox"]::before,
+.caption-type input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  left: 0.2em;
+  top: 0.2em;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  transition: transform 0.3s, background 0.3s;
+}
+
+.transform-item input[type="checkbox"]:checked,
+.caption-type input[type="checkbox"]:checked {
+  background: var(--accent);
+}
+
+.transform-item input[type="checkbox"]:checked::before,
+.caption-type input[type="checkbox"]:checked::before {
+  transform: translateX(1.5em);
+  background: var(--text-tertiary);
+}
+
+.transform-item input[type="checkbox"]:hover::before,
+.caption-type input[type="checkbox"]:hover::before {
+  background: var(--text-primary);
+}
+
+.transform-item input[type="checkbox"]:checked:hover::before,
+.caption-type input[type="checkbox"]:checked:hover::before {
+  background: var(--text-tertiary);
+}
+
+/* Hide description since we're using tooltips */
+.transform-description {
+  display: none;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing);
+  margin-top: var(--spacing-lg);
+}
+
+.dialog-actions button {
+  padding: calc(var(--spacing) * 0.75) var(--spacing);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.dialog-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dialog-actions button:not(.primary) {
+  background: var(--bg-alt);
+  color: var(--text-2);
+}
+
+.dialog-actions button:not(.primary):hover:not(:disabled) {
+  background: var(--hover-bg);
+}
+
+.dialog-actions button.primary {
+  background: var(--accent);
+  color: white;
+}
+
+.dialog-actions button.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 85%, white);
 }
 
 [data-theme="strawberry"] .breadcrumb-actions .icon:hover {

@@ -241,6 +241,13 @@ export interface GalleryTranslations {
   folderLocation: TranslationValue;
   moveToFolder: TranslationValue;
   workWithFolder: TranslationValue;
+  batchTransformTitle: string;
+  batchTransformDescription: string;
+  selectedFiles: string;
+  selectedFilesCount: TranslationValue;
+  enabledTransformations: string;
+  applyBatchTransform: string;
+  applyTransformations: string;
 }
 
 export interface ShortcutsTranslations {
@@ -299,6 +306,8 @@ export interface NotificationsTranslations {
   captionGenerated: string;
   connectionLost: string;
   connectionRestored: string;
+  batchTransformSuccess: string;
+  batchTransformError: string;
 }
 
 export interface Translations {

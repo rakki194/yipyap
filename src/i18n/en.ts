@@ -319,6 +319,16 @@ export default {
     },
     generatingCaption: "Generating caption with {generator}...",
     captionGenerated: "Caption generated with {generator}",
+    batchTransformTitle: "Batch Transform",
+    batchTransformDescription: "Apply enabled text transformations to all selected files. This will modify captions and tags for each selected file.",
+    selectedFiles: "Selected Files",
+    selectedFilesCount: createPluralTranslation({
+      one: "1 file selected",
+      other: "${count} files selected"
+    }, "en"),
+    enabledTransformations: "Enabled Transformations",
+    applyBatchTransform: "Apply batch transformations",
+    applyTransformations: "Apply Transformations",
   },
   shortcuts: {
     title: "Keyboard shortcuts",
@@ -374,5 +384,7 @@ export default {
     captionGenerated: "Caption generated successfully",
     connectionLost: "Connection lost. Please check your internet connection.",
     connectionRestored: "Connection restored.",
+    batchTransformSuccess: "Successfully applied transformations to selected files",
+    batchTransformError: "Failed to apply transformations to some files",
   },
 } as const satisfies Translations;

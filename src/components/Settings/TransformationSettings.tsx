@@ -1,14 +1,36 @@
+/**
+ * TransformationSettings Component
+ * 
+ * A component that provides a UI for managing text transformations, including:
+ * - Viewing and toggling existing transformations
+ * - Adding new custom transformations with various types (search/replace, case, trim, wrap, number)
+ * - Removing custom transformations
+ * 
+ * The component handles form state management, validation, and submission for creating
+ * new transformations. It supports different configuration options based on the selected
+ * transformation type.
+ * 
+ * Props:
+ * @param {() => void} onClose - Callback function to close the settings panel
+ */
+
 import { Component, For, Show, createSignal, createEffect } from "solid-js";
 import { useTransformations, TransformationType, Transformation, SearchReplaceTransformation, CaseTransformation, TrimTransformation, WrapTransformation, NumberTransformation } from "~/contexts/transformations";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 import "./TransformationSettings.css";
 
+/**
+ * Interface defining an icon option with an ID and display label
+ */
 type IconOption = {
   id: string;
   label: string;
 };
 
+/**
+ * Available icons for custom transformations
+ */
 const availableIcons: IconOption[] = [
   { id: "rocket", label: "Rocket" },
   { id: "dog", label: "Dog" },
@@ -22,6 +44,9 @@ const availableIcons: IconOption[] = [
   { id: "search", label: "Search" },
 ];
 
+/**
+ * Available transformation types with their translation keys
+ */
 const transformationTypes: { value: TransformationType; label: string }[] = [
   { value: "searchReplace", label: "tools.transformationTypes.searchReplace" },
   { value: "case", label: "tools.transformationTypes.case" },
@@ -30,6 +55,9 @@ const transformationTypes: { value: TransformationType; label: string }[] = [
   { value: "number", label: "tools.transformationTypes.number" },
 ];
 
+/**
+ * Available case transformation types
+ */
 const caseTypes = [
   { value: "upper", label: "tools.caseTypes.upper" },
   { value: "lower", label: "tools.caseTypes.lower" },
@@ -37,6 +65,9 @@ const caseTypes = [
   { value: "sentence", label: "tools.caseTypes.sentence" },
 ];
 
+/**
+ * Available trim transformation types
+ */
 const trimTypes = [
   { value: "all", label: "tools.trimTypes.all" },
   { value: "start", label: "tools.trimTypes.start" },
@@ -44,6 +75,9 @@ const trimTypes = [
   { value: "duplicates", label: "tools.trimTypes.duplicates" },
 ];
 
+/**
+ * Available number transformation actions
+ */
 const numberActions = [
   { value: "remove", label: "tools.numberActions.remove" },
   { value: "format", label: "tools.numberActions.format" },
@@ -80,6 +114,10 @@ export const TransformationSettings: Component<{
   const [numberAction, setNumberAction] = createSignal<"remove" | "format" | "extract">("remove");
   const [numberFormat, setNumberFormat] = createSignal("");
 
+  /**
+   * Effect to handle form visibility animation
+   * Adds a small delay when showing the form for smooth transition
+   */
   createEffect(() => {
     if (showAddForm()) {
       setTimeout(() => setFormVisible(true), 50);
@@ -88,6 +126,12 @@ export const TransformationSettings: Component<{
     }
   });
 
+  /**
+   * Handles form submission for adding a new transformation
+   * Validates required fields and creates appropriate transformation object based on type
+   * 
+   * @param {Event} e - Form submission event
+   */
   const handleSubmit = (e: Event) => {
     e.preventDefault();
     
@@ -156,6 +200,9 @@ export const TransformationSettings: Component<{
     resetForm();
   };
 
+  /**
+   * Resets all form fields to their default values
+   */
   const resetForm = () => {
     setNewName("");
     setNewDescription("");
@@ -171,6 +218,10 @@ export const TransformationSettings: Component<{
     setSelectedType("searchReplace");
   };
 
+  /**
+   * Closes the add transformation form with animation
+   * Uses a timeout to ensure smooth transition
+   */
   const closeForm = () => {
     setFormVisible(false);
     setTimeout(() => setShowAddForm(false), 300);
@@ -397,15 +448,14 @@ export const TransformationSettings: Component<{
                     {getIcon("delete")}
                   </button>
                 </Show>
-                <button
-                  type="button"
-                  class="icon toggle-button"
-                  classList={{ active: transformation.enabled }}
-                  onClick={() => toggleTransformation(transformation.id)}
-                  title={transformation.enabled ? t("common.disable") : t("common.enable")}
-                >
-                  {getIcon(transformation.enabled ? "check" : "plus")}
-                </button>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={transformation.enabled}
+                    onChange={() => toggleTransformation(transformation.id)}
+                    title={transformation.enabled ? t("common.disable") : t("common.enable")}
+                  />
+                </label>
               </div>
             </div>
           )}

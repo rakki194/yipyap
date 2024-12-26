@@ -171,18 +171,27 @@ const loadTransformations = (): Transformation[] => {
     if (!stored) return defaultTransformations;
 
     const storedTransformations = JSON.parse(stored) as Transformation[];
-    return [
-      ...defaultTransformations,
-      ...storedTransformations.filter(t => t.isCustom),
-    ];
+    
+    // Merge stored transformations with defaults, preserving enabled states
+    return defaultTransformations.map(defaultTransform => {
+      const storedTransform = storedTransformations.find(t => t.id === defaultTransform.id);
+      return storedTransform ? { ...defaultTransform, enabled: storedTransform.enabled } : defaultTransform;
+    }).concat(storedTransformations.filter(t => t.isCustom));
   } catch {
     return defaultTransformations;
   }
 };
 
 const saveTransformations = (transformations: Transformation[]) => {
-  const customTransformations = transformations.filter(t => t.isCustom);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(customTransformations));
+  // Save both custom transformations and enabled states of default transformations
+  const toStore = [
+    ...transformations.filter(t => t.isCustom),
+    ...transformations.filter(t => !t.isCustom).map(t => ({ 
+      id: t.id, 
+      enabled: t.enabled 
+    }))
+  ];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
 };
 
 const TransformationsContext = createContext<TransformationsContextValue>();
