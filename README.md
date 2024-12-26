@@ -6,6 +6,10 @@
 
 **Y**our **I**ntuitive **P**latform for **Y**ielding, **A**nnotating, and **P**rocessing or `yipyap` for short is a web application for uploading, browsing and managing image, audio and video dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with Rust and SolidJS.
 
+The frontend of yipyap is built with SolidJS, a reactive JavaScript framework that emphasizes fine-grained reactivity and performance, using Vite as the build tool for fast development and optimized production builds. The application follows a component-based architecture with a central app context managing global state. The main entry point is `/src/main.tsx`, which sets up the app context and error boundaries, while the routing configuration is defined in `/src/router.ts`. The core application state management resides in `/src/contexts/app.tsx`, which handles theme management, locale/translation management, settings persistence, notification system, and various feature flags and configurations.
+
+Components are organized in feature-based directories under `/src/components`, with CSS modules or shared stylesheets for styling. Global styles are defined in `/src/styles.css`, while theme-specific styles are in `/src/themes.css`. All tests are centralized in the `/src/test/__tests__/` directory, organized by functionality including component tests, context tests, utility tests, and internationalization tests.
+
 ## Features
 
 ### Core Features
@@ -354,3 +358,12 @@ The backend is built with FastAPI and provides a comprehensive API for image man
    - Thumbnail caching
    - Directory listing cache
    - Cache invalidation handling
+
+## Test Organization
+
+The testing system is centralized in the `/src/test/__tests__/` directory and organized by functionality:
+
+1. Component Tests (e.g., `ImageView.test.tsx`, `TagBubble.test.tsx`)
+2. Context and State Tests (e.g., `app.test.tsx`, `gallery.test.ts`)
+3. Utility Tests (e.g., `reactive-utils.test.tsx`, `theme.test.ts`)
+4. Internationalization Tests (e.g., `translations.test.ts`, language-specific plural tests)

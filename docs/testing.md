@@ -33,35 +33,42 @@ The project uses Vitest with SolidJS testing utilities. All tests are centralize
 ## Test Organization
 
 1. **Component Tests**:
-   - `ImageView.test.tsx`: Image viewer component
-   - `TagBubble.test.tsx`: Tag component
-   - `CaptionInput.test.tsx`: Caption input component
-   - `ImageInfo.test.tsx`: Image information display
-   - `Notification.test.tsx`: Notification system
-   - `Settings.test.tsx`: Settings panel
-   - `DeleteConfirmDialog.test.tsx`: Delete confirmation dialog
+   Tests for UI components and their behavior
+   - `ImageView.test.tsx`: Image viewer component tests
+   - `TagBubble.test.tsx`: Tag component tests
+   - `CaptionInput.test.tsx`: Caption input component tests
+   - `ImageInfo.test.tsx`: Image information display tests
+   - `Notification.test.tsx`: Notification system tests
+   - `Settings.test.tsx`: Settings panel tests
+   - `DeleteConfirmDialog.test.tsx`: Delete confirmation dialog tests
+   - `UploadOverlay.test.tsx`: Upload overlay tests
 
 2. **Context and State Tests**:
-   - `app.test.tsx`: App context tests
-   - `contexts.test.ts`: Other contexts
-   - `gallery.test.ts`: Gallery state
-   - `selection.test.ts`: Selection management
+   Tests for application state management and context providers
+   - `app.test.tsx`: App context and global state tests
+   - `contexts.test.ts`: Other context providers tests
+   - `gallery.test.ts`: Gallery state management tests
+   - `selection.test.ts`: Selection management tests
 
 3. **Utility Tests**:
-   - `reactive-utils.test.tsx`: Reactive utility functions
-   - `theme.test.ts`: Theme management
+   Tests for utility functions and helpers
+   - `reactive-utils.test.tsx`: Reactive utility functions tests
+   - `theme.test.ts`: Theme management tests
 
-4. **i18n Tests**:
-   - `translations.test.ts`: Core translation system
-   - Language-specific tests:
+4. **Internationalization Tests**:
+   Tests for translation and localization features
+   - `translations.test.ts`: Core translation system tests
+   - Language-specific plural tests:
      - `arabic-plural.test.ts`
      - `czech-plural.test.ts`
      - `hungarian-article.test.ts`
      - `polish-plural.test.ts`
-     - And more...
+     - `portuguese-plural.test.ts`
+     - `russian-plural.test.ts`
+     - `spanish-plural.test.ts`
+     - `turkish-plural.test.ts`
 
-5. **Hook Tests**:
-   - `useConnectionStatus.test.tsx`: Connection status hook
+When writing component tests, your test file should be added to the `/src/test/__tests__/` directory and follow the naming pattern `ComponentName.test.tsx`. You should make use of the provided test utilities from `/src/test/test-utils.ts` to maintain consistency across tests. It's important to follow the established patterns for test setup and teardown to ensure proper isolation between tests.
 
 ## Test Environment Setup
 
