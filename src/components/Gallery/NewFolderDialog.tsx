@@ -1,7 +1,8 @@
-import { Component, createSignal, onCleanup, onMount } from "solid-js";
+import { Component, createSignal, onCleanup, onMount, batch } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
+import { DirectoryItem } from "~/resources/browse";
 import getIcon from "~/icons";
 import "./NewFolderDialog.css";
 
@@ -44,25 +45,44 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
       const folderPath = currentPath ? `${currentPath}/${folderName}` : folderName;
 
       const response = await fetch(`/api/folder/${folderPath}`, {
-        method: "POST",
+        method: "POST"
       });
 
       if (!response.ok) {
         throw new Error(await response.text());
       }
 
-      // Clear any existing selection to avoid index mismatches
-      gallery.selection.clearMultiSelect();
-      gallery.selection.clearFolderMultiSelect();
-      gallery.select(null);
+      const database = gallery.data();
+      if (!database) return;
 
-      // Force a complete refresh of the gallery data
-      gallery.invalidate();
-      gallery.invalidateFolderCache();
-      await gallery.refetch();
+      // Create the new folder item
+      const newFolder = Object.assign(
+        () => ({
+          type: "directory" as const,
+          name: folderName,
+          mtime: new Date().toISOString(),
+        }),
+        {
+          type: "directory" as const,
+          file_name: folderName,
+          next_page: undefined,
+        }
+      ) as DirectoryItem;
+
+      // Add the new folder to the items list
+      const items = [...database.items, newFolder];
+
+      // Update the data like in deleteImage
+      const data = {
+        ...database,
+        items,
+        total_folders: database.total_folders + 1,
+      };
       
-      // Ensure we're on the first page to see the new folder
-      gallery.setPage(0);
+      batch(() => {
+        gallery.setData(data);
+        gallery.clearImageCache();
+      });
 
       // Show success notification
       app.notify(

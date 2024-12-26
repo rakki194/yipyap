@@ -135,7 +135,7 @@ function fetchPage(
   onError: (error: Error) => void
 ): Promise<void> {
   return fetchStreamingJson(
-    `/api/browse?path=${path}&page=${page}&page_size=32`,
+    `/api/browse?path=${path}&page=${page + 1}&page_size=32`,
     (item, idx) => {
       if (idx === 0) {
         onHeader(item as FolderHeader);
@@ -286,8 +286,9 @@ export function createGalleryResourceCached(
       let pages = {} as PageToItems;
       let setters = {} as Record<string, Setter<AnyData | undefined>>;
 
-      if (prev_value !== undefined && path === prev_value?.path) {
-        if (prev_value.pages[page] !== undefined && !refetching) {
+      // When refetching or changing paths, start with empty cache
+      if (prev_value !== undefined && path === prev_value?.path && !refetching) {
+        if (prev_value.pages[page] !== undefined) {
           return prev_value;
         } else {
           pages = { ...prev_value.pages };
@@ -300,13 +301,21 @@ export function createGalleryResourceCached(
       }
       const result = await fetchPageItemsAsSignals(path, page);
 
+      // When refetching, only use the current page's items
+      if (refetching) {
+        pages = {};
+      }
       pages[page] = result.items;
-      const items = Object.values(pages).reduce<AnyItem[]>((acc, pageItems) => {
-        if (pageItems instanceof Map) {
-          acc.push(...Array.from(pageItems.values()));
-        }
-        return acc;
-      }, []);
+
+      // Create a fresh items array from the current pages
+      const items = Object.entries(pages)
+        .sort(([a], [b]) => Number(a) - Number(b))
+        .reduce<AnyItem[]>((acc, [_, pageItems]) => {
+          if (pageItems instanceof Map) {
+            acc.push(...Array.from(pageItems.values()));
+          }
+          return acc;
+        }, []);
 
       const value: BrowsePagesCached = {
         path,
@@ -316,7 +325,7 @@ export function createGalleryResourceCached(
         mtime: result.mtime,
         pages,
         items,
-        setters: { ...setters, ...result.setters },
+        setters: refetching ? result.setters : { ...setters, ...result.setters },
       };
 
       if (import.meta.env.DEV) {

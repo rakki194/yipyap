@@ -406,8 +406,20 @@ export function makeGalleryState() {
   const windowSize = createWindowSize();
 
   const invalidate = () => {
-    // Clear the current data to force a fresh fetch
-    setData(undefined);
+    batch(() => {
+      // Clear all data and caches
+      setData(undefined);
+      clearImageCache();
+      invalidateFolderCache();
+      
+      // Reset page to 0 to ensure we start fresh
+      setState({ ...state, page: 0 });
+      
+      // Clear any selections
+      selection.clearMultiSelect();
+      selection.clearFolderMultiSelect();
+      selection.select(null);
+    });
   };
 
   const getAllKnownFolders = async () => {
@@ -470,6 +482,7 @@ export function makeGalleryState() {
     windowSize,
     params,
     data: backendData,
+    setData,
     // state,
     saveCaption,
     deleteImage,
