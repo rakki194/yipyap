@@ -66,4 +66,11 @@
   50% {
     transform: translateY(-10px);
   }
+}
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
+  .overlay {
+    background: color-mix(in srgb, var(--card-bg) 98%, transparent);
+  }
 } 
