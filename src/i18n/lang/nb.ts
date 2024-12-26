@@ -93,6 +93,22 @@ export default {
     thumbnailSizeDescription: "Størrelse på miniatyrbilder i piksler (f.eks. 250)",
     thumbnailSizeUpdateError: "Kunne ikke oppdatere miniatyrstørrelse",
   },
+  frontPage: {
+    subtitle: {
+      1: "Store språkmodeller jukser, lyver og hallusinerer. Akkurat som meg!",
+      2: "Vi fant en annen måte å be på",
+      3: "Det uendelige universet reflekteres i tomme øyne",
+      4: "Rustent hjerte, ny spire",
+      5: "Et magisk sted hvor drøm og virkelighet krysser hverandre",
+      6: "Ukjent territorium, uendelige muligheter",
+      7: "Evig kjærlighet utover tidens strøm",
+      8: "Dette vil få deg kastet ut!",
+    },
+    imageWork: "Arbeid med bilder",
+    audioWork: "Arbeid med lyd",
+    deselectAll: "Velg ingen",
+    deleteSelected: "Slett valgte",
+  },
   gallery: {
     addTag: "Legg til tagg...",
     addCaption: "Legg til bildetekst...",
@@ -124,8 +140,7 @@ export default {
       txt: "Opprett ny tekstfil",
       tags: "Opprett ny .tags-fil",
       caption: "Opprett ny .caption-fil",
-      wd: "Opprett ny .wd-fil",
-      e621: "Opprett ny .e621-fil"
+      wd: "Opprett ny .wd-fil"
     },
     noCaptionFiles: "Ingen bildetekstfiler ennå!",
     uploadError: "Opplasting mislyktes",

@@ -93,6 +93,22 @@ export default {
     thumbnailSizeDescription: "调整网格视图中的缩略图大小",
     thumbnailSizeUpdateError: "更新缩略图大小失败",
   },
+  frontPage: {
+    subtitle: {
+      1: "大规模语言模型会作弊、撒谎、产生幻觉。就像我一样！",
+      2: "我们找到了另一种祈祷方式",
+      3: "空洞的眼眸中映照着无限宇宙",
+      4: "锈蚀的心灵，新生的萌芽",
+      5: "梦境与现实交织的奇妙境地",
+      6: "未知的领域，无限的可能",
+      7: "超越时间流逝的永恒之爱",
+      8: "这样会被赶出去的！",
+    },
+    imageWork: "处理图片",
+    audioWork: "处理音频",
+    deselectAll: "取消全选",
+    deleteSelected: "删除所选",
+  },
   gallery: {
     addTag: "添加标签...",
     addCaption: "添加说明...",
@@ -122,8 +138,7 @@ export default {
       txt: "创建新文本文件",
       tags: "创建新.tags文件",
       caption: "创建新.caption文件",
-      wd: "创建新.wd文件",
-      e621: "创建新.e621文件"
+      wd: "创建新.wd文件"
     },
     noCaptionFiles: "还没有说明文件！",
     fileCount: (params?: TranslationParams) => `${params?.count ?? 0}个文件`,

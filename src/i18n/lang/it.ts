@@ -94,6 +94,22 @@ export default {
     thumbnailSizeDescription: "Dimensione delle miniature in pixel (es: 250)",
     thumbnailSizeUpdateError: "Errore durante l'aggiornamento della dimensione delle miniature",
   },
+  frontPage: {
+    subtitle: {
+      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
+      2: "私たちは別の祈り方を見つけました",
+      3: "虚ろな瞳に映る、無限の宇宙",
+      4: "錆びた心、新たな芽吹き",
+      5: "夢と現実が交錯する、不思議な境地",
+      6: "未知の領域、無限の可能性",
+      7: "時の流れを超えた、永遠の愛",
+      8: "これで追い出されますよ！",
+    },
+    imageWork: "Lavora con le immagini",
+    audioWork: "Lavora con l'audio",
+    deselectAll: "Deseleziona tutto",
+    deleteSelected: "Elimina selezionati",
+  },
   gallery: {
     addTag: "Aggiungi tag",
     addCaption: "Aggiungi didascalia",
@@ -185,7 +201,6 @@ export default {
       tags: "Tag",
       caption: "Didascalia",
       wd: "WD",
-      e621: "E621"
     },
     noCaptionFiles: "Nessun file didascalia",
     uploadError: "Errore di caricamento",

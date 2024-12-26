@@ -94,6 +94,22 @@ export default {
     thumbnailSizeDescription: "Grootte van miniaturen in pixels (bijv. 250)",
     thumbnailSizeUpdateError: "Fout bij bijwerken van miniatuurgrootte",
   },
+  frontPage: {
+    subtitle: {
+      1: "Welkom bij yipyap",
+      2: "Een eenvoudige galerij",
+      3: "Voor al je afbeeldingen",
+      4: "En meer",
+      5: "Veel meer",
+      6: "Nog veel meer",
+      7: "Bijna klaar",
+      8: "Helemaal klaar",
+    },
+    imageWork: "Afbeeldingswerk",
+    audioWork: "Audiowerk",
+    deselectAll: "Alles deselecteren",
+    deleteSelected: "Selectie verwijderen",
+  },
   gallery: {
     addTag: "Tag toevoegen",
     addCaption: "Bijschrift toevoegen",
@@ -181,11 +197,10 @@ export default {
     removeTags: "Tags verwijderen",
     createCaption: "Bijschrift maken",
     captionTypes: {
-      txt: "Nieuw tekstbestand maken",
-      tags: "Nieuw .tags-bestand maken",
-      caption: "Nieuw .caption-bestand maken",
-      wd: "Nieuw .wd-bestand maken",
-      e621: "Nieuw .e621-bestand maken"
+      txt: "Txt",
+      tags: "Tags",
+      caption: "Bijschrift",
+      wd: "WD",
     },
     noCaptionFiles: "Geen bijschriftbestanden",
     uploadError: "Upload fout",

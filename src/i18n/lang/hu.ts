@@ -183,11 +183,10 @@ export default {
     removeTags: "Címkék eltávolítása",
     createCaption: "Felirat létrehozása",
     captionTypes: {
-      txt: "Új szövegfájl létrehozása",
-      tags: "Új .tags fájl létrehozása",
-      caption: "Új .caption fájl létrehozása",
-      wd: "Új .wd fájl létrehozása",
-      e621: "Új .e621 fájl létrehozása"
+      txt: "Txt",
+      tags: "Címkék",
+      caption: "Felirat",
+      wd: "WD",
     },
     noCaptionFiles: "Nincsenek felirat fájlok",
     uploadError: "Feltöltési hiba",

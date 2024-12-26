@@ -132,8 +132,7 @@ export default {
       txt: "新規テキストファイルを作成",
       tags: "新規.tagsファイルを作成",
       caption: "新規.captionファイルを作成",
-      wd: "新規.wdファイルを作成",
-      e621: "新規.e621ファイルを作成"
+      wd: "新規.wdファイルを作成"
     },
     noCaptionFiles: "キャプションファイルがまだありません！",
     fileCount: (params?: TranslationParams) => `${params?.count ?? 0}個のファイル`,

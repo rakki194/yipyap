@@ -23,7 +23,7 @@ from .models import ImageModel, DirectoryModel, BrowseHeader
 logger = logging.getLogger("uvicorn.error")
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl", ".avif"}
-CAPTION_EXTENSIONS = {".caption", ".txt", ".tags", ".e621"}
+CAPTION_EXTENSIONS = {".caption", ".txt", ".tags"}
 
 try:
     import pillow_avif
@@ -407,7 +407,7 @@ class CachedFileSystemDataSource(ImageDataSource):
                         }
                     )
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
-                elif suffix in CAPTION_EXTENSIONS:
+                elif suffix in {".caption", ".txt", ".tags", ".wd"}:
                     stem = entry.stem
                     all_side_car_files[stem][suffix] = name
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))

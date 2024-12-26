@@ -147,6 +147,7 @@ export default {
   gallery: {
     addTag: "Add tag",
     addCaption: "Add caption",
+    // Quick navigation between folders and actions using keyboard shortcuts
     quickJump: "Quick jump",
     loadingFolders: "Loading folders...",
     noResults: "No results found",
@@ -227,6 +228,16 @@ export default {
     generatingTags: "Generating tags...",
     removeTags: "Remove tags",
     createCaption: "Create caption",
+    captionTypes: {
+      // Plain text file containing usually the concatenated tags and caption.
+      txt: "Text file",
+      // Comma-separated tags describing the image in the e621 format.
+      tags: "JTP2 generated tags file",
+      // Natural language description of the image
+      caption: "Caption file",
+      // Comma-separated tags describing the image in the danbooru format.
+      wd: "WDv3 generated tags file",
+    },
     noCaptionFiles: "No caption files found",
     uploadError: "Failed to upload file",
     dropOverlay: "Drop files here",
@@ -312,20 +323,6 @@ export default {
     moveFailedMissing: "Cannot move {files} because they no longer exist",
     moveError: "Move failed: {error}",
     sameDirectoryMove: "Cannot move items to the same directory they are already in",
-    editE621Tags: "Edit e621 Tags",
-    close: "Close",
-    captionTypes: {
-      // Plain text file containing usually the concatenated tags and caption.
-      txt: "Create new text file",
-      // Comma-separated tags describing the image in the JTP2's e621 format.
-      tags: "Create new JTP2 tags file",
-      // Natural language description of the image
-      caption: "Create new caption file",
-      // Comma-separated tags describing the image in the danbooru format.
-      wd: "Create new WDv3 tags file",
-      // e621 JSON format
-      e621: "Create new e621 JSON file"
-    },
   },
   shortcuts: {
     title: "Keyboard shortcuts",
