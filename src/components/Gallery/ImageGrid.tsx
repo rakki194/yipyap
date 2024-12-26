@@ -197,14 +197,8 @@ export const ImageItem = (props: {
     e.stopPropagation();
     if (!e.dataTransfer) return;
 
-    // Set drag data
-    e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
-      type: 'image',
-      path: props.path,
-      name: props.item.file_name,
-      idx: props.idx
-    }));
-    e.dataTransfer.effectAllowed = 'move';
+    const target = e.currentTarget as HTMLElement;
+    target.classList.add('being-dragged');
 
     // If this item is part of a multi-selection, include all selected items
     if (isMultiSelected()) {
@@ -223,19 +217,33 @@ export const ImageItem = (props: {
         })
         .filter(Boolean);
       e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
+        type: 'image',
+        path: props.path,
+        name: props.item.file_name,
+        idx: props.idx
+      }));
 
-      // Add being-dragged class to all selected images
-      requestAnimationFrame(() => {
-        gallery.selection.multiSelected.forEach(idx => {
-          const el = document.querySelector(`.item.image[data-idx="${idx}"]`);
-          if (el) el.classList.add('being-dragged');
-        });
+      // Add being-dragged class to all selected items (both images and folders)
+      document.querySelectorAll('.item').forEach(el => {
+        const idx = parseInt(el.getAttribute('data-idx') || '');
+        if (!isNaN(idx) && (
+          gallery.selection.multiSelected.has(idx) || 
+          gallery.selection.multiFolderSelected.has(idx)
+        )) {
+          el.classList.add('being-dragged');
+        }
       });
     } else {
       // Single item drag
-      const target = e.currentTarget as HTMLElement;
-      target.classList.add('being-dragged');
+      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
+        type: 'image',
+        path: props.path,
+        name: props.item.file_name,
+        idx: props.idx
+      }));
     }
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragEnd = (e: DragEvent) => {
@@ -355,14 +363,8 @@ export const DirectoryItem = (props: {
     e.stopPropagation();
     if (!e.dataTransfer) return;
 
-    // Set drag data
-    e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
-      type: 'directory',
-      path: props.path,
-      name: props.name,
-      idx: props.idx
-    }));
-    e.dataTransfer.effectAllowed = 'move';
+    const target = e.currentTarget as HTMLElement;
+    target.classList.add('being-dragged');
 
     // If this folder is part of a multi-selection, include all selected folders
     if (isMultiSelected()) {
@@ -381,19 +383,33 @@ export const DirectoryItem = (props: {
         })
         .filter(Boolean);
       e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
+        type: 'directory',
+        path: props.path,
+        name: props.name,
+        idx: props.idx
+      }));
 
-      // Add being-dragged class to all selected directories
-      requestAnimationFrame(() => {
-        gallery.selection.multiFolderSelected.forEach(idx => {
-          const el = document.querySelector(`.item.directory[data-idx="${idx}"]`);
-          if (el) el.classList.add('being-dragged');
-        });
+      // Add being-dragged class to all selected items (both images and folders)
+      document.querySelectorAll('.item').forEach(el => {
+        const idx = parseInt(el.getAttribute('data-idx') || '');
+        if (!isNaN(idx) && (
+          gallery.selection.multiSelected.has(idx) || 
+          gallery.selection.multiFolderSelected.has(idx)
+        )) {
+          el.classList.add('being-dragged');
+        }
       });
     } else {
       // Single item drag
-      const target = e.currentTarget as HTMLElement;
-      target.classList.add('being-dragged');
+      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
+        type: 'directory',
+        path: props.path,
+        name: props.name,
+        idx: props.idx
+      }));
     }
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragEnd = (e: DragEvent) => {
