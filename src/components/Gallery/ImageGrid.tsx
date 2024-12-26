@@ -367,8 +367,15 @@ export const DirectoryItem = (props: {
 
   const handleClick = (e: MouseEvent) => {
     if (e.ctrlKey || e.metaKey) {
-      gallery.selection.toggleFolderMultiSelect(props.idx);
+      if (props.name !== "..") {
+        gallery.selection.toggleFolderMultiSelect(props.idx);
+      }
     } else {
+      if (props.name === "..") {
+        // For parent directory navigation, don't set selection to null
+        // Just let the default navigation handle it
+        return;
+      }
       gallery.select(props.idx);
     }
   };
@@ -460,14 +467,14 @@ export const DirectoryItem = (props: {
   return (
     <A
       ref={props.ref}
-      href={`/${fullPath}`}
+      href={props.name === ".." ? `/${props.path.split("/").slice(0, -1).join("/")}` : `/${fullPath}`}
       class="item directory"
       classList={{ 
         selected: props.selected,
         "multi-selected": isMultiSelected()
       }}
       onClick={handleClick}
-      draggable={true}
+      draggable={props.name !== ".."}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}

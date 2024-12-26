@@ -161,3 +161,18 @@ For detailed information about adding new settings to the application, including
 Always read the whole documentation on the related topic before writing code.
 
 Instead of using lists while writing documentation, use paragraphs. Only use lists when listing files and do not include the file size in the list.
+
+## Composables in SolidJS
+
+The application uses composables for reusable reactive logic, following SolidJS's composition pattern. All composables must be placed in the `/src/composables` directory. Never create a `hooks` directory or use the term "hooks" - this terminology is specific to React and does not align with SolidJS's mental model.
+
+Composables are functions that encapsulate reactive logic and return signals, memos, or other reactive primitives. They should be named with the `use` prefix to indicate their role as composition functions. Each composable should focus on a specific concern, such as state management, event handling, or data fetching.
+
+The composables directory structure reflects the feature-based organization of the application. For example, gallery-related composables like `useGalleryScroll`, `useGalleryUI`, and `useGalleryEffects` are grouped together to maintain clear boundaries and dependencies.
+
+When creating new composables, ensure they:
+- Have a clear, single responsibility
+- Return only the necessary reactive primitives
+- Clean up resources when no longer needed
+- Are well-typed with TypeScript
+- Include proper documentation and usage examples
