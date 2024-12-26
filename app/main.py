@@ -747,14 +747,19 @@ async def move_items(
     Move files and folders to a target directory.
     
     Args:
-        path (str): Current directory path
+        path (str): Current directory path (use "_" for root directory)
         target (str): Target directory path
         items (List[str]): List of items to move
         preserve_latents (bool): Whether to preserve .npz files
         preserve_txt (bool): Whether to preserve .txt files
     """
     try:
-        source_dir = utils.resolve_path(path, ROOT_DIR)
+        # Handle root directory case
+        if path == "_":
+            source_dir = ROOT_DIR
+        else:
+            source_dir = utils.resolve_path(path, ROOT_DIR)
+            
         target_dir = utils.resolve_path(target, ROOT_DIR)
         
         # Ensure target directory exists
