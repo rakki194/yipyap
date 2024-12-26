@@ -1,10 +1,12 @@
-/** @jsxImportSource solid-js */
 /// <reference types="vitest/globals" />
 /// <reference types="@solidjs/testing-library" />
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@solidjs/testing-library";
 import { Component } from "solid-js";
+
+// Create a module-level variable to control DEV mode
+let isDev = false;
 
 // Mock import.meta.env before any imports
 vi.mock('import.meta', () => ({
@@ -13,9 +15,6 @@ vi.mock('import.meta', () => ({
     PROD: true
   }
 }));
-
-// Create a module-level variable to control DEV mode
-let isDev = false;
 
 // Mock the theme module before importing it
 vi.mock('../../contexts/theme', () => {
@@ -43,62 +42,58 @@ vi.mock('../../contexts/theme', () => {
     "high-contrast-inverse": "contrast-inverse",
   };
 
-  function isSeasonalThemeAvailable(theme: string): boolean {
-    if (isDev) return true;
-    
-    const today = new Date();
-    const month = today.getMonth();
-    const date = today.getDate();
-
-    switch (theme) {
-      case 'christmas':
-        return (month === 11) || (month === 0 && date <= 10);
-      case 'halloween':
-        return (month === 9 && date >= 24) || (month === 10 && date <= 4);
-      default:
-        return true;
-    }
-  }
-
-  function makeThemeList(): ThemeIconMap {
-    const themeIconMap = { ...baseThemes };
-
-    if (isSeasonalThemeAvailable('christmas')) {
-      themeIconMap.christmas = "christmas";
-    }
-    if (isSeasonalThemeAvailable('halloween')) {
-      themeIconMap.halloween = "ghost";
-    }
-
-    return themeIconMap;
-  }
-
-  function getInitialTheme(): string {
-    const stored = window.localStorage.getItem("theme");
-    
-    if (!stored) return "gray";
-
-    // Check if it's a base theme
-    if (stored in baseThemes) return stored;
-    
-    // Check if it's a seasonal theme and available
-    if ((stored === 'christmas' || stored === 'halloween') && isSeasonalThemeAvailable(stored)) {
-      return stored;
-    }
-    
-    return "gray";
-  }
-
   return {
     baseThemes,
-    makeThemeList,
-    getInitialTheme,
+    makeThemeList: () => {
+      const themeIconMap = { ...baseThemes };
+
+      if (isDev || isSeasonalThemeAvailable('christmas')) {
+        themeIconMap.christmas = "christmas";
+      }
+      if (isDev || isSeasonalThemeAvailable('halloween')) {
+        themeIconMap.halloween = "ghost";
+      }
+
+      return themeIconMap;
+    },
+    getInitialTheme: () => {
+      const stored = window.localStorage.getItem("theme");
+      
+      if (!stored) return "gray";
+
+      // Check if it's a base theme
+      if (stored in baseThemes) return stored;
+      
+      // Check if it's a seasonal theme and available
+      if ((stored === 'christmas' || stored === 'halloween') && (isDev || isSeasonalThemeAvailable(stored))) {
+        return stored;
+      }
+      
+      return "gray";
+    },
     isSeasonalThemeAvailable,
     getNextTheme: vi.fn(),
     themes: Object.keys(baseThemes),
-    themeIconMap: makeThemeList()
+    themeIconMap: {} // This will be populated by makeThemeList later
   };
 });
+
+function isSeasonalThemeAvailable(theme: string): boolean {
+  if (isDev) return true;
+  
+  const today = new Date();
+  const month = today.getMonth();
+  const date = today.getDate();
+
+  switch (theme) {
+    case 'christmas':
+      return (month === 11) || (month === 0 && date <= 10);
+    case 'halloween':
+      return (month === 9 && date >= 24) || (month === 10 && date <= 4);
+    default:
+      return true;
+  }
+}
 
 import { Theme, makeThemeList, getInitialTheme } from "../../contexts/theme";
 import { ThemeProvider } from "../../theme/ThemeProvider";

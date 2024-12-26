@@ -562,3 +562,49 @@ The component structure must be thoroughly validated. Tests should verify the pr
 Integration testing verifies how components work together. This includes testing interactions between parent and child components, verifying event handling works correctly, and checking that state changes propagate appropriately through the component tree.
 
 When writing tests, maintain focus and isolation between test cases. Use appropriate selectors and queries for reliable element targeting. Include both success and failure test cases to ensure comprehensive coverage. Accessibility checks should be a standard part of the test suite. Document any assumptions and requirements clearly to help future maintenance.
+
+### JSX Transform Configuration Issues
+
+Location: `vitest.config.ts` and test files
+
+```typescript
+// Error 1: JSX import source warning
+// Problem: The JSX import source cannot be set without also enabling React's "automatic" JSX transform
+/** @jsxImportSource solid-js */  // Warning: JSX import source cannot be set
+import { render } from "@solidjs/testing-library";
+
+// Solution: Configure JSX transform in vitest.config.ts instead
+export default defineConfig({
+  plugins: [solidPlugin()],
+  esbuild: {
+    jsx: 'automatic',
+    jsxImportSource: 'solid-js'
+  }
+});
+
+// Then remove @jsxImportSource from test files
+/// <reference types="vitest/globals" />
+/// <reference types="@solidjs/testing-library" />
+import { render } from "@solidjs/testing-library";
+```
+
+This error occurs when trying to configure the JSX transform at the file level using the `@jsxImportSource` pragma. The warning indicates that the JSX transform needs to be configured at the build tool level instead.
+
+Key points about the solution:
+- Move JSX configuration to `vitest.config.ts`
+- Configure both `jsx: 'automatic'` and `jsxImportSource: 'solid-js'`
+- Remove `@jsxImportSource` pragmas from individual test files
+- Keep necessary type references for Vitest and testing library
+- Update test dependencies to include `@solidjs/testing-library`
+
+The configuration in `vitest.config.ts` ensures:
+- Proper JSX transform for SolidJS
+- Correct type checking
+- Consistent behavior across all test files
+- Integration with the testing library
+
+Common mistakes to avoid:
+- Don't mix file-level and config-level JSX settings
+- Don't remove necessary type references
+- Don't forget to include testing library in dependencies
+- Don't assume JSX transform settings from `tsconfig.json` are sufficient for tests

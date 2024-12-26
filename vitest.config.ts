@@ -3,7 +3,7 @@ import solidPlugin from 'vite-plugin-solid';
 import { resolve } from 'path';
 
 export default defineConfig({
-  plugins: [solidPlugin({ dev: true })],
+  plugins: [solidPlugin()],
   test: {
     globals: true,
     environment: 'jsdom',
@@ -11,7 +11,7 @@ export default defineConfig({
     deps: {
       optimizer: {
         web: {
-          include: ['solid-js']
+          include: ['solid-js', '@solidjs/testing-library']
         }
       }
     },
@@ -28,4 +28,8 @@ export default defineConfig({
       '~': resolve(__dirname, 'src'),
     },
   },
+  esbuild: {
+    jsx: 'automatic',
+    jsxImportSource: 'solid-js'
+  }
 });

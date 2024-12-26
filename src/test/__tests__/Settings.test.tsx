@@ -63,6 +63,8 @@ const mockAppContext = {
       'settings.theme.peanut': 'Peanut Theme',
       'settings.theme.christmas': 'Christmas Theme',
       'settings.theme.halloween': 'Halloween Theme',
+      'settings.theme.high-contrast-black': 'High Contrast Black Theme',
+      'settings.theme.high-contrast-inverse': 'High Contrast Inverse Theme',
       'settings.disableNonsense': 'Disable Nonsense',
       'settings.instantDelete': 'Instant Delete',
       'settings.preserveLatents': 'Preserve Latents',
@@ -73,7 +75,10 @@ const mockAppContext = {
       'settings.jtp2ModelPath': 'JTP2 Model Path',
       'settings.jtp2TagsPath': 'JTP2 Tags Path',
       'settings.downloadModel': 'Download Model',
-      'settings.downloadTags': 'Download Tags'
+      'settings.downloadTags': 'Download Tags',
+      'tools.transformations': 'Transformations',
+      'settings.enableZoomTooltip': 'Enable zoom functionality in the image viewer',
+      'settings.enableMinimapTooltip': 'Enable minimap in the image viewer'
     };
     return translations[key] || key;
   },
@@ -287,15 +292,36 @@ describe('Settings Component', () => {
     expect(screen.getByText('⚠️警告！これはあなたをビーバーに変えてしまいます！')).toBeInTheDocument();
   });
 
-  it('toggles experimental features correctly', () => {
-    renderSettings();
-    const zoomCheckbox = screen.getByLabelText('Enable Zoom');
-    const minimapCheckbox = screen.getByLabelText('Enable Minimap');
+  it('toggles experimental features correctly', async () => {
+    render(() => (
+      <Router>
+        <AppContext.Provider value={mockAppContext}>
+          <GalleryProvider>
+            <Settings onClose={() => {}} />
+          </GalleryProvider>
+        </AppContext.Provider>
+      </Router>
+    ));
 
+    // Find the experimental features button using the translated text
+    const experimentalButton = screen.getByRole('button', { name: 'Experimental Features' });
+    fireEvent.click(experimentalButton);
+
+    // Wait for the transition animation
+    vi.advanceTimersByTime(300);
+
+    // Now we can access the toggles in the experimental section
+    const zoomCheckbox = screen.getByRole('checkbox', { name: 'Enable Zoom' });
+    const minimapCheckbox = screen.getByRole('checkbox', { name: 'Enable Minimap' });
+
+    // Test zoom toggle
+    expect(zoomCheckbox).not.toBeChecked();
     fireEvent.click(zoomCheckbox);
-    fireEvent.click(minimapCheckbox);
+    expect(mockAppContext.setEnableZoom).toHaveBeenCalledWith(true);
 
-    expect(zoomCheckbox).toBeChecked();
-    expect(minimapCheckbox).toBeChecked();
+    // Test minimap toggle
+    expect(minimapCheckbox).not.toBeChecked();
+    fireEvent.click(minimapCheckbox);
+    expect(mockAppContext.setEnableMinimap).toHaveBeenCalledWith(true);
   });
 }); 

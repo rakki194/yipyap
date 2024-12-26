@@ -4,6 +4,7 @@ import { CaptionInput } from "../../components/ImageViewer/CaptionInput";
 import { useBasicTestSetup } from "~/test/test-hooks";
 import { renderWithContext, mockAppContext, createMockResource, mockBrowseData } from "~/test/test-utils";
 import { GalleryContext } from "~/contexts/contexts";
+import { TransformationsProvider } from "~/contexts/transformations";
 import type { Component, JSX } from "solid-js";
 import { action } from "@solidjs/router";
 
@@ -167,11 +168,14 @@ const GalleryProvider: Component<{ children: JSX.Element }> = (props) => {
     setMode: () => true,
     selected: null,
     setColumns: () => {},
+    invalidateFolderCache: () => {},
   };
 
   return (
     <GalleryContext.Provider value={galleryValue}>
-      {props.children}
+      <TransformationsProvider>
+        {props.children}
+      </TransformationsProvider>
     </GalleryContext.Provider>
   );
 };

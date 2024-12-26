@@ -210,7 +210,9 @@ export const ImageItem = (props: {
     if (isMultiSelected()) {
       const selectedItems = Array.from(gallery.selection.multiSelected)
         .map(idx => {
-          const item = gallery.data()?.items[idx];
+          const data = gallery.data();
+          if (!data) return null;
+          const item = data.items[idx as number];
           if (item?.type !== 'image') return null;
           return {
             type: 'image',
@@ -345,7 +347,9 @@ export const DirectoryItem = (props: {
     if (isMultiSelected()) {
       const selectedItems = Array.from(gallery.selection.multiFolderSelected)
         .map(idx => {
-          const item = gallery.data()?.items[idx];
+          const data = gallery.data();
+          if (!data) return null;
+          const item = data.items[idx as number];
           if (item?.type !== 'directory') return null;
           return {
             type: 'directory',
