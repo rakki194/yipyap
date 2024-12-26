@@ -18,7 +18,7 @@ export const BreadcrumbNavigation: Component = () => {
         const last = acc[acc.length - 1];
         acc.push({
           children: segment,
-          href: last ? `${last.href}/${segment}` : `/gallery/${segment}`,
+          href: last ? `${last.href}/${segment}` : `/${segment}`,
         });
         return acc;
       },
@@ -27,13 +27,10 @@ export const BreadcrumbNavigation: Component = () => {
 
   return (
     <div class="breadcrumb-links">
-      <A href="/" aria-label={t('common.returnToFrontPage')}>
+      <A href="/" aria-label={t('common.home')}>
         <span class="accent-hover icon" title={t('common.home')}>
           {getIcon("yipyap")}
         </span>
-      </A>
-      <A href="/gallery">
-        <span class="accent icon">{getIcon("dimensions")}</span>
       </A>
       <For each={crumbs()}>
         {(crumb) => (

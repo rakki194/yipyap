@@ -123,7 +123,7 @@ export function makeGalleryState() {
   // State that is not part of the URL
   // Also some unused stuff: only `page`, `selected`, and `mode` are used. The rest is here for future use
   const [state, setState] = createStaticStore<GalleryState>({
-    path: params.path,
+    path: params.path || "",
     viewMode: "grid",
     sort: "name",
     search: "",
