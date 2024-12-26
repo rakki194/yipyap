@@ -61,6 +61,13 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         onDragStateChange(false);
       }
     }
+
+    // Handle drag-target class only if target is a directory
+    const target = e.target as HTMLElement;
+    const directoryItem = target.closest('.directory');
+    if (directoryItem) {
+      directoryItem.classList.remove('drag-target');
+    }
   };
 
   /**
@@ -75,6 +82,12 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     if (e.dataTransfer.types.includes('application/x-yipyap-item') ||
         e.dataTransfer.types.includes('application/x-yipyap-items')) {
       e.dataTransfer.dropEffect = 'move';
+      // Add drag-target class only if target is a directory
+      const target = e.target as HTMLElement;
+      const directoryItem = target.closest('.directory');
+      if (directoryItem) {
+        directoryItem.classList.add('drag-target');
+      }
     } else if (e.dataTransfer.types.includes('Files')) {
       e.dataTransfer.dropEffect = 'copy';
     }
@@ -180,17 +193,63 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     await uploadFiles(files);
   };
 
+  const handleDragStart = (e: DragEvent) => {
+    const target = e.target as HTMLElement;
+    const draggableItem = target.closest('.item');
+    if (!draggableItem) return;
+
+    draggableItem.classList.add('being-dragged');
+
+    // If this is a directory and it's part of a multi-selection
+    if (draggableItem.classList.contains('directory')) {
+      const idx = parseInt(draggableItem.getAttribute('data-idx') || '');
+      if (!isNaN(idx) && gallery.selection.multiFolderSelected.has(idx)) {
+        // Add being-dragged class to all selected directories
+        document.querySelectorAll('.item.directory').forEach(el => {
+          const itemIdx = parseInt(el.getAttribute('data-idx') || '');
+          if (!isNaN(itemIdx) && gallery.selection.multiFolderSelected.has(itemIdx)) {
+            el.classList.add('being-dragged');
+          }
+        });
+      }
+    }
+    // If this is an image and it's part of a multi-selection
+    else if (draggableItem.classList.contains('image')) {
+      const idx = parseInt(draggableItem.getAttribute('data-idx') || '');
+      if (!isNaN(idx) && gallery.selection.multiSelected.has(idx)) {
+        // Add being-dragged class to all selected images
+        document.querySelectorAll('.item.image').forEach(el => {
+          const itemIdx = parseInt(el.getAttribute('data-idx') || '');
+          if (!isNaN(itemIdx) && gallery.selection.multiSelected.has(itemIdx)) {
+            el.classList.add('being-dragged');
+          }
+        });
+      }
+    }
+  };
+
+  const handleDragEnd = (e: DragEvent) => {
+    // Clean up any remaining drag-related classes
+    document.querySelectorAll('.being-dragged, .drag-target').forEach(el => {
+      el.classList.remove('being-dragged', 'drag-target');
+    });
+  };
+
   // Add document-level drag event listeners
   document.addEventListener('dragenter', handleDragEnter);
   document.addEventListener('dragleave', handleDragLeave);
   document.addEventListener('dragover', handleDragOver);
   document.addEventListener('drop', handleDrop);
+  document.addEventListener('dragstart', handleDragStart);
+  document.addEventListener('dragend', handleDragEnd);
 
   onCleanup(() => {
     document.removeEventListener('dragenter', handleDragEnter);
     document.removeEventListener('dragleave', handleDragLeave);
     document.removeEventListener('dragover', handleDragOver);
     document.removeEventListener('drop', handleDrop);
+    document.removeEventListener('dragstart', handleDragStart);
+    document.removeEventListener('dragend', handleDragEnd);
   });
 
   return {

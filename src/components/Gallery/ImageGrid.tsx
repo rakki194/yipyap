@@ -206,6 +206,10 @@ export const ImageItem = (props: {
     }));
     e.dataTransfer.effectAllowed = 'move';
 
+    // Add being-dragged class to this item
+    const target = e.currentTarget as HTMLElement;
+    target.classList.add('being-dragged');
+
     // If this item is part of a multi-selection, include all selected items
     if (isMultiSelected()) {
       const selectedItems = Array.from(gallery.selection.multiSelected)
@@ -223,7 +227,22 @@ export const ImageItem = (props: {
         })
         .filter(Boolean);
       e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+
+      // Add being-dragged class to all selected images
+      document.querySelectorAll('.item.image').forEach(el => {
+        const itemIdx = parseInt(el.getAttribute('data-idx') || '');
+        if (!isNaN(itemIdx) && gallery.selection.multiSelected.has(itemIdx)) {
+          el.classList.add('being-dragged');
+        }
+      });
     }
+  };
+
+  const handleDragEnd = (e: DragEvent) => {
+    // Remove being-dragged class from all items
+    document.querySelectorAll('.being-dragged').forEach(el => {
+      el.classList.remove('being-dragged');
+    });
   };
 
   return (
@@ -237,6 +256,8 @@ export const ImageItem = (props: {
       onClick={handleClick}
       draggable={true}
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      data-idx={props.idx}
       role="gridcell"
       aria-selected={props.selected || isMultiSelected()}
       aria-label={`Image: ${props.item.file_name}`}
@@ -343,6 +364,10 @@ export const DirectoryItem = (props: {
     }));
     e.dataTransfer.effectAllowed = 'move';
 
+    // Add being-dragged class to this folder
+    const target = e.currentTarget as HTMLElement;
+    target.classList.add('being-dragged');
+
     // If this folder is part of a multi-selection, include all selected folders
     if (isMultiSelected()) {
       const selectedItems = Array.from(gallery.selection.multiFolderSelected)
@@ -360,7 +385,42 @@ export const DirectoryItem = (props: {
         })
         .filter(Boolean);
       e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+
+      // Add being-dragged class to all selected directories
+      document.querySelectorAll('.item.directory').forEach(el => {
+        const itemIdx = parseInt(el.getAttribute('data-idx') || '');
+        if (!isNaN(itemIdx) && gallery.selection.multiFolderSelected.has(itemIdx)) {
+          el.classList.add('being-dragged');
+        }
+      });
     }
+  };
+
+  const handleDragEnd = (e: DragEvent) => {
+    // Remove being-dragged class from all items
+    document.querySelectorAll('.being-dragged').forEach(el => {
+      el.classList.remove('being-dragged');
+    });
+  };
+
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!e.dataTransfer) return;
+
+    if (e.dataTransfer.types.includes('application/x-yipyap-item') ||
+        e.dataTransfer.types.includes('application/x-yipyap-items')) {
+      e.dataTransfer.dropEffect = 'move';
+      const target = e.currentTarget as HTMLElement;
+      target.classList.add('drag-target');
+    }
+  };
+
+  const handleDragLeave = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const target = e.currentTarget as HTMLElement;
+    target.classList.remove('drag-target');
   };
 
   const fullPath = props.path
@@ -379,8 +439,12 @@ export const DirectoryItem = (props: {
       onClick={handleClick}
       draggable={true}
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
       data-path={props.path}
       data-name={props.name}
+      data-idx={props.idx}
       role="gridcell"
       aria-selected={props.selected || isMultiSelected()}
       aria-label={`Folder: ${props.name}`}

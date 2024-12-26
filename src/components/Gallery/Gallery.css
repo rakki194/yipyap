@@ -175,6 +175,13 @@
     gap: calc(var(--spacing) * 0.5);
     color: var(--text-primary);
     font-weight: bold;
+    transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease, color 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
+
+    &.drag-target {
+      outline: 4px solid var(--accent);
+      outline-offset: -4px;
+      z-index: 1;
+    }
 
     .icon {
       flex: 0 0 auto;
@@ -524,4 +531,15 @@
 .gallery.settings-open {
   pointer-events: none;
   user-select: none;
+}
+
+/* Add styles for items being dragged */
+.item.being-dragged {
+  opacity: 0.6 !important;
+  filter: grayscale(50%) !important;
+}
+
+/* Ensure the drag target outline is above other effects */
+.item.directory.drag-target {
+  z-index: 1;
 }
