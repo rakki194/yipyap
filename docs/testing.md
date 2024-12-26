@@ -1,63 +1,67 @@
 # Writing Tests
 
 ## Table of Contents
-- [Test Organization](#test-organization)
-  - [Component Tests](#component-tests)
-  - [Context and State Tests](#context-and-state-tests)
-  - [Utility Tests](#utility-tests)
-  - [i18n Tests](#i18n-tests)
-  - [Hook Tests](#hook-tests)
-- [Test Environment Setup](#test-environment-setup)
-- [Test Utilities](#test-utilities)
-  - [Configuration](#configuration)
-- [Component Testing](#component-testing)
-- [Testing Patterns](#testing-patterns)
-- [Mocking](#mocking)
-- [Test Documentation](#test-documentation)
-- [Common Testing Errors and Solutions](#common-testing-errors-and-solutions)
-  - [Timer-Based Test Failures](#1-timer-based-test-failures)
-  - [Hover State Test Failures](#2-hover-state-test-failures)
-  - [Theme System Testing Challenges](#6-theme-system-testing-challenges)
+- [Writing Tests](#writing-tests)
+  - [Table of Contents](#table-of-contents)
+  - [Test Organization](#test-organization)
+  - [Test Environment Setup](#test-environment-setup)
+  - [Test Utilities](#test-utilities)
+    - [Configuration](#configuration)
+  - [Component Testing](#component-testing)
+  - [Testing Patterns](#testing-patterns)
+  - [Mocking](#mocking)
+  - [Test Documentation](#test-documentation)
+  - [Common Testing Errors and Solutions](#common-testing-errors-and-solutions)
+    - [Timer-Based Test Failures](#timer-based-test-failures)
+    - [Hover State Test Failures](#hover-state-test-failures)
+    - [Translation Mock Issues](#translation-mock-issues)
+    - [Event Timing Issues](#event-timing-issues)
+    - [Component State Timing](#component-state-timing)
+    - [Theme System Testing Challenges](#theme-system-testing-challenges)
+      - [Best Practices for Theme Testing](#best-practices-for-theme-testing)
+      - [Common Pitfalls to Avoid](#common-pitfalls-to-avoid)
+  - [Best Practices](#best-practices)
+  - [Case Study: UploadOverlay Component Testing](#case-study-uploadoverlay-component-testing)
+    - [Initial Approach and Challenges](#initial-approach-and-challenges)
+    - [Key Lessons Learned](#key-lessons-learned)
+    - [Best Practices Derived](#best-practices-derived)
+    - [Common Pitfalls to Avoid](#common-pitfalls-to-avoid-1)
+    - [Recommendations for Similar Components](#recommendations-for-similar-components)
 
-The project uses Vitest with SolidJS testing utilities. All tests are organized by feature and component in their respective directories:
+The project uses Vitest with SolidJS testing utilities. All tests are centralized in the `/src/test/__tests__/` directory and organized by functionality:
 
 ## Test Organization
 
 1. **Component Tests**:
-   Tests for UI components are located alongside their components in `__tests__` directories:
-   - `/src/components/Gallery/__tests__/`: Gallery component tests
-   - `/src/components/ImageViewer/__tests__/`: Image viewer tests
-   - `/src/components/Settings/__tests__/`: Settings component tests
-   - `/src/components/UploadOverlay/__tests__/`: Upload overlay tests
+   - `ImageView.test.tsx`: Image viewer component
+   - `TagBubble.test.tsx`: Tag component
+   - `CaptionInput.test.tsx`: Caption input component
+   - `ImageInfo.test.tsx`: Image information display
+   - `Notification.test.tsx`: Notification system
+   - `Settings.test.tsx`: Settings panel
+   - `DeleteConfirmDialog.test.tsx`: Delete confirmation dialog
 
 2. **Context and State Tests**:
-   Located in `/src/contexts/__tests__/`:
    - `app.test.tsx`: App context tests
-   - `theme.test.tsx`: Theme context tests
-   - `selection.test.tsx`: Selection management
-   - `transformations.test.tsx`: Image transformation tests
+   - `contexts.test.ts`: Other contexts
+   - `gallery.test.ts`: Gallery state
+   - `selection.test.ts`: Selection management
 
-3. **Composable Tests**:
-   Located in `/src/composables/__tests__/`:
-   - `useConnectionStatus.test.tsx`: Connection monitoring
-   - `useDragAndDrop.test.tsx`: Drag and drop functionality
-   - `useGlobalEscapeManager.test.tsx`: Escape key handling
+3. **Utility Tests**:
+   - `reactive-utils.test.tsx`: Reactive utility functions
+   - `theme.test.ts`: Theme management
 
-4. **Utility Tests**:
-   Located in `/src/utils/__tests__/`:
-   - `utils.test.ts`: General utility functions
-   - `directives.test.tsx`: Custom directive tests
-
-5. **i18n Tests**:
-   Located in `/src/i18n/__tests__/`:
+4. **i18n Tests**:
    - `translations.test.ts`: Core translation system
-   - Language-specific tests in respective language directories
+   - Language-specific tests:
+     - `arabic-plural.test.ts`
+     - `czech-plural.test.ts`
+     - `hungarian-article.test.ts`
+     - `polish-plural.test.ts`
+     - And more...
 
-6. **Integration Tests**:
-   Located in `/src/test/integration/`:
-   - End-to-end workflows
-   - Cross-component interactions
-   - State management integration
+5. **Hook Tests**:
+   - `useConnectionStatus.test.tsx`: Connection status hook
 
 ## Test Environment Setup
 
