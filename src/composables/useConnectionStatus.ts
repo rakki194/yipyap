@@ -1,24 +1,58 @@
 /**
- * A reactive hook that monitors and manages the browser's online/offline connection status.
+ * A composable that monitors and manages the browser's online/offline connection status.
  * 
- * This hook provides real-time connection status monitoring and notification handling:
- * - Returns a signal getter function that indicates the current online status (true = online, false = offline)
- * - Automatically shows notifications when connection status changes
- * - Handles both initial state and subsequent changes
- * - Server-side safe (always returns true when running on server)
+ * Features:
+ * - Real-time connection status monitoring via browser's Navigator.onLine API
+ * - Automatic notification handling for status changes
+ * - Server-side safe (returns true when running on server)
+ * - Cleanup on component unmount
+ * - Deduplication of notifications
  * 
- * Notifications are shown in these scenarios:
- * - When connection is lost (error notification)
- * - When connection is restored (success notification)
- * - On initial load if starting in offline state
+ * Usage Guide:
  * 
- * @example
+ * 1. Basic Usage:
+ * ```tsx
+ * const isOnline = useConnectionStatus();
+ * return <div>Status: {isOnline() ? 'Connected' : 'Offline'}</div>;
+ * ```
+ * 
+ * 2. With Conditional Rendering:
  * ```tsx
  * const isOnline = useConnectionStatus();
  * 
- * // Use in JSX
- * <div>Status: {isOnline() ? 'Connected' : 'Offline'}</div>
+ * return (
+ *   <Show when={!isOnline()}>
+ *     <div class="offline-banner">
+ *       You are currently offline. Some features may be unavailable.
+ *     </div>
+ *   </Show>
+ * );
  * ```
+ * 
+ * 3. Disabling Features When Offline:
+ * ```tsx
+ * const isOnline = useConnectionStatus();
+ * 
+ * return (
+ *   <button 
+ *     disabled={!isOnline()} 
+ *     onClick={handleSync}
+ *   >
+ *     Sync Data
+ *   </button>
+ * );
+ * ```
+ * 
+ * Notification Behavior:
+ * The system shows error notifications when the connection is lost and success
+ * notifications when it is restored. If the application starts in an offline state,
+ * it will trigger an initial notification.
+ * 
+ * All connection status notifications are tagged with 'connection-status' to prevent
+ * duplicate notifications from being shown.
+ * 
+ * Note: The composable automatically handles cleanup of event listeners when the component
+ * unmounts, so no manual cleanup is required.
  * 
  * @returns {() => boolean} A signal getter function that returns true if online, false if offline
  */

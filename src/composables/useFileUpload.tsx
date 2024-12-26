@@ -2,6 +2,44 @@
  * A composable for handling file uploads in the gallery.
  * Provides functionality for file upload with progress tracking,
  * size validation, and notification feedback.
+ * 
+ * @example
+ * ```tsx
+ * const MyUploadComponent = () => {
+ *   const { uploadFiles, MAX_FILE_SIZE } = useFileUpload();
+ * 
+ *   const handleFileSelect = (event: Event) => {
+ *     const input = event.target as HTMLInputElement;
+ *     if (input.files) {
+ *       uploadFiles(input.files);
+ *     }
+ *   };
+ * 
+ *   return <input type="file" multiple onChange={handleFileSelect} />;
+ * };
+ * ```
+ * 
+ * Features:
+ * - Automatic file size validation (100MB per file limit)
+ * - Real-time upload progress tracking with notifications
+ * - Error handling with user feedback
+ * - Automatic gallery refresh on successful upload
+ * - Support for multiple file uploads
+ * 
+ * Upload Process:
+ * 1. Files are validated for size constraints
+ * 2. Progress is tracked and displayed via notifications
+ * 3. On completion, gallery is automatically refreshed
+ * 4. Error states are handled with user feedback
+ * 
+ * Error Handling:
+ * - Oversized files: Notifies user with list of rejected files
+ * - Network errors: Displays connection error notification
+ * - Upload failures: Shows error message with status details
+ * 
+ * @returns {Object} Upload utilities
+ * @property {Function} uploadFiles - Handles the file upload process
+ * @property {number} MAX_FILE_SIZE - Maximum allowed file size (100MB)
  */
 
 import { useGallery } from "~/contexts/GalleryContext";

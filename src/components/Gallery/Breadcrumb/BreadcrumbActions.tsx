@@ -349,4 +349,4 @@ const ThemeToggle: Component = () => {
       {getIcon(themeIconMap[hovered() ? nextTheme() : app.theme]!)}
     </button>
   );
-}; 
+};

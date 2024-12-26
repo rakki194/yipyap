@@ -329,6 +329,7 @@ const ModalHeader = (props: {
         </button>
         <DeleteButton
           imageInfo={props.imageInfo}
+          onClose={props.onClose}
         />
         <button
           type="button"
@@ -347,6 +348,7 @@ const ModalHeader = (props: {
 // Update DeleteButton component
 const DeleteButton = (props: {
   imageInfo: ImageInfoType;
+  onClose: () => void;
 }) => {
   const gallery = useGallery();
   const app = useAppContext();
@@ -430,7 +432,7 @@ const DeleteButton = (props: {
                 });
                 
                 if (response.ok) {
-                  appContext.notify(appContext.t('notifications.deleteSuccess'), 'success');
+                  app.notify(app.t('notifications.deleteSuccess'), 'success');
                   props.onClose();
                   // Refresh gallery data
                   gallery.refetchGallery();

@@ -5,8 +5,85 @@
  * This module provides a centralized way to handle escape key events and manage the state of
  * different types of overlays (modal, settings, quickJump) with a priority-based closing system.
  * 
- * The manager ensures that only one overlay can be active at a time and handles escape key
- * presses according to a predefined priority order: settings > modal > quickJump.
+ * Usage Guide:
+ * ------------
+ * 1. Import and Setup:
+ *    ```tsx
+ *    import { useGlobalEscapeManager } from './composables/useGlobalEscapeManager';
+ *    
+ *    const MyComponent = () => {
+ *      const escape = useGlobalEscapeManager();
+ *      // ... rest of component
+ *    };
+ *    ```
+ * 
+ * 2. Managing Overlay State:
+ *    - Use setOverlayState to control overlay visibility:
+ *    ```tsx
+ *    // Opening an overlay
+ *    escape.setOverlayState('modal', true);
+ *    
+ *    // Closing an overlay
+ *    escape.setOverlayState('modal', false);
+ *    ```
+ * 
+ * 3. Handling Escape Key:
+ *    - Register a close handler in onMount:
+ *    ```tsx
+ *    onMount(() => {
+ *      const cleanup = escape.registerHandler('modal', () => {
+ *        // Handle closing logic here
+ *        escape.setOverlayState('modal', false);
+ *      });
+ *      
+ *      onCleanup(cleanup);
+ *    });
+ *    ```
+ * 
+ * Priority System:
+ * ---------------
+ * Overlays are closed in the following priority order when Escape is pressed:
+ * 1. Settings (highest priority)
+ * 2. Modal
+ * 3. QuickJump (lowest priority)
+ * 
+ * Only one overlay can be active at a time. When a higher-priority overlay
+ * is open, pressing Escape will close it before affecting lower-priority overlays.
+ * 
+ * Best Practices:
+ * --------------
+ * 1. Always clean up handlers:
+ *    ```tsx
+ *    onMount(() => {
+ *      const cleanup = escape.registerHandler('modal', handleClose);
+ *      onCleanup(() => {
+ *        cleanup();
+ *        escape.setOverlayState('modal', false);
+ *      });
+ *    });
+ *    ```
+ * 
+ * 2. Keep state in sync:
+ *    - Update overlay state when manually closing:
+ *    ```tsx
+ *    const closeModal = () => {
+ *      // Your close logic
+ *      escape.setOverlayState('modal', false);
+ *    };
+ *    ```
+ * 
+ * 3. Check current state:
+ *    ```tsx
+ *    const isModalOpen = () => escape.state().modalOpen;
+ *    ```
+ * 
+ * Types:
+ * ------
+ * - OverlayType: 'modal' | 'settings' | 'quickJump'
+ * - Each overlay has corresponding state and handler management
+ * 
+ * Note: This manager automatically prevents event bubbling and default
+ * behavior for Escape key events when handling overlays.
  */
 
 import { createSignal, onCleanup, onMount, createRoot } from "solid-js";

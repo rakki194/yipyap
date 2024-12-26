@@ -5,6 +5,50 @@
  * Provides functionality for file upload with progress tracking, size validation,
  * and proper drag state management. Supports multiple file uploads with a 100MB
  * per file size limit.
+ * 
+ * Usage Guide:
+ * 
+ * Import and Initialize:
+ *    ```tsx
+ *    import { useDragAndDrop } from '~/composables/useDragAndDrop';
+ *    
+ *    const MyComponent = () => {
+ *      const handleDragStateChange = (isDragging: boolean) => {
+ *        // Update UI state based on drag status
+ *        setShowDropOverlay(isDragging);
+ *      };
+ *    
+ *      const { uploadFiles } = useDragAndDrop({ onDragStateChange: handleDragStateChange });
+ *      // ...
+ *    };
+ *    ```
+ * 
+ * Features:
+ *    - External File Upload: Handles drag and drop of files from outside the application
+ *    - Gallery Item Movement: Supports dragging items between directories
+ *    - Multi-Selection: Works with both single items and multiple selected items
+ *    - Progress Tracking: Shows upload progress through the notification system
+ *    - Validation: Automatically validates file sizes and types
+ * 
+ * 3. Drag States:
+ *    - The onDragStateChange callback is triggered when:
+ *      - Files are dragged over the application (isDragging = true)
+ *      - Files leave the drop zone (isDragging = false)
+ *      - Files are dropped (isDragging = false)
+ * 
+ * 4. Gallery Item Movement:
+ *    - Items can be dragged between directories
+ *    - Visual feedback shows valid drop targets
+ *    - Supports moving multiple selected items at once
+ *    - Preserves latents and txt files based on app settings
+ * 
+ * 5. Error Handling:
+ *    - Failed moves are reported through notifications
+ *    - Visual feedback for failed operations
+ *    - Detailed error messages for common scenarios
+ * 
+ * Note: This composable is designed to work with the GalleryContext and AppContext.
+ * Make sure these contexts are available in your component tree.
  */
 
 import { onCleanup } from "solid-js";

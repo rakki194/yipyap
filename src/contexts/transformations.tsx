@@ -1,7 +1,92 @@
+/**
+ * Text Transformation System
+ * 
+ * This module provides a comprehensive system for managing and applying text transformations
+ * in the application. It includes a context provider and hooks for handling various types
+ * of text transformations like search/replace, case changes, trimming, wrapping, and number
+ * formatting.
+ * 
+ * The system supports both built-in default transformations and custom user-defined
+ * transformations. All transformations are persisted in localStorage and can be
+ * enabled/disabled individually.
+ * 
+ * @example
+ * ```tsx
+ * // Wrap your application with the provider
+ * const App = () => (
+ *   <TransformationsProvider>
+ *     <YourComponents />
+ *   </TransformationsProvider>
+ * );
+ * 
+ * // Use transformations in your components
+ * const TextEditor = () => {
+ *   const { 
+ *     state, 
+ *     addTransformation, 
+ *     toggleTransformation, 
+ *     applyEnabledTransformations 
+ *   } = useTransformations();
+ * 
+ *   // Add a custom transformation
+ *   const addCustomReplace = () => {
+ *     addTransformation({
+ *       name: "Replace Dashes",
+ *       description: "Replace dashes with spaces",
+ *       type: "searchReplace",
+ *       pattern: "-",
+ *       replacement: " ",
+ *       icon: "textAlign"
+ *     });
+ *   };
+ * 
+ *   // Apply transformations to text
+ *   const processText = (text: string) => {
+ *     return applyEnabledTransformations(text);
+ *   };
+ * 
+ *   return (
+ *     <div>
+ *       <button onClick={addCustomReplace}>Add Custom Transform</button>
+ *       {state.transformations.map(transform => (
+ *         <label key={transform.id}>
+ *           <input
+ *             type="checkbox"
+ *             checked={transform.enabled}
+ *             onChange={() => toggleTransformation(transform.id)}
+ *           />
+ *           {transform.name}
+ *         </label>
+ *       ))}
+ *       <textarea 
+ *         onChange={e => processText(e.target.value)}
+ *       />
+ *     </div>
+ *   );
+ * };
+ * ```
+ * 
+ * @module TransformationSystem
+ * @description
+ * The system provides a rich set of transformation capabilities including search/replace operations,
+ * case modifications, text trimming, content wrapping, and number formatting. All transformations
+ * are automatically persisted to storage, maintaining state between sessions, and the system fully
+ * supports custom user-defined transformations alongside the built-in ones.
+ *
+ * Multiple transformations can be applied in batch operations for efficient text processing, with
+ * the entire system being built on type-safe definitions to ensure reliability and maintainability.
+ * This comprehensive approach allows for flexible and powerful text manipulation while maintaining
+ * strict type safety throughout the codebase.
+ */
+
 import { createContext, useContext, ParentComponent } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useAppContext } from "./app";
 
+/**
+ * Defines the available types of transformations supported by the system.
+ * Each type corresponds to a specific kind of text transformation operation.
+ */
 export type TransformationType = 
   | "searchReplace" 
   | "case" 
@@ -9,6 +94,18 @@ export type TransformationType =
   | "wrap" 
   | "number";
 
+/**
+ * Base interface for all transformation types. Contains common properties that
+ * every transformation must implement.
+ * 
+ * @property id - Unique identifier for the transformation
+ * @property name - Display name of the transformation
+ * @property description - Detailed description of what the transformation does
+ * @property icon - Icon identifier for UI representation
+ * @property enabled - Whether the transformation is currently active
+ * @property isCustom - Whether this is a user-defined transformation
+ * @property type - The specific type of transformation
+ */
 export interface BaseTransformation {
   id: string;
   name: string;
@@ -19,34 +116,78 @@ export interface BaseTransformation {
   type: TransformationType;
 }
 
+/**
+ * Search and replace transformation that replaces all occurrences of a pattern
+ * with a specified replacement text.
+ * 
+ * @property pattern - The text or regex pattern to search for
+ * @property replacement - The text to replace matches with
+ */
 export interface SearchReplaceTransformation extends BaseTransformation {
   type: "searchReplace";
   pattern: string;
   replacement: string;
 }
 
+/**
+ * Case transformation that modifies the letter casing of text.
+ * 
+ * @property caseType - The type of case transformation to apply:
+ *   - upper: Convert to uppercase
+ *   - lower: Convert to lowercase
+ *   - title: Capitalize first letter of each word
+ *   - sentence: Capitalize first letter of sentences
+ */
 export interface CaseTransformation extends BaseTransformation {
   type: "case";
   caseType: "upper" | "lower" | "title" | "sentence";
 }
 
+/**
+ * Trim transformation that removes whitespace from text.
+ * 
+ * @property trimType - The type of trimming to apply:
+ *   - all: Trim both ends
+ *   - start: Trim start only
+ *   - end: Trim end only
+ *   - duplicates: Remove duplicate whitespace
+ */
 export interface TrimTransformation extends BaseTransformation {
   type: "trim";
   trimType: "all" | "start" | "end" | "duplicates";
 }
 
+/**
+ * Wrap transformation that adds prefix and suffix text.
+ * 
+ * @property prefix - Text to add before the content
+ * @property suffix - Text to add after the content
+ */
 export interface WrapTransformation extends BaseTransformation {
   type: "wrap";
   prefix: string;
   suffix: string;
 }
 
+/**
+ * Number transformation that handles numeric content in text.
+ * 
+ * @property numberAction - The type of number operation:
+ *   - remove: Remove all numbers
+ *   - format: Format numbers according to pattern
+ *   - extract: Extract only the numbers
+ * @property format - Optional format pattern for number formatting
+ */
 export interface NumberTransformation extends BaseTransformation {
   type: "number";
   numberAction: "remove" | "format" | "extract";
   format?: string;
 }
 
+/**
+ * Union type of all possible transformation types.
+ * Used for type-safe handling of transformations throughout the system.
+ */
 export type Transformation = 
   | SearchReplaceTransformation 
   | CaseTransformation 
@@ -54,10 +195,25 @@ export type Transformation =
   | WrapTransformation 
   | NumberTransformation;
 
+/**
+ * State interface for the transformations context.
+ * Contains the list of all available transformations.
+ */
 interface TransformationsState {
   transformations: Transformation[];
 }
 
+/**
+ * Context value interface that defines the shape of the transformations context.
+ * Provides access to transformation state and methods for managing transformations.
+ * 
+ * @property state - Current state of transformations
+ * @property addTransformation - Add a new transformation
+ * @property removeTransformation - Remove an existing transformation
+ * @property toggleTransformation - Toggle a transformation's enabled state
+ * @property applyTransformation - Apply a single transformation
+ * @property applyEnabledTransformations - Apply all enabled transformations
+ */
 interface TransformationsContextValue {
   state: TransformationsState;
   addTransformation: (transformation: Omit<Transformation, "id" | "enabled" | "isCustom">) => void;
@@ -105,6 +261,14 @@ const defaultTransformations: Transformation[] = [
 
 const STORAGE_KEY = "yipyap:transformations";
 
+/**
+ * Applies a single transformation to the given text based on the transformation type
+ * and its specific configuration.
+ * 
+ * @param transformation - The transformation to apply
+ * @param text - The input text to transform
+ * @returns The transformed text
+ */
 const applyTransformationToText = (transformation: Transformation, text: string): string => {
   switch (transformation.type) {
     case "searchReplace":
@@ -165,6 +329,13 @@ const applyTransformationToText = (transformation: Transformation, text: string)
   return text;
 };
 
+/**
+ * Loads transformations from localStorage, merging them with default transformations
+ * while preserving enabled states. Creates a fresh set of default transformations if
+ * no stored transformations exist.
+ * 
+ * @returns An array of transformations combining defaults and stored custom transformations
+ */
 const loadTransformations = (): Transformation[] => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -182,6 +353,12 @@ const loadTransformations = (): Transformation[] => {
   }
 };
 
+/**
+ * Persists transformations to localStorage. Saves both custom transformations and
+ * the enabled states of default transformations.
+ * 
+ * @param transformations - The array of transformations to save
+ */
 const saveTransformations = (transformations: Transformation[]) => {
   // Save both custom transformations and enabled states of default transformations
   const toStore = [
@@ -196,6 +373,13 @@ const saveTransformations = (transformations: Transformation[]) => {
 
 const TransformationsContext = createContext<TransformationsContextValue>();
 
+/**
+ * Provider component that manages the transformation system state and operations.
+ * Initializes with default transformations and provides methods for managing and
+ * applying transformations through context.
+ * 
+ * @param props - Component props including children
+ */
 export const TransformationsProvider: ParentComponent = (props) => {
   const { t } = useAppContext();
   const initialTransformations = loadTransformations();
@@ -268,6 +452,13 @@ export const TransformationsProvider: ParentComponent = (props) => {
   );
 };
 
+/**
+ * Hook that provides access to the transformation system context. Must be used
+ * within a TransformationsProvider component.
+ * 
+ * @throws Error if used outside of a TransformationsProvider
+ * @returns The transformation context value containing state and methods
+ */
 export const useTransformations = () => {
   const context = useContext(TransformationsContext);
   if (!context) {

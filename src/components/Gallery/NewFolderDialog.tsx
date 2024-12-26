@@ -143,4 +143,4 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
       </div>
     </div>
   );
-}; 
+};

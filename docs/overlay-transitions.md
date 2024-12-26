@@ -62,11 +62,9 @@ For a complete overlay transition, you need:
 
 ## Best Practices
 
-1. Always include both `overlay` and `display` in transitions for top-layer elements
-2. Use `@starting-style` to ensure smooth entry animations
-3. Keep transitions under 400ms for optimal user experience
-4. Consider adding backdrop transitions for modal elements
-5. Test transitions across different browsers due to experimental support
+When implementing overlay transitions, it's essential to include both `overlay` and `display` properties in transitions for top-layer elements, and utilize `@starting-style` rules to ensure smooth entry animations. The transitions should be kept under 400ms to maintain an optimal user experience that feels responsive and natural.
+
+For modal elements specifically, consider implementing backdrop transitions to enhance the visual hierarchy, and always test transitions across different browsers since overlay support is still experimental. Proper testing across browsers will help ensure a consistent experience for all users regardless of their browser choice.
 
 ## Browser Support
 
@@ -82,18 +80,11 @@ For browsers without support, ensure graceful fallbacks are in place.
 ## Common Issues
 
 ### Missing Entry Animation
-
-If the entry animation isn't working, check that you've:
-1. Included `@starting-style`
-2. Added `allow-discrete` to the transition
-3. Included both `overlay` and `display` in the transition
+If your entry animation isn't functioning properly, there are several key things to verify. Make sure you've included the `@starting-style` rule in your CSS, as this is essential for smooth entry animations. Additionally, check that you've added the `allow-discrete` keyword to your transition declaration, which enables proper handling of discrete property animations. Finally, confirm that both the `overlay` and `display` properties are included in your transition list, as these are required for proper top-layer animations.
 
 ### Flickering During Exit
 
-If elements flicker during exit animation:
-1. Ensure `display` is included in the transition
-2. Verify the transition duration matches for all properties
-3. Check that `allow-discrete` is set correctly
+Elements flickering during exit animations can be resolved by taking a few key steps. First, make sure that the `display` property is included in your transition declaration, as this is essential for smooth exit animations. Next, carefully check that all properties in the transition have matching durations to ensure synchronized timing. Finally, verify that the `allow-discrete` keyword is properly set in your transition, as this enables proper handling of discrete property animations.
 
 ## Related Documentation
 
