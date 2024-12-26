@@ -1,7 +1,8 @@
-import { Component, For } from "solid-js";
+import { Component, For, createMemo, createSignal, onCleanup } from "solid-js";
 import { A } from "@solidjs/router";
 import { useAppContext } from "~/contexts/app";
 import { useGallery } from "~/contexts/GalleryContext";
+import { debounce } from "@solid-primitives/scheduled";
 import getIcon from "~/icons";
 import "./BreadcrumbNavigation.css";
 
@@ -11,10 +12,24 @@ export const BreadcrumbNavigation: Component = () => {
   const t = app.t;
   const { data } = gallery;
 
-  const segments = () => data()?.path.split("/").filter(Boolean) || [];
+  // Create a signal to store the debounced path
+  const [debouncedPath, setDebouncedPath] = createSignal("");
+
+  // Create a debounced function to update the path
+  const updatePath = debounce((path: string) => {
+    setDebouncedPath(path);
+  }, 100);
+
+  // Update the debounced path whenever the actual path changes
+  createMemo(() => {
+    const currentPath = data()?.path || "";
+    updatePath(currentPath);
+  });
+
+  const segments = () => debouncedPath().split("/").filter(Boolean) || [];
   const crumbs = () =>
     segments().reduce<{ children: string; href: string }[]>(
-      (acc, segment) => {
+      (acc: { children: string; href: string }[], segment: string) => {
         const last = acc[acc.length - 1];
         acc.push({
           children: segment,
@@ -24,6 +39,11 @@ export const BreadcrumbNavigation: Component = () => {
       },
       []
     );
+
+  // Clean up the debounced function
+  onCleanup(() => {
+    updatePath.clear();
+  });
 
   return (
     <div class="breadcrumb-links">
