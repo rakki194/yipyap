@@ -4,237 +4,221 @@ import { createPluralTranslation } from "../plurals";
 
 export default {
   common: {
-    search: "खोजें",
+    close: "बंद करें",
+    delete: "हटाएं",
+    cancel: "रद्द करें",
+    save: "सहेजें",
+    edit: "संपादित करें",
+    add: "जोड़ें",
+    remove: "हटाएं",
     loading: "लोड हो रहा है...",
     error: "त्रुटि",
     success: "सफल",
-    cancel: "रद्द करें",
-    save: "सहेजें",
-    delete: "हटाएं",
-    edit: "संपादित करें",
-    close: "बंद करें",
     confirm: "पुष्टि करें",
-    pathSeparator: getPathSeparator("hi"),
-    add: "जोड़ें",
-    remove: "हटाएं",
     download: "डाउनलोड करें",
     path: "पथ",
     size: "आकार",
     date: "दिनांक",
     name: "नाम",
     type: "प्रकार",
-    actions: "कार्रवाइयां",
+    actions: "क्रियाएं",
+    search: "खोजें...",
     filter: "फ़िल्टर",
     apply: "लागू करें",
     reset: "रीसेट करें",
     selected: "चयनित",
     all: "सभी",
     none: "कोई नहीं",
+    pathSeparator: getPathSeparator("hi"),
     toggleTheme: "थीम टॉगल करें",
+    theme: "थीम",
     returnToFrontPage: "मुख्य पृष्ठ पर वापस जाएं",
     home: "होम",
     openSettings: "सेटिंग्स खोलें",
     create: "बनाएं",
     creating: "बना रहे हैं...",
-    theme: "थीम",
-    language: "भाषा",
-    description: "विवरण"
+    language: "हिन्दी",
+    description: "हिन्दी भाषा",
   },
   settings: {
+    title: "सेटिंग्स",
     appearance: "दिखावट",
     theme: {
-      light: "लाइट",
-      dark: "डार्क",
-      gray: "ग्रे",
+      light: "हल्का",
+      gray: "धूसर",
+      dark: "गहरा",
       banana: "केला",
       strawberry: "स्ट्रॉबेरी",
       peanut: "मूंगफली",
       christmas: "क्रिसमस",
       halloween: "हैलोवीन",
       "high-contrast-black": "उच्च कंट्रास्ट काला",
-      "high-contrast-inverse": "उच्च कंट्रास्ट विपरीत"
+      "high-contrast-inverse": "उच्च कंट्रास्ट वल्टा",
     },
-    enableZoom: "ज़ूम सक्षम करें",
-    enableZoomTooltip: "छवि व्यूअर में ज़ूम और पैन सक्षम करें",
-    enableMinimap: "मिनीमैप सक्षम करें",
-    enableMinimapTooltip: "आसान नेविगेशन के लिए ज़ूम करते समय मिनीमैप दिखाएं",
-    alwaysShowCaptionEditor: "कैप्शन एडिटर हमेशा दिखाएं",
-    alwaysShowCaptionEditorTooltip: "कैप्शन एडिटर को हमेशा खुला रखें",
-    instantDelete: "तुरंत हटाएं",
-    instantDeleteTooltip: "पुष्टि डायलॉग के बिना फ़ाइलें हटाएं",
-    disableAnimations: "एनिमेशन बंद करें",
-    disableAnimationsTooltip: "बेहतर प्रदर्शन के लिए सभी एनिमेशन बंद करें",
-    disableNonsense: "जापानी बंद करें",
-    disableNonsenseTooltip: "जापानी टेक्स्ट और अन्य अनावश्यक तत्वों को छिपाएं",
-    modelSettings: (params: TranslationParams) => "मॉडल सेटिंग्स",
-    jtp2ModelPath: "JTP2 मॉडल पथ",
-    jtp2ModelPathTooltip: "JTP2 मॉडल फ़ाइल (.safetensors) का पथ",
-    jtp2TagsPath: "JTP2 टैग पथ",
-    jtp2TagsPathTooltip: "JTP2 टैग फ़ाइल (.json) का पथ",
-    gallery: "गैलरी",
-    title: "सेटिंग्स",
-    experimentalFeatures: "प्रायोगिक सुविधाएं",
+    disableAnimations: "एनिमेशन अक्षम करें",
+    disableAnimationsTooltip: "सभी एनिमेशन अक्षम करें",
     language: "भाषा",
-    languageTooltip: "इंटरफ़ेस की भाषा बदलें",
-    downloadModel: "मॉडल डाउनलोड करें (1.8 GB)",
-    downloadTags: "टैग डाउनलोड करें (195 KB)",
-    viewMode: "व्यू मोड",
-    gridView: "ग्रिड व्यू",
-    listView: "लिस्ट व्यू",
+    languageTooltip: "अपनी पसंदीदा भाषा चुनें",
+    disableNonsense: "बकवास अक्षम करें",
+    disableNonsenseTooltip: "बकवास विशेषताएं अक्षम करें",
+    modelSettings: "मॉडल सेटिंग्स",
+    jtp2ModelPath: "JTP2 मॉडल पथ",
+    jtp2ModelPathTooltip: "JTP2 मॉडल फ़ाइल का पथ",
+    jtp2TagsPath: "JTP2 टैग्स पथ",
+    jtp2TagsPathTooltip: "JTP2 टैग्स फ़ाइल का पथ",
+    downloadModel: "मॉडल डाउनलोड करें",
+    downloadTags: "टैग्स डाउनलोड करें",
+    viewMode: "दृश्य मोड",
+    gridView: "ग्रिड दृश्य",
+    listView: "सूची दृश्य",
     sortBy: "इसके अनुसार क्रमबद्ध करें",
-    sortByName: "नाम के अनुसार क्रमबद्ध करें",
-    sortByDate: "दिनांक के अनुसार क्रमबद्ध करें",
-    sortBySize: "आकार के अनुसार क्रमबद्ध करें",
+    sortByName: "नाम से क्रमबद्ध करें",
+    sortByDate: "दिनांक से क्रमबद्ध करें",
+    sortBySize: "आकार से क्रमबद्ध करें",
+    experimentalFeatures: "प्रायोगिक विशेषताएं",
+    enableZoom: "ज़ूम सक्षम करें",
+    enableZoomTooltip: "छवि पूर्वावलोकन में ज़ूम सक्षम करें",
+    enableMinimap: "मिनीमैप सक्षम करें",
+    enableMinimapTooltip: "ज़ूम करते समय मिनीमैप दिखाएं",
+    alwaysShowCaptionEditor: "हमेशा कैप्शन एडिटर दिखाएं",
+    alwaysShowCaptionEditorTooltip: "कैप्शन एडिटर को हमेशा खुला रखें",
+    instantDelete: "तत्काल हटाएं",
+    instantDeleteTooltip: "पुष्टिकरण डायलॉग के बिना फ़ाइलें हटाएं",
     warning: "चेतावनी",
-    preserveLatents: "लेटेंट्स संरक्षित रखें",
-    preserveLatentsTooltip: "छवियों को स्थानांतरित या हटाते समय .npz (latent) फ़ाइलें रखें।",
-    preserveTxt: ".txt संरक्षित रखें",
-    preserveTxtTooltip: "छवियों को स्थानांतरित या हटाते समय .txt फ़ाइलें रखें।",
+    gallery: "गैलरी",
+    preserveLatents: "लेटेंट्स संरक्षित करें",
+    preserveLatentsTooltip: "लेटेंट्स को संरक्षित करें",
+    preserveTxt: "टेक्स्ट संरक्षित करें",
+    preserveTxtTooltip: "टेक्स्ट को संरक्षित करें",
     thumbnailSize: "थंबनेल आकार",
-    thumbnailSizeDescription: "पिक्सेल में थंबनेल का आकार (उदाहरण: 250)",
-    thumbnailSizeUpdateError: "थंबनेल आकार अपडेट करने में विफल"
+    thumbnailSizeDescription: "थंबनेल का आकार पिक्सेल में",
+    thumbnailSizeUpdateError: "थंबनेल आकार अपडेट करने में त्रुटि",
   },
-  frontPage: {
-    subtitle: {
-      1: "बड़े भाषा मॉडल धोखा करते हैं, झूठ बोलते हैं, और भ्रम में रहते हैं। बिल्कुल मेरी तरह!",
-      2: "हमने प्रार्थना का एक नया तरीका खोजा है",
-      3: "खाली आंखों में परिलक्षित अनंत ब्रह्मांड",
-      4: "जंग लगे दिल में नई उम्मीद",
-      5: "सपने और वास्तविकता का अद्भुत मिश्रण",
-      6: "अज्ञात क्षेत्र, असीमित संभावनाएं",
-      7: "समय से परे, अनंत प्रेम",
-      8: "इससे तो निकाल दिए जाएंगे!"
+  tools: {
+    removeCommas: "कॉमा हटाएं",
+    replaceNewlinesWithCommas: "नई लाइनों को कॉमा से बदलें",
+    replaceUnderscoresWithSpaces: "अंडरस्कोर को स्पेस से बदलें",
+    transformations: "रूपांतरण",
+    transformationType: "रूपांतरण का प्रकार",
+    transformationTypes: {
+      searchReplace: "खोजें और बदलें",
+      case: "केस",
+      trim: "ट्रिम",
+      wrap: "रैप",
+      number: "संख्या"
     },
-    imageWork: "छवियों के साथ काम करें",
-    audioWork: "ऑडियो के साथ काम करें",
-    deselectAll: "सभी अचयनित करें",
-    deleteSelected: "चयनित हटाएं"
+    caseTypes: {
+      upper: "अपर केस",
+      lower: "लोअर केस",
+      title: "टाइटल केस",
+      sentence: "वाक्य केस"
+    },
+    trimTypes: {
+      all: "सभी",
+      start: "शुरुआत",
+      end: "अंत",
+      duplicates: "डुप्लिकेट"
+    },
+    numberActions: {
+      remove: "हटाएं",
+      format: "फॉर्मेट",
+      extract: "निकालें"
+    },
+    prefix: "उपसर्ग",
+    suffix: "प्रत्यय",
+    prefixPlaceholder: "उपसर्ग दर्ज करें",
+    suffixPlaceholder: "प्रत्यय दर्ज करें",
+    numberFormat: "संख्या फॉर्मेट",
+    numberFormatPlaceholder: "संख्या फॉर्मेट दर्ज करें",
+    transformationNamePlaceholder: "रूपांतरण का नाम",
+    transformationDescriptionPlaceholder: "रूपांतरण का विवरण",
+    searchPattern: "खोज पैटर्न",
+    searchPatternPlaceholder: "खोज पैटर्न दर्ज करें",
+    replacement: "प्रतिस्थापन",
+    replacementPlaceholder: "प्रतिस्थापन टेक्स्ट दर्ज करें",
+    selectIcon: "आइकन चुनें",
+    addTransformation: "रूपांतरण जोड़ें"
   },
   gallery: {
-    addTag: "टैग जोड़ें...",
-    addCaption: "कैप्शन जोड़ें...",
-    quickJump: "फ़ोल्डर में जाएं...",
+    addTag: "टैग जोड़ें",
+    addCaption: "कैप्शन जोड़ें",
+    quickJump: "त्वरित जंप",
     loadingFolders: "फ़ोल्डर लोड हो रहे हैं...",
-    noResults: "कोई परिणाम नहीं मिला",
-    folderCount: (params?: TranslationParams) => `${params?.count ?? 0} फ़ोल्डर`,
-    deleteConfirm: (params: TranslationParams) => {
-      const name = params.name ?? "यह आइटम";
-      return `क्या आप वाकई "${name}" को हटाना चाहते हैं?`;
-    },
-    deleteSuccess: "छवि सफलतापूर्वक हटा दी गई",
-    deleteError: (params: TranslationParams) => {
-      const name = params.name ?? "आइटम";
-      return `"${name}" को हटाने में त्रुटि`;
-    },
-    savingCaption: (params: TranslationParams) => {
-      const name = params.name ?? "आइटम";
-      return `"${name}" का कैप्शन सहेजा जा रहा है...`;
-    },
+    noResults: "कोई परिणाम नहीं",
+    uploadFiles: "फ़ाइलें अपलोड करें",
+    deleteCurrentFolder: "वर्तमान फ़ोल्डर हटाएं",
+    moveNotImplemented: "स्थानांतरण अभी उपलब्ध नहीं है",
+    folderCount: ({ count }) => `${count} फ़ोल्डर`,
+    fileCount: ({ count }) => `${count} फ़ाइल(ें)`,
+    imageCount: ({ count }) => `${count} छवि(यां)`,
+    foundFolders: ({ count }) => `${count} फ़ोल्डर मिले`,
+    deletedCount: ({ count }) => `${count} फ़ाइल(ें) हटाई गईं`,
+    deleteConfirm: ({ name }) => `क्या आप वाकई "${name}" को हटाना चाहते हैं?`,
+    deleteSuccess: "सफलतापूर्वक हटाया गया",
+    deleteError: ({ name }) => `"${name}" को हटाने में त्रुटि`,
+    savingCaption: ({ name }) => `"${name}" का कैप्शन सहेजा जा रहा है...`,
     savedCaption: "कैप्शन सहेजा गया",
-    errorSavingCaption: (params: TranslationParams) => {
-      const name = params.name ?? "आइटम";
-      return `"${name}" का कैप्शन सहेजने में त्रुटि`;
-    },
-    emptyFolder: "यह फ़ोल्डर खाली है",
-    dropToUpload: "अपलोड करने के लिए फ़ाइलें यहां छोड़ें",
-    uploadProgress: (params: TranslationParams) => {
-      if (!params || typeof params.count !== 'number') {
-        return 'फ़ाइलें अपलोड हो रही हैं...';
-      }
-      return createPluralTranslation({
-        one: "1 फ़ाइल अपलोड हो रही है...",
-        other: "${count} फ़ाइलें अपलोड हो रही हैं..."
-      }, "hi")(params);
-    },
-    uploadProgressPercent: "अपलोड हो रहा है... {progress}%",
-    processingImage: (params: TranslationParams) => {
-      const name = params.name ?? "छवि";
-      return `"${name}" प्रोसेस हो रही है...`;
-    },
-    generateTags: "टैग जनरेट करें",
-    generatingTags: "टैग जनरेट हो रहे हैं...",
-    uploadError: "अपलोड विफल रहा",
-    dropOverlay: "फ़ाइलें या फ़ोल्डर यहां छोड़ें",
-    confirmMultiDelete: (params: TranslationParams | null | undefined = {}) => {
-      if (!params || typeof params !== 'object') {
-        return 'क्या आप वाकई इन आइटम्स को हटाना चाहते हैं?';
-      }
-      const folders = typeof params.folders === 'number' ? params.folders : 0;
-      const images = typeof params.images === 'number' ? params.images : 0;
-      
-      if (folders === 0 && images === 0) {
-        return 'क्या आप वाकई इन आइटम्स को हटाना चाहते हैं?';
-      }
-
-      const parts = [];
-      if (folders > 0) {
-        parts.push(createPluralTranslation({
-          one: "1 फ़ोल्डर",
-          other: "${count} फ़ोल्डर"
-        }, "hi")({ count: folders }));
-      }
-      if (images > 0) {
-        parts.push(createPluralTranslation({
-          one: "1 छवि",
-          other: "${count} छवियां"
-        }, "hi")({ count: images }));
-      }
-      return `क्या आप वाकई ${parts.join(" और ")} को हटाना चाहते हैं?`;
-    },
-    confirmFolderDelete: (params: TranslationParams) => {
-      const name = params.name ?? "फ़ोल्डर";
-      return `क्या आप वाकई फ़ोल्डर "${name}" और इसकी सभी सामग्री को हटाना चाहते हैं?`;
-    },
-    someFolderDeletesFailed: "कुछ फ़ोल्डर हटाए नहीं जा सके",
-    folderDeleteError: "फ़ोल्डर हटाने में त्रुटि",
-    filesExceedLimit: "फ़ाइलें बहुत बड़ी हैं: {files}",
-    noFilesToUpload: "अपलोड करने के लिए कोई फ़ाइल नहीं है",
-    processingFiles: "फ़ाइलें प्रोसेस हो रही हैं...",
-    uploadComplete: "अपलोड पूरा हुआ",
-    uploadFailed: "अपलोड विफल रहा: {error}",
-    deleteComplete: "हटाना पूरा हुआ",
-    deleteFailed: "हटाना विफल रहा",
-    generatingCaption: "कैप्शन जनरेट किया जा रहा है...",
-    captionGenerated: "कैप्शन जनरेट किया गया",
-    workWithFolder: (params: TranslationParams) => {
-      const name = params.name ?? "फ़ोल्डर";
-      return `"${name}" के साथ काम करें`;
-    },
-    deletingFiles: (params: TranslationParams) => {
-      if (!params || typeof params.count !== 'number') {
-        return 'फ़ाइलें हटाई जा रही हैं...';
-      }
-      return createPluralTranslation({
-        one: "1 फ़ाइल हटाई जा रही है...",
-        other: "${count} फ़ाइलें हटाई जा रही हैं..."
-      }, "hi")(params);
-    },
-    deleteSelected: "चयनित हटाएं",
-    removeTags: "टैग हटाएं",
+    errorSavingCaption: ({ name }) => `"${name}" का कैप्शन सहेजने में त्रुटि`,
+    emptyFolder: "खाली फ़ोल्डर",
+    dropToUpload: "अपलोड करने के लिए फ़ाइलें यहाँ छोड़ें",
+    uploadProgress: ({ progress }) => `अपलोड प्रगति: ${progress}%`,
+    uploadProgressPercent: ({ progress }) => `${progress}%`,
+    filesExceedLimit: "फ़ाइलों की संख्या सीमा से अधिक है",
+    noFilesToUpload: "अपलोड करने के लिए कोई फ़ाइल नहीं",
+    processingFiles: "फ़ाइलें संसाधित की जा रही हैं...",
+    uploadComplete: "अपलोड पूर्ण",
+    uploadFailed: "अपलोड विफल",
+    deletingFiles: ({ count }) => `${count} फ़ाइल(ें) हटाई जा रही हैं...`,
+    deleteComplete: "हटाना पूर्ण",
+    deleteFailed: "हटाना विफल",
+    processingImage: ({ name }) => `"${name}" संसाधित की जा रही है...`,
+    processingImages: ({ count }) => `${count} छवि(यां) संसाधित की जा रही हैं...`,
+    generateTags: "टैग्स जनरेट करें",
+    generatingTags: "टैग्स जनरेट किए जा रहे हैं...",
+    removeTags: "टैग्स हटाएं",
     createCaption: "कैप्शन बनाएं",
     captionTypes: {
       txt: "नई टेक्स्ट फ़ाइल बनाएं",
       tags: "नई .tags फ़ाइल बनाएं",
       caption: "नई .caption फ़ाइल बनाएं",
-      wd: "नई .wd फ़ाइल बनाएं"
+      wd: "नई .wd फ़ाइल बनाएं",
+      e621: "नई .e621 फ़ाइल बनाएं"
     },
     noCaptionFiles: "अभी तक कोई कैप्शन फ़ाइल नहीं है!",
-    deletingFile: "फ़ाइल हटा रहा है...",
-    fileDeleteSuccess: "फ़ाइल सफलतापूर्वक हटा दी गई",
+    uploadError: "अपलोड में त्रुटि",
+    dropOverlay: "फ़ाइलें अपलोड करने के लिए यहाँ छोड़ें",
+    selectAll: "सभी चुनें",
+    deselectAll: "सभी अचयनित करें",
+    deleteSelected: "चयनित हटाएं",
+    confirmMultiDelete: ({ count }) => `क्या आप वाकई ${count} फ़ाइल(ें) हटाना चाहते हैं?`,
+    confirmFolderDelete: ({ name }) => `क्या आप वाकई "${name}" फ़ोल्डर को हटाना चाहते हैं?`,
+    someFolderDeletesFailed: "कुछ फ़ोल्डर हटाए नहीं जा सके",
+    folderDeleteError: "फ़ोल्डर हटाने में त्रुटि",
+    deletingFile: "फ़ाइल हटाई जा रही है...",
+    fileDeleteSuccess: "फ़ाइल सफलतापूर्वक हटाई गई",
     fileDeleteError: "फ़ाइल हटाने में त्रुटि",
-    fileCount: (params?: TranslationParams) => `${params?.count ?? 0} फ़ाइलें`,
-    imageCount: (params?: TranslationParams) => `${params?.count ?? 0} छवियां`,
-    foundFolders: (params?: TranslationParams) => `${params?.count ?? 0} फ़ोल्डर मिले`,
-    deletedCount: (params?: TranslationParams) => `${params?.count ?? 0} आइटम हटाए गए`,
-    selectedCount: (params?: TranslationParams) => `${params?.count ?? 0} चयनित`,
-    processingImages: (params?: TranslationParams) => `${params?.count ?? 0} छवियां प्रोसेस हो रही हैं...`,
-    folderLocation: (params?: TranslationParams) => `स्थान: ${params?.name ?? ''}`,
-    moveToFolder: (params?: TranslationParams) => `${params?.name ?? ''} में ले जाएं`,
-    createFolder: "फ़ोल्डर बनाएं",
+    createFolder: "नया फ़ोल्डर बनाएं",
     folderNamePlaceholder: "फ़ोल्डर का नाम",
     deleteConfirmation: "हटाने की पुष्टि",
-    selectAll: "सभी चुनें",
-    deselectAll: "सभी अचयनित करें"
+    selectedCount: ({ count }) => `${count} चयनित`,
+    folderLocation: ({ path }) => `फ़ोल्डर स्थान: ${path}`,
+    moveToFolder: ({ name }) => `"${name}" में ले जाएं`,
+    workWithFolder: ({ name }) => `"${name}" के साथ काम करें`,
+    generatingCaption: "कैप्शन जनरेट किया जा रहा है...",
+    captionGenerated: "कैप्शन जनरेट किया गया",
+    batchTransformTitle: "बैच ट्रांसफ़ॉर्म",
+    batchTransformDescription: "चयनित फ़ाइलों पर ट्रांसफ़ॉर्मेशन लागू करें",
+    selectedFiles: "चयनित फ़ाइलें",
+    selectedFilesCount: ({ count }) => `${count} फ़ाइल(ें) चयनित`,
+    enabledTransformations: "सक्षम ट्रांसफ़ॉर्मेशन",
+    applyBatchTransform: "बैच ट्रांसफ़ॉर्म लागू करें",
+    applyTransformations: "ट्रांसफ़ॉर्मेशन लागू करें",
+    moveComplete: ({ count }) => `${count} फ़ाइल(ें) सफलतापूर्वक स्थानांतरित की गईं`,
+    moveFailed: "फ़ाइल स्थानांतरण विफल",
+    moveFailedExists: "फ़ाइल पहले से मौजूद है",
+    moveFailedMissing: "फ़ाइल नहीं मिली",
+    moveError: "स्थानांतरण में त्रुटि",
+    sameDirectoryMove: "फ़ाइल पहले से ही इस फ़ोल्डर में है"
   },
   shortcuts: {
     title: "कीबोर्ड शॉर्टकट",
@@ -244,24 +228,24 @@ export default {
     belowImage: "नीचे की छवि",
     previousImage: "पिछली छवि",
     nextImage: "अगली छवि",
-    togglePreview: "प्रीव्यू टॉगल करें",
+    togglePreview: "पूर्वावलोकन टॉगल करें",
     tagNavigation: "टैग नेविगेशन",
     previousTag: "पिछला टैग",
     nextTag: "अगला टैग",
-    switchTagBubble: "टैग बबल पर स्विच करें",
-    switchTagInput: "टैग इनपुट पर स्विच करें",
+    switchTagBubble: "टैग बबल स्विच करें",
+    switchTagInput: "टैग इनपुट स्विच करें",
     cycleCaptions: "कैप्शन चक्र",
-    firstTagRow: "पहली पंक्ति का टैग",
-    lastTagRow: "अंतिम पंक्ति का टैग",
+    firstTagRow: "पहली टैग पंक्ति",
+    lastTagRow: "अंतिम टैग पंक्ति",
     doubleShift: "डबल शिफ्ट",
     shift: "शिफ्ट",
     del: "डिलीट",
     removeTag: "टैग हटाएं",
     other: "अन्य",
     esc: "एस्केप",
-    closePreview: "प्रीव्यू/मोडल बंद करें",
+    closePreview: "पूर्वावलोकन बंद करें",
     deleteImage: "छवि हटाएं",
-    toggleImagePreview: "छवि प्रीव्यू टॉगल करें",
+    toggleImagePreview: "छवि पूर्वावलोकन टॉगल करें",
     copyToClipboard: "छवि को क्लिपबोर्ड में कॉपी करें"
   },
   imageViewer: {
@@ -273,67 +257,24 @@ export default {
     nextImage: "अगली छवि",
     copyPath: "पथ कॉपी करें",
     openInNewTab: "नए टैब में खोलें",
-    fitToScreen: "स्क्रीन के अनुसार फिट करें",
+    fitToScreen: "स्क्रीन के अनुरूप फिट करें",
     actualSize: "वास्तविक आकार",
     rotateLeft: "बाएं घुमाएं",
     rotateRight: "दाएं घुमाएं",
     downloadImage: "छवि डाउनलोड करें",
-    imageInfo: "छवि की जानकारी",
-    dimensions: "आयात"
-  },
-  tools: {
-    transformations: "परिवर्तन",
-    addTransformation: "परिवर्तन जोड़ें",
-    transformationType: "परिवर्तन का प्रकार",
-    transformationTypes: {
-      searchReplace: "खोजें और बदलें",
-      case: "केस",
-      trim: "ट्रिम",
-      wrap: "रैप",
-      number: "संख्या"
-    },
-    caseTypes: {
-      upper: "अपर",
-      lower: "लोअर",
-      title: "टाइटल",
-      sentence: "वाक्य"
-    },
-    trimTypes: {
-      all: "सभी",
-      start: "शुरुआत",
-      end: "अंत",
-      duplicates: "डुप्लिकेट"
-    },
-    numberActions: {
-      remove: "हटाएं",
-      format: "प्रारूप",
-      extract: "निकालें"
-    },
-    numberFormat: "संख्या प्रारूप",
-    numberFormatPlaceholder: "संख्या प्रारूप दर्ज करें",
-    searchPattern: "खोज पैटर्न",
-    searchPatternPlaceholder: "खोजने के लिए टेक्स्ट दर्ज करें",
-    replacement: "प्रतिस्थापन",
-    replacementPlaceholder: "प्रतिस्थापन टेक्स्ट दर्ज करें",
-    prefix: "उपसर्ग",
-    suffix: "प्रत्यय",
-    prefixPlaceholder: "उपसर्ग दर्ज करें",
-    suffixPlaceholder: "प्रत्यय दर्ज करें",
-    transformationNamePlaceholder: "परिवर्तन का नाम दर्ज करें",
-    transformationDescriptionPlaceholder: "परिवर्तन का विवरण दर्ज करें",
-    selectIcon: "आइकन चुनें",
-    removeCommas: "कॉमा हटाएं",
-    replaceNewlinesWithCommas: "नई लाइनों को कॉमा से बदलें",
-    replaceUnderscoresWithSpaces: "अंडरस्कोर को स्पेस से बदलें"
+    imageInfo: "छवि जानकारी",
+    dimensions: "आयाम"
   },
   notifications: {
-    imageCopied: "छवि क्लिपबोर्ड में कॉपी की गई",
-    imageCopyFailed: "छवि को क्लिपबोर्ड में कॉपी करने में विफल",
-    folderCreated: "फ़ोल्डर सफलतापूर्वक बनाया गया",
+    imageCopied: "छवि कॉपी की गई",
+    imageCopyFailed: "छवि कॉपी करने में विफल",
+    folderCreated: "फ़ोल्डर बनाया गया",
     folderCreateError: "फ़ोल्डर बनाने में त्रुटि",
     generatingCaption: "कैप्शन जनरेट किया जा रहा है...",
-    captionGenerated: "कैप्शन सफलतापूर्वक जनरेट किया गया",
-    connectionLost: "कनेक्शन खो गया है",
-    connectionRestored: "कनेक्शन बहाल हो गया है"
-  }
+    captionGenerated: "कैप्शन जनरेट किया गया",
+    connectionLost: "कनेक्शन खो गया",
+    connectionRestored: "कनेक्शन बहाल हुआ",
+    batchTransformSuccess: "बैच ट्रांसफ़ॉर्म सफल",
+    batchTransformError: "बैच ट्रांसफ़ॉर्म में त्रुटि"
+  },
 } as const satisfies Translations;

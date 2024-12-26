@@ -145,7 +145,8 @@ export default {
       txt: "Luo uusi tekstitiedosto",
       tags: "Luo uusi .tags-tiedosto",
       caption: "Luo uusi .caption-tiedosto",
-      wd: "Luo uusi .wd-tiedosto"
+      wd: "Luo uusi .wd-tiedosto",
+      e621: "Luo uusi .e621-tiedosto"
     },
     noCaptionFiles: "Ei vielä kuvatekstitiedostoja!",
     uploadError: "Lataus epäonnistui",

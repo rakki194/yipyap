@@ -93,22 +93,6 @@ export default {
     thumbnailSizeDescription: "Ukuran thumbnail dalam piksel (mis. 250)",
     thumbnailSizeUpdateError: "Gagal memperbarui ukuran thumbnail",
   },
-  frontPage: {
-    subtitle: {
-      1: "Model bahasa besar berbuat curang, berbohong, dan berhalusinasi. Seperti saya!",
-      2: "Kami telah menemukan cara berdoa yang berbeda",
-      3: "Alam semesta tak terbatas terpantul di mata yang kosong",
-      4: "Hati yang berkarat, tunas yang baru",
-      5: "Tempat ajaib di mana mimpi dan kenyataan bersilangan",
-      6: "Wilayah yang tidak diketahui, kemungkinan tak terbatas",
-      7: "Cinta abadi yang melampaui aliran waktu",
-      8: "Ini akan membuat Anda diusir!",
-    },
-    imageWork: "Bekerja dengan Gambar",
-    audioWork: "Bekerja dengan Audio",
-    deselectAll: "Batalkan Pilihan",
-    deleteSelected: "Hapus yang Dipilih",
-  },
   gallery: {
     addTag: "Tambah tag...",
     addCaption: "Tambah keterangan...",
@@ -138,7 +122,8 @@ export default {
       txt: "Buat file Teks baru",
       tags: "Buat file .tags baru",
       caption: "Buat file .caption baru",
-      wd: "Buat file .wd baru"
+      wd: "Buat file .wd baru",
+      e621: "Buat file .e621 baru"
     },
     noCaptionFiles: "Belum ada file keterangan!",
     uploadError: "Gagal mengunggah",

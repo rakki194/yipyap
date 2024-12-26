@@ -168,6 +168,15 @@ export interface GalleryTranslations {
   uploadFiles?: string;
   deleteCurrentFolder?: string;
   moveNotImplemented?: string;
+  editE621Tags: string;
+  close: string;
+  captionTypes: {
+    txt: string;
+    tags: string;
+    caption: string;
+    wd: string;
+    e621: string;
+  };
   folderCount: TranslationValue;
   fileCount: TranslationValue;
   imageCount: TranslationValue;
@@ -197,12 +206,6 @@ export interface GalleryTranslations {
   generatingTags?: string;
   removeTags?: string;
   createCaption?: string;
-  captionTypes?: {
-    txt: string;
-    tags: string;
-    caption: string;
-    wd: string;
-  };
   noCaptionFiles?: string;
   uploadError?: string;
   dropOverlay: string;

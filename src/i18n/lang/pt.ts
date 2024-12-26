@@ -94,22 +94,6 @@ export default {
     thumbnailSizeDescription: "Ajuste o tamanho das miniaturas na visualização em grade",
     thumbnailSizeUpdateError: "Erro ao atualizar o tamanho das miniaturas",
   },
-  frontPage: {
-    subtitle: {
-      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見つけました",
-      3: "虚ろな瞳に映る、無限の宇宙",
-      4: "錆びた心、新たな芽吹き",
-      5: "夢と現実が交錯する、不思議な境地",
-      6: "未知の領域、無限の可能性",
-      7: "時の流れを超えた、永遠の愛",
-      8: "これで追い出されますよ！",
-    },
-    imageWork: "Trabalhar com imagens",
-    audioWork: "Trabalhar com áudio",
-    deselectAll: "Desmarcar todos",
-    deleteSelected: "Excluir selecionados",
-  },
   gallery: {
     addTag: "Adicionar tag...",
     addCaption: "Adicionar legenda...",
@@ -145,7 +129,8 @@ export default {
       txt: "Criar novo arquivo de texto",
       tags: "Criar novo arquivo .tags",
       caption: "Criar novo arquivo .caption",
-      wd: "Criar novo arquivo .wd"
+      wd: "Criar novo arquivo .wd",
+      e621: "Criar novo arquivo .e621"
     },
     noCaptionFiles: "Ainda não há arquivos de legenda!",
     fileCount: (params?: TranslationParams) => {

@@ -183,10 +183,11 @@ export default {
     removeTags: "Tags entfernen",
     createCaption: "Beschriftung erstellen",
     captionTypes: {
-      txt: "Txt",
-      tags: "Tags",
-      caption: "Beschriftung",
-      wd: "WD",
+      txt: "Neue Textdatei erstellen",
+      tags: "Neue .tags-Datei erstellen",
+      caption: "Neue .caption-Datei erstellen",
+      wd: "Neue .wd-Datei erstellen",
+      e621: "Neue .e621-Datei erstellen"
     },
     noCaptionFiles: "Keine Beschriftungsdateien",
     uploadError: "Upload-Fehler",

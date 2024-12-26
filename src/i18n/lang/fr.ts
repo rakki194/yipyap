@@ -228,10 +228,11 @@ export default {
     removeTags: "Supprimer les tags",
     createCaption: "Créer une légende",
     captionTypes: {
-      txt: "Txt",
-      tags: "Tags",
-      caption: "Légende",
-      wd: "WD",
+      txt: "Créer un nouveau fichier texte",
+      tags: "Créer un nouveau fichier .tags",
+      caption: "Créer un nouveau fichier .caption",
+      wd: "Créer un nouveau fichier .wd",
+      e621: "Créer un nouveau fichier .e621"
     },
     noCaptionFiles: "Aucun fichier de légende",
     uploadError: "Erreur de téléchargement",

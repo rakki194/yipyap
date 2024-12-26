@@ -93,22 +93,6 @@ export default {
     thumbnailSizeDescription: "썸네일의 픽셀 크기 (예: 250)",
     thumbnailSizeUpdateError: "썸네일 크기 업데이트 실패",
   },
-  frontPage: {
-    subtitle: {
-      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見つけました",
-      3: "虚ろな瞳に映る、無限の宇宙",
-      4: "錆びた心、新たな芽吹き",
-      5: "夢と現実が交錯する、不思議な境地",
-      6: "未知の領域、無限の可能性",
-      7: "時の流れを超えた、永遠の愛",
-      8: "これで追い出されますよ！",
-    },
-    imageWork: "이미지 작업",
-    audioWork: "오디오 작업",
-    deselectAll: "선택 해제",
-    deleteSelected: "선택 항목 삭제",
-  },
   gallery: {
     addTag: "태그 추가...",
     addCaption: "캡션 추가...",
@@ -138,7 +122,8 @@ export default {
       txt: "새 텍스트 파일 생성",
       tags: "새 .tags 파일 생성",
       caption: "새 .caption 파일 생성",
-      wd: "새 .wd 파일 생성"
+      wd: "새 .wd 파일 생성",
+      e621: "새 .e621 파일 생성"
     },
     noCaptionFiles: "아직 캡션 파일이 없습니다!",
     fileCount: (params?: TranslationParams) => `${params?.count ?? 0}개 파일`,
