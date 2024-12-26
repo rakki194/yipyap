@@ -173,8 +173,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         }
 
         // Refresh both source and target directories
-        gallery.invalidate();
-        gallery.refetch();
+        gallery.refetchGallery();
         
         return;
       } catch (err) {

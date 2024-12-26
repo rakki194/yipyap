@@ -134,16 +134,23 @@ function fetchPage(
   onItem: (data: AnyData) => void,
   onError: (error: Error) => void
 ): Promise<void> {
+  console.debug('Fetching page from server:', { path, page });
   return fetchStreamingJson(
-    `/api/browse?path=${path}&page=${page + 1}&page_size=32`,
+    `/api/browse?path=${path}&page=${page}&page_size=32`,
     (item, idx) => {
+      console.debug('Received item from stream:', { idx, item });
       if (idx === 0) {
+        console.debug('Processing header:', item);
         onHeader(item as FolderHeader);
       } else {
+        console.debug('Processing item:', item);
         onItem(item as AnyData);
       }
     }
-  ).catch(onError);
+  ).catch((error) => {
+    console.error('Error fetching page:', error);
+    onError(error);
+  });
 }
 
 /**

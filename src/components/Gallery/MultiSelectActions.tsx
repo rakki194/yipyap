@@ -184,11 +184,14 @@ export const MultiSelectActions: Component = () => {
                 );
               }
               
-              // Clear selection and refresh
-              selection.clearMultiSelect();
-              gallery.invalidate();
-              gallery.invalidateFolderCache();
-              await gallery.refetch();
+              // Clear selection after all operations
+              gallery.selection.clearMultiSelect();
+              gallery.selection.clearFolderMultiSelect();
+              
+              // Force a refetch
+              gallery.refetchGallery();
+              
+              setShowDeleteConfirm(false);
               
             } catch (error) {
               console.error('Error in bulk delete operation:', error);

@@ -179,8 +179,7 @@ export const Gallery: Component = () => {
 
   createEffect(() => {
     const handleThumbnailSizeChange = () => {
-      gallery.invalidate();
-      gallery.refetch();
+      gallery.refetchGallery();
     };
     
     window.addEventListener('thumbnailSizeChanged', handleThumbnailSizeChange);
@@ -200,14 +199,22 @@ export const Gallery: Component = () => {
         }}
       >
         <Show when={gallery.data()}>
-          {(data) => (
-            <ImageGrid
-              data={data()}
-              items={data().items}
-              path={data().path}
-              onImageClick={gallery.edit}
-            />
-          )}
+          {(data) => {
+            console.debug('Gallery rendering with data:', {
+              path: data().path,
+              itemCount: data().items?.length,
+              totalFolders: data().total_folders,
+              totalImages: data().total_images
+            });
+            return (
+              <ImageGrid
+                data={data()}
+                items={data().items}
+                path={data().path}
+                onImageClick={gallery.edit}
+              />
+            );
+          }}
         </Show>
 
         <Show when={progressInfo()}>
@@ -392,8 +399,7 @@ export const Gallery: Component = () => {
             gallery.selection.clearFolderMultiSelect();
             
             // Force a refetch
-            gallery.invalidate();
-            await gallery.refetch();
+            gallery.refetchGallery();
             
             setShowDeleteConfirm(false);
           }}

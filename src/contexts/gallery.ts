@@ -139,11 +139,15 @@ export function makeGalleryState() {
 
   // Our data source for directory listings. Calls the `/browse` and memoizes pages.
   const [backendData, { refetch, mutate: setData }] =
-    createGalleryResourceCached(() => ({
-      path: state.path,
-      page: state.page,
-      page_size: 32,
-    }));
+    createGalleryResourceCached(() => {
+      const navState = {
+        path: state.path,
+        page: state.page,
+        page_size: 32,
+      };
+      console.debug('Gallery resource requesting data:', navState);
+      return navState;
+    });
 
   const selection = useSelection(backendData);
 
@@ -406,19 +410,31 @@ export function makeGalleryState() {
   const windowSize = createWindowSize();
 
   const invalidate = () => {
+    console.debug('Invalidating gallery data');
+    refetch();
+    if (refetchConfig.refetch) {
+      refetchConfig.refetch();
+    }
+  };
+
+  const refetchGallery = () => {
+    console.debug('Starting gallery refetch');
     batch(() => {
-      // Clear all data and caches
+      // Clear all data first
+      console.debug('Clearing existing data');
       setData(undefined);
       clearImageCache();
-      invalidateFolderCache();
       
-      // Reset page to 0 to ensure we start fresh
-      setState({ ...state, page: 0 });
-      
-      // Clear any selections
+      // Reset page and selection state
+      console.debug('Resetting page and selection state');
+      setState({ page: 1 });
+      selection.select(null);
       selection.clearMultiSelect();
       selection.clearFolderMultiSelect();
-      selection.select(null);
+      
+      // Then trigger a refetch
+      console.debug('Triggering refetch');
+      invalidate();
     });
   };
 
@@ -482,8 +498,10 @@ export function makeGalleryState() {
     windowSize,
     params,
     data: backendData,
+    refetch,
+    invalidate,
+    refetchGallery,
     setData,
-    // state,
     saveCaption,
     deleteImage,
     deleteCaption,
@@ -493,8 +511,6 @@ export function makeGalleryState() {
     getAllKnownFolders,
     invalidateFolderCache,
     generateTags,
-    refetch,
-    invalidate,
   };
 
   if (import.meta.env.DEV) {
@@ -523,6 +539,17 @@ export function makeGalleryState() {
       })
     );
   }
+
+  // Add effect to monitor data changes
+  createEffect(() => {
+    const data = backendData();
+    console.debug('Gallery data updated:', {
+      path: data?.path,
+      totalItems: data?.items?.length,
+      totalFolders: data?.total_folders,
+      totalImages: data?.total_images
+    });
+  });
 
   // Merge gallery and selection properties
   return mergeProps(gallery, selection);

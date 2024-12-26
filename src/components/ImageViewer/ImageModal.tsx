@@ -429,7 +429,15 @@ const DeleteButton = (props: {
                   method: "DELETE",
                 });
                 
-                return response;
+                if (response.ok) {
+                  appContext.notify(appContext.t('notifications.deleteSuccess'), 'success');
+                  props.onClose();
+                  // Refresh gallery data
+                  gallery.refetchGallery();
+                } else {
+                  console.error(`Error deleting image at index ${idx}:`, response);
+                  throw new Error('Failed to delete image');
+                }
               } catch (error) {
                 console.error(`Error deleting image at index ${idx}:`, error);
                 throw error;

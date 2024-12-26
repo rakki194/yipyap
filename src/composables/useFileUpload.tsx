@@ -86,8 +86,7 @@ export const useFileUpload = () => {
           "success",
           "file-upload"
         );
-        gallery.invalidate();
-        gallery.refetch();
+        gallery.refetchGallery();
       } else {
         appContext.notify(
           t("gallery.uploadFailed", { error: xhr.statusText }),

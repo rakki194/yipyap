@@ -184,7 +184,7 @@ const BatchTransformButton: Component = () => {
       }
 
       // Refresh gallery data
-      gallery.refetch();
+      gallery.refetchGallery();
       
       app.notify(t('notifications.batchTransformSuccess'), 'success');
     } catch (error) {

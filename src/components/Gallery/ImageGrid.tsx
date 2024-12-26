@@ -1,5 +1,5 @@
 // src/components/Gallery/ImageGrid.tsx
-import { For, onCleanup, onMount, Show, createSignal, createMemo } from "solid-js";
+import { For, onCleanup, onMount, Show, createSignal, createMemo, createEffect } from "solid-js";
 import { A } from "@solidjs/router";
 
 import { useGallery } from "~/contexts/GalleryContext";
@@ -40,6 +40,15 @@ export const ImageGrid = (props: {
   const setColumns = gallery.selection.setColumns;
   const addObserved = makeIntersectionObserver(gallery.setPage);
   const app = useAppContext();
+
+  // Add debug logging for props
+  createEffect(() => {
+    console.debug('ImageGrid received props:', {
+      path: props.path,
+      itemCount: props.items?.length,
+      hasData: !!props.data
+    });
+  });
 
   const isActive = (ref: HTMLElement, idx: number) => {
     if (gallery.mode === "view" && gallery.selected === idx) {
@@ -86,6 +95,11 @@ export const ImageGrid = (props: {
       </Show>
       <For each={props.items}>
         {(item, getIdx) => {
+          console.debug('Rendering item:', {
+            type: item.type,
+            fileName: item.file_name,
+            idx: getIdx()
+          });
           let ref!: HTMLElement;
           const next_page = item.next_page;
           if (next_page !== undefined) {
