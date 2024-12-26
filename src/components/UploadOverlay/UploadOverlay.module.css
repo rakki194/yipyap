@@ -4,13 +4,20 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: color-mix(in srgb, var(--card-bg) 95%, transparent);
-  backdrop-filter: blur(8px);
+  background: rgba(var(--card-bg-rgb), 0.95);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Apply backdrop-filter with progressive enhancement */
+@supports (backdrop-filter: blur(8px)) {
+  .overlay {
+    background: rgba(var(--card-bg-rgb), 0.85);
+    backdrop-filter: blur(8px);
+  }
 }
 
 .content {
@@ -21,8 +28,8 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  background: color-mix(in srgb, var(--card-bg) 98%, var(--accent) 2%);
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--shadow) 25%, transparent);
+  background: rgba(var(--card-bg-rgb), 0.98);
+  box-shadow: 0 8px 32px rgba(var(--shadow-rgb), 0.25);
   animation: scaleIn 0.2s ease-in-out;
 }
 
@@ -40,11 +47,23 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    backdrop-filter: blur(0);
   }
   to {
     opacity: 1;
-    backdrop-filter: blur(8px);
+  }
+}
+
+/* Separate animation for backdrop-filter */
+@supports (backdrop-filter: blur(8px)) {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      backdrop-filter: blur(0);
+    }
+    to {
+      opacity: 1;
+      backdrop-filter: blur(8px);
+    }
   }
 }
 
@@ -65,12 +84,5 @@
   }
   50% {
     transform: translateY(-10px);
-  }
-}
-
-/* Fallback for browsers that don't support backdrop-filter */
-@supports not (backdrop-filter: blur(8px)) {
-  .overlay {
-    background: color-mix(in srgb, var(--card-bg) 98%, transparent);
   }
 } 

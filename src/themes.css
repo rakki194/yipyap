@@ -16,6 +16,8 @@
 :root[data-theme="dark"] {
   --bg-color: hsl(0deg 0% 15%);
   --card-bg: hsl(0deg 0% 20%);
+  --card-bg-rgb: 51, 51, 51;
+  --shadow-rgb: 0, 0, 0;
   --text-primary: hsl(0deg 0% 80%);
   --text-secondary: hsl(0deg 0% 60%);
   --border: #333;
@@ -44,6 +46,8 @@
   --bg-color: #eff1f5;
   --secondary-bg: #e0e3e7;
   --card-bg: #ccd0da;
+  --card-bg-rgb: 204, 208, 218;
+  --shadow-rgb: 0, 0, 0;
   --text-primary: #4c4f69;
   --text-secondary: #5c5f77;
   --border: var(--card-bg);
@@ -63,6 +67,8 @@
   --accent: hsl(265deg 54% 54%);
   --bg-color: hsl(0deg 0% 50%);
   --card-bg: hsl(0deg 0% 45%);
+  --card-bg-rgb: 115, 115, 115;
+  --shadow-rgb: 0, 0, 0;
   --text-primary: hsl(0deg 0% 95%);
   --text-secondary: hsl(0deg 0% 85%);
   --border: hsl(0deg 0% 40%);
@@ -616,13 +622,16 @@
   }
 }
 
-/* Add global scrollbar styles */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+/* Scrollbar styling with progressive enhancement */
+@supports (scrollbar-width: thin) {
+  * {
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
 }
 
-/* Webkit scrollbar styles */
+/* Webkit scrollbar styles (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -630,15 +639,27 @@
 
 ::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 4px;
+  /* Improve touch targets on mobile */
+  min-height: 40px;
+  /* Add border for better visibility on light backgrounds in Safari */
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
 }
 
 /* Christmas theme special scrollbar */
@@ -646,17 +667,20 @@
   background: var(--scrollbar-candy-stripe);
   background-size: 20px 20px;
   animation: scroll-candy 60s linear infinite;
+  border: none;
 }
 
 /* Halloween theme special scrollbar */
 :root[data-theme="halloween"] ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   box-shadow: 0 0 8px var(--accent);
+  border: none;
 }
 
 :root[data-theme="halloween"] ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
   box-shadow: 0 0 12px var(--shadow-accent);
+  border: none;
 }
 
 /* Animation for Christmas scrollbar */
