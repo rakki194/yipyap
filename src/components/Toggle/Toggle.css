@@ -7,7 +7,7 @@
   background: var(--secondary-bg);
   border-radius: 1.5em;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all var(--transition-duration) var(--transition-timing);
 }
 
 .toggle::before {
@@ -19,7 +19,7 @@
   height: 1.1em;
   border-radius: 50%;
   background: var(--text-secondary);
-  transition: transform 0.3s, background 0.3s;
+  transition: all var(--transition-duration) var(--transition-timing);
 }
 
 .toggle:checked {
@@ -42,4 +42,10 @@
 .toggle:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Disable all animations when no-animation class is present */
+.toggle.no-animation,
+.toggle.no-animation::before {
+  transition: none;
 } 

@@ -156,6 +156,11 @@
     background: hsl(348deg 100% 97% / 41.1%);
   }
 
+  /* Style for toggle knob when focused and enabled */
+  .toggle:focus:checked::before {
+    background: var(--text-secondary);
+  }
+
   /* Scrollbar styles */
   --scrollbar-track: var(--secondary-bg);
   --scrollbar-thumb: #ffb3c0;
