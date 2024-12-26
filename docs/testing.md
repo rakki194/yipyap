@@ -19,40 +19,45 @@
   - [Hover State Test Failures](#2-hover-state-test-failures)
   - [Theme System Testing Challenges](#6-theme-system-testing-challenges)
 
-The project uses Vitest with SolidJS testing utilities. All tests are centralized in the `/src/test/__tests__/` directory and organized by functionality:
+The project uses Vitest with SolidJS testing utilities. All tests are organized by feature and component in their respective directories:
 
 ## Test Organization
 
 1. **Component Tests**:
-   - `ImageView.test.tsx`: Image viewer component
-   - `TagBubble.test.tsx`: Tag component
-   - `CaptionInput.test.tsx`: Caption input component
-   - `ImageInfo.test.tsx`: Image information display
-   - `Notification.test.tsx`: Notification system
-   - `Settings.test.tsx`: Settings panel
-   - `DeleteConfirmDialog.test.tsx`: Delete confirmation dialog
+   Tests for UI components are located alongside their components in `__tests__` directories:
+   - `/src/components/Gallery/__tests__/`: Gallery component tests
+   - `/src/components/ImageViewer/__tests__/`: Image viewer tests
+   - `/src/components/Settings/__tests__/`: Settings component tests
+   - `/src/components/UploadOverlay/__tests__/`: Upload overlay tests
 
 2. **Context and State Tests**:
+   Located in `/src/contexts/__tests__/`:
    - `app.test.tsx`: App context tests
-   - `contexts.test.ts`: Other contexts
-   - `gallery.test.ts`: Gallery state
-   - `selection.test.ts`: Selection management
+   - `theme.test.tsx`: Theme context tests
+   - `selection.test.tsx`: Selection management
+   - `transformations.test.tsx`: Image transformation tests
 
-3. **Utility Tests**:
-   - `reactive-utils.test.tsx`: Reactive utility functions
-   - `theme.test.ts`: Theme management
+3. **Composable Tests**:
+   Located in `/src/composables/__tests__/`:
+   - `useConnectionStatus.test.tsx`: Connection monitoring
+   - `useDragAndDrop.test.tsx`: Drag and drop functionality
+   - `useGlobalEscapeManager.test.tsx`: Escape key handling
 
-4. **i18n Tests**:
+4. **Utility Tests**:
+   Located in `/src/utils/__tests__/`:
+   - `utils.test.ts`: General utility functions
+   - `directives.test.tsx`: Custom directive tests
+
+5. **i18n Tests**:
+   Located in `/src/i18n/__tests__/`:
    - `translations.test.ts`: Core translation system
-   - Language-specific tests:
-     - `arabic-plural.test.ts`
-     - `czech-plural.test.ts`
-     - `hungarian-article.test.ts`
-     - `polish-plural.test.ts`
-     - And more...
+   - Language-specific tests in respective language directories
 
-5. **Hook Tests**:
-   - `useConnectionStatus.test.tsx`: Connection status hook
+6. **Integration Tests**:
+   Located in `/src/test/integration/`:
+   - End-to-end workflows
+   - Cross-component interactions
+   - State management integration
 
 ## Test Environment Setup
 

@@ -1,9 +1,9 @@
 /**
- * A global keyboard event management hook that handles escape key presses across different modal states.
- * This hook provides centralized keyboard event handling and state management for modal, settings,
+ * A global keyboard event and overlay state manager that handles escape key presses across different modal states.
+ * This manager provides centralized keyboard event handling and state management for modal, settings,
  * and quick jump overlays in the application.
  * 
- * @module useGlobalKeyboard
+ * @module useGlobalEscapeManager
  * 
  * Features:
  * - Manages global keyboard state for different overlay types (modal, settings, quick jump)
@@ -23,7 +23,7 @@
  * @example
  * ```tsx
  * const MyComponent = () => {
- *   const { registerCloseHandler, setKeyboardState } = useGlobalKeyboard();
+ *   const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
  * 
  *   onMount(() => {
  *     setKeyboardState('modalOpen', true);
@@ -39,7 +39,7 @@
  * };
  * ```
  * 
- * @returns {Object} Hook methods and state management functions
+ * @returns {Object} Manager methods and state management functions
  * @returns {Function} .registerCloseHandler - Registers a close handler for a specific overlay type
  * @returns {Function} .setKeyboardState - Updates the keyboard state for a specific overlay
  */
@@ -66,7 +66,7 @@ interface CloseHandlers {
 
 const closeHandlers: CloseHandlers = {};
 
-export const useGlobalKeyboard = () => {
+export const createGlobalEscapeManager = () => {
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
       event.preventDefault();

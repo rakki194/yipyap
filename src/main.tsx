@@ -4,7 +4,7 @@ import { Router } from "@solidjs/router";
 import { routes } from "./router";
 import { AppProvider } from "./contexts/app";
 import { NotificationContainer } from "./components/Notification/NotificationContainer";
-import useConnectionStatus from "./hooks/useConnectionStatus";
+import useConnectionStatus from "./composables/useConnectionStatus";
 import "./styles.css";
 
 const CustomErrorBoundary: ParentComponent = (props) => {

@@ -17,7 +17,7 @@ import { ProgressOverlay, ProgressInfo } from './ProgressOverlay';
 import { SettingsOverlay } from './SettingsOverlay';
 import { useScrollManager } from './ScrollManager';
 import { useKeyboardManager } from './KeyboardManager';
-import { useDragAndDrop } from '../DragAndDrop';
+import { useDragAndDrop } from '../../composables/useDragAndDrop';
 import "./Gallery.css";
 
 export const Gallery: Component = () => {

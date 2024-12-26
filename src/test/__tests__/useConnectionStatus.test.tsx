@@ -3,7 +3,7 @@ import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "solid-js";
 import { Router, useLocation } from "@solidjs/router";
 import { AppProvider } from "~/contexts/app";
-import useConnectionStatus from "../../hooks/useConnectionStatus";
+import useConnectionStatus from "../../composables/useConnectionStatus";
 
 // Mock router hooks
 vi.mock("@solidjs/router", () => ({

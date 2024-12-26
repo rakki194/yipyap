@@ -2,6 +2,7 @@ import { onCleanup, createSignal } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAppContext } from "~/contexts/app";
 import { useNavigate } from "@solidjs/router";
+import { keyboardState } from "~/composables/useGlobalEscapeManager";
 
 export interface KeyboardHandlerProps {
   onShowQuickJump: () => void;
@@ -30,11 +31,9 @@ export const useKeyboardManager = ({
   const [shiftSelectionStart, setShiftSelectionStart] = createSignal<number | null>(null);
 
   const keyDownHandler = async (event: KeyboardEvent) => {
-    // Don't handle keyboard events when settings or quickjump is open
-    if (isSettingsOpen || isQuickJumpOpen) return;
-
-    // Returns when we don't act on the event, preventDefault for acted-upon event
-    if (!event) return;
+    // Check global keyboard state
+    const state = keyboardState();
+    if (state.modalOpen || state.settingsOpen || state.quickJumpOpen) return;
 
     // Don't act if a input element is focused
     const activeElement = document.activeElement as HTMLElement;

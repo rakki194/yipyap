@@ -1,7 +1,7 @@
 import { Component, createSignal, onCleanup, onMount } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import { useGallery } from "~/contexts/GalleryContext";
-import { useGlobalKeyboard } from "~/hooks/useGlobalKeyboard";
+import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 import getIcon from "~/icons";
 import "./NewFolderDialog.css";
 
@@ -12,7 +12,7 @@ interface NewFolderDialogProps {
 export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
   const app = useAppContext();
   const gallery = useGallery();
-  const { registerCloseHandler, setKeyboardState } = useGlobalKeyboard();
+  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
   const t = app.t;
 
   const [newFolderName, setNewFolderName] = createSignal("");

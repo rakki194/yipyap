@@ -1,6 +1,6 @@
 // src/components/Settings/Settings.tsx
 
-import { Component, Show, createSignal, createEffect, For } from "solid-js";
+import { Component, Show, createSignal, createEffect, For, onMount, onCleanup } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAppContext } from "~/contexts/app";
 import { Theme, themeIconMap, themes } from "~/contexts/theme";
@@ -10,12 +10,30 @@ import { Slider } from "~/components/Slider/Slider";
 import { TransformationSettings } from "./TransformationSettings";
 import "./Settings.css";
 import { languages } from "~/i18n";
+import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 
 export const Settings: Component<{ onClose: () => void }> = (props) => {
   const app = useAppContext();
+  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
   const [activeView, setActiveView] = createSignal<'main' | 'help' | 'transformations' | 'experimental'>('main');
   const [isTransitioning, setIsTransitioning] = createSignal(false);
   const t = app.t;
+
+  onMount(() => {
+    setKeyboardState('settingsOpen', true);
+    const cleanup = registerCloseHandler('settingsOpen', () => {
+      if (activeView() !== 'main') {
+        switchView('main');
+      } else {
+        props.onClose();
+      }
+    });
+
+    onCleanup(() => {
+      cleanup();
+      setKeyboardState('settingsOpen', false);
+    });
+  });
 
   const switchView = (view: 'main' | 'help' | 'transformations' | 'experimental') => {
     if (isTransitioning()) return;
@@ -38,18 +56,20 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
     }, 300);
   };
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Escape") {
-      if (activeView() !== 'main') {
-        switchView('main');
-      } else {
-        props.onClose();
-      }
-    }
-  };
-
   return (
-    <div class="settings-panel card" onKeyDown={handleKeyDown}>
+    <div 
+      class="settings-panel card" 
+      onKeyDown={(e) => {
+        e.stopPropagation();
+        if (e.key === "Escape") {
+          if (activeView() !== 'main') {
+            switchView('main');
+          } else {
+            props.onClose();
+          }
+        }
+      }}
+    >
       <div class="settings-header">
         <h2>{t('settings.title')}</h2>
         <div class="settings-header-buttons">
@@ -95,7 +115,12 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
         </div>
       </div>
       
-      <div class="settings-content-wrapper">
+      <div 
+        class="settings-content-wrapper"
+        onKeyDown={(e) => {
+          e.stopPropagation();
+        }}
+      >
         <Show
           when={activeView() === 'main'}
           fallback={

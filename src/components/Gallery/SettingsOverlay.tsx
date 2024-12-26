@@ -1,6 +1,6 @@
 import { Component, onCleanup, onMount } from "solid-js";
 import { Settings } from "~/components/Settings/Settings";
-import { useGlobalKeyboard } from "~/hooks/useGlobalKeyboard";
+import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 import "./SettingsOverlay.css";
 
 interface SettingsOverlayProps {
@@ -9,7 +9,7 @@ interface SettingsOverlayProps {
 
 export const SettingsOverlay: Component<SettingsOverlayProps> = (props) => {
   let settingsRef: HTMLDivElement | undefined;
-  const { registerCloseHandler, setKeyboardState } = useGlobalKeyboard();
+  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
 
   onMount(() => {
     // Focus trap

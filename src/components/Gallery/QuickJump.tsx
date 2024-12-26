@@ -5,6 +5,7 @@ import {
   Show,
   createResource,
   onMount,
+  onCleanup,
 } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { useGallery } from "~/contexts/GalleryContext";
@@ -12,6 +13,7 @@ import "./QuickJump.css";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 import { getNextTheme, themeIconMap } from "~/contexts/theme";
+import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 
 interface FolderMatch {
   name: string;
@@ -36,6 +38,7 @@ export const QuickJump: Component<{
 }> = (props) => {
   const { t } = useAppContext();
   const app = useAppContext();
+  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
   let inputRef: HTMLInputElement | undefined;
   const [search, setSearch] = createSignal("");
   const [selectedIndex, setSelectedIndex] = createSignal(0);
@@ -46,20 +49,13 @@ export const QuickJump: Component<{
 
   onMount(() => {
     inputRef?.focus();
+    setKeyboardState('quickJumpOpen', true);
+    const cleanup = registerCloseHandler('quickJumpOpen', props.onClose);
     
-    // Add global keyboard event listener
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        props.onClose();
-      }
-    };
-    
-    document.addEventListener("keydown", handleGlobalKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleGlobalKeyDown);
-    };
+    onCleanup(() => {
+      cleanup();
+      setKeyboardState('quickJumpOpen', false);
+    });
   });
 
   const isInSubfolder = () => {
