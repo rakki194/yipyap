@@ -206,10 +206,6 @@ export const ImageItem = (props: {
     }));
     e.dataTransfer.effectAllowed = 'move';
 
-    // Add being-dragged class to this item
-    const target = e.currentTarget as HTMLElement;
-    target.classList.add('being-dragged');
-
     // If this item is part of a multi-selection, include all selected items
     if (isMultiSelected()) {
       const selectedItems = Array.from(gallery.selection.multiSelected)
@@ -229,12 +225,16 @@ export const ImageItem = (props: {
       e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
 
       // Add being-dragged class to all selected images
-      document.querySelectorAll('.item.image').forEach(el => {
-        const itemIdx = parseInt(el.getAttribute('data-idx') || '');
-        if (!isNaN(itemIdx) && gallery.selection.multiSelected.has(itemIdx)) {
-          el.classList.add('being-dragged');
-        }
+      requestAnimationFrame(() => {
+        gallery.selection.multiSelected.forEach(idx => {
+          const el = document.querySelector(`.item.image[data-idx="${idx}"]`);
+          if (el) el.classList.add('being-dragged');
+        });
       });
+    } else {
+      // Single item drag
+      const target = e.currentTarget as HTMLElement;
+      target.classList.add('being-dragged');
     }
   };
 
@@ -364,10 +364,6 @@ export const DirectoryItem = (props: {
     }));
     e.dataTransfer.effectAllowed = 'move';
 
-    // Add being-dragged class to this folder
-    const target = e.currentTarget as HTMLElement;
-    target.classList.add('being-dragged');
-
     // If this folder is part of a multi-selection, include all selected folders
     if (isMultiSelected()) {
       const selectedItems = Array.from(gallery.selection.multiFolderSelected)
@@ -387,12 +383,16 @@ export const DirectoryItem = (props: {
       e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
 
       // Add being-dragged class to all selected directories
-      document.querySelectorAll('.item.directory').forEach(el => {
-        const itemIdx = parseInt(el.getAttribute('data-idx') || '');
-        if (!isNaN(itemIdx) && gallery.selection.multiFolderSelected.has(itemIdx)) {
-          el.classList.add('being-dragged');
-        }
+      requestAnimationFrame(() => {
+        gallery.selection.multiFolderSelected.forEach(idx => {
+          const el = document.querySelector(`.item.directory[data-idx="${idx}"]`);
+          if (el) el.classList.add('being-dragged');
+        });
       });
+    } else {
+      // Single item drag
+      const target = e.currentTarget as HTMLElement;
+      target.classList.add('being-dragged');
     }
   };
 
