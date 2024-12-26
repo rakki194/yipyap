@@ -60,9 +60,6 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
       gallery.invalidate();
       gallery.invalidateFolderCache();
       await gallery.refetch();
-      
-      // Ensure we're on the first page to see the new folder
-      gallery.setPage(0);
 
       // Show success notification
       app.notify(

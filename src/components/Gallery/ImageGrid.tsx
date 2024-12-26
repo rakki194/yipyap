@@ -446,7 +446,7 @@ export const DirectoryItem = (props: {
   return (
     <A
       ref={props.ref}
-      href={`/${fullPath}`}
+      href={`/gallery/${fullPath}`}
       class="item directory"
       classList={{ 
         selected: props.selected,

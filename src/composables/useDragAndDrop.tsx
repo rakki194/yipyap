@@ -129,10 +129,10 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
 
         // Only check for same directory if moving between directories
         if (item.type === 'directory' && sourcePath === targetPath) {
-        //  appContext.notify(
-        //    t("gallery.sameDirectoryMove"),
-        //    "info"
-        //  );
+          appContext.notify(
+            t("gallery.sameDirectoryMove"),
+            "info"
+          );
           return;
         }
         
@@ -165,11 +165,10 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         }
         
         if (result.failed.length > 0) {
-          //appContext.notify(
-          //  t("gallery.moveFailed", { files: result.failed.join(", ") }),
-          //  "error"
-          //);
-          return;
+          appContext.notify(
+            t("gallery.moveFailed", { files: result.failed.join(", ") }),
+            "error"
+          );
         }
 
         // Refresh both source and target directories
@@ -199,52 +198,32 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     const draggableItem = target.closest('.item');
     if (!draggableItem) return;
 
-    const idx = parseInt(draggableItem.getAttribute('data-idx') || '');
-    if (isNaN(idx)) return;
-
-    // Always add being-dragged class to the dragged item
     draggableItem.classList.add('being-dragged');
 
-    // Check if the dragged item is part of any multi-selection
-    const isInImageSelection = gallery.selection.multiSelected.has(idx);
-    const isInFolderSelection = gallery.selection.multiFolderSelected.has(idx);
-
-    if (isInImageSelection || isInFolderSelection) {
-      // Add being-dragged class to all selected images
-      document.querySelectorAll('.item.image').forEach(el => {
-        const itemIdx = parseInt(el.getAttribute('data-idx') || '');
-        if (!isNaN(itemIdx) && gallery.selection.multiSelected.has(itemIdx)) {
-          el.classList.add('being-dragged');
-        }
-      });
-
-      // Add being-dragged class to all selected folders
-      document.querySelectorAll('.item.directory').forEach(el => {
-        const itemIdx = parseInt(el.getAttribute('data-idx') || '');
-        if (!isNaN(itemIdx) && gallery.selection.multiFolderSelected.has(itemIdx)) {
-          el.classList.add('being-dragged');
-        }
-      });
+    // If this is a directory and it's part of a multi-selection
+    if (draggableItem.classList.contains('directory')) {
+      const idx = parseInt(draggableItem.getAttribute('data-idx') || '');
+      if (!isNaN(idx) && gallery.selection.multiFolderSelected.has(idx)) {
+        // Add being-dragged class to all selected directories
+        document.querySelectorAll('.item.directory').forEach(el => {
+          const itemIdx = parseInt(el.getAttribute('data-idx') || '');
+          if (!isNaN(itemIdx) && gallery.selection.multiFolderSelected.has(itemIdx)) {
+            el.classList.add('being-dragged');
+          }
+        });
+      }
     }
-
-    // Set up drag data transfer
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = 'move';
-      const itemData = {
-        type: draggableItem.classList.contains('directory') ? 'directory' : 'image',
-        name: draggableItem.getAttribute('data-name') || '',
-        path: draggableItem.getAttribute('data-path') || ''
-      };
-      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify(itemData));
-
-      // If part of multi-selection, add all selected items data
-      if (isInImageSelection || isInFolderSelection) {
-        const selectedItems = Array.from(document.querySelectorAll('.item.being-dragged')).map(el => ({
-          type: el.classList.contains('directory') ? 'directory' : 'image',
-          name: el.getAttribute('data-name') || '',
-          path: el.getAttribute('data-path') || ''
-        }));
-        e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+    // If this is an image and it's part of a multi-selection
+    else if (draggableItem.classList.contains('image')) {
+      const idx = parseInt(draggableItem.getAttribute('data-idx') || '');
+      if (!isNaN(idx) && gallery.selection.multiSelected.has(idx)) {
+        // Add being-dragged class to all selected images
+        document.querySelectorAll('.item.image').forEach(el => {
+          const itemIdx = parseInt(el.getAttribute('data-idx') || '');
+          if (!isNaN(itemIdx) && gallery.selection.multiSelected.has(itemIdx)) {
+            el.classList.add('being-dragged');
+          }
+        });
       }
     }
   };

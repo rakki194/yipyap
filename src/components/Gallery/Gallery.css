@@ -183,19 +183,6 @@
       z-index: 1;
     }
 
-    /* Add strawberry theme-specific drag target styles */
-    [data-theme="strawberry"] &.drag-target {
-      outline: none;
-      background-color: var(--accent);
-      color: white;
-      transition: background-color 0.4s ease, color 0.4s ease;
-
-      svg {
-        fill: white;
-        transition: fill 0.4s ease;
-      }
-    }
-
     .icon {
       flex: 0 0 auto;
       margin: 0 var(--spacing);

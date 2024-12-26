@@ -254,7 +254,7 @@ export const BreadcrumbActions: Component = () => {
 
       // Navigate to parent folder
       const parentPath = currentPath.split("/").slice(0, -1).join("/");
-      window.location.href = parentPath ? `/${parentPath}` : "/";
+      window.location.href = parentPath ? `/gallery/${parentPath}` : "/gallery";
 
       app.notify(
         t('notifications.folderDeleted'),
