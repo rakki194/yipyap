@@ -94,22 +94,6 @@ export default {
     thumbnailSizeDescription: "Größe der Vorschaubilder in Pixeln (z.B. 250)",
     thumbnailSizeUpdateError: "Fehler beim Aktualisieren der Vorschaubildgröße",
   },
-  frontPage: {
-    subtitle: {
-      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見つけました",
-      3: "虚ろな瞳に映る、無限の宇宙",
-      4: "錆びた心、新たな芽吹き",
-      5: "夢と現実が交錯する、不思議な境地",
-      6: "未知の領域、無限の可能性",
-      7: "時の流れを超えた、永遠の愛",
-      8: "これで追い出されますよ！",
-    },
-    imageWork: "Mit Bildern arbeiten",
-    audioWork: "Mit Audio arbeiten",
-    deselectAll: "Auswahl aufheben",
-    deleteSelected: "Ausgewählte löschen",
-  },
   gallery: {
     addTag: "Tag hinzufügen",
     addCaption: "Beschriftung hinzufügen",

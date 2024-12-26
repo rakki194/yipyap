@@ -31,7 +31,7 @@ from pathlib import Path
 import logging
 import os
 
-from fastapi import FastAPI, HTTPException, Query, Request, File, UploadFile
+from fastapi import FastAPI, HTTPException, Query, Request, File, UploadFile, Body
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -733,4 +733,81 @@ async def create_folder(path: str):
         
     except Exception as e:
         logger.error(f"Error creating folder: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/move/{path:path}")
+async def move_items(
+    path: str,
+    target: str = Query(..., description="Target directory path"),
+    items: List[str] = Body(..., description="List of items to move"),
+    preserve_latents: bool = Query(False),
+    preserve_txt: bool = Query(False)
+):
+    """
+    Move files and folders to a target directory.
+    
+    Args:
+        path (str): Current directory path
+        target (str): Target directory path
+        items (List[str]): List of items to move
+        preserve_latents (bool): Whether to preserve .npz files
+        preserve_txt (bool): Whether to preserve .txt files
+    """
+    try:
+        source_dir = utils.resolve_path(path, ROOT_DIR)
+        target_dir = utils.resolve_path(target, ROOT_DIR)
+        
+        # Ensure target directory exists
+        target_dir.mkdir(parents=True, exist_ok=True)
+        
+        moved_items = []
+        failed_items = []
+        
+        for item in items:
+            try:
+                source_path = source_dir / item
+                target_path = target_dir / item
+                
+                # Skip if source doesn't exist or target already exists
+                if not source_path.exists() or target_path.exists():
+                    failed_items.append(item)
+                    continue
+                
+                if source_path.is_dir():
+                    # Move directory and all contents
+                    shutil.move(str(source_path), str(target_path))
+                    moved_items.append(item)
+                else:
+                    # Move file and associated files (captions, etc)
+                    stem = source_path.stem
+                    for f in source_path.parent.glob(f"{stem}*"):
+                        # Skip latents/txt files if not preserving them
+                        if (not preserve_latents and f.suffix == '.npz') or \
+                           (not preserve_txt and f.suffix == '.txt'):
+                            continue
+                        shutil.move(str(f), str(target_dir / f.name))
+                    moved_items.append(item)
+                
+            except Exception as e:
+                logger.error(f"Failed to move {item}: {e}")
+                failed_items.append(item)
+        
+        # Touch directories to force cache update
+        source_dir.touch()
+        target_dir.touch()
+        
+        # Clear cache for affected directories
+        if source_dir in data_source.directory_cache:
+            del data_source.directory_cache[source_dir]
+        if target_dir in data_source.directory_cache:
+            del data_source.directory_cache[target_dir]
+        
+        return {
+            "success": True,
+            "moved": moved_items,
+            "failed": failed_items
+        }
+        
+    except Exception as e:
+        logger.error(f"Error moving items: {e}")
         raise HTTPException(status_code=500, detail=str(e))

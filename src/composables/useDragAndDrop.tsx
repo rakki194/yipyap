@@ -26,6 +26,7 @@ export interface DragAndDropProps {
 export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
   const gallery = useGallery();
   const appContext = useAppContext();
+  const t = appContext.t;
   let dragCounter = 0;
   const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB per file
 
@@ -36,8 +37,12 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
   const handleDragEnter = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dragCounter++;
-    onDragStateChange(true);
+
+    // Only show upload overlay for external files
+    if (e.dataTransfer?.types.includes('Files')) {
+      dragCounter++;
+      onDragStateChange(true);
+    }
   };
 
   /**
@@ -47,34 +52,110 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
   const handleDragLeave = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dragCounter--;
-    if (dragCounter === 0) {
-      onDragStateChange(false);
+
+    // Only handle external file drags
+    if (e.dataTransfer?.types.includes('Files')) {
+      dragCounter--;
+      if (dragCounter === 0) {
+        onDragStateChange(false);
+      }
     }
   };
 
   /**
-   * Handles the dragover event, setting the drop effect to 'copy'.
+   * Handles the dragover event, setting the appropriate drop effect.
    */
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.dataTransfer) {
+    if (!e.dataTransfer) return;
+
+    // Check if this is a gallery item drag
+    if (e.dataTransfer.types.includes('application/x-yipyap-item') ||
+        e.dataTransfer.types.includes('application/x-yipyap-items')) {
+      e.dataTransfer.dropEffect = 'move';
+    } else if (e.dataTransfer.types.includes('Files')) {
       e.dataTransfer.dropEffect = 'copy';
     }
   };
 
   /**
-   * Handles the drop event, processing dropped files and initiating
-   * the upload process.
+   * Handles the drop event, processing dropped files or gallery items.
    */
   const handleDrop = async (e: DragEvent) => {
     e.preventDefault();
     onDragStateChange(false);
     dragCounter = 0;
 
-    const files = e.dataTransfer?.files;
-    if (!files) return;
+    if (!e.dataTransfer) return;
+
+    // Handle gallery item drops
+    if (e.dataTransfer.types.includes('application/x-yipyap-item') ||
+        e.dataTransfer.types.includes('application/x-yipyap-items')) {
+      const itemData = e.dataTransfer.getData('application/x-yipyap-item');
+      const itemsData = e.dataTransfer.getData('application/x-yipyap-items');
+      
+      try {
+        const item = JSON.parse(itemData);
+        const items = itemsData ? JSON.parse(itemsData) : [item];
+        
+        // Get current path and settings
+        const currentPath = gallery.data()?.path ?? "";
+        const sourcePath = item.path || "_";  // Use "_" for root directory
+        
+        // Call the move API
+        const response = await fetch(`/api/move/${sourcePath}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            target: currentPath,
+            items: items.map((i: any) => i.name),
+            preserve_latents: appContext.preserveLatents,
+            preserve_txt: appContext.preserveTxt
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Move failed: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        
+        // Show success/failure notifications
+        if (result.moved.length > 0) {
+          appContext.notify(
+            t("gallery.moveComplete", { count: result.moved.length }),
+            "success"
+          );
+        }
+        
+        if (result.failed.length > 0) {
+          appContext.notify(
+            t("gallery.moveFailed", { files: result.failed.join(", ") }),
+            "error"
+          );
+        }
+
+        // Refresh both source and target directories
+        gallery.invalidate();
+        gallery.refetch();
+        
+        return;
+      } catch (err) {
+        console.error('Failed to move items:', err);
+        appContext.notify(
+          t("gallery.moveError", { error: err instanceof Error ? err.message : "Unknown error" }),
+          "error"
+        );
+        return;
+      }
+    }
+
+    // Handle external file drops
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) return;
 
     await uploadFiles(files);
   };

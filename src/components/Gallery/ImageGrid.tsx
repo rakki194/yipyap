@@ -193,6 +193,37 @@ export const ImageItem = (props: {
     }
   };
 
+  const handleDragStart = (e: DragEvent) => {
+    e.stopPropagation();
+    if (!e.dataTransfer) return;
+
+    // Set drag data
+    e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
+      type: 'image',
+      path: props.path,
+      name: props.item.file_name,
+      idx: props.idx
+    }));
+    e.dataTransfer.effectAllowed = 'move';
+
+    // If this item is part of a multi-selection, include all selected items
+    if (isMultiSelected()) {
+      const selectedItems = Array.from(gallery.selection.multiSelected)
+        .map(idx => {
+          const item = gallery.data()?.items[idx];
+          if (item?.type !== 'image') return null;
+          return {
+            type: 'image',
+            path: props.path,
+            name: item.file_name,
+            idx
+          };
+        })
+        .filter(Boolean);
+      e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+    }
+  };
+
   return (
     <div
       ref={props.ref}
@@ -202,6 +233,8 @@ export const ImageItem = (props: {
         "multi-selected": isMultiSelected()
       }}
       onClick={handleClick}
+      draggable={true}
+      onDragStart={handleDragStart}
       role="gridcell"
       aria-selected={props.selected || isMultiSelected()}
       aria-label={`Image: ${props.item.file_name}`}
@@ -289,28 +322,62 @@ export const DirectoryItem = (props: {
 
   const handleClick = (e: MouseEvent) => {
     if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
       gallery.selection.toggleFolderMultiSelect(props.idx);
+    } else {
+      gallery.select(props.idx);
     }
   };
 
-  const isParentDir = props.name === "..";
-  const dirName = isParentDir ? "Parent Directory" : props.name;
+  const handleDragStart = (e: DragEvent) => {
+    e.stopPropagation();
+    if (!e.dataTransfer) return;
+
+    // Set drag data
+    e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
+      type: 'directory',
+      path: props.path,
+      name: props.name,
+      idx: props.idx
+    }));
+    e.dataTransfer.effectAllowed = 'move';
+
+    // If this folder is part of a multi-selection, include all selected folders
+    if (isMultiSelected()) {
+      const selectedItems = Array.from(gallery.selection.multiFolderSelected)
+        .map(idx => {
+          const item = gallery.data()?.items[idx];
+          if (item?.type !== 'directory') return null;
+          return {
+            type: 'directory',
+            path: props.path,
+            name: item.file_name,
+            idx
+          };
+        })
+        .filter(Boolean);
+      e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+    }
+  };
+
+  const fullPath = props.path
+    ? `${props.path}/${props.name}`
+    : props.name;
 
   return (
     <A
       ref={props.ref}
+      href={`/gallery/${fullPath}`}
       class="item directory"
       classList={{ 
         selected: props.selected,
         "multi-selected": isMultiSelected()
       }}
       onClick={handleClick}
-      href={joinUrlParts("/gallery", props.path, props.name)}
+      draggable={true}
+      onDragStart={handleDragStart}
       role="gridcell"
       aria-selected={props.selected || isMultiSelected()}
-      aria-label={`Folder: ${dirName}`}
-      aria-describedby={`dir-details-${props.idx}`}
+      aria-label={`Folder: ${props.name}`}
     >
       <Show when={isMultiSelected()}>
         <div class="multi-select-indicator" aria-hidden="true">
@@ -318,7 +385,7 @@ export const DirectoryItem = (props: {
         </div>
       </Show>
       <span class="icon directory-icon" aria-hidden="true">
-        {getIcon(isParentDir ? "folderArrowUp" : "folder")}
+        {getIcon(props.name === ".." ? "folderArrowUp" : "folder")}
       </span>
       <span class="directory-name" id={`dir-details-${props.idx}`}>
         {props.name}

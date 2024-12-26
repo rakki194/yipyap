@@ -144,22 +144,6 @@ export default {
     replacementPlaceholder: "Enter replacement text",
     selectIcon: "Select Icon",
   },
-  frontPage: {
-    subtitle: {
-      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見つけました",
-      3: "虚ろな瞳に映る、無限の宇宙",
-      4: "錆びた心、新たな芽吹き",
-      5: "夢と現実が交錯する、不思議な境地",
-      6: "未知の領域、無限の可能性",
-      7: "時の流れを超えた、永遠の愛",
-      8: "これで追い出されますよ！",
-    },
-    imageWork: "Image work",
-    audioWork: "Audio work",
-    deselectAll: "Deselect all",
-    deleteSelected: "Delete selected",
-  },
   gallery: {
     addTag: "Add tag",
     addCaption: "Add caption",
@@ -169,6 +153,7 @@ export default {
     noResults: "No results found",
     uploadFiles: "Upload files",
     deleteCurrentFolder: "Delete current folder",
+    moveNotImplemented: "Moving items is not yet implemented",
     folderCount: createPluralTranslation({
       one: "1 folder",
       other: "${count} folders"
@@ -329,6 +314,12 @@ export default {
     enabledTransformations: "Enabled Transformations",
     applyBatchTransform: "Apply batch transformations",
     applyTransformations: "Apply Transformations",
+    moveComplete: createPluralTranslation({
+      one: "Moved 1 item",
+      other: "Moved ${count} items"
+    }, "en"),
+    moveFailed: "Failed to move: {files}",
+    moveError: "Move failed: {error}",
   },
   shortcuts: {
     title: "Keyboard shortcuts",

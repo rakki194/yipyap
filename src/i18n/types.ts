@@ -159,23 +159,6 @@ export interface ToolsTranslations {
   selectIcon: string;
 }
 
-export interface FrontPageTranslations {
-  subtitle: {
-    1: string;
-    2: string;
-    3: string;
-    4: string;
-    5: string;
-    6: string;
-    7: string;
-    8: string;
-  };
-  imageWork: string;
-  audioWork: string;
-  deselectAll: string;
-  deleteSelected: string;
-}
-
 export interface GalleryTranslations {
   addTag: string;
   addCaption: string;
@@ -184,6 +167,7 @@ export interface GalleryTranslations {
   noResults: string;
   uploadFiles: string;
   deleteCurrentFolder: string;
+  moveNotImplemented: string;
   folderCount: TranslationValue;
   fileCount: TranslationValue;
   imageCount: TranslationValue;
@@ -248,6 +232,9 @@ export interface GalleryTranslations {
   enabledTransformations: string;
   applyBatchTransform: string;
   applyTransformations: string;
+  moveComplete: TranslationValue;
+  moveFailed: string;
+  moveError: string;
 }
 
 export interface ShortcutsTranslations {
@@ -314,7 +301,6 @@ export interface Translations {
   common: CommonTranslations;
   settings: SettingsTranslations;
   tools: ToolsTranslations;
-  frontPage: FrontPageTranslations;
   gallery: GalleryTranslations;
   shortcuts: ShortcutsTranslations;
   imageViewer: ImageViewerTranslations;
