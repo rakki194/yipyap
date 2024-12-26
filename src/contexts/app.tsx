@@ -17,7 +17,7 @@ import { Location, useLocation, useNavigate } from "@solidjs/router";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { AppContext } from "~/contexts/contexts";
 import { Theme, getInitialTheme } from "~/contexts/theme";
-import { Locale, getTranslationValue, translations } from "~/i18n";
+import { Locale, getTranslationValue } from "~/i18n";
 import type { Translations } from "~/i18n/types";
 import { createNotification } from "~/components/Notification/NotificationContainer";
 import { TransformationsProvider } from "./transformations";
@@ -72,6 +72,39 @@ export interface AppContext {
     progress?: number;
   }) => void;
 }
+
+const translations: Record<Locale, () => Promise<{ default: Translations }>> = {
+  en: () => import("~/i18n/lang/en") as Promise<{ default: Translations }>,
+  ja: () => import("~/i18n/lang/ja") as Promise<{ default: Translations }>,
+  fr: () => import("~/i18n/lang/fr") as Promise<{ default: Translations }>,
+  ru: () => import("~/i18n/lang/ru") as Promise<{ default: Translations }>,
+  zh: () => import("~/i18n/lang/zh") as Promise<{ default: Translations }>,
+  sv: () => import("~/i18n/lang/sv") as Promise<{ default: Translations }>,
+  pl: () => import("~/i18n/lang/pl") as Promise<{ default: Translations }>,
+  uk: () => import("~/i18n/lang/uk") as Promise<{ default: Translations }>,
+  fi: () => import("~/i18n/lang/fi") as Promise<{ default: Translations }>,
+  de: () => import("~/i18n/lang/de") as Promise<{ default: Translations }>,
+  es: () => import("~/i18n/lang/es") as Promise<{ default: Translations }>,
+  it: () => import("~/i18n/lang/it") as Promise<{ default: Translations }>,
+  pt: () => import("~/i18n/lang/pt") as Promise<{ default: Translations }>,
+  "pt-BR": () => import("~/i18n/lang/pt-BR") as Promise<{ default: Translations }>,
+  ko: () => import("~/i18n/lang/ko") as Promise<{ default: Translations }>,
+  nl: () => import("~/i18n/lang/nl") as Promise<{ default: Translations }>,
+  tr: () => import("~/i18n/lang/tr") as Promise<{ default: Translations }>,
+  vi: () => import("~/i18n/lang/vi") as Promise<{ default: Translations }>,
+  th: () => import("~/i18n/lang/th") as Promise<{ default: Translations }>,
+  ar: () => import("~/i18n/lang/ar") as Promise<{ default: Translations }>,
+  he: () => import("~/i18n/lang/he") as Promise<{ default: Translations }>,
+  hi: () => import("~/i18n/lang/hi") as Promise<{ default: Translations }>,
+  id: () => import("~/i18n/lang/id") as Promise<{ default: Translations }>,
+  cs: () => import("~/i18n/lang/cs") as Promise<{ default: Translations }>,
+  el: () => import("~/i18n/lang/el") as Promise<{ default: Translations }>,
+  hu: () => import("~/i18n/lang/hu") as Promise<{ default: Translations }>,
+  ro: () => import("~/i18n/lang/ro") as Promise<{ default: Translations }>,
+  bg: () => import("~/i18n/lang/bg") as Promise<{ default: Translations }>,
+  da: () => import("~/i18n/lang/da") as Promise<{ default: Translations }>,
+  nb: () => import("~/i18n/lang/nb") as Promise<{ default: Translations }>
+};
 
 /**
  * Creates the app context with initial state and state management functions.
@@ -219,7 +252,14 @@ const createAppContext = (): AppContext => {
       if (import.meta.env.DEV) {
         console.log("Loading translations for locale:", locale);
       }
-      return translations[locale]();
+      try {
+        const module = await translations[locale]();
+        return module.default;
+      } catch (error) {
+        console.error(`Failed to load translations for locale ${locale}, falling back to English:`, error);
+        const enModule = await translations.en();
+        return enModule.default;
+      }
     }
   );
 
