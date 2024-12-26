@@ -740,27 +740,27 @@ async def move_items(
     path: str,
     target: str = Query(..., description="Target directory path"),
     items: List[str] = Body(..., description="List of items to move"),
-    preserve_latents: bool = Query(False),
-    preserve_txt: bool = Query(False)
+    preserve_latents: bool = Body(False, description="Whether to preserve .npz files"),
+    preserve_txt: bool = Body(False, description="Whether to preserve .txt files")
 ):
     """
     Move files and folders to a target directory.
     
     Args:
-        path (str): Current directory path (use "_" for root directory)
+        path (str): Current directory path (empty string for root directory)
         target (str): Target directory path
         items (List[str]): List of items to move
         preserve_latents (bool): Whether to preserve .npz files
         preserve_txt (bool): Whether to preserve .txt files
     """
     try:
-        # Handle root directory case
-        if path == "_":
-            source_dir = ROOT_DIR
-        else:
-            source_dir = utils.resolve_path(path, ROOT_DIR)
-            
+        # Use ROOT_DIR for empty path, otherwise resolve the path
+        source_dir = ROOT_DIR if not path else utils.resolve_path(path, ROOT_DIR)
         target_dir = utils.resolve_path(target, ROOT_DIR)
+        
+        logger.info(f"Moving items from {source_dir} to {target_dir}")
+        logger.info(f"Items to move: {items}")
+        logger.info(f"Preserve settings: latents={preserve_latents}, txt={preserve_txt}")
         
         # Ensure target directory exists
         target_dir.mkdir(parents=True, exist_ok=True)
@@ -773,8 +773,15 @@ async def move_items(
                 source_path = source_dir / item
                 target_path = target_dir / item
                 
+                logger.info(f"Moving {source_path} to {target_path}")
+                
                 # Skip if source doesn't exist or target already exists
-                if not source_path.exists() or target_path.exists():
+                if not source_path.exists():
+                    logger.error(f"Source does not exist: {source_path}")
+                    failed_items.append(item)
+                    continue
+                if target_path.exists():
+                    logger.error(f"Target already exists: {target_path}")
                     failed_items.append(item)
                     continue
                 
@@ -790,6 +797,7 @@ async def move_items(
                         if (not preserve_latents and f.suffix == '.npz') or \
                            (not preserve_txt and f.suffix == '.txt'):
                             continue
+                        logger.info(f"Moving associated file: {f} to {target_dir / f.name}")
                         shutil.move(str(f), str(target_dir / f.name))
                     moved_items.append(item)
                 
@@ -807,11 +815,13 @@ async def move_items(
         if target_dir in data_source.directory_cache:
             del data_source.directory_cache[target_dir]
         
-        return {
+        result = {
             "success": True,
             "moved": moved_items,
             "failed": failed_items
         }
+        logger.info(f"Move operation result: {result}")
+        return result
         
     except Exception as e:
         logger.error(f"Error moving items: {e}")

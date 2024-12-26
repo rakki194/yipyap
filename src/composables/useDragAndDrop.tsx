@@ -101,16 +101,23 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         
         // Get current path and settings
         const currentPath = gallery.data()?.path ?? "";
-        const sourcePath = item.path || "_";  // Use "_" for root directory
+        const sourcePath = item.path || "";  // Empty string for root directory
         
+        console.log('Moving items:', {
+          sourcePath,
+          targetPath: currentPath,
+          items: items.map((i: any) => i.name),
+          preserveLatents: appContext.preserveLatents,
+          preserveTxt: appContext.preserveTxt
+        });
+
         // Call the move API
-        const response = await fetch(`/api/move/${sourcePath}`, {
+        const response = await fetch(`/api/move/${sourcePath}?target=${encodeURIComponent(currentPath)}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            target: currentPath,
             items: items.map((i: any) => i.name),
             preserve_latents: appContext.preserveLatents,
             preserve_txt: appContext.preserveTxt
@@ -118,7 +125,8 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         });
 
         if (!response.ok) {
-          throw new Error(`Move failed: ${response.statusText}`);
+          const errorText = await response.text();
+          throw new Error(`Move failed: ${response.statusText}\n${errorText}`);
         }
 
         const result = await response.json();
