@@ -23,22 +23,62 @@ const configureServer = {
   configureServer(server) {
     if (process.env.NODE_ENV === "development") {
       server.middlewares.use((req, res, next) => {
-        if (req.url?.endsWith(".css")) {
-          res.setHeader("Content-Type", "text/css; charset=utf-8");
-        } else if (req.url?.endsWith(".svg")) {
-          res.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
-        } else if (req.url?.endsWith(".jsx")) {
-          res.setHeader("Content-Type", "text/jsx; charset=utf-8");
-        } else if (req.url?.endsWith(".tsx") || req.url?.endsWith(".ts")) {
-          res.setHeader(
-            "Content-Type",
-            "application/x-typescript; charset=utf-8"
-          );
-        } else if (req.url?.endsWith(".mjs")) {
-          res.setHeader(
-            "Content-Type",
-            "application/javascript; charset=utf-8"
-          );
+        // Set security headers
+        res.setHeader("X-Content-Type-Options", "nosniff");
+
+        // Handle content types based on file extensions and paths
+        if (req.url) {
+          // Extract extension, handling query parameters
+          const urlWithoutQuery = req.url.split("?")[0];
+          const ext = urlWithoutQuery.split(".").pop()?.toLowerCase();
+          
+          // Set content type based on file extension, regardless of path
+          switch (ext) {
+            // Scripts
+            case "js":
+            case "mjs":
+              res.setHeader("Content-Type", "text/javascript; charset=utf-8");
+              break;
+            case "jsx":
+              // Ensure JSX files (including those from node_modules) get correct type
+              res.setHeader("Content-Type", "text/jsx; charset=utf-8");
+              break;
+            case "ts":
+            case "tsx":
+              res.setHeader("Content-Type", "application/x-typescript; charset=utf-8");
+              break;
+
+            // Styles - ensure all CSS files get correct type
+            case "css":
+              res.setHeader("Content-Type", "text/css; charset=utf-8");
+              break;
+
+            // Images
+            case "svg":
+              res.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
+              break;
+            case "png":
+              res.setHeader("Content-Type", "image/png");
+              break;
+            case "jpg":
+            case "jpeg":
+              res.setHeader("Content-Type", "image/jpeg");
+              break;
+            case "gif":
+              res.setHeader("Content-Type", "image/gif");
+              break;
+            case "webp":
+              res.setHeader("Content-Type", "image/webp");
+              break;
+
+            // Data
+            case "json":
+              res.setHeader("Content-Type", "application/json; charset=utf-8");
+              break;
+            case "txt":
+              res.setHeader("Content-Type", "text/plain; charset=utf-8");
+              break;
+          }
         }
         next();
       });
