@@ -15,12 +15,18 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
   const escape = useGlobalEscapeManager();
   const t = app.t;
 
+  let inputRef: HTMLInputElement;
   const [newFolderName, setNewFolderName] = createSignal("");
   const [isCreatingFolder, setIsCreatingFolder] = createSignal(false);
 
   onMount(() => {
     escape.setOverlayState("modal", true);
     const unregister = escape.registerHandler("modal", props.onClose);
+    
+    // Use a small timeout to ensure modal is mounted and other focus is cleared
+    setTimeout(() => {
+      inputRef?.focus();
+    }, 0);
 
     onCleanup(() => {
       escape.setOverlayState("modal", false);
@@ -94,12 +100,12 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
           }}
         >
           <input
+            ref={inputRef!}
             type="text"
             value={newFolderName()}
             onInput={(e) => setNewFolderName(e.currentTarget.value)}
             placeholder={t('gallery.folderNamePlaceholder')}
             disabled={isCreatingFolder()}
-            autofocus
           />
           <div class="modal-actions">
             <button
