@@ -99,12 +99,31 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         const item = JSON.parse(itemData);
         const items = itemsData ? JSON.parse(itemsData) : [item];
         
-        // Get current path and settings
-        const currentPath = gallery.data()?.path ?? "";
+        // Get source path and target directory path
         const sourcePath = item.path || "";  // Empty string for root directory
 
-        // Don't try to move if source and target are the same
-        if (sourcePath === currentPath) {
+        // Get the target directory path
+        let targetPath = gallery.data()?.path ?? "";
+        const targetElement = e.target as HTMLElement;
+        const directoryItem = targetElement.closest('.item.directory') as HTMLElement;
+        if (directoryItem) {
+          // If dropped on a directory item, use its path
+          const dirPath = directoryItem.getAttribute('data-path') || "";
+          const dirName = directoryItem.getAttribute('data-name') || "";
+          targetPath = dirPath ? `${dirPath}/${dirName}` : dirName;
+        }
+
+        console.log('Move paths:', {
+          sourcePath,
+          targetPath,
+          item,
+          items,
+          targetElement,
+          isDirectory: !!directoryItem
+        });
+
+        // Only check for same directory if moving between directories
+        if (item.type === 'directory' && sourcePath === targetPath) {
           appContext.notify(
             t("gallery.sameDirectoryMove"),
             "info"
@@ -112,16 +131,8 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           return;
         }
         
-        console.log('Moving items:', {
-          sourcePath,
-          targetPath: currentPath,
-          items: items.map((i: any) => i.name),
-          preserveLatents: appContext.preserveLatents,
-          preserveTxt: appContext.preserveTxt
-        });
-
         // Call the move API
-        const response = await fetch(`/api/move/${sourcePath}?target=${encodeURIComponent(currentPath)}`, {
+        const response = await fetch(`/api/move/${sourcePath}?target=${encodeURIComponent(targetPath)}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
