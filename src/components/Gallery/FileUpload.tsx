@@ -1,100 +1,17 @@
 import { Component } from "solid-js";
 import { useAppContext } from "~/contexts/app";
-import { useGallery } from "~/contexts/GalleryContext";
 import getIcon from "~/icons";
+import { useFileUpload } from "~/composables/useFileUpload";
 import "./FileUpload.css";
 
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
-
+/**
+ * A button component that handles file uploads through a hidden file input.
+ * Provides a clean UI for file selection and upload functionality.
+ */
 export const FileUpload: Component = () => {
   const app = useAppContext();
-  const gallery = useGallery();
+  const { uploadFiles } = useFileUpload();
   const t = app.t;
-
-  const uploadFiles = async (files: FileList) => {
-    const formData = new FormData();
-    let totalSize = 0;
-    let oversizedFiles = [];
-
-    // Check file sizes and add to form data
-    for (const file of files) {
-      if (file.size > MAX_FILE_SIZE) {
-        oversizedFiles.push(file.name);
-        continue;
-      }
-      totalSize += file.size;
-      formData.append("files", file);
-    }
-
-    if (oversizedFiles.length > 0) {
-      app.notify(
-        t("gallery.filesExceedLimit", { files: oversizedFiles.join(", ") }),
-        "error",
-        "file-upload"
-      );
-      return;
-    }
-
-    if (totalSize === 0) {
-      app.notify(
-        t("gallery.noFilesToUpload"),
-        "error",
-        "file-upload"
-      );
-      return;
-    }
-
-    app.notify(
-      t("gallery.processingFiles"),
-      "info",
-      "file-upload",
-      "spinner"
-    );
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", `/api/upload/${gallery.data()?.path}`);
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const progress = Math.round((event.loaded / event.total) * 100);
-        app.createNotification({
-          message: t("gallery.uploadProgressPercent", { progress }),
-          type: "info",
-          group: "file-upload",
-          icon: "spinner",
-          progress
-        });
-      }
-    };
-
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        app.notify(
-          t("gallery.uploadComplete"),
-          "success",
-          "file-upload"
-        );
-        gallery.invalidate();
-        gallery.refetch();
-      } else {
-        app.notify(
-          t("gallery.uploadFailed", { error: xhr.statusText }),
-          "error",
-          "file-upload"
-        );
-      }
-    };
-
-    xhr.onerror = () => {
-      app.notify(
-        t("gallery.uploadFailed", { error: "Network error" }),
-        "error",
-        "file-upload"
-      );
-    };
-
-    xhr.send(formData);
-  };
 
   return (
     <>

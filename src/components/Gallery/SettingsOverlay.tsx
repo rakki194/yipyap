@@ -1,6 +1,6 @@
 import { Component, onCleanup, onMount } from "solid-js";
 import { Settings } from "~/components/Settings/Settings";
-import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
+import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 import "./SettingsOverlay.css";
 
 interface SettingsOverlayProps {
@@ -9,7 +9,7 @@ interface SettingsOverlayProps {
 
 export const SettingsOverlay: Component<SettingsOverlayProps> = (props) => {
   let settingsRef: HTMLDivElement | undefined;
-  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
+  const { registerHandler, setOverlayState } = useGlobalEscapeManager();
 
   onMount(() => {
     // Focus trap
@@ -17,11 +17,11 @@ export const SettingsOverlay: Component<SettingsOverlayProps> = (props) => {
     settingsRef?.focus();
 
     // Register escape handler
-    setKeyboardState("settingsOpen", true);
-    const unregister = registerCloseHandler("settingsOpen", props.onClose);
+    setOverlayState("settings", true);
+    const unregister = registerHandler("settings", props.onClose);
 
     onCleanup(() => {
-      setKeyboardState("settingsOpen", false);
+      setOverlayState("settings", false);
       unregister();
       previouslyFocused?.focus();
     });

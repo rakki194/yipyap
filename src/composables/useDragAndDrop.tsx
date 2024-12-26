@@ -1,17 +1,38 @@
+/**
+ * DragAndDrop.tsx
+ * 
+ * A composable for handling file drag and drop operations in the gallery.
+ * Provides functionality for file upload with progress tracking, size validation,
+ * and proper drag state management. Supports multiple file uploads with a 100MB
+ * per file size limit.
+ */
+
 import { onCleanup } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAppContext } from "~/contexts/app";
 
+/**
+ * Props for configuring drag and drop behavior
+ */
 export interface DragAndDropProps {
   onDragStateChange: (isDragging: boolean) => void;
 }
 
+/**
+ * Hook that implements drag and drop file upload functionality.
+ * Handles drag events, file validation, upload progress tracking,
+ * and provides feedback through the notification system.
+ */
 export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
   const gallery = useGallery();
   const appContext = useAppContext();
   let dragCounter = 0;
   const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB per file
 
+  /**
+   * Handles the dragenter event, incrementing the drag counter
+   * and updating the drag state.
+   */
   const handleDragEnter = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -19,6 +40,10 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     onDragStateChange(true);
   };
 
+  /**
+   * Handles the dragleave event, decrementing the drag counter
+   * and updating the drag state when appropriate.
+   */
   const handleDragLeave = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -28,6 +53,9 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     }
   };
 
+  /**
+   * Handles the dragover event, setting the drop effect to 'copy'.
+   */
   const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -36,6 +64,10 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     }
   };
 
+  /**
+   * Handles the drop event, processing dropped files and initiating
+   * the upload process.
+   */
   const handleDrop = async (e: DragEvent) => {
     e.preventDefault();
     onDragStateChange(false);
@@ -47,6 +79,15 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     await uploadFiles(files);
   };
 
+  /**
+   * Processes and uploads the provided files, handling size validation,
+   * progress tracking, and error states.
+   * 
+   * - Validates individual file sizes (max 100MB)
+   * - Tracks upload progress
+   * - Provides feedback through notifications
+   * - Refreshes gallery on successful upload
+   */
   const uploadFiles = async (files: FileList) => {
     const t = appContext.t;
     const formData = new FormData();

@@ -13,7 +13,7 @@ import "./QuickJump.css";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 import { getNextTheme, themeIconMap } from "~/contexts/theme";
-import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
+import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 
 interface FolderMatch {
   name: string;
@@ -38,7 +38,7 @@ export const QuickJump: Component<{
 }> = (props) => {
   const { t } = useAppContext();
   const app = useAppContext();
-  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
+  const escape = useGlobalEscapeManager();
   let inputRef: HTMLInputElement | undefined;
   const [search, setSearch] = createSignal("");
   const [selectedIndex, setSelectedIndex] = createSignal(0);
@@ -49,12 +49,12 @@ export const QuickJump: Component<{
 
   onMount(() => {
     inputRef?.focus();
-    setKeyboardState('quickJumpOpen', true);
-    const cleanup = registerCloseHandler('quickJumpOpen', props.onClose);
+    escape.setOverlayState("quickJump", true);
+    const unregister = escape.registerHandler("quickJump", props.onClose);
     
     onCleanup(() => {
-      cleanup();
-      setKeyboardState('quickJumpOpen', false);
+      escape.setOverlayState("quickJump", false);
+      unregister();
     });
   });
 

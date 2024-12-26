@@ -10,28 +10,22 @@ import { Slider } from "~/components/Slider/Slider";
 import { TransformationSettings } from "./TransformationSettings";
 import "./Settings.css";
 import { languages } from "~/i18n";
-import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
+import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 
 export const Settings: Component<{ onClose: () => void }> = (props) => {
   const app = useAppContext();
-  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
+  const escape = useGlobalEscapeManager();
   const [activeView, setActiveView] = createSignal<'main' | 'help' | 'transformations' | 'experimental'>('main');
   const [isTransitioning, setIsTransitioning] = createSignal(false);
   const t = app.t;
 
   onMount(() => {
-    setKeyboardState('settingsOpen', true);
-    const cleanup = registerCloseHandler('settingsOpen', () => {
-      if (activeView() !== 'main') {
-        switchView('main');
-      } else {
-        props.onClose();
-      }
-    });
+    escape.setOverlayState("settings", true);
+    const unregister = escape.registerHandler("settings", props.onClose);
 
     onCleanup(() => {
-      cleanup();
-      setKeyboardState('settingsOpen', false);
+      escape.setOverlayState("settings", false);
+      unregister();
     });
   });
 

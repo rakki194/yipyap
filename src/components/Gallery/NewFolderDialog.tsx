@@ -1,7 +1,7 @@
 import { Component, createSignal, onCleanup, onMount } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import { useGallery } from "~/contexts/GalleryContext";
-import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
+import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 import getIcon from "~/icons";
 import "./NewFolderDialog.css";
 
@@ -12,18 +12,18 @@ interface NewFolderDialogProps {
 export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
   const app = useAppContext();
   const gallery = useGallery();
-  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
+  const escape = useGlobalEscapeManager();
   const t = app.t;
 
   const [newFolderName, setNewFolderName] = createSignal("");
   const [isCreatingFolder, setIsCreatingFolder] = createSignal(false);
 
   onMount(() => {
-    setKeyboardState("modalOpen", true);
-    const unregister = registerCloseHandler("modalOpen", props.onClose);
+    escape.setOverlayState("modal", true);
+    const unregister = escape.registerHandler("modal", props.onClose);
 
     onCleanup(() => {
-      setKeyboardState("modalOpen", false);
+      escape.setOverlayState("modal", false);
       unregister();
     });
   });

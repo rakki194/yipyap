@@ -21,7 +21,7 @@ import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions, SaveCaption } from "~/types";
 import { useAppContext } from "~/contexts/app";
 import { captionIconsMap } from "~/icons";
-import { createGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
+import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -48,15 +48,15 @@ export const ImageModal = (props: ImageModalProps) => {
     computeLayout(props.imageInfo, windowSize)
   );
   const [showMetadata, setShowMetadata] = createSignal(false);
-  const { registerCloseHandler, setKeyboardState } = createGlobalEscapeManager();
+  const escape = useGlobalEscapeManager();
 
   onMount(() => {
     // Register escape handler
-    setKeyboardState("modalOpen", true);
-    const unregister = registerCloseHandler("modalOpen", props.onClose);
+    escape.setOverlayState("modal", true);
+    const unregister = escape.registerHandler("modal", props.onClose);
 
     onCleanup(() => {
-      setKeyboardState("modalOpen", false);
+      escape.setOverlayState("modal", false);
       unregister();
     });
   });

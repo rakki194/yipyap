@@ -2,7 +2,7 @@ import { onCleanup, createSignal } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAppContext } from "~/contexts/app";
 import { useNavigate } from "@solidjs/router";
-import { keyboardState } from "~/composables/useGlobalEscapeManager";
+import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 
 export interface KeyboardHandlerProps {
   onShowQuickJump: () => void;
@@ -28,6 +28,7 @@ export const useKeyboardManager = ({
   const navigate = useNavigate();
   const gallery = useGallery();
   const appContext = useAppContext();
+  const { state: keyboardState } = useGlobalEscapeManager();
   const [shiftSelectionStart, setShiftSelectionStart] = createSignal<number | null>(null);
 
   const keyDownHandler = async (event: KeyboardEvent) => {
