@@ -37,12 +37,15 @@ const availableIcons: IconOption[] = [
   { id: "dog", label: "Dog" },
   { id: "cat", label: "Cat" },
   { id: "turtle", label: "Turtle" },
-  { id: "notepad", label: "Notepad" },
-  { id: "subtitles", label: "Subtitles" },
+  { id: "addCircle", label: "Add Circle Filled" },
+  { id: "addCircleRegular", label: "Add Circle Regular" },
+  { id: "addRegular", label: "Add Regular" },
+  //{ id: "notepad", label: "Notepad" },
+  //{ id: "subtitles", label: "Subtitles" },
   { id: "textSortAscending", label: "Text Sort" },
   { id: "textAlign", label: "Text Align" },
-  { id: "info", label: "Info" },
-  { id: "search", label: "Search" },
+  //{ id: "info", label: "Info" },
+  //{ id: "search", label: "Search" },
 ];
 
 /**

@@ -218,7 +218,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                               onChange={(checked) => app.setEnableZoom(checked)}
                               title={t('settings.enableZoom')}
                             />
-                            {t('settings.enableZoom')}
+                            <span>{t('settings.enableZoom')}</span>
                           </label>
                         </Tooltip>
                         <Tooltip content={t('settings.enableMinimapTooltip')} position="top">
@@ -228,7 +228,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                               onChange={(checked) => app.setEnableMinimap(checked)}
                               title={t('settings.enableMinimap')}
                             />
-                            {t('settings.enableMinimap')}
+                            <span>{t('settings.enableMinimap')}</span>
                           </label>
                         </Tooltip>
                         <Tooltip content={t('settings.alwaysShowCaptionEditorTooltip')} position="top">
@@ -238,7 +238,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                               onChange={(checked) => app.setAlwaysShowCaptionEditor(checked)}
                               title={t('settings.alwaysShowCaptionEditor')}
                             />
-                            {t('settings.alwaysShowCaptionEditor')}
+                            <span>{t('settings.alwaysShowCaptionEditor')}</span>
                           </label>
                         </Tooltip>
                       </div>

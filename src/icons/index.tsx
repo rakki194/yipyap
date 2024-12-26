@@ -3,7 +3,12 @@ import PeanutIcon from "./peanut.svg?raw";
 import BananaIcon from "./banana.svg?raw";
 import YipYap from "./favicon.svg?raw";
 import DeleteDataset from "./delete_dataset.svg?raw";
-import DeleteRegular from "@fluentui/svg-icons/icons/delete_24_regular.svg?raw";
+import TurtleRegular from "@fluentui/svg-icons/icons/animal_turtle_24_regular.svg?raw";
+import CatRegular from "@fluentui/svg-icons/icons/animal_cat_24_regular.svg?raw";
+import AddCircleFilled from "@fluentui/svg-icons/icons/add_circle_24_filled.svg?raw";
+import AddCircleRegular from "@fluentui/svg-icons/icons/add_circle_24_regular.svg?raw";
+import AddRegular from "@fluentui/svg-icons/icons/add_24_regular.svg?raw";
+import DogRegular from "@fluentui/svg-icons/icons/animal_dog_24_regular.svg?raw";
 import HomeIcon from "@fluentui/svg-icons/icons/home_24_regular.svg?raw";
 import SunIcon from "@fluentui/svg-icons/icons/weather_sunny_24_regular.svg?raw";
 import CloudIcon from "@fluentui/svg-icons/icons/weather_cloudy_24_regular.svg?raw";
@@ -87,6 +92,12 @@ export const themeIconMap = {
 };
 
 const iconMap: Readonly<Record<string, string>> = {
+  addCircle: AddCircleFilled,
+  addCircleRegular: AddCircleRegular,
+  addRegular: AddRegular,
+  cat: CatRegular,
+  dog: DogRegular,
+  turtle: TurtleRegular,
   rocket: RocketFilled,
   trash: DeleteDataset,
   upload: FolderArrowUpIcon,

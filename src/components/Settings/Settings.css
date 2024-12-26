@@ -428,6 +428,17 @@ kbd {
   align-items: center;
   gap: var(--spacing);
   color: var(--text-primary);
+  justify-content: space-between;
+  width: 100%;
+}
+
+.experimental-options label .toggle {
+  order: 2;
+  margin-left: auto;
+}
+
+.experimental-options label span {
+  order: 1;
 }
 
 .language-buttons {
