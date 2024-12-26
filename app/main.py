@@ -767,6 +767,7 @@ async def move_items(
         
         moved_items = []
         failed_items = []
+        failed_reasons = {}
         
         for item in items:
             try:
@@ -779,10 +780,12 @@ async def move_items(
                 if not source_path.exists():
                     logger.error(f"Source does not exist: {source_path}")
                     failed_items.append(item)
+                    failed_reasons[item] = "source_missing"
                     continue
                 if target_path.exists():
                     logger.error(f"Target already exists: {target_path}")
                     failed_items.append(item)
+                    failed_reasons[item] = "target_exists"
                     continue
                 
                 if source_path.is_dir():
@@ -804,6 +807,7 @@ async def move_items(
             except Exception as e:
                 logger.error(f"Failed to move {item}: {e}")
                 failed_items.append(item)
+                failed_reasons[item] = "error"
         
         # Touch directories to force cache update
         source_dir.touch()
@@ -818,7 +822,8 @@ async def move_items(
         result = {
             "success": True,
             "moved": moved_items,
-            "failed": failed_items
+            "failed": failed_items,
+            "failed_reasons": failed_reasons
         }
         logger.info(f"Move operation result: {result}")
         return result

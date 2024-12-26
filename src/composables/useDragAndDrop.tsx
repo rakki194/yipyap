@@ -128,11 +128,13 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         }
 
         // Only check for same directory if moving between directories
-        if (item.type === 'directory' && sourcePath === targetPath) {
-        //  appContext.notify(
-        //    t("gallery.sameDirectoryMove"),
-        //    "info"
-        //  );
+        if (sourcePath === targetPath) {
+          // NOTE: Don't uncomment the toast and don't remove it.
+          //                    I like it here!
+          //appContext.notify(
+          //  t("gallery.sameDirectoryMove"),
+          //  "info"
+          //);
           return;
         }
         
@@ -165,15 +167,71 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         }
         
         if (result.failed.length > 0) {
-          //appContext.notify(
-          //  t("gallery.moveFailed", { files: result.failed.join(", ") }),
-          //  "error"
-          //);
-          return;
+          const existingFiles = result.failed.filter((file: string) => result.failed_reasons[file] === "target_exists");
+          const missingFiles = result.failed.filter((file: string) => result.failed_reasons[file] === "source_missing");
+          const otherFiles = result.failed.filter((file: string) => !["target_exists", "source_missing"].includes(result.failed_reasons[file]));
+
+          // Clean up any existing animations
+          document.querySelectorAll('.move-failed').forEach(el => {
+            el.classList.remove('move-failed');
+          });
+
+          // Handle animations after a short delay to ensure DOM is ready
+          setTimeout(() => {
+            result.failed.forEach((file: string) => {
+              // Try both directory and image items
+              const selector = `#gallery .responsive-grid .item[data-name="${CSS.escape(file)}"]`;
+              const item = document.querySelector(selector);
+              
+              if (item) {
+                // Remove any drag-related classes that might interfere
+                item.classList.remove('being-dragged', 'drag-target');
+                
+                // Force a reflow before adding the animation class
+                void (item as HTMLElement).offsetWidth;
+                
+                // Add animation class
+                item.classList.add('move-failed');
+                
+                // Remove the class after animation completes
+                setTimeout(() => {
+                  item.classList.remove('move-failed');
+                }, 400);
+              }
+            });
+          }, 50); // Small delay to ensure DOM is ready
+
+          if (existingFiles.length > 0) {
+            appContext.notify(
+              t("gallery.moveFailedExists", { files: existingFiles.join(", ") }),
+              "error"
+            );
+          }
+          
+          if (missingFiles.length > 0) {
+            appContext.notify(
+              t("gallery.moveFailedMissing", { files: missingFiles.join(", ") }),
+              "error"
+            );
+          }
+
+          // NOTE: Don't uncomment the toast and don't remove it.
+          // this error happens when a folder is multiselected and dropped on the same folder it already exists in.
+          // and probably other cases.
+          if (otherFiles.length > 0) {
+            //appContext.notify(
+            //  t("gallery.moveFailed", { files: otherFiles.join(", ") }),
+            //  "error"
+            //);
+            console.log("Move failed", otherFiles);
+          }
         }
 
-        // Refresh both source and target directories
-        gallery.refetchGallery();
+        // Only refetch if something actually moved
+        if (result.moved.length > 0) {
+          // Refresh both source and target directories
+          gallery.refetchGallery();
+        }
         
         return;
       } catch (err) {

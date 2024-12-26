@@ -123,6 +123,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
+      z-index: 2;
 
       > p {
         color: white;
@@ -136,6 +137,12 @@
       svg {
         filter: drop-shadow(1px 1px 0.1px var(--text-primary));
       }
+    }
+
+    &:hover > .overlay,
+    &.selected > .overlay,
+    &.multi-selected > .overlay {
+      opacity: 1;
     }
 
     > .spin-icon {
@@ -339,6 +346,40 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-8px); }
+  80% { transform: translateX(8px); }
+}
+
+@keyframes flashRed {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(255, 0, 0, 0.5); }
+}
+
+.move-failed {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both, flashRed 0.4s ease-in-out;
+  transform-origin: center;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Ensure animation plays on top of other effects */
+.move-failed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: 11;
+  pointer-events: none;
+  animation: flashRed 0.4s ease-in-out;
 }
 
 /* Add blur and darken effect for multiselected items */
@@ -555,4 +596,16 @@
 /* Ensure the drag target outline is above other effects */
 .item.directory.drag-target {
   z-index: 1;
+}
+
+[data-theme="strawberry"] .item.directory.selected {
+  background-color: var(--accent);
+}
+
+[data-theme="strawberry"] .item.directory.selected svg {
+  fill: white;
+}
+
+[data-theme="strawberry"] .item.directory.selected .directory-name {
+  color: white;
 }

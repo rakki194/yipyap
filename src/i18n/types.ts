@@ -234,6 +234,8 @@ export interface GalleryTranslations {
   applyTransformations?: string;
   moveComplete?: TranslationValue;
   moveFailed?: string;
+  moveFailedExists?: string;
+  moveFailedMissing?: string;
   moveError?: string;
   sameDirectoryMove?: string;
 }

@@ -319,6 +319,8 @@ export default {
       other: "Moved ${count} items"
     }, "en"),
     moveFailed: "Failed to move: {files}",
+    moveFailedExists: "Cannot move {files} because they already exist in the target folder",
+    moveFailedMissing: "Cannot move {files} because they no longer exist",
     moveError: "Move failed: {error}",
     sameDirectoryMove: "Cannot move items to the same directory they are already in",
   },
