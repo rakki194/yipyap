@@ -15,7 +15,7 @@ const AudioPage = lazy(() => import("./pages/Audio"));
  *
  * Defines the following routes:
  * - / - Gallery view (root)
- * - /gallery/* - Main gallery view with nested paths
+ * - /* - Main gallery view with nested paths
  * - /audio/* - Main audio view with nested paths
  * - *404 - Catch-all route for 404 errors
  */
@@ -25,7 +25,7 @@ export const routes: RouteDefinition[] = [
     component: GalleryPage,
   },
   {
-    path: "/gallery/*path",
+    path: "/*path",
     component: GalleryPage,
   },
   {
