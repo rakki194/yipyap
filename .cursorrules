@@ -132,6 +132,10 @@ For detailed information about the translation system, including type definition
 
 For detailed information about making style changes to the application, please refer to the [Theming Documentation](docs/theming.md).
 
+For guidelines on using backdrop filters in the application, including best practices, please refer to the [Backdrop Filter Documentation](docs/backdrop-filter.md).
+
+For information about implementing smooth transitions for overlay elements like modals and popovers, please refer to the [Overlay Transitions Documentation](docs/overlay-transitions.md).
+
 ## Writing Tests
 
 For documentation about writing tests, including test environment setup, patterns, and best practices, please refer to the [Testing Documentation](docs/testing.md).

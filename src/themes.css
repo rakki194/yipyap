@@ -248,7 +248,9 @@
     width: 100%;
     height: 3rem;
     background: linear-gradient(45deg, #c41e3aa2 0%, #0033209f 100%);
-    backdrop-filter: blur(10px);
+    @supports (backdrop-filter: blur(10px)) {
+      backdrop-filter: blur(10px) saturate(120%);
+    }
     z-index: 1100;
     display: flex;
     align-items: center;
@@ -296,6 +298,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 1200;
     min-width: 200px;
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 
     /* Add snow effect to dropdown */
