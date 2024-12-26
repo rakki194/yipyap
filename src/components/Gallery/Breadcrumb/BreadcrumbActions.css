@@ -132,57 +132,10 @@
   cursor: help;
 }
 
-/* Toggle switch styles */
+/* Remove toggle styles since we're using the Toggle component */
 .transform-item input[type="checkbox"],
 .caption-type input[type="checkbox"] {
-  position: relative;
-  width: 3em;
-  height: 1.5em;
   margin-left: auto;
-  appearance: none;
-  background: var(--secondary-bg);
-  border-radius: 1.5em;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.transform-item input[type="checkbox"]::before,
-.caption-type input[type="checkbox"]::before {
-  content: "";
-  position: absolute;
-  left: 0.2em;
-  top: 0.2em;
-  width: 1.1em;
-  height: 1.1em;
-  border-radius: 50%;
-  background: var(--text-secondary);
-  transition: transform 0.3s, background 0.3s;
-}
-
-.transform-item input[type="checkbox"]:checked,
-.caption-type input[type="checkbox"]:checked {
-  background: var(--accent);
-}
-
-.transform-item input[type="checkbox"]:checked::before,
-.caption-type input[type="checkbox"]:checked::before {
-  transform: translateX(1.5em);
-  background: var(--text-tertiary);
-}
-
-.transform-item input[type="checkbox"]:hover::before,
-.caption-type input[type="checkbox"]:hover::before {
-  background: var(--text-primary);
-}
-
-.transform-item input[type="checkbox"]:checked:hover::before,
-.caption-type input[type="checkbox"]:checked:hover::before {
-  background: var(--text-tertiary);
-}
-
-/* Hide description since we're using tooltips */
-.transform-description {
-  display: none;
 }
 
 .dialog-actions {

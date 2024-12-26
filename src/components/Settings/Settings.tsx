@@ -11,6 +11,7 @@ import { TransformationSettings } from "./TransformationSettings";
 import "./Settings.css";
 import { languages } from "~/i18n";
 import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
+import { Toggle } from "~/components/Toggle/Toggle";
 
 export const Settings: Component<{ onClose: () => void }> = (props) => {
   const app = useAppContext();
@@ -212,30 +213,30 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                       <div class="experimental-options">
                         <Tooltip content={t('settings.enableZoomTooltip')} position="top">
                           <label>
-                            <input
-                              type="checkbox"
+                            <Toggle
                               checked={app.enableZoom}
-                              onChange={(e) => app.setEnableZoom(e.currentTarget.checked)}
+                              onChange={(checked) => app.setEnableZoom(checked)}
+                              title={t('settings.enableZoom')}
                             />
                             {t('settings.enableZoom')}
                           </label>
                         </Tooltip>
                         <Tooltip content={t('settings.enableMinimapTooltip')} position="top">
                           <label>
-                            <input
-                              type="checkbox"
+                            <Toggle
                               checked={app.enableMinimap}
-                              onChange={(e) => app.setEnableMinimap(e.currentTarget.checked)}
+                              onChange={(checked) => app.setEnableMinimap(checked)}
+                              title={t('settings.enableMinimap')}
                             />
                             {t('settings.enableMinimap')}
                           </label>
                         </Tooltip>
                         <Tooltip content={t('settings.alwaysShowCaptionEditorTooltip')} position="top">
                           <label>
-                            <input
-                              type="checkbox"
+                            <Toggle
                               checked={app.alwaysShowCaptionEditor}
-                              onChange={(e) => app.setAlwaysShowCaptionEditor(e.currentTarget.checked)}
+                              onChange={(checked) => app.setAlwaysShowCaptionEditor(checked)}
+                              title={t('settings.alwaysShowCaptionEditor')}
                             />
                             {t('settings.alwaysShowCaptionEditor')}
                           </label>
@@ -345,12 +346,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   <div class="icon-buttons">
                     <Tooltip content={t('settings.disableAnimationsTooltip')} position="top">
                       <label>
-                        <input
-                          type="checkbox"
+                        <Toggle
                           checked={app.disableAnimations}
-                          onChange={(e) =>
-                            app.setDisableAnimations(e.currentTarget.checked)
-                          }
+                          onChange={(checked) => app.setDisableAnimations(checked)}
+                          title={t('settings.disableAnimations')}
                         />
                         {t('settings.disableAnimations')}
                       </label>
@@ -381,10 +380,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                     <div class="setting-item">
                       <Tooltip content={t('settings.disableNonsenseTooltip')} position="top">
                         <label>
-                          <input
-                            type="checkbox"
+                          <Toggle
                             checked={app.disableNonsense}
-                            onChange={(e) => app.setDisableNonsense(e.currentTarget.checked)}
+                            onChange={(checked) => app.setDisableNonsense(checked)}
+                            title={t('settings.disableNonsense')}
                           />
                           {t('settings.disableNonsense')}
                         </label>
@@ -474,10 +473,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               </Show>
               <Tooltip content={t('settings.instantDeleteTooltip')} position="top">
                 <label>
-                  <input
-                    type="checkbox"
+                  <Toggle
                     checked={app.instantDelete}
-                    onChange={(e) => app.setInstantDelete(e.currentTarget.checked)}
+                    onChange={(checked) => app.setInstantDelete(checked)}
+                    title={t('settings.instantDelete')}
                   />
                   {t('settings.instantDelete')}
                 </label>
@@ -486,10 +485,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               <div class="setting-item">
                 <Tooltip content={t('settings.preserveLatentsTooltip')} position="top">
                   <label>
-                    <input
-                      type="checkbox"
+                    <Toggle
                       checked={app.preserveLatents}
-                      onChange={(e) => app.setPreserveLatents(e.currentTarget.checked)}
+                      onChange={(checked) => app.setPreserveLatents(checked)}
+                      title={t('settings.preserveLatents')}
                     />
                     {t('settings.preserveLatents')}
                   </label>
@@ -499,10 +498,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               <div class="setting-item">
                 <Tooltip content={t('settings.preserveTxtTooltip')} position="top">
                   <label>
-                    <input
-                      type="checkbox"
+                    <Toggle
                       checked={app.preserveTxt}
-                      onChange={(e) => app.setPreserveTxt(e.currentTarget.checked)}
+                      onChange={(checked) => app.setPreserveTxt(checked)}
+                      title={t('settings.preserveTxt')}
                     />
                     {t('settings.preserveTxt')}
                   </label>

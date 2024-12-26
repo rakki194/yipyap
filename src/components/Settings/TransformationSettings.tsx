@@ -19,6 +19,7 @@ import { useTransformations, TransformationType, Transformation, SearchReplaceTr
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 import "./TransformationSettings.css";
+import { Toggle } from "~/components/Toggle/Toggle";
 
 /**
  * Interface defining an icon option with an ID and display label
@@ -449,8 +450,7 @@ export const TransformationSettings: Component<{
                   </button>
                 </Show>
                 <label>
-                  <input
-                    type="checkbox"
+                  <Toggle
                     checked={transformation.enabled}
                     onChange={() => toggleTransformation(transformation.id)}
                     title={transformation.enabled ? t("common.disable") : t("common.enable")}

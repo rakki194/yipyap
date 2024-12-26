@@ -11,6 +11,7 @@ import { MultiSelectActions } from "../MultiSelectActions";
 import getIcon from "~/icons";
 import "./BreadcrumbActions.css";
 import { Tooltip } from "~/components/Tooltip/Tooltip";
+import { Toggle } from "~/components/Toggle/Toggle";
 
 const BatchTransformDialog: Component<{
   onClose: () => void;
@@ -78,10 +79,10 @@ const BatchTransformDialog: Component<{
                   <Tooltip content={t(transform.description)} position="right">
                     <span class="transform-name">{t(transform.name)}</span>
                   </Tooltip>
-                  <input
-                    type="checkbox"
+                  <Toggle
                     checked={selectedTransforms().has(transform.id)}
                     onChange={() => toggleTransform(transform.id)}
+                    title={t(transform.name)}
                   />
                 </label>
               ))}
@@ -93,10 +94,10 @@ const BatchTransformDialog: Component<{
                 <div class="caption-type">
                   <label>
                     <span>{label}</span>
-                    <input
-                      type="checkbox"
+                    <Toggle
                       checked={selectedTypes().has(type)}
                       onChange={() => toggleType(type)}
+                      title={t(type)}
                     />
                   </label>
                 </div>
