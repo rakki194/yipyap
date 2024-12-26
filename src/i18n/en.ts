@@ -320,6 +320,7 @@ export default {
     }, "en"),
     moveFailed: "Failed to move: {files}",
     moveError: "Move failed: {error}",
+    sameDirectoryMove: "Cannot move items to the same directory they are already in",
   },
   shortcuts: {
     title: "Keyboard shortcuts",

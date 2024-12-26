@@ -235,6 +235,7 @@ export interface GalleryTranslations {
   moveComplete: TranslationValue;
   moveFailed: string;
   moveError: string;
+  sameDirectoryMove: string;
 }
 
 export interface ShortcutsTranslations {

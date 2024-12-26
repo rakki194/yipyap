@@ -102,6 +102,15 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         // Get current path and settings
         const currentPath = gallery.data()?.path ?? "";
         const sourcePath = item.path || "";  // Empty string for root directory
+
+        // Don't try to move if source and target are the same
+        if (sourcePath === currentPath) {
+          appContext.notify(
+            t("gallery.sameDirectoryMove"),
+            "info"
+          );
+          return;
+        }
         
         console.log('Moving items:', {
           sourcePath,
