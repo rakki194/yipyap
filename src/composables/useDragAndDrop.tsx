@@ -113,9 +113,16 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         const item = JSON.parse(itemData);
         const items = itemsData ? JSON.parse(itemsData) : [item];
         
-        // Get source path and target directory path
-        const sourcePath = item.path || "";  // Empty string for root directory
-
+        console.log('Drag and drop items:', {
+          singleItem: item,
+          multiItems: items,
+          itemsData: itemsData,
+          selectionState: {
+            multiSelected: Array.from(gallery.selection.multiSelected),
+            multiFolderSelected: Array.from(gallery.selection.multiFolderSelected)
+          }
+        });
+        
         // Get the target directory path
         let targetPath = gallery.data()?.path ?? "";
         const targetElement = e.target as HTMLElement;
@@ -127,36 +134,126 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           targetPath = dirPath ? `${dirPath}/${dirName}` : dirName;
         }
 
-        // Only check for same directory if moving between directories
-        if (sourcePath === targetPath) {
-          // NOTE: Don't uncomment the toast and don't remove it.
-          //                    I like it here!
-          //appContext.notify(
-          //  t("gallery.sameDirectoryMove"),
-          //  "info"
-          //);
-          return;
-        }
-        
-        // Call the move API
-        const response = await fetch(`/api/move/${sourcePath}?target=${encodeURIComponent(targetPath)}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            items: items.map((i: any) => i.name),
-            preserve_latents: appContext.preserveLatents,
-            preserve_txt: appContext.preserveTxt
-          })
+        // Ensure we have all selected items
+        const data = gallery.data();
+        if (!data) return;
+
+        // Add any missing selected items
+        const selectedItems = new Set(items.map((item: DragItem) => item.idx));
+        const allItems = [...items];
+
+        // Add any selected images that weren't in the drag data
+        Array.from(gallery.selection.multiSelected).forEach(idx => {
+          if (!selectedItems.has(idx)) {
+            const item = data.items[idx];
+            if (item?.type === 'image') {
+              allItems.push({
+                type: 'image' as const,
+                name: item.file_name,
+                path: data.path || '',
+                idx
+              });
+            }
+          }
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Move failed: ${response.statusText}\n${errorText}`);
+        // Add any selected folders that weren't in the drag data
+        Array.from(gallery.selection.multiFolderSelected).forEach(idx => {
+          if (!selectedItems.has(idx)) {
+            const item = data.items[idx];
+            if (item?.type === 'directory') {
+              allItems.push({
+                type: 'directory' as const,
+                name: item.file_name,
+                path: data.path || '',
+                idx
+              });
+            }
+          }
+        });
+
+        // Group items by their source path to handle multiple moves
+        interface DragItem {
+          type: 'directory' | 'image';
+          name: string;
+          path: string;
+          idx: number;
         }
 
-        const result = await response.json();
+        const itemsByPath = allItems.reduce((acc: { [key: string]: DragItem[] }, item: DragItem) => {
+          const sourcePath = item.path || "";
+          if (!acc[sourcePath]) {
+            acc[sourcePath] = [];
+          }
+          acc[sourcePath].push(item);
+          return acc;
+        }, {});
+
+        console.log('Items grouped by path:', {
+          itemsByPath,
+          totalItems: allItems.length,
+          itemTypes: allItems.map((i: DragItem) => i.type),
+          paths: Object.keys(itemsByPath),
+          targetPath
+        });
+
+        // Process each group of items separately
+        const moveResults = await Promise.all(
+          (Object.entries(itemsByPath) as [string, DragItem[]][]).map(async ([sourcePath, pathItems]) => {
+            // Skip if source and target are the same
+            if (sourcePath === targetPath) {
+              console.log('Skipping same directory:', { sourcePath, targetPath });
+              return null;
+            }
+
+            const movePayload = {
+              items: pathItems.map((i: DragItem) => i.name),
+              preserve_latents: appContext.preserveLatents,
+              preserve_txt: appContext.preserveTxt
+            };
+
+            console.log('Move API payload:', {
+              sourcePath,
+              targetPath,
+              payload: movePayload,
+              itemsCount: pathItems.length,
+              itemTypes: pathItems.map((i: DragItem) => i.type)
+            });
+
+            const response = await fetch(`/api/move/${sourcePath}?target=${encodeURIComponent(targetPath)}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(movePayload)
+            });
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              console.error('Move API error:', {
+                sourcePath,
+                status: response.status,
+                statusText: response.statusText,
+                error: errorText
+              });
+              throw new Error(`Move failed for ${sourcePath}: ${response.statusText}\n${errorText}`);
+            }
+
+            return await response.json();
+          })
+        );
+
+        // Combine all results
+        const result = moveResults.reduce((acc: any, curr: any) => {
+          if (!curr) return acc;
+          return {
+            moved: [...(acc.moved || []), ...curr.moved],
+            failed: [...(acc.failed || []), ...curr.failed],
+            failed_reasons: { ...(acc.failed_reasons || {}), ...curr.failed_reasons }
+          };
+        }, { moved: [], failed: [], failed_reasons: {} });
+
+        console.log('Combined move results:', result);
         
         // Show success/failure notifications
         if (result.moved.length > 0) {
@@ -199,7 +296,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
                 }, 400);
               }
             });
-          }, 50); // Small delay to ensure DOM is ready
+          }, 50);
 
           if (existingFiles.length > 0) {
             appContext.notify(
@@ -207,7 +304,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
               "error"
             );
           }
-          
+
           if (missingFiles.length > 0) {
             appContext.notify(
               t("gallery.moveFailedMissing", { files: missingFiles.join(", ") }),
@@ -229,6 +326,9 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
 
         // Only refetch if something actually moved
         if (result.moved.length > 0) {
+          // Clear selections after successful move
+          gallery.selection.multiSelected.clear();
+          gallery.selection.multiFolderSelected.clear();
           // Refresh both source and target directories
           gallery.refetchGallery();
         }
@@ -266,43 +366,98 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     const isInImageSelection = gallery.selection.multiSelected.has(idx);
     const isInFolderSelection = gallery.selection.multiFolderSelected.has(idx);
 
-    if (isInImageSelection || isInFolderSelection) {
-      // Add being-dragged class to all selected images
-      document.querySelectorAll('.item.image').forEach(el => {
-        const itemIdx = parseInt(el.getAttribute('data-idx') || '');
-        if (!isNaN(itemIdx) && gallery.selection.multiSelected.has(itemIdx)) {
-          el.classList.add('being-dragged');
-        }
-      });
-
-      // Add being-dragged class to all selected folders
-      document.querySelectorAll('.item.directory').forEach(el => {
-        const itemIdx = parseInt(el.getAttribute('data-idx') || '');
-        if (!isNaN(itemIdx) && gallery.selection.multiFolderSelected.has(itemIdx)) {
-          el.classList.add('being-dragged');
-        }
-      });
-    }
-
     // Set up drag data transfer
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = 'move';
-      const itemData = {
-        type: draggableItem.classList.contains('directory') ? 'directory' : 'image',
-        name: draggableItem.getAttribute('data-name') || '',
-        path: draggableItem.getAttribute('data-path') || ''
-      };
-      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify(itemData));
+    if (!e.dataTransfer) return;
 
-      // If part of multi-selection, add all selected items data
-      if (isInImageSelection || isInFolderSelection) {
-        const selectedItems = Array.from(document.querySelectorAll('.item.being-dragged')).map(el => ({
-          type: el.classList.contains('directory') ? 'directory' : 'image',
-          name: el.getAttribute('data-name') || '',
-          path: el.getAttribute('data-path') || ''
-        }));
-        e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+    e.dataTransfer.effectAllowed = 'move';
+    
+    // Get the gallery data once to avoid multiple calls
+    const data = gallery.data();
+    if (!data) return;
+
+    // Determine if this is a directory or image being dragged
+    const isDraggingDirectory = draggableItem.classList.contains('directory');
+    const itemData = {
+      type: isDraggingDirectory ? 'directory' as const : 'image' as const,
+      name: draggableItem.getAttribute('data-name') || '',
+      path: data.path || '',
+      idx: idx
+    };
+
+    // If part of multi-selection, add all selected items data
+    if (isInImageSelection || isInFolderSelection) {
+      // Get selected images using the multiSelected set
+      const selectedImages = Array.from(gallery.selection.multiSelected)
+        .map(idx => {
+          const item = data.items[idx];
+          // Make sure we're getting an image item
+          if (!item || item.type !== 'image') return null;
+          return {
+            type: 'image' as const,
+            name: item.file_name,
+            path: data.path || '',
+            idx
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null);
+
+      // Get selected folders using the multiFolderSelected set
+      const selectedFolders = Array.from(gallery.selection.multiFolderSelected)
+        .map(idx => {
+          const item = data.items[idx];
+          // Make sure we're getting a directory item
+          if (!item || item.type !== 'directory') return null;
+          return {
+            type: 'directory' as const,
+            name: item.file_name,
+            path: data.path || '',
+            idx
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => item !== null);
+
+      // Combine both selections
+      const selectedItems = [...selectedImages, ...selectedFolders];
+      
+      // If the dragged item isn't in the selection, add it
+      if (!selectedItems.some(item => item.idx === idx)) {
+        selectedItems.push(itemData);
       }
+
+      console.log('Setting drag data:', {
+        selectedImages,
+        selectedFolders,
+        combinedItems: selectedItems,
+        draggedItem: itemData,
+        selectionSets: {
+          multiSelected: Array.from(gallery.selection.multiSelected),
+          multiFolderSelected: Array.from(gallery.selection.multiFolderSelected)
+        },
+        galleryData: {
+          itemsCount: data.items.length,
+          selectedItemTypes: selectedItems.map(i => i.type)
+        }
+      });
+
+      // Set both the single item and multi-item data
+      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify(itemData));
+      e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
+
+      // Add being-dragged class to all selected items
+      selectedItems.forEach(item => {
+        const selector = `#gallery .responsive-grid .item[data-idx="${item.idx}"]`;
+        const el = document.querySelector(selector);
+        if (el) {
+          el.classList.add('being-dragged');
+        }
+      });
+    } else {
+      // Single item drag
+      console.log('Single item drag:', {
+        itemData,
+        type: isDraggingDirectory ? 'directory' : 'image'
+      });
+      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify(itemData));
     }
   };
 
