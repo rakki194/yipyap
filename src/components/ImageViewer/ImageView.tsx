@@ -69,7 +69,6 @@ export const ImageView = (props: ImageViewProps) => {
   // Updated wheel zoom handler with smoother zoom behavior
   const handleWheel = (e: WheelEvent) => {
     if (!app.enableZoom) return;
-    e.preventDefault();
     if (!containerRef) return;
 
     // Make zoom more gradual and smooth
@@ -199,7 +198,10 @@ export const ImageView = (props: ImageViewProps) => {
       ref={containerRef}
       class="image-container" 
       {...divProps}
-      onWheel={handleWheel}
+      onWheel={(e) => {
+        e.stopPropagation();  // Stop propagation instead of preventDefault
+        handleWheel(e);
+      }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}

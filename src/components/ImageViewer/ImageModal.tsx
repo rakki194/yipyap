@@ -136,7 +136,7 @@ const ModelBody = (props: {
 
   // Add and remove event listener
   createEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, { passive: true });
     onCleanup(() => {
       window.removeEventListener("keydown", handleKeyDown);
     });
