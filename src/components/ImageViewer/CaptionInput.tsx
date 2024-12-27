@@ -1,6 +1,5 @@
 // src/components/ImageViewer/CaptionInput.tsx
 import {
-  createSignal,
   splitProps,
   Component,
   JSX,
@@ -16,6 +15,9 @@ import { TagBubble } from "./TagBubble";
 import { preserveState } from "~/directives";
 import "./CaptionInput.css";
 import { useAppContext } from "~/contexts/app";
+import { useCaptionHistory } from "~/composables/useCaptionHistory";
+import { useTagManagement } from "~/composables/useTagManagement";
+import { useE621Editor } from "~/composables/useE621Editor";
 
 type CaptionType = "wd" | "e621" | "tags" | string;
 
@@ -30,136 +32,44 @@ export const CaptionInput: Component<
   const [localProps, rest] = splitProps(props, ["caption"]);
   const type = () => localProps.caption[0];
   const caption = () => localProps.caption[1];
-  const [captionHistory, setCaptionHistory] = createSignal<string[]>([]);
-  const [newTag, setNewTag] = createSignal("");
-  const [lastEditedTag, setLastEditedTag] = createSignal<string | null>(null);
-
-  const { saveCaption, deleteCaption: deleteCaptionAction } = useGallery();
-  const save = useAction(saveCaption);
-  const submission = useSubmission(saveCaption);
+  const { deleteCaption: deleteCaptionAction } = useGallery();
   const deleteCaption = useAction(deleteCaptionAction);
 
-  const isTagInput = () => ["wd", "e621", "tags"].includes(type());
-  const splitAndCleanTags = (text: string) =>
-    text
-      .split(/,\s*/)
-      .map((t) => t.trim())
-      .filter(Boolean);
+  const {
+    captionHistory,
+    saveWithHistory,
+    undo,
+    submission
+  } = useCaptionHistory(type, caption);
 
-  const tags = () => (isTagInput() ? splitAndCleanTags(caption()) : []);
+  const {
+    newTag,
+    setNewTag,
+    lastEditedTag,
+    setLastEditedTag,
+    addTag,
+    removeTag,
+    editTag,
+    navigateTag,
+    splitAndCleanTags
+  } = useTagManagement(saveWithHistory);
 
-  const normalizeTagText = (text: string) => splitAndCleanTags(text).join(", ");
-
-  const saveWithHistory = (newText: string) => {
-    setCaptionHistory((prev) => [...prev, caption()]);
-    save({
-      caption: isTagInput() ? normalizeTagText(newText) : newText,
-      type: type(),
-    });
-  };
-
-  const undo = () => {
-    const history = captionHistory();
-    if (history.length > 0) {
-      const previousText = history[history.length - 1];
-      setCaptionHistory((prev) => prev.slice(0, -1));
-      save({
-        caption: isTagInput() ? normalizeTagText(previousText) : previousText,
-        type: type(),
-      });
-    }
-  };
-
-  const addTag = (tag: string) => {
-    const trimmedTag = tag.trim();
-    if (!trimmedTag) return;
-
-    const currentTags = tags();
-    if (!currentTags.includes(trimmedTag)) {
-      saveWithHistory([...currentTags, trimmedTag].join(", "));
-    }
-    setNewTag("");
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    const newTags = tags().filter((tag) => tag !== tagToRemove);
-    saveWithHistory(newTags.join(", "));
-  };
-
-  const editTag = (oldTag: string, newTag: string) => {
-    const currentTags = tags();
-    const tagIndex = currentTags.indexOf(oldTag);
-    if (tagIndex !== -1) {
-      const newTags = [...currentTags];
-      newTags[tagIndex] = newTag;
-      setLastEditedTag(newTag);
-      saveWithHistory(newTags.join(", "));
-    }
-  };
+  const {
+    lineCount,
+    currentLine,
+    highlightedContent,
+    isValidJSON,
+    calculateCurrentLine,
+    handleInput,
+    handleKeyDown,
+    handlePaste,
+    handleScroll,
+  } = useE621Editor(caption, saveWithHistory);
 
   let containerRef!: HTMLDivElement;
+  let editorRef!: HTMLDivElement;
   let textareaRef!: HTMLTextAreaElement;
   let inputRef!: HTMLInputElement;
-
-  const navigateTag = (
-    currentTag: string,
-    direction: "left" | "right" | "up" | "down" | "start" | "end"
-  ) => {
-    if (!containerRef) return;
-    const currentTags = tags();
-    const currentIndex = currentTags.indexOf(currentTag);
-    const tagElements = containerRef.querySelectorAll(".tag-bubble");
-
-    // Handle start/end navigation within the same row
-    if (direction === "start" || direction === "end") {
-      const currentElement = tagElements[currentIndex];
-      const currentRect = currentElement.getBoundingClientRect();
-
-      // Find all elements in the same row (similar y-position)
-      const sameRowElements = Array.from(tagElements).filter((element) => {
-        const rect = element.getBoundingClientRect();
-        return Math.abs(rect.top - currentRect.top) < 5; // 5px tolerance
-      });
-
-      // Get the first or last element in the row
-      const targetElement =
-        direction === "start"
-          ? sameRowElements[0]
-          : sameRowElements[sameRowElements.length - 1];
-
-      const tagText = targetElement?.querySelector(".tag-text");
-      if (tagText) {
-        (tagText as HTMLElement).click();
-      }
-      return;
-    }
-
-    // Handle left/right navigation
-    if (direction === "left" || direction === "right") {
-      let newIndex;
-      if (direction === "left") {
-        newIndex = currentIndex > 0 ? currentIndex - 1 : currentTags.length - 1;
-      } else {
-        newIndex = currentIndex < currentTags.length - 1 ? currentIndex + 1 : 0;
-      }
-
-      const targetElement = tagElements[newIndex];
-      const tagText = targetElement?.querySelector(".tag-text");
-      if (tagText) {
-        (tagText as HTMLElement).click();
-      }
-      return;
-    }
-
-    // Handle down navigation
-    if (direction === "down") {
-      const newTagInput = containerRef.querySelector(".new-tag-input input");
-      if (newTagInput) {
-        setLastEditedTag(currentTag);
-        (newTagInput as HTMLElement).focus();
-      }
-    }
-  };
 
   const handleNewTagKeyDown = (e: KeyboardEvent) => {
     if (!containerRef) return;
@@ -202,6 +112,14 @@ export const CaptionInput: Component<
     }
   };
 
+  const handleDeleteCaption = async () => {
+    try {
+      await deleteCaption(type());
+    } catch (error) {
+      console.error("Error deleting caption:", error);
+    }
+  };
+
   createEffect(() => {
     if (props.state === "expanded") {
       if (isTagInput()) {
@@ -212,13 +130,10 @@ export const CaptionInput: Component<
     }
   });
 
-  const handleDeleteCaption = async () => {
-    try {
-      await deleteCaption(type());
-    } catch (error) {
-      console.error("Error deleting caption:", error);
-    }
-  };
+  const isTagInput = () => ["wd", "tags"].includes(type());
+  const isE621Input = () => type() === "e621";
+
+  const tags = () => (isTagInput() ? splitAndCleanTags(caption()) : []);
 
   return (
     <div
@@ -263,9 +178,9 @@ export const CaptionInput: Component<
                 <TagBubble
                   tag={getTag()}
                   index={i}
-                  onRemove={() => removeTag(getTag())}
-                  onEdit={(newTag) => editTag(getTag(), newTag)}
-                  onNavigate={(direction) => navigateTag(getTag(), direction)}
+                  onRemove={() => removeTag(getTag(), tags())}
+                  onEdit={(newTag) => editTag(getTag(), newTag, tags())}
+                  onNavigate={(direction) => navigateTag(getTag(), direction, containerRef, tags())}
                 />
               )}
             </Index>
@@ -280,20 +195,63 @@ export const CaptionInput: Component<
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  addTag(newTag());
+                  addTag(newTag(), tags());
                 }
               }}
-              placeholder="Add a tag..."
+              placeholder={t('gallery.addTag')}
             />
             <button
               type="button"
               class="icon add-tag"
-              onClick={() => addTag(newTag())}
+              onClick={() => addTag(newTag(), tags())}
               title="Add tag"
             >
               {getIcon("plus")}
             </button>
           </div>
+        </div>
+      ) : isE621Input() ? (
+        <div 
+          class="e621-editor" 
+          classList={{ "invalid-json": !isValidJSON(caption() || "") }}
+        >
+          {/* Temporarily hide line numbers */}
+          {/* <div class="line-numbers">
+            <div 
+              class="line-numbers-content" 
+              style={{ 
+                transform: `translateY(-${editorRef?.scrollTop || 0}px)` 
+              }}
+            >
+              <For each={Array.from({length: lineCount()}, (_, i) => i + 1)}>
+                {(lineNum) => (
+                  <span classList={{ active: lineNum === currentLine() }}>
+                    {lineNum}
+                  </span>
+                )}
+              </For>
+            </div>
+          </div> */}
+          <div
+            ref={editorRef}
+            class="e621-content"
+            contentEditable="plaintext-only"
+            spellcheck={false}
+            innerHTML={highlightedContent()}
+            onInput={(e) => {
+              const text = e.currentTarget.innerText;
+              handleInput(e as InputEvent, e.currentTarget);
+            }}
+            onKeyDown={(e) => {
+              handleKeyDown(e, e.currentTarget);
+            }}
+            onPaste={(e) => {
+              handlePaste(e, e.currentTarget);
+            }}
+            onScroll={handleScroll}
+            onKeyUp={(e) => calculateCurrentLine(e.currentTarget)}
+            onSelect={(e) => calculateCurrentLine(e.currentTarget)}
+          />
         </div>
       ) : (
         <textarea

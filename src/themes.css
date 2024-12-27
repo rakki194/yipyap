@@ -37,6 +37,16 @@
   --scrollbar-track: var(--bg-color);
   --scrollbar-thumb: var(--secondary-bg);
   --scrollbar-thumb-hover: var(--accent);
+
+  /* JSON syntax highlighting colors */
+  --json-key: #569cd6;
+  --json-string: #ce9178;
+  --json-number: #b5cea8;
+  --json-boolean: #4fc1ff;
+  --json-null: #c586c0;
+  --json-bracket: #d4d4d4;
+  --json-comma: #d4d4d4;
+  --json-colon: #d4d4d4;
 }
 
 /* Light theme */
@@ -59,6 +69,16 @@
   --scrollbar-track: var(--secondary-bg);
   --scrollbar-thumb: var(--card-bg);
   --scrollbar-thumb-hover: var(--accent);
+
+  /* JSON syntax highlighting colors */
+  --json-key: #0451a5;
+  --json-string: #a31515;
+  --json-number: #098658;
+  --json-boolean: #0000ff;
+  --json-null: #800080;
+  --json-bracket: #000000;
+  --json-comma: #000000;
+  --json-colon: #000000;
 }
 
 /* Gray theme */
@@ -90,6 +110,16 @@
   --scrollbar-track: var(--bg-color);
   --scrollbar-thumb: var(--card-bg);
   --scrollbar-thumb-hover: var(--accent);
+
+  /* JSON syntax highlighting colors */
+  --json-key: #88c0d0;
+  --json-string: #a3be8c;
+  --json-number: #ebcb8b;
+  --json-boolean: #81a1c1;
+  --json-null: #bf616a;
+  --json-bracket: #f8f8f2;
+  --json-comma: #f8f8f2;
+  --json-colon: #f8f8f2;
 }
 
 /* Banana theme */

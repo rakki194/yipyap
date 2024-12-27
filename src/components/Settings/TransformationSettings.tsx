@@ -36,10 +36,12 @@ const availableIcons: IconOption[] = [
   { id: "rocket", label: "Rocket" },
   { id: "dog", label: "Dog" },
   { id: "cat", label: "Cat" },
+  { id: "beakerRegular", label: "Beaker" },
   { id: "turtle", label: "Turtle" },
   { id: "addCircle", label: "Add Circle Filled" },
   { id: "addCircleRegular", label: "Add Circle Regular" },
   { id: "addRegular", label: "Add Regular" },
+  
   //{ id: "notepad", label: "Notepad" },
   //{ id: "subtitles", label: "Subtitles" },
   { id: "textSortAscending", label: "Text Sort" },

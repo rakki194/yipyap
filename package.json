@@ -19,6 +19,7 @@
     "@solid-primitives/refs": "^1.0.0",
     "@solid-primitives/resize-observer": "^2.0.0",
     "@solid-primitives/scheduled": "^1.4.0",
+    "@solid-primitives/selection": "^0.0.8",
     "@solid-primitives/static-store": "^0.0.8",
     "@solid-primitives/transition-group": "^1.0.0",
     "@solidjs/router": "^0.15.0",

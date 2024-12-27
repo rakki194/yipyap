@@ -68,6 +68,7 @@ export const captionIconsMap = {
   tags: "tag",
   caption: "subtitles",
   wd: "wd",
+  e621: "beakerRegular",
 };
 
 export const statusIconsMap = {

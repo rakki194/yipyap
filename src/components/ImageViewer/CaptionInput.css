@@ -92,3 +92,275 @@
   display: inline-block;
   min-width: 0;
 }
+
+/* E621 Editor Styles */
+.e621-editor {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  font-family: monospace;
+  line-height: 1.5;
+  background: color-mix(in srgb, var(--secondary-bg) 50%, transparent);
+  border-radius: var(--half-spacing);
+  overflow: hidden;
+}
+
+.e621-editor.invalid-json {
+  background-color: color-mix(in srgb, var(--error) 10%, var(--secondary-bg));
+}
+
+.line-numbers {
+  position: sticky;
+  left: 0;
+  top: 0;
+  padding: var(--half-spacing) 0;
+  background: color-mix(in srgb, var(--secondary-bg) 80%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--text-secondary) 20%, transparent);
+  user-select: none;
+  z-index: 1;
+  min-width: 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.line-numbers-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  opacity: 0.7;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+.line-numbers-content span {
+  height: 1.5em;
+  line-height: inherit;
+  display: block;
+  padding: 0 0.25rem;
+  min-width: 2em;
+  text-align: right;
+}
+
+.line-numbers-content span.active {
+  opacity: 1;
+  color: var(--text-primary);
+  font-weight: 500;
+  background: color-mix(in srgb, var(--text-secondary) 10%, transparent);
+  border-radius: calc(var(--half-spacing) / 2);
+}
+
+.e621-content {
+  flex: 1;
+  padding: var(--half-spacing);
+  white-space: pre-wrap;
+  overflow: auto;
+  outline: none;
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 0.9em;
+  tab-size: 2;
+  background: none;
+  line-height: 1.5;
+  font-family: monospace;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: text;
+  position: relative;
+  caret-color: var(--json-string);
+  border-radius: var(--half-spacing);
+}
+
+.e621-content::selection {
+  background: hsla(0, 0%, 90%, 0.2);
+}
+
+.e621-content br {
+  display: block;
+  content: "";
+  margin: 0;
+  padding: 0;
+  line-height: inherit;
+}
+
+.e621-content span {
+  white-space: pre;
+  font-family: inherit;
+  line-height: inherit;
+  display: inline;
+  position: relative;
+  z-index: 1;
+}
+
+.e621-content:focus {
+  outline: none;
+}
+
+/* Scrollbar styles */
+.e621-editor ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.e621-editor ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.e621-editor ::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  opacity: 0.3;
+  border-radius: 4px;
+}
+
+.e621-editor ::-webkit-scrollbar-thumb:hover {
+  opacity: 0.5;
+}
+
+/* JSON Syntax Highlighting */
+.json-key {
+  color: var(--json-key);
+  font-weight: 500;
+  position: relative;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--json-key) 20%, transparent);
+    opacity: 0.5;
+  }
+}
+
+.json-string {
+  color: var(--json-string);
+  font-weight: normal;
+  /*font-style: italic;*/
+}
+
+.json-number {
+  color: var(--json-number);
+  font-weight: normal;
+}
+
+.json-boolean {
+  color: var(--json-boolean);
+  font-weight: 500;
+}
+
+.json-null {
+  color: var(--json-null);
+  font-weight: 500;
+}
+
+.json-bracket {
+  color: var(--json-bracket);
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.json-comma {
+  color: var(--json-comma);
+  opacity: 0.7;
+  font-weight: normal;
+}
+
+.json-colon {
+  color: var(--json-colon);
+  opacity: 0.7;
+  font-weight: normal;
+  margin: 0 0.2em;
+}
+
+/* Dark theme specific colors */
+[data-theme="dark"] {
+  --json-key: #9cdcfe;
+  --json-number: #b5cea8;
+  --json-boolean: #569cd6;
+  --json-null: #c586c0;
+  --json-bracket: #ffd700;
+  --json-comma: #808080;
+  --json-colon: #d4d4d4;
+}
+
+/* Light theme specific colors */
+[data-theme="light"] {
+  --json-key: #0451a5;
+  --json-number: #098658;
+  --json-boolean: #0000ff;
+  --json-null: #800080;
+  --json-bracket: #ff6b00;
+  --json-comma: #666666;
+  --json-colon: #333333;
+}
+
+/* Strawberry theme specific colors */
+[data-theme="strawberry"] {
+  --json-key: #ff1a75;
+  --json-number: #fa6a6a;
+  --json-boolean: #ff0033;
+  --json-null: #d633ff;
+  --json-bracket: #bb008c;
+  --json-comma: #ff80b3;
+  --json-colon: #ff3399;
+}
+
+/* Banana theme specific colors */
+[data-theme="banana"] {
+  --json-key: #996600;
+  --json-number: #ffb700;
+  --json-boolean: #804d00;
+  --json-null: #b38600;
+  --json-bracket: #ffd700;
+  --json-comma: #d4af37;
+  --json-colon: #daa520;
+}
+
+/* Peanut theme specific colors */
+[data-theme="peanut"] {
+  --json-key: #8b4513;
+  --json-number: #cd853f;
+  --json-boolean: #6b4423;
+  --json-null: #d2691e;
+  --json-bracket: #deb887;
+  --json-comma: #bc8f8f;
+  --json-colon: #b8860b;
+}
+
+/* Christmas theme specific colors */
+[data-theme="christmas"] {
+  --json-key: #c41e3a;
+  --json-number: #ffd700;
+  --json-boolean: #ff0000;
+  --json-null: #32cd32;
+  --json-bracket: #ffffff;
+  --json-comma: #f8b229;
+  --json-colon: #c0c0c0;
+}
+
+/* Halloween theme specific colors */
+[data-theme="halloween"] {
+  --json-key: #ff6600;
+  --json-number: #50c878;
+  --json-boolean: #ff4500;
+  --json-null: #800080;
+  --json-bracket: #ffa500;
+  --json-comma: #9370db;
+  --json-colon: #98fb98;
+}
+
+/* Gray theme specific colors */
+[data-theme="gray"] {
+  --json-key: #404040;
+  --json-number: #808080;
+  --json-boolean: #333333;
+  --json-null: #595959;
+  --json-bracket: #4d4d4d;
+  --json-comma: #737373;
+  --json-colon: #8c8c8c;
+}
