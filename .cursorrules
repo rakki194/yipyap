@@ -176,3 +176,11 @@ When creating new composables, ensure they:
 - Clean up resources when no longer needed
 - Are well-typed with TypeScript
 - Include proper documentation and usage examples
+
+## Event Handling and Performance
+
+The application prioritizes performance in event handling, particularly for scroll and touch interactions. A key optimization is the use of passive event listeners, which significantly improve scrolling performance by allowing the browser to immediately begin scrolling operations without waiting for JavaScript execution.
+
+For detailed information about implementing passive event listeners, including best practices, browser support, and common pitfalls, please refer to the [Passive Event Listeners Documentation](docs/passive-events.md).
+
+When implementing event handlers in the application, particularly in composables and components that handle scroll or touch events, ensure proper usage of passive event listeners according to the documentation guidelines. This is especially important for the gallery system's smooth scrolling and touch interaction features.
