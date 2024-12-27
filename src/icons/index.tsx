@@ -62,6 +62,8 @@ import FolderAddIcon from "@fluentui/svg-icons/icons/folder_add_24_regular.svg?r
 import FolderArrowUpIcon from "@fluentui/svg-icons/icons/folder_arrow_up_24_regular.svg?raw";
 import BeakerRegular from "@fluentui/svg-icons/icons/beaker_24_regular.svg?raw";
 import RocketFilled from "@fluentui/svg-icons/icons/rocket_24_filled.svg?raw";
+import TextLowerCaseRegular from "@fluentui/svg-icons/icons/text_case_lowercase_24_regular.svg?raw";
+import TextUpperCaseRegular from "@fluentui/svg-icons/icons/text_case_uppercase_24_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -93,6 +95,8 @@ export const themeIconMap = {
 };
 
 const iconMap: Readonly<Record<string, string>> = {
+  lowercase: TextLowerCaseRegular,
+  uppercase: TextUpperCaseRegular,
   addCircle: AddCircleFilled,
   addCircleRegular: AddCircleRegular,
   addRegular: AddRegular,

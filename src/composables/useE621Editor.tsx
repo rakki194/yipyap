@@ -1,4 +1,5 @@
 import { createSignal, createEffect } from "solid-js";
+import { createSelection, getTextNodes } from "@solid-primitives/selection";
 
 export function useE621Editor(
   caption: () => string,
@@ -7,6 +8,7 @@ export function useE621Editor(
   const [lineCount, setLineCount] = createSignal(1);
   const [currentLine, setCurrentLine] = createSignal(1);
   const [highlightedContent, setHighlightedContent] = createSignal("");
+  const [selection, setSelection] = createSelection();
 
   const isValidJSON = (text: string): boolean => {
     try {
@@ -114,18 +116,32 @@ export function useE621Editor(
   };
 
   const calculateCurrentLine = (element: HTMLElement) => {
-    const selection = window.getSelection();
-    if (!selection?.rangeCount) return;
+    const [node, start] = selection();
+    if (!node || node !== element) return;
 
-    const range = selection.getRangeAt(0);
-    const preCaretRange = range.cloneRange();
-    preCaretRange.selectNodeContents(element);
-    preCaretRange.setEnd(range.endContainer, range.endOffset);
+    // Get all text nodes in order
+    const textNodes = getTextNodes(element);
+    let currentOffset = 0;
+    let lineNumber = 1;
 
-    // Get text content up to caret
-    const textUpToCaret = preCaretRange.toString();
-    const currentLine = textUpToCaret.split('\n').length;
-    setCurrentLine(currentLine);
+    // Count newlines up to the cursor position
+    for (const textNode of textNodes) {
+      const nodeText = textNode.textContent || '';
+      const nodeLength = nodeText.length;
+
+      // If this node contains our cursor position
+      if (currentOffset + nodeLength >= start) {
+        const textUpToCursor = nodeText.slice(0, start - currentOffset);
+        lineNumber += textUpToCursor.split('\n').length - 1;
+        break;
+      }
+
+      // Count full newlines in this node
+      lineNumber += (nodeText.match(/\n/g) || []).length;
+      currentOffset += nodeLength;
+    }
+
+    setCurrentLine(lineNumber);
   };
 
   const getPlainText = (element: HTMLElement): string => {
@@ -134,20 +150,8 @@ export function useE621Editor(
 
   const handleInput = (e: InputEvent, element: HTMLElement) => {
     const text = getPlainText(element);
+    const [node, start, end] = selection();
     
-    // Store selection state before updating content
-    const selection = window.getSelection();
-    if (!selection?.rangeCount) return;
-    
-    const range = selection.getRangeAt(0);
-    const preCaretRange = range.cloneRange();
-    preCaretRange.selectNodeContents(element);
-    preCaretRange.setEnd(range.endContainer, range.endOffset);
-    
-    // Get the text content up to the cursor to count characters
-    const textBeforeCursor = preCaretRange.toString();
-    const cursorOffset = textBeforeCursor.length;
-
     // Update content
     const highlighted = syntaxHighlight(text);
     setHighlightedContent(highlighted);
@@ -158,18 +162,7 @@ export function useE621Editor(
     // Restore cursor position after content update
     requestAnimationFrame(() => {
       try {
-        const textNodes = [];
-        const walk = document.createTreeWalker(
-          element,
-          NodeFilter.SHOW_TEXT,
-          null
-        );
-
-        let node;
-        while (node = walk.nextNode()) {
-          textNodes.push(node);
-        }
-
+        const textNodes = getTextNodes(element);
         let currentOffset = 0;
         let targetNode = textNodes[0];
         let targetOffset = 0;
@@ -177,21 +170,16 @@ export function useE621Editor(
         // Find the text node and offset where our cursor should be
         for (const node of textNodes) {
           const nodeLength = node.textContent?.length || 0;
-          if (currentOffset + nodeLength >= cursorOffset) {
+          if (currentOffset + nodeLength >= start) {
             targetNode = node;
-            targetOffset = cursorOffset - currentOffset;
+            targetOffset = start - currentOffset;
             break;
           }
           currentOffset += nodeLength;
         }
 
         if (targetNode) {
-          const newRange = document.createRange();
-          newRange.setStart(targetNode, targetOffset);
-          newRange.setEnd(targetNode, targetOffset);
-          
-          selection.removeAllRanges();
-          selection.addRange(newRange);
+          setSelection([element, targetOffset, targetOffset]);
         }
       } catch (error) {
         console.error('Error restoring cursor position:', error);
@@ -200,6 +188,8 @@ export function useE621Editor(
   };
 
   const handleKeyDown = (e: KeyboardEvent, element: HTMLElement) => {
+    const [node, start, end] = selection();
+    
     // Handle Tab key
     if (e.key === 'Tab') {
       e.preventDefault();
@@ -231,14 +221,24 @@ export function useE621Editor(
   const handlePaste = (e: ClipboardEvent, element: HTMLElement) => {
     e.preventDefault();
     const text = e.clipboardData?.getData('text/plain') || '';
+    const [node, start, end] = selection();
+    
     document.execCommand('insertText', false, text);
     
     const newText = getPlainText(element);
     const highlighted = syntaxHighlight(newText);
     element.innerHTML = highlighted;
+    
+    // Update line count and save
     calculateCurrentLine(element);
     setLineCount(countLinesInElement(element));
     saveWithHistory(newText);
+    
+    // Restore selection after paste
+    requestAnimationFrame(() => {
+      const newStart = start + text.length;
+      setSelection([element, newStart, newStart]);
+    });
   };
 
   const handleScroll = (e: Event) => {
@@ -273,5 +273,7 @@ export function useE621Editor(
     handleKeyDown,
     handlePaste,
     handleScroll,
+    selection,
+    setSelection
   };
 }

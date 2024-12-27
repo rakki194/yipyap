@@ -8,6 +8,7 @@ import {
   Index,
 } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
+import { createSelection } from "@solid-primitives/selection";
 import getIcon, { captionIconsMap } from "~/icons";
 import { useGallery } from "~/contexts/GalleryContext";
 import { CaptionTools } from "./CaptionTools";
@@ -65,6 +66,8 @@ export const CaptionInput: Component<
     handlePaste,
     handleScroll,
   } = useE621Editor(caption, saveWithHistory);
+
+  const [selection, setSelection] = createSelection();
 
   let containerRef!: HTMLDivElement;
   let editorRef!: HTMLDivElement;
@@ -134,6 +137,34 @@ export const CaptionInput: Component<
   const isE621Input = () => type() === "e621";
 
   const tags = () => (isTagInput() ? splitAndCleanTags(caption()) : []);
+
+  const handleE621Input = (e: Event, node: HTMLElement) => {
+    const [selNode, start, end] = selection();
+    if (node === selNode) {
+      handleInput(e as InputEvent, node);
+      // Restore selection after content update
+      setSelection([node, start, end]);
+    }
+  };
+
+  const handleE621KeyDown = (e: KeyboardEvent, node: HTMLElement) => {
+    const [selNode, start, end] = selection();
+    if (node === selNode) {
+      handleKeyDown(e, node);
+      calculateCurrentLine(node);
+    }
+  };
+
+  const handleE621Paste = (e: ClipboardEvent, node: HTMLElement) => {
+    const [selNode, start, end] = selection();
+    if (node === selNode) {
+      handlePaste(e, node);
+      // Selection will be updated after paste
+      requestAnimationFrame(() => {
+        calculateCurrentLine(node);
+      });
+    }
+  };
 
   return (
     <div
@@ -215,41 +246,16 @@ export const CaptionInput: Component<
           class="e621-editor" 
           classList={{ "invalid-json": !isValidJSON(caption() || "") }}
         >
-          {/* Temporarily hide line numbers */}
-          {/* <div class="line-numbers">
-            <div 
-              class="line-numbers-content" 
-              style={{ 
-                transform: `translateY(-${editorRef?.scrollTop || 0}px)` 
-              }}
-            >
-              <For each={Array.from({length: lineCount()}, (_, i) => i + 1)}>
-                {(lineNum) => (
-                  <span classList={{ active: lineNum === currentLine() }}>
-                    {lineNum}
-                  </span>
-                )}
-              </For>
-            </div>
-          </div> */}
           <div
             ref={editorRef}
             class="e621-content"
             contentEditable="plaintext-only"
             spellcheck={false}
             innerHTML={highlightedContent()}
-            onInput={(e) => {
-              const text = e.currentTarget.innerText;
-              handleInput(e as InputEvent, e.currentTarget);
-            }}
-            onKeyDown={(e) => {
-              handleKeyDown(e, e.currentTarget);
-            }}
-            onPaste={(e) => {
-              handlePaste(e, e.currentTarget);
-            }}
+            onInput={(e) => handleE621Input(e, e.currentTarget)}
+            onKeyDown={(e) => handleE621KeyDown(e, e.currentTarget)}
+            onPaste={(e) => handleE621Paste(e, e.currentTarget)}
             onScroll={handleScroll}
-            onKeyUp={(e) => calculateCurrentLine(e.currentTarget)}
             onSelect={(e) => calculateCurrentLine(e.currentTarget)}
           />
         </div>
