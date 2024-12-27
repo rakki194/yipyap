@@ -70,12 +70,12 @@ vi.mock("~/contexts/app", () => ({
         "tools.removeCommas": "Remove commas",
         "tools.replaceNewlinesWithCommas": "Replace newlines with commas",
         "tools.replaceUnderscoresWithSpaces": "Replace underscores with spaces",
-        "Add a tag...": "Add a tag...",
+        "gallery.addTag": "Add a tag...",
+        "gallery.addCaption": "Add caption",
         "Remove tag": "Remove tag",
         "Add tag": "Add tag",
         "Delete tags caption": "Delete tags caption",
         "Undo last change": "Undo last change",
-        "gallery.addCaption": "Add caption"
       };
       return translations[key] || key;
     },
@@ -142,10 +142,13 @@ const GalleryProvider: Component<{ children: JSX.Element }> = (props) => {
     invalidate: () => {},
     clearImageCache: () => {},
     getAllKnownFolders: async () => [],
-    generateTags: action(async () => undefined),
-    deleteImage: action(async () => new Error("Mock error")),
+    generateTags: mockAction(async () => undefined),
+    deleteImage: mockAction(async () => new Error("Mock error")),
     captionHistory: () => [],
     getEditedImage: () => undefined,
+    refetchGallery: () => {},
+    setData: () => undefined,
+    invalidateFolderCache: () => {},
     select: () => false,
     selectedImage: null,
     selectPrev: () => false,
@@ -168,7 +171,6 @@ const GalleryProvider: Component<{ children: JSX.Element }> = (props) => {
     setMode: () => true,
     selected: null,
     setColumns: () => {},
-    invalidateFolderCache: () => {},
   };
 
   return (
