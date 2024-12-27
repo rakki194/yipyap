@@ -1,5 +1,5 @@
 // src/components/Gallery/Gallery.tsx
-import { Component, Show } from "solid-js";
+import { Component, Show, onMount } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAppContext } from "~/contexts/app";
 import { ImageGrid } from "./ImageGrid";
@@ -25,7 +25,8 @@ export const Gallery: Component = () => {
     scrollToSelected,
     smoothScroll,
     startPositionChecking,
-    autoScrolling
+    autoScrolling,
+    setupWheelHandler
   } = useGalleryScroll();
 
   const {
@@ -66,6 +67,11 @@ export const Gallery: Component = () => {
     scrollToSelected,
     autoScrolling,
     startPositionChecking
+  });
+
+  // Initialize wheel handler
+  onMount(() => {
+    setupWheelHandler();
   });
 
   const handleFileUpload = (files: FileList) => {

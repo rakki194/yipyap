@@ -4,7 +4,7 @@
 
 ## Introduction
 
-**Y**our **I**ntuitive **P**latform for **Y**ielding, **A**nnotating, and **P**rocessing or `yipyap` for short is a web application for uploading, browsing and managing image, audio and video dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with Rust and SolidJS.
+**Y**our **I**ntuitive **P**latform for **Y**ielding, **A**nnotating, and **P**rocessing or `yipyap` for short is a web application for uploading, browsing and managing image, audio and video dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with Python and SolidJS.
 
 The frontend of yipyap is built with SolidJS, a reactive JavaScript framework that emphasizes fine-grained reactivity and performance, using Vite as the build tool for fast development and optimized production builds. The application follows a component-based architecture with a central app context managing global state. The main entry point is `/src/main.tsx`, which sets up the app context and error boundaries, while the routing configuration is defined in `/src/router.ts`. The core application state management resides in `/src/contexts/app.tsx`, which handles theme management, locale/translation management, settings persistence, notification system, and various feature flags and configurations.
 
@@ -329,35 +329,11 @@ The backend is built with FastAPI and provides a comprehensive API for image man
 
 ### Key Features
 
-1. **Efficient Directory Browsing**
-   - Pagination support
-   - Cache-aware responses
-   - If-Modified-Since handling
-   - Async directory scanning
+The directory browsing system provides efficient access to image collections through pagination support and cache-aware responses. It leverages If-Modified-Since handling and asynchronous directory scanning to optimize performance when browsing large datasets. The system intelligently manages directory listings to provide fast access while minimizing server load.
 
-2. **Image Processing**
-   - Thumbnail generation (300x300)
-   - Preview generation (1024x1024)
-   - WebP format optimization
-   - Color space management
+Image processing capabilities include automatic generation of thumbnails at 300x300 pixels and previews at 1024x1024 pixels, with WebP format optimization for reduced file sizes. The system handles color space management to ensure consistent image quality across different formats and display conditions. Security features protect against path traversal attacks while providing proper error handling and logging, with separate development and production modes for enhanced safety.
 
-3. **Caption Management**
-   - Multiple caption formats (.caption, .txt, .tags)
-   - Automatic caption generation
-   - Caption priority ordering
-   - Batch operations
-
-4. **Security**
-   - Path traversal protection
-   - Development/Production mode isolation
-   - Error handling and logging
-   - Permission validation
-
-5. **Caching System**
-   - SQLite-based metadata cache
-   - Thumbnail caching
-   - Directory listing cache
-   - Cache invalidation handling
+The caching and caption management systems work together to provide a robust media handling solution. Captions are supported in multiple formats including plain text `.caption`, `.txt`, and comma-separated `.tags` and `.wd` files, with automatic generation capabilities and priority-based ordering. The editor also supports `.e621` with a custom JSON editor. You are also able to edit the `sample-prompts.txt` for your dataset with a custom GUI and the configuration files with a `.toml`, `.yaml`, `.json` or even `.ini` files supported text editor. The SQLite-based metadata cache stores thumbnail references and directory listings, with intelligent cache invalidation to maintain data freshness. Batch operations are supported for efficient processing of multiple files, while the permission validation system ensures proper access control.
 
 ## Test Organization
 

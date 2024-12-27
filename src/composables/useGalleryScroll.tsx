@@ -5,7 +5,7 @@
  * @description
  * This composable provides functionality to manage smooth scrolling behavior in the gallery.
  * It enables seamless scrolling to selected items while ensuring they remain within the visible
- * viewport.
+ * viewport. It also handles mouse wheel events for image navigation.
  * 
  * The composable handles automatic position checking and correction to maintain proper item visibility.
  * Additionally, it manages scroll animations with debouncing to provide a smooth user experience.
@@ -36,6 +36,7 @@
  * - `startPositionChecking()`: Begins monitoring the selected item's position in viewport.
  * - `autoScrolling(): boolean`: Signal indicating if an automatic scroll is in progress.
  * - `checkingPosition(): boolean`: Signal indicating if position verification is in progress.
+ * - `setupWheelHandler()`: Sets up the wheel event handler for image navigation.
  * 
  * @remarks
  * - Maintains a 15% margin buffer zone at top and bottom of viewport
@@ -43,6 +44,7 @@
  * - Performs position checking every 500ms when enabled
  * - Verifies and corrects item positions during scroll animations
  * - Automatically cleans up position checking intervals on unmount
+ * - Uses wheel events for image navigation instead of page scrolling
  */
 
 import { createSignal, onCleanup } from "solid-js";
@@ -54,6 +56,7 @@ export function useGalleryScroll() {
   const [autoScrolling, setAutoScrolling] = createSignal(false);
   const [checkingPosition, setCheckingPosition] = createSignal(false);
   let positionCheckInterval: number | null = null;
+  let wheelHandler: ((e: WheelEvent) => void) | null = null;
   
   const scrollManager = useScrollManager(200);
 
@@ -147,10 +150,48 @@ export function useGalleryScroll() {
     }, 500); // Check every 500ms
   };
 
+  const setupWheelHandler = () => {
+    if (wheelHandler) return;
+
+    wheelHandler = (e: WheelEvent) => {
+      // Only handle wheel events when no modifiers are pressed
+      if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;
+
+      e.preventDefault();
+      
+      const delta = e.deltaY;
+      const data = gallery.data();
+      if (!data) return;
+
+      const currentIdx = gallery.selected ?? -1;
+      const totalItems = data.items.length;
+
+      if (delta > 0 && currentIdx < totalItems - 1) {
+        // Scroll down - move to next image
+        gallery.select(currentIdx + 1);
+      } else if (delta < 0 && currentIdx > 0) {
+        // Scroll up - move to previous image
+        gallery.select(currentIdx - 1);
+      }
+    };
+
+    const galleryElement = document.getElementById('gallery');
+    if (galleryElement) {
+      galleryElement.addEventListener('wheel', wheelHandler, { passive: false });
+    }
+  };
+
   onCleanup(() => {
     if (positionCheckInterval) {
       clearInterval(positionCheckInterval);
       positionCheckInterval = null;
+    }
+    if (wheelHandler) {
+      const galleryElement = document.getElementById('gallery');
+      if (galleryElement) {
+        galleryElement.removeEventListener('wheel', wheelHandler);
+      }
+      wheelHandler = null;
     }
   });
 
@@ -159,6 +200,7 @@ export function useGalleryScroll() {
     smoothScroll,
     startPositionChecking,
     autoScrolling,
-    checkingPosition
+    checkingPosition,
+    setupWheelHandler
   };
 }

@@ -19,6 +19,7 @@ import { useAppContext } from "~/contexts/app";
 import { useCaptionHistory } from "~/composables/useCaptionHistory";
 import { useTagManagement } from "~/composables/useTagManagement";
 import { useE621Editor } from "~/composables/useE621Editor";
+import { useTomlEditor } from "~/composables/useTomlEditor";
 
 type CaptionType = "wd" | "e621" | "tags" | string;
 
@@ -56,16 +57,28 @@ export const CaptionInput: Component<
   } = useTagManagement(saveWithHistory);
 
   const {
-    lineCount,
-    currentLine,
-    highlightedContent,
+    lineCount: e621LineCount,
+    currentLine: e621CurrentLine,
+    highlightedContent: e621HighlightedContent,
     isValidJSON,
-    calculateCurrentLine,
-    handleInput,
-    handleKeyDown,
-    handlePaste,
-    handleScroll,
+    calculateCurrentLine: calculateE621Line,
+    handleInput: handleE621Input,
+    handleKeyDown: handleE621KeyDown,
+    handlePaste: handleE621Paste,
+    handleScroll: handleE621Scroll,
   } = useE621Editor(caption, saveWithHistory);
+
+  const {
+    lineCount: tomlLineCount,
+    currentLine: tomlCurrentLine,
+    highlightedContent: tomlHighlightedContent,
+    isValidTOML,
+    calculateCurrentLine: calculateTomlLine,
+    handleInput: handleTomlInput,
+    handleKeyDown: handleTomlKeyDown,
+    handlePaste: handleTomlPaste,
+    handleScroll: handleTomlScroll,
+  } = useTomlEditor(caption, saveWithHistory);
 
   const [selection, setSelection] = createSelection();
 
@@ -135,34 +148,60 @@ export const CaptionInput: Component<
 
   const isTagInput = () => ["wd", "tags"].includes(type());
   const isE621Input = () => type() === "e621";
+  const isTomlInput = () => type() === "toml";
 
   const tags = () => (isTagInput() ? splitAndCleanTags(caption()) : []);
 
-  const handleE621Input = (e: Event, node: HTMLElement) => {
+  const handleEditorInput = (e: Event, node: HTMLElement) => {
     const [selNode, start, end] = selection();
     if (node === selNode) {
-      handleInput(e as InputEvent, node);
+      if (isE621Input()) {
+        handleE621Input(e as InputEvent, node);
+      } else if (isTomlInput()) {
+        handleTomlInput(e as InputEvent, node);
+      }
       // Restore selection after content update
       setSelection([node, start, end]);
     }
   };
 
-  const handleE621KeyDown = (e: KeyboardEvent, node: HTMLElement) => {
+  const handleEditorKeyDown = (e: KeyboardEvent, node: HTMLElement) => {
     const [selNode, start, end] = selection();
     if (node === selNode) {
-      handleKeyDown(e, node);
-      calculateCurrentLine(node);
+      if (isE621Input()) {
+        handleE621KeyDown(e, node);
+        calculateE621Line(node);
+      } else if (isTomlInput()) {
+        handleTomlKeyDown(e, node);
+        calculateTomlLine(node);
+      }
     }
   };
 
-  const handleE621Paste = (e: ClipboardEvent, node: HTMLElement) => {
+  const handleEditorPaste = (e: ClipboardEvent, node: HTMLElement) => {
     const [selNode, start, end] = selection();
     if (node === selNode) {
-      handlePaste(e, node);
+      if (isE621Input()) {
+        handleE621Paste(e, node);
+      } else if (isTomlInput()) {
+        handleTomlPaste(e, node);
+      }
       // Selection will be updated after paste
       requestAnimationFrame(() => {
-        calculateCurrentLine(node);
+        if (isE621Input()) {
+          calculateE621Line(node);
+        } else if (isTomlInput()) {
+          calculateTomlLine(node);
+        }
       });
+    }
+  };
+
+  const handleEditorScroll = (e: Event) => {
+    if (isE621Input()) {
+      handleE621Scroll(e);
+    } else if (isTomlInput()) {
+      handleTomlScroll(e);
     }
   };
 
@@ -241,22 +280,31 @@ export const CaptionInput: Component<
             </button>
           </div>
         </div>
-      ) : isE621Input() ? (
+      ) : isE621Input() || isTomlInput() ? (
         <div 
-          class="e621-editor" 
-          classList={{ "invalid-json": !isValidJSON(caption() || "") }}
+          class={isE621Input() ? "e621-editor" : "toml-editor"}
+          classList={{ 
+            "invalid-json": isE621Input() && !isValidJSON(caption() || ""),
+            "invalid-toml": isTomlInput() && !isValidTOML()
+          }}
         >
           <div
             ref={editorRef}
-            class="e621-content"
+            class={isE621Input() ? "e621-content" : "toml-content"}
             contentEditable="plaintext-only"
             spellcheck={false}
-            innerHTML={highlightedContent()}
-            onInput={(e) => handleE621Input(e, e.currentTarget)}
-            onKeyDown={(e) => handleE621KeyDown(e, e.currentTarget)}
-            onPaste={(e) => handleE621Paste(e, e.currentTarget)}
-            onScroll={handleScroll}
-            onSelect={(e) => calculateCurrentLine(e.currentTarget)}
+            innerHTML={isE621Input() ? e621HighlightedContent() : tomlHighlightedContent()}
+            onInput={(e) => handleEditorInput(e, e.currentTarget)}
+            onKeyDown={(e) => handleEditorKeyDown(e, e.currentTarget)}
+            onPaste={(e) => handleEditorPaste(e, e.currentTarget)}
+            onScroll={handleEditorScroll}
+            onSelect={(e) => {
+              if (isE621Input()) {
+                calculateE621Line(e.currentTarget);
+              } else if (isTomlInput()) {
+                calculateTomlLine(e.currentTarget);
+              }
+            }}
           />
         </div>
       ) : (

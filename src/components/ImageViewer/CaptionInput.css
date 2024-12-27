@@ -364,3 +364,147 @@
   --json-comma: #737373;
   --json-colon: #8c8c8c;
 }
+
+/* TOML Syntax Highlighting */
+.toml-key {
+  color: var(--json-key);
+  font-weight: 500;
+  position: relative;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--json-key) 20%, transparent);
+    opacity: 0.5;
+  }
+}
+
+.toml-string {
+  color: var(--json-string);
+  font-weight: normal;
+}
+
+.toml-number {
+  color: var(--json-number);
+  font-weight: normal;
+}
+
+.toml-boolean {
+  color: var(--json-boolean);
+  font-weight: 500;
+}
+
+.toml-date {
+  color: var(--json-string);
+  font-style: italic;
+}
+
+.toml-array {
+  color: var(--json-bracket);
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.toml-comment {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.toml-equals {
+  color: var(--json-colon);
+  opacity: 0.7;
+  font-weight: normal;
+  margin: 0 0.2em;
+}
+
+.toml-section {
+  color: var(--json-key);
+  font-weight: bold;
+}
+
+/* TOML Editor Styles */
+.toml-editor {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  font-family: monospace;
+  line-height: 1.5;
+  background: color-mix(in srgb, var(--secondary-bg) 50%, transparent);
+  border-radius: var(--half-spacing);
+  overflow: hidden;
+}
+
+.toml-editor.invalid-toml {
+  background-color: color-mix(in srgb, var(--error) 10%, var(--secondary-bg));
+}
+
+.toml-content {
+  flex: 1;
+  padding: var(--half-spacing);
+  white-space: pre-wrap;
+  overflow: auto;
+  outline: none;
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 0.9em;
+  tab-size: 2;
+  background: none;
+  line-height: 1.5;
+  font-family: monospace;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: text;
+  position: relative;
+  caret-color: var(--json-string);
+  border-radius: var(--half-spacing);
+}
+
+.toml-content::selection {
+  background: hsla(0, 0%, 90%, 0.2);
+}
+
+.toml-content br {
+  display: block;
+  content: "";
+  margin: 0;
+  padding: 0;
+  line-height: inherit;
+}
+
+.toml-content span {
+  white-space: pre;
+  font-family: inherit;
+  line-height: inherit;
+  display: inline;
+  position: relative;
+  z-index: 1;
+}
+
+.toml-content:focus {
+  outline: none;
+}
+
+/* Scrollbar styles for TOML editor */
+.toml-editor ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.toml-editor ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toml-editor ::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  opacity: 0.3;
+  border-radius: 4px;
+}
+
+.toml-editor ::-webkit-scrollbar-thumb:hover {
+  opacity: 0.5;
+}

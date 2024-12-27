@@ -71,6 +71,8 @@ export const captionIconsMap = {
   caption: "subtitles",
   wd: "wd",
   e621: "beakerRegular",
+  json: "type",
+  toml: "type",
 };
 
 export const statusIconsMap = {
