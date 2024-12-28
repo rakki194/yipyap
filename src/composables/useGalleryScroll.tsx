@@ -222,9 +222,14 @@ export function useGalleryScroll() {
           // Scroll down - move to next image
           gallery.select(currentIdx + 1);
           touchpadDelta = 0;
-        } else if (touchpadDelta < 0 && currentIdx > 0) {
-          // Scroll up - move to previous image
-          gallery.select(currentIdx - 1);
+        } else if (touchpadDelta < 0) {
+          if (currentIdx > 0) {
+            // Scroll up - move to previous image
+            gallery.select(currentIdx - 1);
+          } else if (currentIdx === 0 && data.path) {
+            // At first item and there's a parent directory, select it
+            gallery.select(null);
+          }
           touchpadDelta = 0;
         }
       } else {
@@ -232,9 +237,14 @@ export function useGalleryScroll() {
         if (delta > 0 && currentIdx < totalItems - 1) {
           // Scroll down - move to next image
           gallery.select(currentIdx + 1);
-        } else if (delta < 0 && currentIdx > 0) {
-          // Scroll up - move to previous image
-          gallery.select(currentIdx - 1);
+        } else if (delta < 0) {
+          if (currentIdx > 0) {
+            // Scroll up - move to previous image
+            gallery.select(currentIdx - 1);
+          } else if (currentIdx === 0 && data.path) {
+            // At first item and there's a parent directory, select it
+            gallery.select(null);
+          }
         }
       }
     };
