@@ -405,6 +405,14 @@ kbd {
   color: var(--kbd-text, var(--text-primary));
 }
 
+.language-select {
+  max-width: 20rem;
+}
+
+.wdv3-model-select {
+  max-width: 20rem;
+}
+
 /* Theme-specific kbd styles */
 [data-theme="light"] kbd {
   background: #f5f5f5;
