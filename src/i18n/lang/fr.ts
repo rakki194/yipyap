@@ -104,6 +104,8 @@ export default {
     wdv3CharThreshold: "Seuil des tags de personnages",
     wdv3CharThresholdTooltip: "Seuil de confiance pour les tags de personnages (0.75 par défaut)",
     wdv3ConfigUpdateError: "Échec de la mise à jour des paramètres WDv3",
+    wdv3ForceCpu: "Forcer le CPU pour WDv3",
+    wdv3ForceCpuTooltip: "Forcer WDv3 à utiliser le CPU au lieu du GPU",
   },
   tools: {
     removeCommas: "Supprimer les virgules",

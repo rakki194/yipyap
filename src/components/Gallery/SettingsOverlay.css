@@ -17,8 +17,6 @@
   overflow: auto;
   background: var(--surface-1);
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 32px;
   width: 100%;
   max-width: 800px;
   box-sizing: border-box;

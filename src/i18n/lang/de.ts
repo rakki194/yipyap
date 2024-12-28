@@ -104,6 +104,8 @@ export default {
     thumbnailSize: "Vorschaubildgröße",
     thumbnailSizeDescription: "Größe der Vorschaubilder in Pixeln (z.B. 250)",
     thumbnailSizeUpdateError: "Fehler beim Aktualisieren der Vorschaubildgröße",
+    wdv3ForceCpu: "WDv3 auf CPU erzwingen",
+    wdv3ForceCpuTooltip: "WDv3 zwingen, CPU statt GPU zu verwenden",
   },
   gallery: {
     addTag: "Tag hinzufügen",

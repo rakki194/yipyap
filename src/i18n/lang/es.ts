@@ -102,8 +102,10 @@ export default {
     preserveTxt: "Conservar archivos TXT",
     preserveTxtTooltip: "Conservar archivos TXT que contienen configuración de generación",
     thumbnailSize: "Tamaño de miniaturas",
-    thumbnailSizeDescription: "Tamaño de miniaturas en píxeles (ej: 250)",
+    thumbnailSizeDescription: "Tamaño de miniaturas en píxeles (ej. 250)",
     thumbnailSizeUpdateError: "Error al actualizar el tamaño de miniaturas",
+    wdv3ForceCpu: "Forzar WDv3 en CPU",
+    wdv3ForceCpuTooltip: "Forzar WDv3 a usar CPU en lugar de GPU",
   },
   gallery: {
     addTag: "Añadir etiqueta",
