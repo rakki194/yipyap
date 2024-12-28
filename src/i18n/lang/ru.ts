@@ -63,9 +63,20 @@ export default {
     disableNonsenseTooltip: "Скрыть японский текст и другие бессмысленные элементы",
     modelSettings: (params: TranslationParams) => "Настройки модели",
     jtp2ModelPath: "Путь к модели JTP2",
-    jtp2ModelPathTooltip: "Путь к файлу модели JTP2 (.safetensors)",
+    jtp2ModelPathTooltip: "Путь к файлу модели JTP2",
     jtp2TagsPath: "Путь к тегам JTP2",
-    jtp2TagsPathTooltip: "Путь к файлу тегов JTP2 (.json)",
+    jtp2TagsPathTooltip: "Путь к файлу тегов JTP2",
+    jtp2Threshold: "Порог тегов JTP2",
+    jtp2ThresholdTooltip: "Порог уверенности для включения тегов (от 0.0 до 1.0)",
+    jtp2ForceCpu: "Принудительно использовать CPU для JTP2",
+    jtp2ForceCpuTooltip: "Заставить JTP2 использовать CPU вместо GPU",
+    wdv3ModelName: "Модель WDv3",
+    wdv3ModelNameTooltip: "Выберите архитектуру модели WDv3 (ViT, SwinV2 или ConvNext)",
+    wdv3GenThreshold: "Порог общих тегов",
+    wdv3GenThresholdTooltip: "Порог уверенности для общих тегов (по умолчанию 0.35)",
+    wdv3CharThreshold: "Порог тегов персонажей",
+    wdv3CharThresholdTooltip: "Порог уверенности для тегов персонажей (по умолчанию 0.75)",
+    wdv3ConfigUpdateError: "Не удалось обновить настройки WDv3",
     downloadModel: "Скачать модель",
     downloadTags: "Скачать теги",
     viewMode: "Режим просмотра",
@@ -94,21 +105,50 @@ export default {
     thumbnailSizeDescription: "Размер миниатюр в пикселях (например: 250)",
     thumbnailSizeUpdateError: "Ошибка при обновлении размера миниатюр",
   },
-  frontPage: {
-    subtitle: {
-      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見つけました",
-      3: "虚ろな瞳に映る、無限の宇宙",
-      4: "錆びた心、新たな芽吹き",
-      5: "夢と現実が交錯する、不思議な境地",
-      6: "未知の領域、無限の可能性",
-      7: "時の流れを超えた、永遠の愛",
-      8: "これで追い出されますよ！",
+  tools: {
+    removeCommas: "Удалить запятые",
+    replaceNewlinesWithCommas: "Заменить переносы строк запятыми",
+    replaceUnderscoresWithSpaces: "Заменить подчеркивания пробелами",
+    transformations: "Преобразования",
+    transformationType: "Тип преобразования",
+    transformationTypes: {
+      searchReplace: "Поиск и замена",
+      case: "Регистр",
+      trim: "Обрезка",
+      wrap: "Обертывание",
+      number: "Число"
     },
-    imageWork: "Работа с изображениями",
-    audioWork: "Работа с аудио",
-    deselectAll: "Отменить выбор",
-    deleteSelected: "Удалить выбранные",
+    addTransformation: "Добавить преобразование",
+    caseTypes: {
+      upper: "ВЕРХНИЙ РЕГИСТР",
+      lower: "нижний регистр",
+      title: "Каждое Слово С Заглавной",
+      sentence: "Первое слово предложения"
+    },
+    trimTypes: {
+      all: "Обрезать все",
+      start: "Обрезать начало",
+      end: "Обрезать конец",
+      duplicates: "Удалить дубликаты"
+    },
+    numberActions: {
+      remove: "Удалить",
+      format: "Форматировать",
+      extract: "Извлечь"
+    },
+    numberFormat: "Формат числа",
+    numberFormatPlaceholder: "Введите формат числа",
+    prefix: "Префикс",
+    suffix: "Суффикс",
+    prefixPlaceholder: "Введите префикс",
+    suffixPlaceholder: "Введите суффикс",
+    transformationNamePlaceholder: "Введите название преобразования",
+    transformationDescriptionPlaceholder: "Введите описание преобразования",
+    searchPattern: "Шаблон поиска",
+    searchPatternPlaceholder: "Введите шаблон поиска",
+    replacement: "Замена",
+    replacementPlaceholder: "Введите текст замены",
+    selectIcon: "Выбрать иконку"
   },
   gallery: {
     addTag: "Добавить тег",
@@ -339,50 +379,5 @@ export default {
     captionGenerated: "Подпись сгенерирована",
     connectionLost: "Соединение потеряно",
     connectionRestored: "Соединение восстановлено",
-  },
-  tools: {
-    removeCommas: "Удалить запятые",
-    replaceNewlinesWithCommas: "Заменить переносы строк запятыми",
-    replaceUnderscoresWithSpaces: "Заменить подчеркивания пробелами",
-    transformations: "Преобразования",
-    transformationType: "Тип преобразования",
-    transformationTypes: {
-      searchReplace: "Поиск и замена",
-      case: "Регистр",
-      trim: "Обрезка",
-      wrap: "Обертывание",
-      number: "Число"
-    },
-    addTransformation: "Добавить преобразование",
-    caseTypes: {
-      upper: "ВЕРХНИЙ РЕГИСТР",
-      lower: "нижний регистр",
-      title: "Каждое Слово С Заглавной",
-      sentence: "Первое слово предложения"
-    },
-    trimTypes: {
-      all: "Обрезать все",
-      start: "Обрезать начало",
-      end: "Обрезать конец",
-      duplicates: "Удалить дубликаты"
-    },
-    numberActions: {
-      remove: "Удалить",
-      format: "Форматировать",
-      extract: "Извлечь"
-    },
-    numberFormat: "Формат числа",
-    numberFormatPlaceholder: "Введите формат числа",
-    prefix: "Префикс",
-    suffix: "Суффикс",
-    prefixPlaceholder: "Введите префикс",
-    suffixPlaceholder: "Введите суффикс",
-    transformationNamePlaceholder: "Введите название преобразования",
-    transformationDescriptionPlaceholder: "Введите описание преобразования",
-    searchPattern: "Шаблон поиска",
-    searchPatternPlaceholder: "Введите шаблон поиска",
-    replacement: "Замена",
-    replacementPlaceholder: "Введите текст замены",
-    selectIcon: "Выбрать иконку"
   },
 } as const satisfies Translations;

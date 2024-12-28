@@ -681,6 +681,90 @@ kbd {
   margin-top: var(--half-spacing);
 }
 
+.setting-group h4 {
+  margin: var(--spacing) 0 var(--half-spacing);
+  color: var(--text-primary);
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.threshold-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.threshold-controls input[type="range"] {
+  flex: 1;
+  height: 2px;
+  background: var(--text-color);
+  border-radius: 2px;
+  appearance: none;
+  outline: none;
+}
+
+.threshold-controls input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--text-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.threshold-controls input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--text-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+.threshold-value {
+  min-width: 3ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.toggle-control {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-control input[type="checkbox"] {
+  appearance: none;
+  width: 40px;
+  height: 20px;
+  background: var(--background-color);
+  border: 2px solid var(--text-color);
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-control input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--text-color);
+  border-radius: 50%;
+  top: 0;
+  left: 0;
+  transition: transform 0.2s ease;
+}
+
+.toggle-control input[type="checkbox"]:checked {
+  background: var(--text-color);
+}
+
+.toggle-control input[type="checkbox"]:checked::before {
+  background: var(--background-color);
+  transform: translateX(20px);
+}
+
 .transformations-content {
   opacity: 1;
   transform: translateX(0);
@@ -705,4 +789,51 @@ kbd {
 /* Remove checkbox styles since we're using the Toggle component */
 input[type="checkbox"] {
   margin-left: auto;
+}
+
+.tagger-content {
+  padding: 1rem;
+}
+
+.tagger-content .setting-group {
+  margin-bottom: 1.5rem;
+}
+
+.tagger-content h4 {
+  margin-bottom: 1rem;
+  font-size: 1.1em;
+  color: var(--text-color);
+}
+
+.tagger-content .threshold-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tagger-content .threshold-value {
+  min-width: 3em;
+  text-align: right;
+  color: var(--text-color-secondary);
+}
+
+.tagger-content .setting-info {
+  margin-top: 0.5rem;
+}
+
+.tagger-content .download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-color-link);
+  text-decoration: none;
+}
+
+.tagger-content .download-link:hover {
+  text-decoration: underline;
+}
+
+.tagger-content .download-link .icon {
+  width: 1em;
+  height: 1em;
 }

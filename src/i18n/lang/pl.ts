@@ -63,9 +63,20 @@ export default {
     disableNonsenseTooltip: "Wyłącz tekst japoński w aplikacji",
     modelSettings: "Ustawienia modelu",
     jtp2ModelPath: "Ścieżka modelu JTP2",
-    jtp2ModelPathTooltip: "Ścieżka do modelu JTP2",
+    jtp2ModelPathTooltip: "Ścieżka do pliku modelu JTP2",
     jtp2TagsPath: "Ścieżka tagów JTP2",
-    jtp2TagsPathTooltip: "Ścieżka do tagów JTP2",
+    jtp2TagsPathTooltip: "Ścieżka do pliku tagów JTP2",
+    jtp2Threshold: "Próg tagów JTP2",
+    jtp2ThresholdTooltip: "Próg pewności dla włączenia tagów (od 0.0 do 1.0)",
+    jtp2ForceCpu: "Wymuś CPU dla JTP2",
+    jtp2ForceCpuTooltip: "Wymuś użycie CPU zamiast GPU dla JTP2",
+    wdv3ModelName: "Model WDv3",
+    wdv3ModelNameTooltip: "Wybierz architekturę modelu WDv3 (ViT, SwinV2 lub ConvNext)",
+    wdv3GenThreshold: "Próg tagów ogólnych",
+    wdv3GenThresholdTooltip: "Próg pewności dla tagów ogólnych (domyślnie 0.35)",
+    wdv3CharThreshold: "Próg tagów postaci",
+    wdv3CharThresholdTooltip: "Próg pewności dla tagów postaci (domyślnie 0.75)",
+    wdv3ConfigUpdateError: "Nie udało się zaktualizować ustawień WDv3",
     downloadModel: "Pobierz model (1,8 GB)",
     downloadTags: "Pobierz tagi (195 KB)",
     viewMode: "Tryb widoku",
@@ -94,21 +105,50 @@ export default {
     thumbnailSizeDescription: "Rozmiar miniatur w pikselach (np. 250)",
     thumbnailSizeUpdateError: "Nie udało się zaktualizować rozmiaru miniatur",
   },
-  frontPage: {
-    subtitle: {
-      1: "大規模言語モデルは不正行為をし、嘘をつき、幻覚を見ます。まるで私のように！",
-      2: "私たちは別の祈り方を見つけました",
-      3: "虚ろな瞳に映る、無限の宇宙",
-      4: "錆びた心、新たな芽吹き",
-      5: "夢と現実が交錯する、不思議な境地",
-      6: "未知の領域、無限の可能性",
-      7: "時の流れを超えた、永遠の愛",
-      8: "これで追い出されますよ！",
+  tools: {
+    addTransformation: "Dodaj transformację",
+    transformations: "Transformacje",
+    transformationType: "Typ transformacji",
+    transformationTypes: {
+      searchReplace: "Wyszukaj i zamień",
+      case: "Wielkość liter",
+      trim: "Przycinanie",
+      wrap: "Zawijanie",
+      number: "Liczba"
     },
-    imageWork: "Praca z obrazami",
-    audioWork: "Praca z dźwiękiem",
-    deselectAll: "Odznacz wszystkie",
-    deleteSelected: "Usuń zaznaczone",
+    caseTypes: {
+      upper: "WIELKIE LITERY",
+      lower: "małe litery",
+      title: "Pierwsza Wielka",
+      sentence: "Jak w zdaniu"
+    },
+    trimTypes: {
+      all: "Wszystko", 
+      start: "Początek",
+      end: "Koniec",
+      duplicates: "Duplikaty"
+    },
+    numberActions: {
+      remove: "Usuń",
+      format: "Formatuj", 
+      extract: "Wyodrębnij"
+    },
+    numberFormat: "Format liczby",
+    numberFormatPlaceholder: "Wprowadź format liczby...",
+    prefix: "Prefiks",
+    suffix: "Sufiks",
+    prefixPlaceholder: "Wprowadź prefiks...",
+    suffixPlaceholder: "Wprowadź sufiks...",
+    transformationNamePlaceholder: "Nazwa transformacji...",
+    transformationDescriptionPlaceholder: "Opis transformacji...",
+    searchPattern: "Wzorzec wyszukiwania",
+    searchPatternPlaceholder: "Wprowadź wzorzec wyszukiwania...",
+    replacement: "Zamiana",
+    replacementPlaceholder: "Wprowadź tekst zamiany...",
+    selectIcon: "Wybierz ikonę",
+    removeCommas: "Usuń przecinki",
+    replaceNewlinesWithCommas: "Zamień nowe linie na przecinki",
+    replaceUnderscoresWithSpaces: "Zamień podkreślenia na spacje"
   },
   gallery: {
     addTag: "Dodaj tag...",
@@ -282,50 +322,5 @@ export default {
     captionGenerated: "Podpis został wygenerowany",
     connectionLost: "Utracono połączenie z serwerem",
     connectionRestored: "Połączenie z serwerem zostało przywrócone"
-  },
-  tools: {
-    addTransformation: "Dodaj transformację",
-    transformations: "Transformacje",
-    transformationType: "Typ transformacji",
-    transformationTypes: {
-      searchReplace: "Wyszukaj i zamień",
-      case: "Wielkość liter",
-      trim: "Przycinanie",
-      wrap: "Zawijanie",
-      number: "Liczba"
-    },
-    caseTypes: {
-      upper: "WIELKIE LITERY",
-      lower: "małe litery",
-      title: "Pierwsza Wielka",
-      sentence: "Jak w zdaniu"
-    },
-    trimTypes: {
-      all: "Wszystko", 
-      start: "Początek",
-      end: "Koniec",
-      duplicates: "Duplikaty"
-    },
-    numberActions: {
-      remove: "Usuń",
-      format: "Formatuj", 
-      extract: "Wyodrębnij"
-    },
-    numberFormat: "Format liczby",
-    numberFormatPlaceholder: "Wprowadź format liczby...",
-    prefix: "Prefiks",
-    suffix: "Sufiks",
-    prefixPlaceholder: "Wprowadź prefiks...",
-    suffixPlaceholder: "Wprowadź sufiks...",
-    transformationNamePlaceholder: "Nazwa transformacji...",
-    transformationDescriptionPlaceholder: "Opis transformacji...",
-    searchPattern: "Wzorzec wyszukiwania",
-    searchPatternPlaceholder: "Wprowadź wzorzec wyszukiwania...",
-    replacement: "Zamiana",
-    replacementPlaceholder: "Wprowadź tekst zamiany...",
-    selectIcon: "Wybierz ikonę",
-    removeCommas: "Usuń przecinki",
-    replaceNewlinesWithCommas: "Zamień nowe linie na przecinki",
-    replaceUnderscoresWithSpaces: "Zamień podkreślenia na spacje"
   }
 } as const satisfies Translations;

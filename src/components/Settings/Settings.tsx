@@ -8,17 +8,19 @@ import getIcon from "~/icons";
 import { Tooltip } from "~/components/Tooltip/Tooltip";
 import { Slider } from "~/components/Slider/Slider";
 import { TransformationSettings } from "./TransformationSettings";
+import { TaggerSettings } from "./TaggerSettings";
 import "./Settings.css";
 import { languages } from "~/i18n";
 import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 import { Toggle } from "~/components/Toggle/Toggle";
+import { useTranslations } from "../../composables/useTranslations";
 
 export const Settings: Component<{ onClose: () => void }> = (props) => {
   const app = useAppContext();
   const escape = useGlobalEscapeManager();
-  const [activeView, setActiveView] = createSignal<'main' | 'help' | 'transformations' | 'experimental'>('main');
+  const [activeView, setActiveView] = createSignal<'main' | 'help' | 'transformations' | 'experimental' | 'tagger'>('main');
   const [isTransitioning, setIsTransitioning] = createSignal(false);
-  const t = app.t;
+  const t = useTranslations();
 
   onMount(() => {
     escape.setOverlayState("settings", true);
@@ -30,7 +32,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
     });
   });
 
-  const switchView = (view: 'main' | 'help' | 'transformations' | 'experimental') => {
+  const switchView = (view: 'main' | 'help' | 'transformations' | 'experimental' | 'tagger') => {
     if (isTransitioning()) return;
     
     if (activeView() === view) {
@@ -68,6 +70,16 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
       <div class="settings-header">
         <h2>{t('settings.title')}</h2>
         <div class="settings-header-buttons">
+          <button
+            type="button"
+            class="icon tagger-button"
+            classList={{ active: activeView() === 'tagger' }}
+            onClick={() => switchView('tagger')}
+            title={t('settings.modelSettings')}
+            aria-label={t('settings.modelSettings')}
+          >
+            {getIcon("tag")}
+          </button>
           <button
             type="button"
             class="icon transformations-button"
@@ -126,86 +138,95 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   <Show
                     when={activeView() === 'experimental'}
                     fallback={
-                      <div class="help-content">
-                        <h3>{t('shortcuts.title')}</h3>
-                        <div class="shortcuts-grid">
-                          <div class="shortcuts-section">
-                            <h4>{t('shortcuts.galleryNavigation')}</h4>
-                            <div class="shortcut">
-                              <kbd>q</kbd>
-                              <span>{t('shortcuts.quickFolderSwitch')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>↑</kbd>
-                              <span>{t('shortcuts.aboveImage')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>↓</kbd>
-                              <span>{t('shortcuts.belowImage')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>←</kbd>
-                              <span>{t('shortcuts.previousImage')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>→</kbd>
-                              <span>{t('shortcuts.nextImage')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>Enter</kbd>
-                              <span>{t('shortcuts.togglePreview')}</span>
-                            </div>
-                          </div>
+                      <Show
+                        when={activeView() === 'tagger'}
+                        fallback={
+                          <div class="help-content">
+                            <h3>{t('shortcuts.title')}</h3>
+                            <div class="shortcuts-grid">
+                              <div class="shortcuts-section">
+                                <h4>{t('shortcuts.galleryNavigation')}</h4>
+                                <div class="shortcut">
+                                  <kbd>q</kbd>
+                                  <span>{t('shortcuts.quickFolderSwitch')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>↑</kbd>
+                                  <span>{t('shortcuts.aboveImage')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>↓</kbd>
+                                  <span>{t('shortcuts.belowImage')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>←</kbd>
+                                  <span>{t('shortcuts.previousImage')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>→</kbd>
+                                  <span>{t('shortcuts.nextImage')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>Enter</kbd>
+                                  <span>{t('shortcuts.togglePreview')}</span>
+                                </div>
+                              </div>
 
-                          <div class="shortcuts-section">
-                            <h4>{t('shortcuts.tagNavigation')}</h4>
-                            <div class="shortcut">
-                              <kbd>Shift</kbd> + <kbd>←</kbd>
-                              <span>{t('shortcuts.previousTag')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>Shift</kbd> + <kbd>→</kbd>
-                              <span>{t('shortcuts.nextTag')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>Shift</kbd> + <kbd>↑</kbd>
-                              <span>{t('shortcuts.switchTagBubble')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>Shift</kbd> + <kbd>↓</kbd>
-                              <span>{t('shortcuts.switchTagInput')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>{t('shortcuts.doubleShift')}</kbd>
-                              <span>{t('shortcuts.cycleCaptions')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>←</kbd>
-                              <span>{t('shortcuts.firstTagRow')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>→</kbd>
-                              <span>{t('shortcuts.lastTagRow')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>{t('shortcuts.shift')}</kbd> + <kbd>{t('shortcuts.del')}</kbd>
-                              <span>{t('shortcuts.removeTag')}</span>
-                            </div>
-                          </div>
+                              <div class="shortcuts-section">
+                                <h4>{t('shortcuts.tagNavigation')}</h4>
+                                <div class="shortcut">
+                                  <kbd>Shift</kbd> + <kbd>←</kbd>
+                                  <span>{t('shortcuts.previousTag')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>Shift</kbd> + <kbd>→</kbd>
+                                  <span>{t('shortcuts.nextTag')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>Shift</kbd> + <kbd>↑</kbd>
+                                  <span>{t('shortcuts.switchTagBubble')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>Shift</kbd> + <kbd>↓</kbd>
+                                  <span>{t('shortcuts.switchTagInput')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>{t('shortcuts.doubleShift')}</kbd>
+                                  <span>{t('shortcuts.cycleCaptions')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>←</kbd>
+                                  <span>{t('shortcuts.firstTagRow')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>{t('shortcuts.doubleShift')}</kbd> + <kbd>→</kbd>
+                                  <span>{t('shortcuts.lastTagRow')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>{t('shortcuts.shift')}</kbd> + <kbd>{t('shortcuts.del')}</kbd>
+                                  <span>{t('shortcuts.removeTag')}</span>
+                                </div>
+                              </div>
 
-                          <div class="shortcuts-section full-width">
-                            <h4>{t('shortcuts.other')}</h4>
-                            <div class="shortcut">
-                              <kbd>{t('shortcuts.esc')}</kbd>
-                              <span>{t('shortcuts.closePreview')}</span>
-                            </div>
-                            <div class="shortcut">
-                              <kbd>{t('shortcuts.del')}</kbd>
-                              <span>{t('shortcuts.deleteImage')}</span>
+                              <div class="shortcuts-section full-width">
+                                <h4>{t('shortcuts.other')}</h4>
+                                <div class="shortcut">
+                                  <kbd>{t('shortcuts.esc')}</kbd>
+                                  <span>{t('shortcuts.closePreview')}</span>
+                                </div>
+                                <div class="shortcut">
+                                  <kbd>{t('shortcuts.del')}</kbd>
+                                  <span>{t('shortcuts.deleteImage')}</span>
+                                </div>
+                              </div>
                             </div>
                           </div>
+                        }
+                      >
+                        <div class="tagger-content">
+                          <TaggerSettings />
                         </div>
-                      </div>
+                      </Show>
                     }
                   >
                     <div class="experimental-content">
@@ -280,68 +301,6 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
 
               <div class="settings-column">
                 <h3>{t('settings.gallery')}</h3>
-                {/* <div class="setting-group">
-                  <label>{t('settings.viewMode')}</label>
-                  <div class="icon-buttons">
-                    <button
-                      type="button"
-                      class="icon"
-                      classList={{ active: gallery.state.viewMode === "grid" }}
-                      onClick={() => gallery.setViewMode("grid")}
-                      title="Grid view"
-                      aria-label="Switch to grid view"
-                    >
-                      {getIcon("grid")}
-                    </button>
-                    <button
-                      type="button"
-                      class="icon"
-                      classList={{ active: gallery.state.viewMode === "list" }}
-                      onClick={() => gallery.setViewMode("list")}
-                      title="List view"
-                      aria-label="Switch to list view"
-                    >
-                      {getIcon("list")}
-                    </button>
-                  </div>
-                </div>
-
-                <div class="setting-group">
-                  <label>{t('settings.sortBy')}</label>
-                  <div class="icon-buttons">
-                    <button
-                      type="button"
-                      class="icon"
-                      classList={{ active: gallery.state.sort === "name" }}
-                      onClick={() => gallery.setSort("name")}
-                      title="Sort by name"
-                      aria-label="Sort by name"
-                    >
-                      {getIcon("textSortAscending")}
-                    </button>
-                    <button
-                      type="button"
-                      class="icon"
-                      classList={{ active: gallery.state.sort === "date" }}
-                      onClick={() => gallery.setSort("date")}
-                      title="Sort by date modified"
-                      aria-label="Sort by date modified"
-                    >
-                      {getIcon("calendarDate")}
-                    </button>
-                    <button
-                      type="button"
-                      class="icon"
-                      classList={{ active: gallery.state.sort === "size" }}
-                      onClick={() => gallery.setSort("size")}
-                      title="Sort by file size"
-                      aria-label="Sort by file size"
-                    >
-                      {getIcon("documentArrowDown")}
-                    </button>
-                  </div>
-                </div> */}
-
                 <div class="setting-group">
                   <div class="icon-buttons">
                     <Tooltip content={t('settings.disableAnimationsTooltip')} position="top">
@@ -390,54 +349,6 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                       </Tooltip>
                     </div>
                   </Show>
-                </div>
-              </div>
-
-              <div class="settings-column">
-                <h3>{t('settings.modelSettings')}</h3>
-                <div class="setting-group">
-                  <Tooltip content={t('settings.jtp2ModelPathTooltip')} position="top">
-                    <label>{t('settings.jtp2ModelPath')}</label>
-                  </Tooltip>
-                  <input
-                    type="text"
-                    value={app.jtp2ModelPath}
-                    onChange={(e) => app.setJtp2ModelPath(e.currentTarget.value)}
-                    placeholder="/path/to/jtp2/model.safetensors"
-                  />
-                  <div class="setting-info">
-                    <a 
-                      href="https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="download-link"
-                    >
-                      <span class="icon">{getIcon("documentArrowDown")}</span>
-                      {t('settings.downloadModel')}
-                    </a>
-                  </div>
-                </div>
-                <div class="setting-group">
-                  <Tooltip content={t('settings.jtp2TagsPathTooltip')} position="top">
-                    <label>{t('settings.jtp2TagsPath')}</label>
-                  </Tooltip>
-                  <input
-                    type="text"
-                    value={app.jtp2TagsPath}
-                    onChange={(e) => app.setJtp2TagsPath(e.currentTarget.value)}
-                    placeholder="/path/to/jtp2/tags.json"
-                  />
-                  <div class="setting-info">
-                    <a 
-                      href="https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/tags.json"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="download-link"
-                    >
-                      <span class="icon">{getIcon("documentArrowDown")}</span>
-                      {t('settings.downloadTags')}
-                    </a>
-                  </div>
                 </div>
               </div>
             </div>

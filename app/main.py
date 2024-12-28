@@ -44,6 +44,12 @@ from .data_access import CachedFileSystemDataSource
 from . import utils
 from . import caption_generation
 
+MODEL_REPO_MAP = {
+    "vit": "SmilingWolf/wd-v1-4-vit-tagger-v2",
+    "swinv2": "SmilingWolf/wd-v1-4-swinv2-tagger-v2",
+    "convnext": "SmilingWolf/wd-v1-4-convnext-tagger-v2"
+}
+
 logger = logging.getLogger("uvicorn.error")
 
 # Move environment detection to top, before app creation
@@ -99,6 +105,10 @@ WDV3_MODEL_NAME = os.getenv("WDV3_MODEL_NAME", "vit")
 WDV3_GEN_THRESHOLD = float(os.getenv("WDV3_GEN_THRESHOLD", "0.35"))
 WDV3_CHAR_THRESHOLD = float(os.getenv("WDV3_CHAR_THRESHOLD", "0.75"))
 
+# Add near other constants
+JTP2_THRESHOLD = float(os.getenv("JTP2_THRESHOLD", "0.2"))
+JTP2_FORCE_CPU = os.getenv("JTP2_FORCE_CPU", "false").lower() == "true"
+
 # Initialize caption generators with graceful fallback
 caption_generators = {}
 
@@ -108,7 +118,8 @@ if hasattr(caption_generation, "JTP2Generator"):
         jtp2_generator = caption_generation.JTP2Generator(
             model_path=JTP2_MODEL_PATH, 
             tags_path=JTP2_TAGS_PATH, 
-            threshold=0.2
+            threshold=JTP2_THRESHOLD,
+            force_cpu=JTP2_FORCE_CPU
         )
         if jtp2_generator.is_available():
             caption_generators["jtp2"] = jtp2_generator
@@ -606,33 +617,42 @@ async def update_jtp2_config(config: dict):
         config (dict): New configuration settings
             - model_path (str, optional): Path to model file
             - tags_path (str, optional): Path to tags file
+            - threshold (float, optional): Confidence threshold for tags
+            - force_cpu (bool, optional): Whether to force CPU usage
             
     Returns:
         dict: Success status
         
     Raises:
         HTTPException: If reinitialization fails
-        
-    Notes:
-        - Updates global JTP2 paths
-        - Reinitializes caption generator with new settings
     """
-    global JTP2_MODEL_PATH, JTP2_TAGS_PATH
+    global JTP2_MODEL_PATH, JTP2_TAGS_PATH, JTP2_THRESHOLD, JTP2_FORCE_CPU
     
     if "model_path" in config:
         JTP2_MODEL_PATH = Path(config["model_path"])
     if "tags_path" in config:
         JTP2_TAGS_PATH = Path(config["tags_path"])
+    if "threshold" in config:
+        threshold = float(config["threshold"])
+        if not 0 <= threshold <= 1:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid threshold: {threshold}. Must be between 0 and 1"
+            )
+        JTP2_THRESHOLD = threshold
+    if "force_cpu" in config:
+        JTP2_FORCE_CPU = bool(config["force_cpu"])
         
-    # Reinitialize caption generator with new paths
+    # Reinitialize caption generator with new settings
     if "jtp2" in caption_generators:
         try:
             caption_generators["jtp2"] = caption_generation.JTP2Generator(
                 model_path=JTP2_MODEL_PATH,
                 tags_path=JTP2_TAGS_PATH,
-                threshold=0.2
+                threshold=JTP2_THRESHOLD,
+                force_cpu=JTP2_FORCE_CPU
             )
-            logger.info("JTP2 caption generator reinitialized with new paths")
+            logger.info("JTP2 caption generator reinitialized with new settings")
         except Exception as e:
             logger.error(f"Failed to reinitialize JTP2 generator: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -830,4 +850,58 @@ async def move_items(
         
     except Exception as e:
         logger.error(f"Error moving items: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/api/wdv3-config")
+async def update_wdv3_config(config: dict):
+    """Update WDv3 model configuration."""
+    try:
+        if "model_name" in config:
+            if config["model_name"] not in MODEL_REPO_MAP:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid model name: {config['model_name']}. Available models: {list(MODEL_REPO_MAP.keys())}"
+                )
+            os.environ["WDV3_MODEL_NAME"] = config["model_name"]
+            
+        if "gen_threshold" in config:
+            gen_threshold = float(config["gen_threshold"])
+            if not 0 <= gen_threshold <= 1:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid general threshold: {gen_threshold}. Must be between 0 and 1"
+                )
+            os.environ["WDV3_GEN_THRESHOLD"] = str(gen_threshold)
+            
+        if "char_threshold" in config:
+            char_threshold = float(config["char_threshold"])
+            if not 0 <= char_threshold <= 1:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid character threshold: {char_threshold}. Must be between 0 and 1"
+                )
+            os.environ["WDV3_CHAR_THRESHOLD"] = str(char_threshold)
+            
+        # Reinitialize WDv3 generator with new settings
+        if "wdv3" in caption_generators:
+            try:
+                wdv3_generator = caption_generation.WDv3Generator(
+                    model_name=os.getenv("WDV3_MODEL_NAME", "vit"),
+                    gen_threshold=float(os.getenv("WDV3_GEN_THRESHOLD", "0.35")),
+                    char_threshold=float(os.getenv("WDV3_CHAR_THRESHOLD", "0.75"))
+                )
+                if wdv3_generator.is_available():
+                    caption_generators["wdv3"] = wdv3_generator
+                else:
+                    logger.warning("WDv3 caption generator is not available after config update")
+            except Exception as e:
+                logger.warning(f"Failed to reinitialize WDv3 caption generator: {e}")
+                
+        return {"success": True, "message": "WDv3 configuration updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating WDv3 config: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

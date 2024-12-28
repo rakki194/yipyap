@@ -26,35 +26,53 @@ import { TransformationsProvider } from "./transformations";
  * Interface defining the shape of the app context.
  * Contains route tracking, theme settings, and various user preferences.
  */
+interface JTP2Settings {
+  readonly modelPath: string;
+  readonly tagsPath: string;
+  readonly threshold: number;
+  readonly forceCpu: boolean;
+  setModelPath: (value: string) => void;
+  setTagsPath: (value: string) => void;
+  setThreshold: (value: number) => void;
+  setForceCpu: (value: boolean) => void;
+}
+
+interface WDv3Settings {
+  readonly modelName: string;
+  readonly genThreshold: number;
+  readonly charThreshold: number;
+  readonly forceCpu: boolean;
+  setModelName: (value: string) => void;
+  setGenThreshold: (value: number) => void;
+  setCharThreshold: (value: number) => void;
+  setForceCpu: (value: boolean) => void;
+}
+
 export interface AppContext {
-  readonly prevRoute: Location | undefined; // Tracks previous route for navigation history
-  readonly location: Location; // Current route location
-  // Theme
-  readonly theme: Theme; // Current theme selection
-  setTheme: (theme: Theme) => void; // Theme setter function
-  // Settings
-  readonly instantDelete: boolean; // Whether to skip delete confirmation
+  readonly prevRoute: Location | undefined;
+  readonly location: Location;
+  readonly theme: Theme;
+  setTheme: (theme: Theme) => void;
+  readonly instantDelete: boolean;
   setInstantDelete: (value: boolean) => void;
   readonly disableAnimations: boolean;
   setDisableAnimations: (value: boolean) => void;
   readonly disableNonsense: boolean;
   setDisableNonsense: (value: boolean) => void;
-  readonly jtp2ModelPath: string;
-  readonly jtp2TagsPath: string;
-  setJtp2ModelPath: (value: string) => void;
-  setJtp2TagsPath: (value: string) => void;
-  enableZoom: boolean;
-  enableMinimap: boolean;
+  readonly jtp2: JTP2Settings;
+  readonly wdv3: WDv3Settings;
+  readonly enableZoom: boolean;
+  readonly enableMinimap: boolean;
   setEnableZoom: (value: boolean) => void;
   setEnableMinimap: (value: boolean) => void;
   readonly locale: Locale;
   setLocale: (locale: Locale) => void;
   t: (key: string, params?: { [key: string]: any }) => string;
-  preserveLatents: boolean;
+  readonly preserveLatents: boolean;
   setPreserveLatents: (value: boolean) => void;
-  preserveTxt: boolean;
+  readonly preserveTxt: boolean;
   setPreserveTxt: (value: boolean) => void;
-  alwaysShowCaptionEditor: boolean;
+  readonly alwaysShowCaptionEditor: boolean;
   setAlwaysShowCaptionEditor: (value: boolean) => void;
   notify: (
     message: string,
@@ -62,7 +80,7 @@ export interface AppContext {
     group?: string,
     icon?: "spinner" | "success" | "error" | "info" | "warning"
   ) => void;
-  thumbnailSize: number; // Size in pixels (e.g., 250)
+  readonly thumbnailSize: number;
   setThumbnailSize: (size: number) => void;
   createNotification: (notification: {
     message: string;
@@ -120,11 +138,17 @@ const createAppContext = (): AppContext => {
     disableNonsense: boolean;
     jtp2ModelPath: string;
     jtp2TagsPath: string;
+    jtp2Threshold: number;
+    jtp2ForceCpu: boolean;
     enableZoom: boolean;
     enableMinimap: boolean;
     locale: Locale;
     thumbnailSize: number;
     alwaysShowCaptionEditor: boolean;
+    wdv3ModelName: string;
+    wdv3GenThreshold: number;
+    wdv3CharThreshold: number;
+    wdv3ForceCpu: boolean;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
@@ -132,11 +156,17 @@ const createAppContext = (): AppContext => {
     disableNonsense: localStorage.getItem("disableNonsense") === "true",
     jtp2ModelPath: localStorage.getItem("jtp2ModelPath") || "",
     jtp2TagsPath: localStorage.getItem("jtp2TagsPath") || "",
+    jtp2Threshold: parseFloat(localStorage.getItem("jtp2Threshold") || "0.2"),
+    jtp2ForceCpu: localStorage.getItem("jtp2ForceCpu") === "true",
     enableZoom: localStorage.getItem("enableZoom") === "true",
     enableMinimap: localStorage.getItem("enableMinimap") === "true",
     locale: (localStorage.getItem("locale") as Locale) || "en",
     thumbnailSize: parseInt(localStorage.getItem("thumbnailSize") || "250"),
     alwaysShowCaptionEditor: localStorage.getItem("alwaysShowCaptionEditor") === "true",
+    wdv3ModelName: localStorage.getItem("wdv3ModelName") || "vit",
+    wdv3GenThreshold: parseFloat(localStorage.getItem("wdv3GenThreshold") || "0.35"),
+    wdv3CharThreshold: parseFloat(localStorage.getItem("wdv3CharThreshold") || "0.75"),
+    wdv3ForceCpu: localStorage.getItem("wdv3ForceCpu") === "true",
   });
 
   // Previous Location tracking
@@ -180,6 +210,12 @@ const createAppContext = (): AppContext => {
     localStorage.setItem("jtp2TagsPath", store.jtp2TagsPath)
   );
   createRenderEffect(() =>
+    localStorage.setItem("jtp2Threshold", store.jtp2Threshold.toString())
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("jtp2ForceCpu", store.jtp2ForceCpu.toString())
+  );
+  createRenderEffect(() =>
     localStorage.setItem("enableZoom", store.enableZoom.toString())
   );
   createRenderEffect(() =>
@@ -196,6 +232,18 @@ const createAppContext = (): AppContext => {
   createRenderEffect(() =>
     localStorage.setItem("alwaysShowCaptionEditor", store.alwaysShowCaptionEditor.toString())
   );
+  createRenderEffect(() =>
+    localStorage.setItem("wdv3ModelName", store.wdv3ModelName)
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("wdv3GenThreshold", store.wdv3GenThreshold.toString())
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("wdv3CharThreshold", store.wdv3CharThreshold.toString())
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("wdv3ForceCpu", store.wdv3ForceCpu.toString())
+  );
 
   const setJtp2ModelPath = (value: string) => {
     setStore("jtp2ModelPath", value);
@@ -205,6 +253,16 @@ const createAppContext = (): AppContext => {
   const setJtp2TagsPath = (value: string) => {
     setStore("jtp2TagsPath", value);
     localStorage.setItem("jtp2TagsPath", value);
+  };
+
+  const setJtp2Threshold = (value: number) => {
+    setStore("jtp2Threshold", value);
+    localStorage.setItem("jtp2Threshold", value.toString());
+  };
+
+  const setJtp2ForceCpu = (value: boolean) => {
+    setStore("jtp2ForceCpu", value);
+    localStorage.setItem("jtp2ForceCpu", value.toString());
   };
 
   const setEnableZoom = (value: boolean) => {
@@ -217,31 +275,26 @@ const createAppContext = (): AppContext => {
     localStorage.setItem("enableMinimap", value.toString());
   };
 
-  const updateJtp2Config = async (config: {
-    model_path?: string;
-    tags_path?: string;
-  }) => {
+  const updateJtp2Config = async (config: Partial<{
+    model_path: string;
+    tags_path: string;
+    threshold: number;
+    force_cpu: boolean;
+  }>) => {
     try {
       const response = await fetch("/api/jtp2-config", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
       });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update JTP2 config: ${response.statusText}`);
-      }
-
-      if (config.model_path) {
-        setJtp2ModelPath(config.model_path);
-      }
-      if (config.tags_path) {
-        setJtp2TagsPath(config.tags_path);
-      }
+      if (!response.ok) throw new Error("Failed to update JTP2 config");
+      
+      if (config.model_path) setStore("jtp2ModelPath", config.model_path);
+      if (config.tags_path) setStore("jtp2TagsPath", config.tags_path);
+      if (config.threshold !== undefined) setStore("jtp2Threshold", config.threshold);
+      if (config.force_cpu !== undefined) setStore("jtp2ForceCpu", config.force_cpu);
     } catch (error) {
-      console.error("Error updating JTP2 config:", error);
+      console.error("Failed to update JTP2 config:", error);
       throw error;
     }
   };
@@ -310,7 +363,32 @@ const createAppContext = (): AppContext => {
     }
   };
 
-  const appContext = {
+  const updateWdv3Config = async (config: Partial<{
+    model_name: string;
+    gen_threshold: number;
+    char_threshold: number;
+    force_cpu: boolean;
+  }>) => {
+    try {
+      const response = await fetch("/api/wdv3-config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config)
+      });
+
+      if (!response.ok) throw new Error("Failed to update WDv3 config");
+      
+      if (config.model_name) setStore("wdv3ModelName", config.model_name);
+      if (config.gen_threshold !== undefined) setStore("wdv3GenThreshold", config.gen_threshold);
+      if (config.char_threshold !== undefined) setStore("wdv3CharThreshold", config.char_threshold);
+      if (config.force_cpu !== undefined) setStore("wdv3ForceCpu", config.force_cpu);
+    } catch (error) {
+      console.error("Failed to update WDv3 config:", error);
+      throw error;
+    }
+  };
+
+  const appContext: AppContext = {
     get prevRoute() {
       return store.prevRoute;
     },
@@ -338,14 +416,26 @@ const createAppContext = (): AppContext => {
     setDisableNonsense(value: boolean) {
       setStore("disableNonsense", value);
     },
-    get jtp2ModelPath() {
-      return store.jtp2ModelPath;
+    get jtp2() {
+      return {
+        get modelPath() {
+          return store.jtp2ModelPath;
+        },
+        get tagsPath() {
+          return store.jtp2TagsPath;
+        },
+        get threshold() {
+          return store.jtp2Threshold;
+        },
+        get forceCpu() {
+          return store.jtp2ForceCpu;
+        },
+        setModelPath: (value: string) => updateJtp2Config({ model_path: value }),
+        setTagsPath: (value: string) => updateJtp2Config({ tags_path: value }),
+        setThreshold: (value: number) => updateJtp2Config({ threshold: value }),
+        setForceCpu: (value: boolean) => updateJtp2Config({ force_cpu: value }),
+      } as JTP2Settings;
     },
-    get jtp2TagsPath() {
-      return store.jtp2TagsPath;
-    },
-    setJtp2ModelPath: (path: string) => updateJtp2Config({ model_path: path }),
-    setJtp2TagsPath: (path: string) => updateJtp2Config({ tags_path: path }),
     get enableZoom() {
       return store.enableZoom;
     },
@@ -389,6 +479,44 @@ const createAppContext = (): AppContext => {
       return store.alwaysShowCaptionEditor;
     },
     setAlwaysShowCaptionEditor: (value: boolean) => setStore("alwaysShowCaptionEditor", value),
+    get wdv3ModelName() {
+      return store.wdv3ModelName;
+    },
+    get wdv3GenThreshold() {
+      return store.wdv3GenThreshold;
+    },
+    get wdv3CharThreshold() {
+      return store.wdv3CharThreshold;
+    },
+    setWdv3ModelName: (value: string) => {
+      setStore("wdv3ModelName", value);
+    },
+    setWdv3GenThreshold: (value: number) => {
+      setStore("wdv3GenThreshold", value);
+    },
+    setWdv3CharThreshold: (value: number) => {
+      setStore("wdv3CharThreshold", value);
+    },
+    get wdv3() {
+      return {
+        get modelName() {
+          return store.wdv3ModelName;
+        },
+        get genThreshold() {
+          return store.wdv3GenThreshold;
+        },
+        get charThreshold() {
+          return store.wdv3CharThreshold;
+        },
+        get forceCpu() {
+          return store.wdv3ForceCpu;
+        },
+        setModelName: (value: string) => updateWdv3Config({ model_name: value }),
+        setGenThreshold: (value: number) => updateWdv3Config({ gen_threshold: value }),
+        setCharThreshold: (value: number) => updateWdv3Config({ char_threshold: value }),
+        setForceCpu: (value: boolean) => updateWdv3Config({ force_cpu: value }),
+      } as WDv3Settings;
+    },
   };
 
   return appContext;
