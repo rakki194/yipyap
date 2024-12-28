@@ -281,20 +281,53 @@ const createAppContext = (): AppContext => {
     threshold: number;
     force_cpu: boolean;
   }>) => {
+    const prevState = {
+      model_path: store.jtp2ModelPath,
+      tags_path: store.jtp2TagsPath,
+      threshold: store.jtp2Threshold,
+      force_cpu: store.jtp2ForceCpu
+    };
+
     try {
+      // Optimistically update the UI
+      if (config.model_path) setStore("jtp2ModelPath", config.model_path);
+      if (config.tags_path) setStore("jtp2TagsPath", config.tags_path);
+      if (config.threshold !== undefined) setStore("jtp2Threshold", config.threshold);
+      if (config.force_cpu !== undefined) setStore("jtp2ForceCpu", config.force_cpu);
+
       const response = await fetch("/api/jtp2-config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config),
       });
-      if (!response.ok) throw new Error("Failed to update JTP2 config");
-      
-      if (config.model_path) setStore("jtp2ModelPath", config.model_path);
-      if (config.tags_path) setStore("jtp2TagsPath", config.tags_path);
-      if (config.threshold !== undefined) setStore("jtp2Threshold", config.threshold);
-      if (config.force_cpu !== undefined) setStore("jtp2ForceCpu", config.force_cpu);
+
+      if (!response.ok) {
+        throw new Error(await response.text() || "Failed to update JTP2 config");
+      }
+
+      //notify(
+      //  getTranslationValue(translation(), 'settings.jtp2ConfigUpdateSuccess') || 'JTP2 settings updated successfully',
+      //  'success'
+      //);
     } catch (error) {
       console.error("Failed to update JTP2 config:", error);
+      
+      // Revert the changes on error
+      setStore("jtp2ModelPath", prevState.model_path);
+      setStore("jtp2TagsPath", prevState.tags_path);
+      setStore("jtp2Threshold", prevState.threshold);
+      setStore("jtp2ForceCpu", prevState.force_cpu);
+
+      // Update localStorage with reverted values
+      localStorage.setItem("jtp2ModelPath", prevState.model_path);
+      localStorage.setItem("jtp2TagsPath", prevState.tags_path);
+      localStorage.setItem("jtp2Threshold", prevState.threshold.toString());
+      localStorage.setItem("jtp2ForceCpu", prevState.force_cpu.toString());
+
+      notify(
+        getTranslationValue(translation(), 'settings.jtp2ConfigUpdateError') || 'Failed to update JTP2 settings',
+        'error'
+      );
       throw error;
     }
   };
@@ -369,21 +402,53 @@ const createAppContext = (): AppContext => {
     char_threshold: number;
     force_cpu: boolean;
   }>) => {
+    const prevState = {
+      model_name: store.wdv3ModelName,
+      gen_threshold: store.wdv3GenThreshold,
+      char_threshold: store.wdv3CharThreshold,
+      force_cpu: store.wdv3ForceCpu
+    };
+
     try {
+      // Optimistically update the UI
+      if (config.model_name) setStore("wdv3ModelName", config.model_name);
+      if (config.gen_threshold !== undefined) setStore("wdv3GenThreshold", config.gen_threshold);
+      if (config.char_threshold !== undefined) setStore("wdv3CharThreshold", config.char_threshold);
+      if (config.force_cpu !== undefined) setStore("wdv3ForceCpu", config.force_cpu);
+
       const response = await fetch("/api/wdv3-config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(config)
       });
 
-      if (!response.ok) throw new Error("Failed to update WDv3 config");
-      
-      if (config.model_name) setStore("wdv3ModelName", config.model_name);
-      if (config.gen_threshold !== undefined) setStore("wdv3GenThreshold", config.gen_threshold);
-      if (config.char_threshold !== undefined) setStore("wdv3CharThreshold", config.char_threshold);
-      if (config.force_cpu !== undefined) setStore("wdv3ForceCpu", config.force_cpu);
+      if (!response.ok) {
+        throw new Error(await response.text() || "Failed to update WDv3 config");
+      }
+
+      //notify(
+      //  getTranslationValue(translation(), 'settings.wdv3ConfigUpdateSuccess') || 'WDv3 settings updated successfully',
+      //  'success'
+      //);
     } catch (error) {
       console.error("Failed to update WDv3 config:", error);
+
+      // Revert the changes on error
+      setStore("wdv3ModelName", prevState.model_name);
+      setStore("wdv3GenThreshold", prevState.gen_threshold);
+      setStore("wdv3CharThreshold", prevState.char_threshold);
+      setStore("wdv3ForceCpu", prevState.force_cpu);
+
+      // Update localStorage with reverted values
+      localStorage.setItem("wdv3ModelName", prevState.model_name);
+      localStorage.setItem("wdv3GenThreshold", prevState.gen_threshold.toString());
+      localStorage.setItem("wdv3CharThreshold", prevState.char_threshold.toString());
+      localStorage.setItem("wdv3ForceCpu", prevState.force_cpu.toString());
+
+      notify(
+        getTranslationValue(translation(), 'settings.wdv3ConfigUpdateError') || 'Failed to update WDv3 settings',
+        'error'
+      );
       throw error;
     }
   };

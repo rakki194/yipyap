@@ -15,7 +15,8 @@
 
 .settings-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -28,11 +29,14 @@
 .add-button {
   color: var(--text-secondary);
   transition: color 0.2s;
+  padding: var(--half-spacing);
+  border-radius: var(--border-radius);
 }
 
 .close-button:hover,
 .add-button:hover {
   color: var(--text-primary);
+  background-color: var(--hover-color);
 }
 
 .transformations-list {
@@ -139,7 +143,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  border-radius: var(--radius-sm);
+  border-radius: var(--border-radius);
 }
 
 .delete-button:hover {
@@ -159,7 +163,7 @@
 }
 
 .add-transformation-form-container.expanded {
-  max-height: 800px; /* Increased to accommodate new form fields */
+  max-height: 800px;
 }
 
 .add-transformation-form {
@@ -181,6 +185,8 @@
 .add-transformation-form h4 {
   margin: 0 0 var(--spacing) 0;
   color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .form-group {
@@ -204,6 +210,7 @@
   color: var(--text-primary);
   font-size: 0.9rem;
   width: 100%;
+  transition: border-color 0.2s ease;
 }
 
 .form-group input:focus,
@@ -282,15 +289,15 @@
   background: var(--accent-hover);
 }
 
-/* Responsive adjustments */
+/* Responsive styles */
 @media (max-width: 480px) {
   .add-transformation-form-container.expanded {
-    max-height: 1000px; /* Even more space for mobile */
+    max-height: 1000px;
   }
 
   .form-group input,
   .form-group select {
-    font-size: 16px; /* Better for mobile touch */
+    font-size: 16px;
     padding: var(--spacing);
   }
 

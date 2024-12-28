@@ -1,0 +1,153 @@
+.tagger-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  padding: var(--spacing);
+}
+
+.tagger-settings.is-updating {
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  margin-bottom: var(--double-spacing);
+}
+
+.setting-group h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.setting-group hr {
+  margin: var(--half-spacing) 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Regular labels (for inputs/selects) */
+.setting-group > label,
+.setting-group .tooltip-wrapper label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  color: var(--text-primary);
+  justify-content: space-between;
+  width: 100%;
+}
+
+.setting-group > label select,
+.setting-group .tooltip-wrapper label .toggle {
+  order: 2;
+  margin-left: auto;
+}
+
+.setting-group > label span,
+.setting-group .tooltip-wrapper label span {
+  order: 0;
+}
+
+.setting-info {
+  display: flex;
+  align-items: center;
+  gap: var(--half-spacing);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.download-link {
+  display: flex;
+  align-items: center;
+  gap: var(--half-spacing);
+  color: var(--accent-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease-in-out;
+}
+
+.download-link:hover {
+  color: var(--accent-color-hover);
+}
+
+.download-link .icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.threshold-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+}
+
+.threshold-value {
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+input[type="text"] {
+  padding: var(--half-spacing);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--input-background);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease-in-out;
+  width: 100%;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+input[type="text"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+select {
+  padding: var(--half-spacing);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--input-background);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease-in-out;
+  width: 100%;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+select:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.wdv3-model-select {
+  order: 1;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .tagger-settings {
+    padding: var(--spacing);
+  }
+
+  input[type="text"],
+  select {
+    font-size: 16px; /* Better for mobile touch */
+    padding: var(--spacing);
+  }
+} 

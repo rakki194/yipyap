@@ -92,7 +92,20 @@ export default {
     preserveTxtTooltip: "छवियों को स्थानांतरित या हटाते समय .txt फ़ाइलें रखें।",
     thumbnailSize: "थंबनेल आकार",
     thumbnailSizeDescription: "पिक्सेल में थंबनेल का आकार (उदाहरण: 250)",
-    thumbnailSizeUpdateError: "थंबनेल आकार अपडेट करने में विफल"
+    thumbnailSizeUpdateError: "थंबनेल आकार अपडेट करने में विफल",
+    jtp2Threshold: "JTP2 थ्रेशोल्ड",
+    jtp2ThresholdTooltip: "JTP2 टैग के लिए कॉन्फिडेंस थ्रेशोल्ड (डिफ़ॉल्ट: 0.35)",
+    jtp2ForceCpu: "JTP2 को CPU पर चलाएं",
+    jtp2ForceCpuTooltip: "JTP2 को GPU के बजाय CPU का उपयोग करने के लिए मजबूर करें",
+    wdv3GenThreshold: "सामान्य टैग थ्रेशोल्ड",
+    wdv3GenThresholdTooltip: "सामान्य टैग के लिए कॉन्फिडेंस थ्रेशोल्ड (डिफ़ॉल्ट: 0.35)",
+    wdv3CharThreshold: "कैरेक्टर टैग थ्रेशोल्ड",
+    wdv3CharThresholdTooltip: "कैरेक्टर टैग के लिए कॉन्फिडेंस थ्रेशोल्ड (डिफ़ॉल्ट: 0.75)",
+    wdv3ConfigUpdateError: "WDv3 सेटिंग्स अपडेट करने में विफल",
+    wdv3ForceCpu: "WDv3 को CPU पर चलाएं",
+    wdv3ForceCpuTooltip: "WDv3 को GPU के बजाय CPU का उपयोग करने के लिए मजबूर करें",
+    wdv3ModelName: "WDv3 मॉडल का नाम",
+    wdv3ModelNameTooltip: "उपयोग करने के लिए WDv3 मॉडल का नाम"
   },
   frontPage: {
     subtitle: {

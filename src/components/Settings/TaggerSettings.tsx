@@ -1,4 +1,4 @@
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import { Tooltip } from "~/components/Tooltip/Tooltip";
 import { Slider } from "~/components/Slider/Slider";
@@ -9,19 +9,46 @@ import { useTranslations } from "~/composables/useTranslations";
 export const TaggerSettings: Component = () => {
   const app = useAppContext();
   const t = useTranslations();
+  const [isUpdating, setIsUpdating] = createSignal(false);
+
+  const handleJtp2Update = async (updater: () => void | Promise<void>) => {
+    if (isUpdating()) return;
+    setIsUpdating(true);
+    try {
+      await Promise.resolve(updater());
+    } catch (error) {
+      // Error is already handled in the app context
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleWdv3Update = async (updater: () => void | Promise<void>) => {
+    if (isUpdating()) return;
+    setIsUpdating(true);
+    try {
+      await Promise.resolve(updater());
+    } catch (error) {
+      // Error is already handled in the app context
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
-    <div class="tagger-settings">
+    <div class="tagger-settings" classList={{ "is-updating": isUpdating() }}>
       <div class="setting-group">
         <h3>JTP2</h3>
+        <hr />
         <Tooltip content={t('settings.jtp2ModelPathTooltip')} position="top">
           <label>{t('settings.jtp2ModelPath')}</label>
         </Tooltip>
         <input
           type="text"
           value={app.jtp2.modelPath}
-          onChange={(e) => app.jtp2.setModelPath(e.currentTarget.value)}
+          onChange={(e) => handleJtp2Update(() => app.jtp2.setModelPath(e.currentTarget.value))}
           placeholder="/path/to/jtp2/model.safetensors"
+          disabled={isUpdating()}
         />
         <div class="setting-info">
           <a 
@@ -43,8 +70,9 @@ export const TaggerSettings: Component = () => {
         <input
           type="text"
           value={app.jtp2.tagsPath}
-          onChange={(e) => app.jtp2.setTagsPath(e.currentTarget.value)}
+          onChange={(e) => handleJtp2Update(() => app.jtp2.setTagsPath(e.currentTarget.value))}
           placeholder="/path/to/jtp2/tags.json"
+          disabled={isUpdating()}
         />
         <div class="setting-info">
           <a 
@@ -70,8 +98,9 @@ export const TaggerSettings: Component = () => {
             max={1}
             step={0.01}
             value={app.jtp2.threshold}
-            onChange={(value) => app.jtp2.setThreshold(value)}
+            onChange={(value) => handleJtp2Update(() => app.jtp2.setThreshold(value))}
             aria-label={t('settings.jtp2Threshold')}
+            disabled={isUpdating()}
           />
           <span class="threshold-value">{app.jtp2.threshold.toFixed(2)}</span>
         </div>
@@ -79,29 +108,35 @@ export const TaggerSettings: Component = () => {
       <div class="setting-group">
         <Tooltip content={t('settings.jtp2ForceCpuTooltip')} position="top">
           <label>
+            <span>{t('settings.jtp2ForceCpu')}</span>
             <Toggle
               checked={app.jtp2.forceCpu}
-              onChange={(checked) => app.jtp2.setForceCpu(checked)}
+              onChange={(checked) => handleJtp2Update(() => app.jtp2.setForceCpu(checked))}
               title={t('settings.jtp2ForceCpu')}
+              disabled={isUpdating()}
             />
-            {t('settings.jtp2ForceCpu')}
           </label>
         </Tooltip>
       </div>
 
       <div class="setting-group">
         <h3>WDv3</h3>
+        <hr />
         <Tooltip content={t('settings.wdv3ModelNameTooltip')} position="top">
-          <label>{t('settings.wdv3ModelName')}</label>
+          <label>
+            <span>{t('settings.wdv3ModelName')}</span>
+            <select
+              class="wdv3-model-select"
+              value={app.wdv3.modelName}
+              onChange={(e) => handleWdv3Update(() => app.wdv3.setModelName(e.currentTarget.value))}
+              disabled={isUpdating()}
+            >
+              <option value="vit">ViT</option>
+              <option value="swinv2">SwinV2</option>
+              <option value="convnext">ConvNext</option>
+            </select>
+          </label>
         </Tooltip>
-        <select
-          value={app.wdv3.modelName}
-          onChange={(e) => app.wdv3.setModelName(e.currentTarget.value)}
-        >
-          <option value="vit">ViT</option>
-          <option value="swinv2">SwinV2</option>
-          <option value="convnext">ConvNext</option>
-        </select>
       </div>
 
       <div class="setting-group">
@@ -114,8 +149,9 @@ export const TaggerSettings: Component = () => {
             max={1}
             step={0.01}
             value={app.wdv3.genThreshold}
-            onChange={(value) => app.wdv3.setGenThreshold(value)}
+            onChange={(value) => handleWdv3Update(() => app.wdv3.setGenThreshold(value))}
             aria-label={t('settings.wdv3GenThreshold')}
+            disabled={isUpdating()}
           />
           <span class="threshold-value">{app.wdv3.genThreshold.toFixed(2)}</span>
         </div>
@@ -131,8 +167,9 @@ export const TaggerSettings: Component = () => {
             max={1}
             step={0.01}
             value={app.wdv3.charThreshold}
-            onChange={(value) => app.wdv3.setCharThreshold(value)}
+            onChange={(value) => handleWdv3Update(() => app.wdv3.setCharThreshold(value))}
             aria-label={t('settings.wdv3CharThreshold')}
+            disabled={isUpdating()}
           />
           <span class="threshold-value">{app.wdv3.charThreshold.toFixed(2)}</span>
         </div>
@@ -141,12 +178,13 @@ export const TaggerSettings: Component = () => {
       <div class="setting-group">
         <Tooltip content={t('settings.wdv3ForceCpuTooltip')} position="top">
           <label>
+            <span>{t('settings.wdv3ForceCpu')}</span>
             <Toggle
               checked={app.wdv3.forceCpu}
-              onChange={(checked) => app.wdv3.setForceCpu(checked)}
+              onChange={(checked) => handleWdv3Update(() => app.wdv3.setForceCpu(checked))}
               title={t('settings.wdv3ForceCpu')}
+              disabled={isUpdating()}
             />
-            {t('settings.wdv3ForceCpu')}
           </label>
         </Tooltip>
       </div>
