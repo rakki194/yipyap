@@ -97,32 +97,67 @@ export function useGalleryScroll() {
       
       smoothScroll(targetY, true);
 
-      setTimeout(() => {
-        setAutoScrolling(false);
-        
-        // Verify selection and position after scroll
+      // Add resize observer to handle layout changes during scroll
+      const resizeObserver = new ResizeObserver(() => {
         if (gallery.selected === initialSelectedIdx) {
-          const newSelectedElement = document.querySelector(
-            `#gallery .responsive-grid .item:nth-child(${initialSelectedIdx + 1})`
-          );
-          if (newSelectedElement) {
-            const newRect = newSelectedElement.getBoundingClientRect();
-            const newGalleryRect = galleryElement.getBoundingClientRect();
-            
-            if (newRect.top < newGalleryRect.top || 
-                newRect.bottom > newGalleryRect.bottom) {
-              requestAnimationFrame(() => scrollToSelected(true));
-            }
-          }
-        } else {
           requestAnimationFrame(() => scrollToSelected(true));
         }
-      }, 200 + 50);
+      });
+      resizeObserver.observe(galleryElement);
+
+      // Verify position multiple times after scroll
+      const verifyPosition = () => {
+        if (gallery.selected !== initialSelectedIdx) {
+          resizeObserver.disconnect();
+          return;
+        }
+
+        const newSelectedElement = document.querySelector(
+          `#gallery .responsive-grid .item:nth-child(${initialSelectedIdx + 1})`
+        );
+        if (newSelectedElement) {
+          const newRect = newSelectedElement.getBoundingClientRect();
+          const newGalleryRect = galleryElement.getBoundingClientRect();
+          
+          if (newRect.top < newGalleryRect.top || 
+              newRect.bottom > newGalleryRect.bottom) {
+            requestAnimationFrame(() => scrollToSelected(true));
+          }
+        }
+      };
+
+      // Check position immediately after scroll and after a delay
+      const checkTimes = [0, 100, 200, 300];
+      checkTimes.forEach(delay => {
+        setTimeout(verifyPosition, delay);
+      });
+
+      // Cleanup
+      setTimeout(() => {
+        setAutoScrolling(false);
+        resizeObserver.disconnect();
+      }, Math.max(...checkTimes) + 100);
     }
   };
 
   const startPositionChecking = () => {
     if (positionCheckInterval) return;
+    
+    // Add resize observer for continuous layout monitoring
+    const galleryElement = document.getElementById('gallery');
+    if (galleryElement) {
+      const resizeObserver = new ResizeObserver(() => {
+        if (!autoScrolling() && gallery.selected !== null) {
+          requestAnimationFrame(() => scrollToSelected(true));
+        }
+      });
+      resizeObserver.observe(galleryElement);
+
+      // Cleanup on component unmount
+      onCleanup(() => {
+        resizeObserver.disconnect();
+      });
+    }
     
     positionCheckInterval = window.setInterval(() => {
       const selectedIdx = gallery.selected;
@@ -135,10 +170,12 @@ export function useGalleryScroll() {
       const galleryRect = galleryElement.getBoundingClientRect();
       const selectedRect = selectedElement.getBoundingClientRect();
 
-      // Check if element is fully out of view
+      // Check if element is fully out of view or partially visible
       const isOutOfView = 
         selectedRect.bottom < galleryRect.top || 
-        selectedRect.top > galleryRect.bottom;
+        selectedRect.top > galleryRect.bottom ||
+        selectedRect.top < galleryRect.top ||
+        selectedRect.bottom > galleryRect.bottom;
 
       if (isOutOfView) {
         setCheckingPosition(true);
@@ -147,7 +184,7 @@ export function useGalleryScroll() {
           setTimeout(() => setCheckingPosition(false), 200);
         });
       }
-    }, 500); // Check every 500ms
+    }, 100); // Check more frequently
   };
 
   const setupWheelHandler = () => {
