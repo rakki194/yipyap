@@ -159,19 +159,42 @@ export function useGalleryScroll() {
 
       e.preventDefault();
       
-      const delta = e.deltaY;
+      // Detect if the event is from a touchpad
+      // Touchpad events typically have smaller deltaY values and deltaMode of 0 (pixels)
+      const isTouchpad = Math.abs(e.deltaY) < 50 && e.deltaMode === 0;
+      
+      // Scale down touchpad scrolling (increased from 0.25 to 0.5 for more responsiveness)
+      const delta = isTouchpad ? e.deltaY * 0.5 : e.deltaY;
       const data = gallery.data();
       if (!data) return;
 
       const currentIdx = gallery.selected ?? -1;
       const totalItems = data.items.length;
 
-      if (delta > 0 && currentIdx < totalItems - 1) {
-        // Scroll down - move to next image
-        gallery.select(currentIdx + 1);
-      } else if (delta < 0 && currentIdx > 0) {
-        // Scroll up - move to previous image
-        gallery.select(currentIdx - 1);
+      // Accumulate delta for touchpad to require more scrolling for image change
+      if (isTouchpad) {
+        touchpadDelta = (touchpadDelta || 0) + delta;
+        // Reduced threshold from 50 to 35 for quicker response
+        if (Math.abs(touchpadDelta) < 35) return;
+        
+        if (touchpadDelta > 0 && currentIdx < totalItems - 1) {
+          // Scroll down - move to next image
+          gallery.select(currentIdx + 1);
+          touchpadDelta = 0;
+        } else if (touchpadDelta < 0 && currentIdx > 0) {
+          // Scroll up - move to previous image
+          gallery.select(currentIdx - 1);
+          touchpadDelta = 0;
+        }
+      } else {
+        // Regular mouse wheel behavior
+        if (delta > 0 && currentIdx < totalItems - 1) {
+          // Scroll down - move to next image
+          gallery.select(currentIdx + 1);
+        } else if (delta < 0 && currentIdx > 0) {
+          // Scroll up - move to previous image
+          gallery.select(currentIdx - 1);
+        }
       }
     };
 
@@ -180,6 +203,9 @@ export function useGalleryScroll() {
       galleryElement.addEventListener('wheel', wheelHandler, { passive: false });
     }
   };
+
+  // Add touchpad delta tracking
+  let touchpadDelta = 0;
 
   onCleanup(() => {
     if (positionCheckInterval) {
