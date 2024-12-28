@@ -163,8 +163,11 @@ export function useGalleryScroll() {
       // Touchpad events typically have smaller deltaY values and deltaMode of 0 (pixels)
       const isTouchpad = Math.abs(e.deltaY) < 50 && e.deltaMode === 0;
       
-      // Scale down touchpad scrolling (increased from 0.25 to 0.5 for more responsiveness)
-      const delta = isTouchpad ? e.deltaY * 0.5 : e.deltaY;
+      // Dynamic scaling for touchpad - less dampening for fast scrolls
+      const scaleFactor = isTouchpad 
+        ? Math.abs(e.deltaY) > 30 ? 0.75 : 0.5  // Higher scale factor for fast scrolls
+        : 1;
+      const delta = e.deltaY * scaleFactor;
       const data = gallery.data();
       if (!data) return;
 
@@ -174,8 +177,9 @@ export function useGalleryScroll() {
       // Accumulate delta for touchpad to require more scrolling for image change
       if (isTouchpad) {
         touchpadDelta = (touchpadDelta || 0) + delta;
-        // Reduced threshold from 50 to 35 for quicker response
-        if (Math.abs(touchpadDelta) < 35) return;
+        // Adjust threshold based on scroll speed
+        const threshold = Math.abs(e.deltaY) > 30 ? 25 : 35;
+        if (Math.abs(touchpadDelta) < threshold) return;
         
         if (touchpadDelta > 0 && currentIdx < totalItems - 1) {
           // Scroll down - move to next image
