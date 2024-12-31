@@ -29,6 +29,7 @@ export default {
     selected: "נבחר",
     all: "הכל",
     none: "ללא",
+    notFound: "404 - הדף לא נמצא",
     pathSeparator: getPathSeparator("he"),
     toggleTheme: "החלף ערכת נושא",
     theme: "ערכת נושא",

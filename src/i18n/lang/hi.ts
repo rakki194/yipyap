@@ -31,6 +31,7 @@ export default {
     all: "सभी",
     none: "कोई नहीं",
     toggleTheme: "थीम टॉगल करें",
+    notFound: "404 - पृष्ठ नहीं मिला",
     returnToFrontPage: "मुख्य पृष्ठ पर वापस जाएं",
     home: "होम",
     openSettings: "सेटिंग्स खोलें",

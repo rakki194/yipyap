@@ -29,6 +29,7 @@ export default {
     selected: "Избрано",
     all: "Всички",
     none: "Нищо",
+    notFound: "404 - Страницата не е намерена",
     pathSeparator: getPathSeparator("bg"),
     toggleTheme: "Превключи тема",
     theme: "Тема",

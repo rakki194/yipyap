@@ -29,6 +29,7 @@ export default {
     selected: "Valittu",
     all: "Kaikki",
     none: "Ei mitään",
+    notFound: "404 - Sivua ei löytynyt",
     pathSeparator: getPathSeparator("fi"),
     toggleTheme: "Vaihda teemaa",
     theme: "Teema",

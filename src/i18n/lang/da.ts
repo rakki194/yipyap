@@ -29,6 +29,7 @@ export default {
     selected: "Valgt",
     all: "Alle",
     none: "Ingen",
+    notFound: "404 - Siden blev ikke fundet",
     pathSeparator: getPathSeparator("da"),
     toggleTheme: "Skift tema",
     theme: "Tema",

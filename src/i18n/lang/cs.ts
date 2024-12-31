@@ -29,6 +29,7 @@ export default {
     selected: "Vybráno",
     all: "Vše",
     none: "Nic",
+    notFound: "404 - Stránka nenalezena",
     pathSeparator: getPathSeparator("cs"),
     toggleTheme: "Přepnout motiv",
     theme: "Motiv",

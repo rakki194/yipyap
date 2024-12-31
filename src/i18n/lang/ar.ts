@@ -29,6 +29,7 @@ export default {
     selected: "محدد",
     all: "الكل",
     none: "لا شيء",
+    notFound: "404 - الصفحة غير موجودة",
     pathSeparator: getPathSeparator("ar"),
     toggleTheme: "تغيير السمة",
     theme: "السمة",

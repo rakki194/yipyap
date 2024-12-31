@@ -28,6 +28,7 @@ export default {
     selected: "선택됨",
     all: "전체",
     none: "없음",
+    notFound: "404 - 페이지를 찾을 수 없습니다",
     pathSeparator: getPathSeparator("ko"),
     toggleTheme: "테마 전환",
     theme: "테마",

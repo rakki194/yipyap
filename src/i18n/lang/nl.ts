@@ -29,6 +29,7 @@ export default {
     selected: "Geselecteerd",
     all: "Alles",
     none: "Geen",
+    notFound: "404 - Pagina niet gevonden",
     pathSeparator: getPathSeparator("nl"),
     toggleTheme: "Thema wisselen",
     theme: "Thema",

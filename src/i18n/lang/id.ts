@@ -28,6 +28,7 @@ export default {
     selected: "Dipilih",
     all: "Semua",
     none: "Tidak ada",
+    notFound: "404 - Halaman tidak ditemukan",
     pathSeparator: getPathSeparator("id"),
     toggleTheme: "Ubah Tema",
     theme: "Tema",

@@ -29,6 +29,7 @@ export default {
     selected: "Επιλεγμένο",
     all: "Όλα",
     none: "Κανένα",
+    notFound: "404 - Η σελίδα δεν βρέθηκε",
     pathSeparator: getPathSeparator("el"),
     toggleTheme: "Εναλλαγή θέματος",
     theme: "Θέμα",

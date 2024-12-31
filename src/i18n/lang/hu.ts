@@ -30,6 +30,7 @@ export default {
     selected: "Kiválasztva",
     all: "Összes",
     none: "Nincs",
+    notFound: "404 - Az oldal nem található",
     pathSeparator: getPathSeparator("hu"),
     toggleTheme: "Téma váltása",
     theme: "Téma",
