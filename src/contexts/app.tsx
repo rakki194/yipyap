@@ -22,6 +22,7 @@ import type { Translations } from "~/i18n/types";
 import { createNotification } from "~/components/Notification/NotificationContainer";
 import { TransformationsProvider } from "./transformations";
 import { BreadcrumbNavigation } from "~/components/Gallery/Breadcrumb/BreadcrumbNavigation";
+import getIcon from "~/icons";
 
 /**
  * Interface defining the shape of the app context.
@@ -596,11 +597,18 @@ const createAppContext = (): AppContext => {
 
 const ErrorFallback: ParentComponent<{ error: Error }> = (props) => {
   const navigate = useNavigate();
+  const app = useAppContext();
   return (
     <>
       <nav class="breadcrumb">
         <div class="breadcrumb-content">
-          <BreadcrumbNavigation />
+          <div class="breadcrumb-links">
+            <a href="/" class="home-link" aria-label={app.t('common.home')}>
+              <span class="accent-hover icon" title={app.t('common.home')}>
+                {getIcon("yipyap")}
+              </span>
+            </a>
+          </div>
         </div>
       </nav>
       <div class="error-message">
