@@ -98,6 +98,20 @@ export function useGalleryScroll() {
     const galleryRect = galleryElement.getBoundingClientRect();
     const selectedRect = selectedElement.getBoundingClientRect();
 
+    console.debug('Scroll check:', {
+      selectedIdx,
+      galleryRect: {
+        top: galleryRect.top,
+        bottom: galleryRect.bottom,
+        height: galleryRect.height
+      },
+      selectedRect: {
+        top: selectedRect.top,
+        bottom: selectedRect.bottom,
+        height: selectedRect.height
+      }
+    });
+
     // Calculate visible area with margins
     const visibleTop = galleryRect.top + (galleryRect.height * 0.15);
     const visibleBottom = galleryRect.bottom - (galleryRect.height * 0.15);
@@ -108,11 +122,24 @@ export function useGalleryScroll() {
       selectedRect.top > visibleBottom || 
       selectedRect.bottom < visibleTop;
 
+    console.debug('Scroll decision:', {
+      visibleTop,
+      visibleBottom,
+      needsScroll,
+      forceScroll
+    });
+
     if (needsScroll) {
       const targetY = galleryElement.scrollTop + 
         (selectedRect.top - galleryRect.top) - 
         (galleryRect.height / 2) + 
         (selectedRect.height / 2);
+
+      console.debug('Initiating scroll:', {
+        currentScrollTop: galleryElement.scrollTop,
+        targetY,
+        offset: selectedRect.top - galleryRect.top
+      });
 
       setAutoScrolling(true);
       const initialSelectedIdx = selectedIdx;
@@ -230,14 +257,27 @@ export function useGalleryScroll() {
       e.preventDefault();
       
       // Detect if the event is from a touchpad
-      // Touchpad events typically have smaller deltaY values and deltaMode of 0 (pixels)
       const isTouchpad = Math.abs(e.deltaY) < 50 && e.deltaMode === 0;
       
+      console.debug('Wheel event:', {
+        deltaY: e.deltaY,
+        deltaMode: e.deltaMode,
+        isTouchpad,
+        currentIdx: gallery.selected
+      });
+
       // Dynamic scaling for touchpad - less dampening for fast scrolls
       const scaleFactor = isTouchpad 
-        ? Math.abs(e.deltaY) > 30 ? 0.75 : 0.5  // Higher scale factor for fast scrolls
+        ? Math.abs(e.deltaY) > 30 ? 0.75 : 0.5
         : 1;
       const delta = e.deltaY * scaleFactor;
+
+      console.debug('Scroll processing:', {
+        scaleFactor,
+        delta,
+        touchpadDelta: touchpadDelta || 0
+      });
+
       const data = gallery.data();
       if (!data) return;
 

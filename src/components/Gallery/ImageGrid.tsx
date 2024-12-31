@@ -149,16 +149,25 @@ export const ImageGrid = (props: {
 function makeIntersectionObserver<T>(
   callback: (assoc_value: T) => void,
   options: IntersectionObserverInit = {
-    rootMargin: "200px",
+    rootMargin: "800px",
     threshold: 0.1,
   }
 ): (el: Element, assoc_value: T) => void {
   const observer_map = new WeakMap<Element, T>();
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
+      console.debug('Intersection observed:', {
+        target: entry.target,
+        isIntersecting: entry.isIntersecting,
+        intersectionRatio: entry.intersectionRatio,
+        boundingClientRect: entry.boundingClientRect,
+        rootBounds: entry.rootBounds
+      });
+      
       if (entry.isIntersecting && entry.boundingClientRect.top > 0) {
         const page = observer_map.get(entry.target);
         if (page) {
+          console.debug('Loading next page:', page);
           callback(page);
         }
       }
