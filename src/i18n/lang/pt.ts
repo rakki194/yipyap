@@ -29,6 +29,7 @@ export default {
     selected: "Selecionado",
     all: "Todos",
     none: "Nenhum",
+    notFound: "404 - Página não encontrada",
     pathSeparator: getPathSeparator("pt"),
     toggleTheme: "Alternar tema",
     theme: "Tema",

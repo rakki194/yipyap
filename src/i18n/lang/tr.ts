@@ -29,6 +29,7 @@ export default {
     selected: "Seçili",
     all: "Tümü",
     none: "Hiçbiri",
+    notFound: "404 - Sayfa bulunamadı",
     pathSeparator: getPathSeparator("tr"),
     toggleTheme: "Temayı değiştir",
     theme: "Tema",

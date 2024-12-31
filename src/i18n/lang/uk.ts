@@ -28,6 +28,7 @@ export default {
     selected: "Вибрано",
     all: "Всі",
     none: "Жодного",
+    notFound: "404 - Сторінку не знайдено",
     pathSeparator: getPathSeparator("uk"),
     toggleTheme: "Перемкнути тему",
     theme: "Тема",

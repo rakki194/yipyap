@@ -28,6 +28,7 @@ export default {
     selected: "Selectat",
     all: "Toate",
     none: "Niciunul",
+    notFound: "404 - Pagina nu a fost găsită",
     pathSeparator: getPathSeparator("ro"),
     toggleTheme: "Comutare temă",
     theme: "Temă",

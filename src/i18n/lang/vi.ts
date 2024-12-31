@@ -28,6 +28,7 @@ export default {
     selected: "Đã chọn",
     all: "Tất cả",
     none: "Không có",
+    notFound: "404 - Không tìm thấy trang",
     pathSeparator: getPathSeparator("vi"),
     toggleTheme: "Chuyển đổi giao diện",
     theme: "Giao diện",

@@ -28,6 +28,7 @@ export default {
     selected: "Vald",
     all: "Alla",
     none: "Ingen",
+    notFound: "404 - Sidan hittades inte",
     pathSeparator: getPathSeparator("sv"),
     toggleTheme: "Växla tema",
     theme: "Tema",

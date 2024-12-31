@@ -28,6 +28,7 @@ export default {
     selected: "เลือกแล้ว",
     all: "ทั้งหมด",
     none: "ไม่มี",
+    notFound: "404 - ไม่พบหน้าที่ต้องการ",
     pathSeparator: getPathSeparator("th"),
     toggleTheme: "สลับธีม",
     theme: "ธีม",
