@@ -149,7 +149,11 @@ export const Gallery: Component = () => {
         <Show when={gallery.data.error}>
           <div class="gallery-error">
             <span class="icon error-icon">{getIcon("error")}</span>
-            <span class="error-message">{appContext.t("gallery.pathNotFound")}</span>
+            <span class="error-message">
+              {gallery.data.error instanceof Error 
+                ? gallery.data.error.message 
+                : appContext.t("gallery.pathNotFound")}
+            </span>
           </div>
         </Show>
 

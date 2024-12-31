@@ -32,7 +32,7 @@ export async function fetchStreamingJson<T>(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
   }
 
   const reader = response.body!.getReader();

@@ -61,6 +61,12 @@ export interface AppContext {
   setDisableNonsense: (value: boolean) => void;
   readonly jtp2: JTP2Settings;
   readonly wdv3: WDv3Settings;
+  readonly wdv3ModelName: string;
+  readonly wdv3GenThreshold: number;
+  readonly wdv3CharThreshold: number;
+  setWdv3ModelName: (value: string) => void;
+  setWdv3GenThreshold: (value: number) => void;
+  setWdv3CharThreshold: (value: number) => void;
   readonly enableZoom: boolean;
   readonly enableMinimap: boolean;
   setEnableZoom: (value: boolean) => void;
@@ -591,8 +597,8 @@ const ErrorFallback: ParentComponent<{ error: Error }> = (props) => {
   const navigate = useNavigate();
   return (
     <div class="error-message">
-      Error: {props.error.toString()}
-      <br />
+      <h2>Something went wrong</h2>
+      <p>{props.error.toString()}</p>
       <button onClick={() => navigate("/")}>Return to front page</button>
     </div>
   );
