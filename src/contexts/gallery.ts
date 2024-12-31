@@ -143,7 +143,7 @@ export function makeGalleryState() {
       const navState = {
         path: state.path,
         page: state.page,
-        page_size: 32,
+        page_size: 100,
       };
       console.debug('Gallery resource requesting data:', navState);
       return navState;
@@ -229,8 +229,13 @@ export function makeGalleryState() {
       () => selection.selectedImage,
       (image) => {
         const currentData = backendData();
-        if (currentData && 'total_images' in currentData && currentData.total_images > 0 && image?.next_page !== undefined) {
-          setPage(image.next_page);
+        if (currentData && 'total_images' in currentData && currentData.total_images > 0) {
+          // If we're within 200 items of the end of the current data, load the next page
+          const currentIdx = selection.selected || 0;
+          const totalItems = currentData.items.length;
+          if (totalItems - currentIdx < 200 && image?.next_page !== undefined) {
+            setPage(image.next_page);
+          }
         }
       }
     )

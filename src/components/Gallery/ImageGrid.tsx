@@ -149,65 +149,56 @@ export const ImageGrid = (props: {
 function makeIntersectionObserver<T>(
   callback: (assoc_value: T) => void,
   options: IntersectionObserverInit = {
-    rootMargin: "4800px",
+    rootMargin: "9600px",  // Much larger margin to preload earlier
     threshold: 0.01,
   }
 ): (el: Element, assoc_value: T) => void {
   const observer_map = new WeakMap<Element, T>();
+  let isLoading = false;
+  let pendingLoads: Set<T> = new Set();
   
-  // Create two observers - one for normal preload and one for early warning
-  const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      console.debug('Primary intersection observed:', {
-        target: entry.target,
-        isIntersecting: entry.isIntersecting,
-        intersectionRatio: entry.intersectionRatio,
-        boundingClientRect: entry.boundingClientRect,
-        rootBounds: entry.rootBounds
+  const tryLoadPending = () => {
+    if (!isLoading && pendingLoads.size > 0) {
+      const [value] = pendingLoads;
+      pendingLoads.delete(value);
+      isLoading = true;
+      Promise.resolve(callback(value)).finally(() => {
+        isLoading = false;
+        // Check for any pending loads after this one completes
+        tryLoadPending();
       });
-      
+    }
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    let shouldTriggerLoad = false;
+    
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        const page = observer_map.get(entry.target);
-        if (page) {
-          console.debug('Loading next page (primary):', page);
-          callback(page);
+        const value = observer_map.get(entry.target);
+        if (value) {
+          if (isLoading) {
+            pendingLoads.add(value);
+          } else {
+            shouldTriggerLoad = true;
+            isLoading = true;
+            Promise.resolve(callback(value)).finally(() => {
+              isLoading = false;
+              tryLoadPending();
+            });
+          }
         }
       }
     });
   }, options);
 
-  // Early warning observer with much larger margin
-  const earlyObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      console.debug('Early warning intersection observed:', {
-        target: entry.target,
-        isIntersecting: entry.isIntersecting,
-        intersectionRatio: entry.intersectionRatio,
-        boundingClientRect: entry.boundingClientRect,
-        rootBounds: entry.rootBounds
-      });
-      
-      if (entry.isIntersecting) {
-        const page = observer_map.get(entry.target);
-        if (page) {
-          console.debug('Loading next page (early warning):', page);
-          callback(page);
-        }
-      }
-    });
-  }, {
-    rootMargin: "9600px",
-    threshold: 0.01
-  });
-
   const addObserved = (el: Element, assoc_value: T) => {
     observer_map.set(el, assoc_value);
     observer.observe(el);
-    earlyObserver.observe(el);
     onCleanup(() => {
       observer_map.delete(el);
       observer.unobserve(el);
-      earlyObserver.unobserve(el);
+      pendingLoads.delete(assoc_value);
     });
   };
   return addObserved;
@@ -243,6 +234,25 @@ export const ImageItem = (props: {
   const { getThumbnailSize } = gallery;
   const [isLoading, setIsLoading] = createSignal(true);
   const isMultiSelected = () => gallery.selection.multiSelected.has(props.idx);
+  
+  // Calculate aspect ratio based on image dimensions
+  const aspectRatio = createMemo(() => 1);
+
+  // Calculate height based on thumbnail size and aspect ratio
+  const imageHeight = createMemo(() => {
+    const size = getThumbnailSize({ width: 300, height: 300 });
+    return size.width;
+  });
+
+  const containerStyle = createMemo(() => ({
+    // Fixed square aspect ratio
+    "aspect-ratio": "1",
+    "height": `${imageHeight()}px`,
+    "display": "flex",
+    "align-items": "center",
+    "justify-content": "center",
+    "overflow": "hidden"
+  }));
 
   const handleClick = (e: MouseEvent) => {
     
@@ -330,6 +340,7 @@ export const ImageItem = (props: {
       aria-selected={props.selected || isMultiSelected()}
       aria-label={`Image: ${props.item.file_name}`}
       aria-describedby={`image-details-${props.idx}`}
+      style={containerStyle()}
     >
       <Show when={props.item()} keyed>
         {(item) => {
