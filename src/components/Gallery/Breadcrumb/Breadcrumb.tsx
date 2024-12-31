@@ -20,7 +20,8 @@
  * ```
  */
 
-import { Component } from "solid-js";
+import { Component, Show } from "solid-js";
+import { useGallery } from "~/contexts/GalleryContext";
 import { BreadcrumbNavigation } from "./BreadcrumbNavigation";
 import { BreadcrumbStats } from "./BreadcrumbStats";
 import { BreadcrumbActions } from "./BreadcrumbActions";
@@ -34,13 +35,17 @@ import "./Breadcrumb.css";
  * and action buttons wrapped in a semantic nav element.
  */
 export const Breadcrumb: Component = () => {
+  const gallery = useGallery();
+  
   return (
     <>
       <nav class="breadcrumb">
         <div class="breadcrumb-content">
           <BreadcrumbNavigation />
-          <BreadcrumbStats />
-          <BreadcrumbActions />
+          <Show when={!gallery.data.error}>
+            <BreadcrumbStats />
+            <BreadcrumbActions />
+          </Show>
         </div>
       </nav>
     </>

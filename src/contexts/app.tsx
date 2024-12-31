@@ -21,6 +21,7 @@ import { Locale, getTranslationValue } from "~/i18n";
 import type { Translations } from "~/i18n/types";
 import { createNotification } from "~/components/Notification/NotificationContainer";
 import { TransformationsProvider } from "./transformations";
+import { BreadcrumbNavigation } from "~/components/Gallery/Breadcrumb/BreadcrumbNavigation";
 
 /**
  * Interface defining the shape of the app context.
@@ -596,11 +597,18 @@ const createAppContext = (): AppContext => {
 const ErrorFallback: ParentComponent<{ error: Error }> = (props) => {
   const navigate = useNavigate();
   return (
-    <div class="error-message">
-      <h2>Something went wrong</h2>
-      <p>{props.error.toString()}</p>
-      <button onClick={() => navigate("/")}>Return to front page</button>
-    </div>
+    <>
+      <nav class="breadcrumb">
+        <div class="breadcrumb-content">
+          <BreadcrumbNavigation />
+        </div>
+      </nav>
+      <div class="error-message">
+        <h2>Something went wrong</h2>
+        <p>{props.error.toString()}</p>
+        <button onClick={() => navigate("/")}>Return to front page</button>
+      </div>
+    </>
   );
 };
 
