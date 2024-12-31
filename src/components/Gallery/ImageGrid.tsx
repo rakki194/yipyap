@@ -149,14 +149,16 @@ export const ImageGrid = (props: {
 function makeIntersectionObserver<T>(
   callback: (assoc_value: T) => void,
   options: IntersectionObserverInit = {
-    rootMargin: "800px",
-    threshold: 0.1,
+    rootMargin: "4800px",
+    threshold: 0.01,
   }
 ): (el: Element, assoc_value: T) => void {
   const observer_map = new WeakMap<Element, T>();
+  
+  // Create two observers - one for normal preload and one for early warning
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
-      console.debug('Intersection observed:', {
+      console.debug('Primary intersection observed:', {
         target: entry.target,
         isIntersecting: entry.isIntersecting,
         intersectionRatio: entry.intersectionRatio,
@@ -164,21 +166,48 @@ function makeIntersectionObserver<T>(
         rootBounds: entry.rootBounds
       });
       
-      if (entry.isIntersecting && entry.boundingClientRect.top > 0) {
+      if (entry.isIntersecting) {
         const page = observer_map.get(entry.target);
         if (page) {
-          console.debug('Loading next page:', page);
+          console.debug('Loading next page (primary):', page);
           callback(page);
         }
       }
     });
   }, options);
+
+  // Early warning observer with much larger margin
+  const earlyObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      console.debug('Early warning intersection observed:', {
+        target: entry.target,
+        isIntersecting: entry.isIntersecting,
+        intersectionRatio: entry.intersectionRatio,
+        boundingClientRect: entry.boundingClientRect,
+        rootBounds: entry.rootBounds
+      });
+      
+      if (entry.isIntersecting) {
+        const page = observer_map.get(entry.target);
+        if (page) {
+          console.debug('Loading next page (early warning):', page);
+          callback(page);
+        }
+      }
+    });
+  }, {
+    rootMargin: "9600px",
+    threshold: 0.01
+  });
+
   const addObserved = (el: Element, assoc_value: T) => {
     observer_map.set(el, assoc_value);
     observer.observe(el);
+    earlyObserver.observe(el);
     onCleanup(() => {
       observer_map.delete(el);
       observer.unobserve(el);
+      earlyObserver.unobserve(el);
     });
   };
   return addObserved;
