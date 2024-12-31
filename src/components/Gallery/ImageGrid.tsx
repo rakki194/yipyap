@@ -51,14 +51,21 @@ export const ImageGrid = (props: {
   });
 
   const isActive = (ref: HTMLElement, idx: number) => {
-    if (gallery.mode === "view" && gallery.selected === idx) {
-      ref.scrollIntoView({ 
-        behavior: "smooth", 
-        block: "center", 
-        inline: "nearest"
-      });
+    const isSelected = gallery.mode === "view" && gallery.selected === idx;
+    if (isSelected) {
+      // Only scroll if this is a new selection
+      const lastSelected = ref.getAttribute('data-last-selected') === 'true';
+      if (!lastSelected) {
+        ref.setAttribute('data-last-selected', 'true');
+        ref.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "center", 
+          inline: "nearest"
+        });
+      }
       return true;
     }
+    ref.removeAttribute('data-last-selected');
     return false;
   };
 
