@@ -27,6 +27,7 @@
     font-family: monospace;
     text-shadow: -1px -1px 2px #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
       1px 1px 0 #fff;
+    pointer-events: auto;
 
     @supports (backdrop-filter: blur(10px)) {
       background: transparent;
@@ -40,6 +41,7 @@
     gap: var(--spacing);
     padding: var(--spacing);
     position: relative;
+    pointer-events: auto;
 
     /* Metadata Button */
     .metadata-button {
@@ -62,6 +64,31 @@
   }
 }
 
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  backdrop-filter: var(--overlay-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  pointer-events: none;  /* Allow events to pass through by default */
+}
+
+.modal-overlay > * {
+  pointer-events: auto;  /* Re-enable events for modal content */
+}
+
+/* Prevent scrolling of underlying content when modal is open */
+body.modal-open {
+  overflow: hidden;
+  height: 100vh;
+  position: fixed;
+  width: 100%;
+}
+
 /* Image Container and Layout */
 .modal-body {
   position: relative;
@@ -74,6 +101,7 @@
   overflow: hidden;
   background: var(--preview-bg);
   backdrop-filter: saturate(50%) brightness(0.5) blur(10px);
+  pointer-events: auto;
 
   /* Image Container Styles */
   & > .image-container {

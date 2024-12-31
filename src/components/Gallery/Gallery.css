@@ -39,6 +39,8 @@
   opacity: 0;
   transform: scale(0.98);
   animation: fadeIn 0.3s ease-out forwards;
+  pointer-events: auto;
+  cursor: pointer;
 
   &:hover,
   &.selected {

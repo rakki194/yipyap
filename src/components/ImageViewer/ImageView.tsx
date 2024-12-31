@@ -199,7 +199,7 @@ export const ImageView = (props: ImageViewProps) => {
       class="image-container" 
       {...divProps}
       onWheel={(e) => {
-        e.stopPropagation();  // Stop propagation instead of preventDefault
+        if (!app.enableZoom) return;
         handleWheel(e);
       }}
       onMouseDown={handleMouseDown}
@@ -209,7 +209,8 @@ export const ImageView = (props: ImageViewProps) => {
       onDblClick={handleDoubleClick}
       style={{
         cursor: scale() > 1 ? (isDragging() ? 'grabbing' : 'grab') : 'default',
-        "touch-action": "none"
+        "touch-action": "none",
+        "pointer-events": "auto"
       }}
       data-zoom={scale() > 1 ? `${Math.round(scale() * 100)}%` : undefined}
     >

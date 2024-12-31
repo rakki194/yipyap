@@ -44,20 +44,54 @@ const AVAILABLE_CAPTION_TYPES = ['txt', 'tags', 'caption', 'wd'] as const;
 
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
+  const gallery = useGallery();
   const getLayout = createMemo(() =>
     computeLayout(props.imageInfo, windowSize)
   );
   const [showMetadata, setShowMetadata] = createSignal(false);
   const escape = useGlobalEscapeManager();
 
+  // Add keyboard navigation handler
+  const handleKeyDown = (e: KeyboardEvent) => {
+    // Only prevent default if we're in a text input or textarea
+    const isInInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+    
+    if (isInInput) {
+      // Prevent default scrolling behavior only when in input fields
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || 
+          e.key === 'PageDown' || e.key === 'PageUp' ||
+          e.key === 'Home' || e.key === 'End') {
+        e.preventDefault();
+      }
+    } else {
+      // Handle navigation when not in input fields
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        gallery.selection.selectNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        gallery.selection.selectPrev();
+      }
+    }
+  };
+
   onMount(() => {
     // Register escape handler
     escape.setOverlayState("modal", true);
     const unregister = escape.registerHandler("modal", props.onClose);
+    
+    // Add keyboard event listener
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    
+    // Add modal-open class to body
+    document.body.classList.add('modal-open');
 
     onCleanup(() => {
       escape.setOverlayState("modal", false);
       unregister();
+      window.removeEventListener('keydown', handleKeyDown, { capture: true });
+      // Remove modal-open class from body
+      document.body.classList.remove('modal-open');
     });
   });
 

@@ -200,6 +200,7 @@ export const ImageItem = (props: {
   const isMultiSelected = () => gallery.selection.multiSelected.has(props.idx);
 
   const handleClick = (e: MouseEvent) => {
+    
     if (e.ctrlKey || e.metaKey) {
       gallery.selection.toggleMultiSelect(props.idx);
     } else {
