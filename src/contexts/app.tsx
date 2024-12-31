@@ -597,14 +597,27 @@ const createAppContext = (): AppContext => {
 
 const ErrorFallback: ParentComponent<{ error: Error }> = (props) => {
   const navigate = useNavigate();
-  const app = useAppContext();
+  const context = useAppContext();
+
+  // Default translations for error messages
+  const defaultTranslations: Record<string, string> = {
+    notFound: "404 - Page Not Found",
+    returnToFrontPage: "Return to the front page"
+  };
+
+  // Get translation function or use a fallback that returns default translations
+  const t = (key: string) => {
+    if (!context?.t) return defaultTranslations[key.split('.')[1]] || key;
+    return context.t(key);
+  };
+
   return (
     <>
       <nav class="breadcrumb">
         <div class="breadcrumb-content">
           <div class="breadcrumb-links">
-            <a href="/" class="home-link" aria-label={app.t('common.home')}>
-              <span class="accent-hover icon" title={app.t('common.home')}>
+            <a href="/" class="home-link" aria-label="Home">
+              <span class="accent-hover icon" title="Home">
                 {getIcon("yipyap")}
               </span>
             </a>
@@ -612,9 +625,8 @@ const ErrorFallback: ParentComponent<{ error: Error }> = (props) => {
         </div>
       </nav>
       <div class="error-message">
-        <h2>Something went wrong</h2>
-        <p>{props.error.toString()}</p>
-        <button onClick={() => navigate("/")}>Return to front page</button>
+        <p>{props.error.toString().includes("HTTP error! status: 404") ? t('common.notFound') : props.error.toString()}</p>
+        <button onClick={() => navigate("/")}>{t('common.returnToFrontPage')}</button>
       </div>
     </>
   );

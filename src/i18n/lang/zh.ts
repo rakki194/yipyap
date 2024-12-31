@@ -28,6 +28,7 @@ export default {
     selected: "已选择",
     all: "全部",
     none: "无",
+    notFound: "404 - 页面未找到",
     pathSeparator: getPathSeparator("zh"),
     toggleTheme: "切换主题",
     theme: "主题",

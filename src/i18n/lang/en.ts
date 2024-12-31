@@ -29,6 +29,7 @@ export default {
     selected: "Selected",
     all: "All",
     none: "None",
+    notFound: "404 - Not Found",
     // The character used to separate parts of a file path (e.g., "/" on Unix, "\" on Windows)
     pathSeparator: getPathSeparator("en"),
     toggleTheme: "Toggle theme",

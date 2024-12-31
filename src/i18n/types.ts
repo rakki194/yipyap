@@ -44,6 +44,7 @@ export interface CommonTranslations {
   selected: string;
   all: string;
   none: string;
+  notFound: string;
   pathSeparator: string;
   toggleTheme: string;
   theme: string;

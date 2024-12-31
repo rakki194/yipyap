@@ -1,0 +1,15 @@
+.error-message {
+  margin: 2rem;
+}
+
+.error-message h2 {
+  padding: 2rem;
+}
+
+.error-message p {
+  margin: 0 2rem;
+}
+
+.error-message button {
+  margin: 2rem;
+}
