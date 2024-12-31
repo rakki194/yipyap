@@ -149,58 +149,70 @@ export const ImageGrid = (props: {
 function makeIntersectionObserver<T>(
   callback: (assoc_value: T) => void,
   options: IntersectionObserverInit = {
-    rootMargin: "9600px",  // Much larger margin to preload earlier
+    rootMargin: "0px",
     threshold: 0.01,
   }
 ): (el: Element, assoc_value: T) => void {
-  const observer_map = new WeakMap<Element, T>();
-  let isLoading = false;
-  let pendingLoads: Set<T> = new Set();
+  const [currentPage, setCurrentPage] = createSignal(1);
   
-  const tryLoadPending = () => {
-    if (!isLoading && pendingLoads.size > 0) {
-      const [value] = pendingLoads;
-      pendingLoads.delete(value);
-      isLoading = true;
-      Promise.resolve(callback(value)).finally(() => {
-        isLoading = false;
-        // Check for any pending loads after this one completes
-        tryLoadPending();
-      });
-    }
+  // Dynamic root margin based on page
+  const getRootMargin = (page: number) => {
+    if (page === 1) return "100px"; // Small margin for initial fast load
+    if (page === 2) return "800px"; // Larger margin for second batch
+    return "9600px"; // Much larger margin for subsequent batches
   };
 
-  const observer = new IntersectionObserver((entries) => {
-    let shouldTriggerLoad = false;
-    
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const value = observer_map.get(entry.target);
-        if (value) {
-          if (isLoading) {
-            pendingLoads.add(value);
-          } else {
-            shouldTriggerLoad = true;
-            isLoading = true;
-            Promise.resolve(callback(value)).finally(() => {
-              isLoading = false;
-              tryLoadPending();
-            });
+  let observer: IntersectionObserver | null = null;
+  const observed = new WeakMap<Element, T>();
+  const pending = new Set<Element>();
+
+  const tryLoadPending = () => {
+    if (pending.size === 0) return;
+
+    // Update observer with new root margin when page changes
+    if (observer) {
+      observer.disconnect();
+    }
+
+    observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const value = observed.get(el);
+          if (value !== undefined) {
+            callback(value);
+            observer?.unobserve(el);
+            observed.delete(el);
           }
         }
       }
+    }, {
+      ...options,
+      rootMargin: getRootMargin(currentPage())
     });
-  }, options);
+
+    for (const el of pending) {
+      const value = observed.get(el);
+      if (value !== undefined) {
+        observer.observe(el);
+      }
+      pending.delete(el);
+    }
+  };
 
   const addObserved = (el: Element, assoc_value: T) => {
-    observer_map.set(el, assoc_value);
-    observer.observe(el);
-    onCleanup(() => {
-      observer_map.delete(el);
-      observer.unobserve(el);
-      pendingLoads.delete(assoc_value);
-    });
+    observed.set(el, assoc_value);
+    pending.add(el);
+    tryLoadPending();
+    
+    // Update page number when loading more
+    setCurrentPage(p => p + 1);
   };
+
+  onCleanup(() => {
+    observer?.disconnect();
+  });
+
   return addObserved;
 }
 

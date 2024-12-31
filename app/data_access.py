@@ -445,14 +445,33 @@ class CachedFileSystemDataSource(ImageDataSource):
 
         return directory_mtime, *items
 
+    def _calculate_dynamic_page_size(self, page: int) -> int:
+        """
+        Calculate dynamic page size based on page number.
+        First page: 20 items
+        Second page: 100 items 
+        Subsequent pages: Exponential increase (2x) up to max 1000 items
+        """
+        if page == 1:
+            return 20
+        elif page == 2:
+            return 100
+        else:
+            # Exponential increase (2x) with max cap
+            return min(100 * (2 ** (page - 2)), 1000)
+
     def analyze_dir(
         self,
         directory: Path,
         page: int = 1,
-        page_size: int = 100,
+        page_size: Optional[int] = None,
         http_head: bool = False,
         if_modified_since: Optional[datetime] = None,
     ) -> Tuple[BrowseHeader, Optional[List[Dict]], Optional[List[asyncio.Future]]]:
+        # Calculate dynamic page size if not explicitly provided
+        if page_size is None:
+            page_size = self._calculate_dynamic_page_size(page)
+        
         # Get directory contents
         directory_mtime, dir_items, img_items = self.scan_directory(directory)
         mtime_dt = datetime.fromtimestamp(directory_mtime, tz=timezone.utc)
