@@ -149,7 +149,7 @@ async def browse(
     request: Request,
     path: str = "",
     page: int = Query(1, ge=1),
-    page_size: int = Query(50, ge=1),
+    page_size: int = Query(100, ge=1),
 ):
     """
     Browse directory contents with pagination and caching support.

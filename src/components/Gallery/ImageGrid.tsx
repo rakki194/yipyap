@@ -142,8 +142,8 @@ export const ImageGrid = (props: {
 function makeIntersectionObserver<T>(
   callback: (assoc_value: T) => void,
   options: IntersectionObserverInit = {
-    rootMargin: "100px",
-    threshold: 0.01,
+    rootMargin: "200px",
+    threshold: 0.1,
   }
 ): (el: Element, assoc_value: T) => void {
   const observer_map = new WeakMap<Element, T>();

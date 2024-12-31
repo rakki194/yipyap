@@ -136,7 +136,7 @@ function fetchPage(
 ): Promise<void> {
   console.debug('Fetching page from server:', { path, page });
   return fetchStreamingJson(
-    `/api/browse?path=${path}&page=${page}&page_size=32`,
+    `/api/browse?path=${path}&page=${page}&page_size=100`,
     (item, idx) => {
       console.debug('Received item from stream:', { idx, item });
       if (idx === 0) {

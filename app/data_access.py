@@ -449,7 +449,7 @@ class CachedFileSystemDataSource(ImageDataSource):
         self,
         directory: Path,
         page: int = 1,
-        page_size: int = 50,
+        page_size: int = 100,
         http_head: bool = False,
         if_modified_since: Optional[datetime] = None,
     ) -> Tuple[BrowseHeader, Optional[List[Dict]], Optional[List[asyncio.Future]]]:
