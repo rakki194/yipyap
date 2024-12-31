@@ -77,6 +77,8 @@ export default {
     wdv3CharThreshold: "Порог тегов персонажей",
     wdv3CharThresholdTooltip: "Порог уверенности для тегов персонажей (по умолчанию 0.75)",
     wdv3ConfigUpdateError: "Не удалось обновить настройки WDv3",
+    wdv3ForceCpu: "Принудительно использовать CPU для WDv3",
+    wdv3ForceCpuTooltip: "Заставить WDv3 использовать CPU вместо GPU",
     downloadModel: "Скачать модель",
     downloadTags: "Скачать теги",
     viewMode: "Режим просмотра",
@@ -316,6 +318,7 @@ export default {
       const name = params.name ?? "";
       return `Расположение: ${name}`;
     },
+    pathNotFound: "Путь не найден",
     moveToFolder: (params: TranslationParams) => {
       const name = params.name ?? "папка";
       return `Переместить в "${name}"`;

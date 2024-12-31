@@ -112,6 +112,7 @@ export default {
     addCaption: "Προσθήκη λεζάντας...",
     quickJump: "Μετάβαση σε φάκελο...",
     loadingFolders: "Φόρτωση φακέλων...",
+    pathNotFound: "Η διαδρομή δεν βρέθηκε",
     uploadFiles: "Μεταφόρτωση αρχείων",
     deleteCurrentFolder: "Διαγραφή τρέχοντος φακέλου",
     noResults: "Δεν βρέθηκαν αποτελέσματα",

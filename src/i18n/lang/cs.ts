@@ -113,6 +113,7 @@ export default {
     quickJump: "Rychlý skok",
     loadingFolders: "Načítání složek...",
     noResults: "Žádné výsledky",
+    pathNotFound: "Cesta nenalezena",
     uploadFiles: "Nahrát soubory",
     deleteCurrentFolder: "Smazat aktuální složku",
     folderCount: createPluralTranslation({

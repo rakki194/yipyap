@@ -560,10 +560,9 @@
 
 .gallery {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
+  padding: 1rem;
   position: relative;
-  padding: var(--spacing);
 }
 
 .settings-overlay {
@@ -608,4 +607,24 @@
 
 [data-theme="strawberry"] .item.directory.selected .directory-name {
   color: white;
+}
+
+.gallery-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: var(--error-text);
+  font-size: 1.125rem;
+}
+
+.gallery-error .error-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--error);
+}
+
+.gallery-error .error-message {
+  font-weight: 500;
 }

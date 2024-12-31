@@ -165,71 +165,75 @@ async def browse(
             First line: BrowseHeader with directory metadata
             Subsequent lines: DirectoryModel or ImageModel objects
 
-    Supports:
-        - HTTP HEAD requests
-        - If-Modified-Since caching
-        - Caption sorting
-        - Async directory scanning
+    Raises:
+        HTTPException: If path not found or other errors occur
     """
-    target_path = utils.resolve_path(path, ROOT_DIR)
+    try:
+        target_path = utils.resolve_path(path, ROOT_DIR)
 
-    # Parse If-Modified-Since header if present
-    if_modified_since = None
-    if_modified_since_header = request.headers.get("if-modified-since")
-    if if_modified_since_header:
-        if_modified_since = parsedate_to_datetime(if_modified_since_header)
+        # Parse If-Modified-Since header if present
+        if_modified_since = None
+        if_modified_since_header = request.headers.get("if-modified-since")
+        if if_modified_since_header:
+            if_modified_since = parsedate_to_datetime(if_modified_since_header)
 
-    # Check if this is a HEAD request
-    is_head = request.method == "HEAD"
+        # Check if this is a HEAD request
+        is_head = request.method == "HEAD"
 
-    browser_header, items, futures = data_source.analyze_dir(
-        directory=target_path,
-        page=page,
-        page_size=page_size,
-        http_head=is_head,
-        if_modified_since=if_modified_since,
-    )
-
-    last_modified = format_datetime(browser_header.mtime, usegmt=True)
-    headers = {
-        "Last-Modified": last_modified,
-        "Cache-Control": "public, max-age=0",
-    }
-
-    # If items is None, it means we should return 304 Not Modified
-    if items is None and if_modified_since:
-        logger.info(f"304 Not Modified: {path}:{page} {last_modified}")
-        return Response(status_code=304, headers=headers)
-
-    # For HEAD requests, return just the header
-    if is_head:
-        return Response(
-            content=browser_header.model_dump_json(),
-            media_type="application/json",
-            headers=headers,
+        browser_header, items, futures = data_source.analyze_dir(
+            directory=target_path,
+            page=page,
+            page_size=page_size,
+            http_head=is_head,
+            if_modified_since=if_modified_since,
         )
 
-    async def stream_response():
-        yield f"{browser_header.model_dump_json()}\n"
+        last_modified = format_datetime(browser_header.mtime, usegmt=True)
+        headers = {
+            "Last-Modified": last_modified,
+            "Cache-Control": "public, max-age=0",
+        }
 
-        # Sort items that have captions
-        for item in items:
-            if hasattr(item, "captions"):
-                item.captions.sort(
-                    key=lambda x: CAPTION_TYPE_ORDER.get(f".{x[0]}", 999)
-                )
-            yield f"{item.model_dump_json()}\n"
+        # If items is None, it means we should return 304 Not Modified
+        if items is None and if_modified_since:
+            logger.info(f"304 Not Modified: {path}:{page} {last_modified}")
+            return Response(status_code=304, headers=headers)
 
-        # Process futures
-        for future in asyncio.as_completed(futures):
-            res = await future
-            if hasattr(res, "captions"):
-                res.captions.sort(key=lambda x: CAPTION_TYPE_ORDER.get(f".{x[0]}", 999))
-            yield f"{res.model_dump_json()}\n"
+        # For HEAD requests, return just the header
+        if is_head:
+            return Response(
+                content=browser_header.model_dump_json(),
+                media_type="application/json",
+                headers=headers,
+            )
 
-    return StreamingResponse(
-        stream_response(), media_type="application/ndjson", headers=headers
-    )
+        async def stream_response():
+            yield f"{browser_header.model_dump_json()}\n"
+
+            # Sort items that have captions
+            for item in items:
+                if hasattr(item, "captions"):
+                    item.captions.sort(
+                        key=lambda x: CAPTION_TYPE_ORDER.get(f".{x[0]}", 999)
+                    )
+                yield f"{item.model_dump_json()}\n"
+
+            # Process futures
+            for future in asyncio.as_completed(futures):
+                res = await future
+                if hasattr(res, "captions"):
+                    res.captions.sort(key=lambda x: CAPTION_TYPE_ORDER.get(f".{x[0]}", 999))
+                yield f"{res.model_dump_json()}\n"
+
+        return StreamingResponse(
+            stream_response(), media_type="application/ndjson", headers=headers
+        )
+    except FileNotFoundError:
+        logger.error(f"Path not found: {path}")
+        raise HTTPException(status_code=404, detail="Path not found")
+    except Exception as e:
+        logger.error(f"Error browsing path {path}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # Used for deleting everything in a directory.

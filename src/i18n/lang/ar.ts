@@ -113,6 +113,7 @@ export default {
     quickJump: "القفز إلى المجلد...",
     loadingFolders: "جارٍ تحميل المجلدات...",
     noResults: "لم يتم العثور على نتائج",
+    pathNotFound: "لم يتم العثور على المسار",
     uploadFiles: "رفع الملفات",
     deleteCurrentFolder: "حذف المجلد الحالي",
     folderCount: ({ count = 0 }) => getArabicPlural(count, {

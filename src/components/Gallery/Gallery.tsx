@@ -14,6 +14,7 @@ import { useDragAndDrop } from '../../composables/useDragAndDrop';
 import { useGalleryScroll } from '../../composables/useGalleryScroll';
 import { useGalleryUI } from '../../composables/useGalleryUI';
 import { useGalleryEffects } from '../../composables/useGalleryEffects';
+import getIcon from "~/icons";
 import "./Gallery.css";
 
 export const Gallery: Component = () => {
@@ -143,6 +144,13 @@ export const Gallery: Component = () => {
               />
             );
           }}
+        </Show>
+
+        <Show when={gallery.data.error}>
+          <div class="gallery-error">
+            <span class="icon error-icon">{getIcon("error")}</span>
+            <span class="error-message">{appContext.t("gallery.pathNotFound")}</span>
+          </div>
         </Show>
 
         <Show when={progressInfo()}>

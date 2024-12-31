@@ -178,6 +178,7 @@ export interface GalleryTranslations {
   quickJump: string;
   loadingFolders: string;
   noResults: string;
+  pathNotFound: string;
   uploadFiles?: string;
   deleteCurrentFolder?: string;
   moveNotImplemented?: string;

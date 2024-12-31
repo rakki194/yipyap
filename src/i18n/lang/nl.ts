@@ -113,6 +113,7 @@ export default {
     quickJump: "Snel springen",
     loadingFolders: "Mappen laden...",
     noResults: "Geen resultaten",
+    pathNotFound: "Pad niet gevonden",
     folderCount: createPluralTranslation({
       one: "1 map",
       other: "${count} mappen"

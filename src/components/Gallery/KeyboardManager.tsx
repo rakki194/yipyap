@@ -131,7 +131,7 @@ export const useKeyboardManager = ({
     } else if (event.key === "ArrowUp") {
       if (!gallery.selectUp()) return;
       scrollToSelected();
-    } else if (event.key === "Enter") {
+    } else if (event.key === "Enter" || (event.key === " " && !event.shiftKey)) {
       // Don't intercept if no selection and in root directory
       if (gallery.selected === null && data.path === "") return;
 
@@ -140,7 +140,7 @@ export const useKeyboardManager = ({
           ? data.items[gallery.selected]
           : { type: "directory", file_name: ".." };
       if (selImageItem.type === "directory") {
-        navigate(`/gallery/${data.path}/${selImageItem.file_name}`);
+        navigate(`/${data.path ? `${data.path}/` : ''}${selImageItem.file_name}`);
       } else {
         if (!gallery.toggleEdit()) return;
       }
@@ -154,7 +154,7 @@ export const useKeyboardManager = ({
     } else if (event.key === "Backspace") {
       const segments = data.path.split("/");
       if (segments.length < 1) return;
-      navigate(`/gallery/${segments.slice(0, -1).join("/")}`);
+      navigate(`/${segments.slice(0, -1).join("/")}`);
     } else if (event.key === "Delete") {
       if (gallery.selection.multiSelected.size > 0 || gallery.selection.multiFolderSelected.size > 0) {
         event.preventDefault();

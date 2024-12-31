@@ -107,28 +107,13 @@ export default {
     wdv3ModelName: "WDv3 मॉडल का नाम",
     wdv3ModelNameTooltip: "उपयोग करने के लिए WDv3 मॉडल का नाम"
   },
-  frontPage: {
-    subtitle: {
-      1: "बड़े भाषा मॉडल धोखा करते हैं, झूठ बोलते हैं, और भ्रम में रहते हैं। बिल्कुल मेरी तरह!",
-      2: "हमने प्रार्थना का एक नया तरीका खोजा है",
-      3: "खाली आंखों में परिलक्षित अनंत ब्रह्मांड",
-      4: "जंग लगे दिल में नई उम्मीद",
-      5: "सपने और वास्तविकता का अद्भुत मिश्रण",
-      6: "अज्ञात क्षेत्र, असीमित संभावनाएं",
-      7: "समय से परे, अनंत प्रेम",
-      8: "इससे तो निकाल दिए जाएंगे!"
-    },
-    imageWork: "छवियों के साथ काम करें",
-    audioWork: "ऑडियो के साथ काम करें",
-    deselectAll: "सभी अचयनित करें",
-    deleteSelected: "चयनित हटाएं"
-  },
   gallery: {
     addTag: "टैग जोड़ें...",
     addCaption: "कैप्शन जोड़ें...",
     quickJump: "फ़ोल्डर में जाएं...",
     loadingFolders: "फ़ोल्डर लोड हो रहे हैं...",
     noResults: "कोई परिणाम नहीं मिला",
+    pathNotFound: "पथ नहीं मिला",
     folderCount: (params?: TranslationParams) => `${params?.count ?? 0} फ़ोल्डर`,
     deleteConfirm: (params: TranslationParams) => {
       const name = params.name ?? "यह आइटम";

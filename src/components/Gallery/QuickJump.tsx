@@ -178,7 +178,7 @@ export const QuickJump: Component<{
 
   const handleSelect = (item: FolderMatch | ActionMatch) => {
     if ('fullPath' in item) {
-      navigate(`/gallery/${item.fullPath}`);
+      navigate(`/${item.fullPath}`);
       props.onClose();
     } else {
       item.action();

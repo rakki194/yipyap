@@ -113,6 +113,7 @@ export default {
     quickJump: "Hop til mappe...",
     loadingFolders: "Indlæser mapper...",
     noResults: "Ingen resultater fundet",
+    pathNotFound: "Sti ikke fundet",
     uploadFiles: "Upload filer",
     deleteCurrentFolder: "Slet nuværende mappe",
     folderCount: createPluralTranslation({

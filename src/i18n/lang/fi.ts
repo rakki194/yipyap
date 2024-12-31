@@ -115,6 +115,7 @@ export default {
     uploadFiles: "Lataa tiedostoja",
     deleteCurrentFolder: "Poista nykyinen kansio",
     noResults: "Ei tuloksia",
+    pathNotFound: "Polkua ei löydy",
     folderCount: (params?: TranslationParams) => `${params?.count ?? 0} kansiota`,
     deleteConfirm: (params: TranslationParams) => {
       const name = params.name ?? "tämä kohde";

@@ -113,6 +113,7 @@ export default {
     quickJump: "קפיצה לתיקייה...",
     loadingFolders: "טוען תיקיות...",
     noResults: "לא נמצאו תוצאות",
+    pathNotFound: "נתיב לא נמצא",
     folderCount: (params?: TranslationParams) => `${params?.count ?? 0} תיקיות`,
     deleteConfirm: (params: TranslationParams) => {
       const name = params.name ?? "פריט זה";

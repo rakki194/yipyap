@@ -79,6 +79,8 @@ export default {
     wdv3CharThreshold: "Soglia caratteri WDv3",
     wdv3CharThresholdTooltip: "Soglia di confidenza per il rilevamento dei caratteri (0.0 - 1.0)",
     wdv3ConfigUpdateError: "Errore durante l'aggiornamento della configurazione WDv3",
+    wdv3ForceCpu: "Forza CPU WDv3",
+    wdv3ForceCpuTooltip: "Forza l'uso della CPU invece della GPU per il rilevamento dei tag",
     viewMode: "Modalità visualizzazione",
     gridView: "Vista griglia",
     listView: "Vista lista",
@@ -111,6 +113,7 @@ export default {
     quickJump: "Salto rapido",
     loadingFolders: "Caricamento cartelle...",
     noResults: "Nessun risultato",
+    pathNotFound: "Percorso non trovato",
     folderCount: createPluralTranslation({
       one: "1 cartella",
       other: "${count} cartelle"

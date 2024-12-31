@@ -163,7 +163,8 @@ export default {
     // Quick navigation between folders and actions using keyboard shortcuts
     quickJump: "Quick jump",
     loadingFolders: "Loading folders...",
-    noResults: "No results found",
+    noResults: "No results",
+    pathNotFound: "Path not found",
     uploadFiles: "Upload files",
     deleteCurrentFolder: "Delete current folder",
     moveNotImplemented: "Moving items is not yet implemented",

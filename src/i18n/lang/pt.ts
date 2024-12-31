@@ -76,6 +76,8 @@ export default {
     wdv3GenThresholdTooltip: "Limite de confiança para tags gerais (padrão: 0.35)",
     wdv3CharThreshold: "Limite de personagens WDv3",
     wdv3CharThresholdTooltip: "Limite de confiança para tags de personagens (padrão: 0.75)",
+    wdv3ForceCpu: "Forçar CPU WDv3",
+    wdv3ForceCpuTooltip: "Forçar WDv3 a usar CPU em vez de GPU",
     wdv3ConfigUpdateError: "Erro ao atualizar configuração WDv3",
     downloadModel: "Baixar modelo (1.8GB)",
     downloadTags: "Baixar tags (195KB)",
@@ -111,6 +113,7 @@ export default {
     quickJump: "Ir para pasta...",
     loadingFolders: "Carregando pastas...",
     noResults: "Nenhum resultado encontrado",
+    pathNotFound: "Caminho não encontrado",
     folderCount: (params?: TranslationParams) => {
       const count = params?.count ?? 0;
       return getPortuguesePlural(count, {

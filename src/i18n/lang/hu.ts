@@ -95,6 +95,19 @@ export default {
     thumbnailSize: "Bélyegkép mérete",
     thumbnailSizeDescription: "Bélyegképek mérete pixelben (pl. 250)",
     thumbnailSizeUpdateError: "Nem sikerült frissíteni a bélyegkép méretét",
+    wdv3ForceCpu: "WDv3 CPU kényszerítése",
+    wdv3ForceCpuTooltip: "WDv3 modell futtatása CPU-n GPU helyett",
+    jtp2Threshold: "JTP2 küszöbérték",
+    jtp2ThresholdTooltip: "Címkegenerálás megbízhatósági küszöbértéke JTP2-höz",
+    jtp2ForceCpu: "JTP2 CPU kényszerítése",
+    jtp2ForceCpuTooltip: "JTP2 modell futtatása CPU-n GPU helyett",
+    wdv3ModelName: "WDv3 modell neve",
+    wdv3ModelNameTooltip: "Használandó WDv3 modell neve",
+    wdv3GenThreshold: "WDv3 generálási küszöb",
+    wdv3GenThresholdTooltip: "Címkegenerálás megbízhatósági küszöbértéke WDv3-hoz",
+    wdv3CharThreshold: "WDv3 karakter küszöb",
+    wdv3CharThresholdTooltip: "Karakterek küszöbértéke WDv3 címkegeneráláshoz",
+    wdv3ConfigUpdateError: "Hiba történt a WDv3 konfiguráció frissítésekor",
   },
   gallery: {
     addTag: "Címke hozzáadása",
@@ -102,6 +115,7 @@ export default {
     quickJump: "Gyors ugrás",
     loadingFolders: "Mappák betöltése...",
     noResults: "Nincs találat",
+    pathNotFound: "Útvonal nem található",
     folderCount: createPluralTranslation({
       one: "1 mappa",
       other: "${count} mappa"

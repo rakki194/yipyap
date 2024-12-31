@@ -57,8 +57,30 @@ export function useGalleryScroll() {
   const [checkingPosition, setCheckingPosition] = createSignal(false);
   let positionCheckInterval: number | null = null;
   let wheelHandler: ((e: WheelEvent) => void) | null = null;
+  let rafHandle: number | null = null;
+  let touchpadDelta = 0;
   
   const scrollManager = useScrollManager(200);
+
+  // Debounced RAF to prevent multiple calls
+  const debouncedRAF = (callback: () => void) => {
+    if (rafHandle) {
+      cancelAnimationFrame(rafHandle);
+    }
+    rafHandle = requestAnimationFrame(() => {
+      callback();
+      rafHandle = null;
+    });
+  };
+
+  onCleanup(() => {
+    if (rafHandle) {
+      cancelAnimationFrame(rafHandle);
+    }
+    if (positionCheckInterval) {
+      clearInterval(positionCheckInterval);
+    }
+  });
 
   const smoothScroll = (targetY: number, forceScroll = false) => {
     scrollManager.smoothScrollTo(targetY, forceScroll);
@@ -97,11 +119,15 @@ export function useGalleryScroll() {
       
       smoothScroll(targetY, true);
 
-      // Add resize observer to handle layout changes during scroll
+      // Debounced resize observer
+      let resizeTimeout: number;
       const resizeObserver = new ResizeObserver(() => {
-        if (gallery.selected === initialSelectedIdx) {
-          requestAnimationFrame(() => scrollToSelected(true));
-        }
+        clearTimeout(resizeTimeout);
+        resizeTimeout = window.setTimeout(() => {
+          if (gallery.selected === initialSelectedIdx) {
+            debouncedRAF(() => scrollToSelected(true));
+          }
+        }, 100);
       });
       resizeObserver.observe(galleryElement);
 
@@ -121,13 +147,13 @@ export function useGalleryScroll() {
           
           if (newRect.top < newGalleryRect.top || 
               newRect.bottom > newGalleryRect.bottom) {
-            requestAnimationFrame(() => scrollToSelected(true));
+            debouncedRAF(() => scrollToSelected(true));
           }
         }
       };
 
-      // Check position immediately after scroll and after a delay
-      const checkTimes = [0, 100, 200, 300];
+      // Reduced number of checks and increased intervals
+      const checkTimes = [100, 300];
       checkTimes.forEach(delay => {
         setTimeout(verifyPosition, delay);
       });
@@ -136,29 +162,36 @@ export function useGalleryScroll() {
       setTimeout(() => {
         setAutoScrolling(false);
         resizeObserver.disconnect();
-      }, Math.max(...checkTimes) + 100);
+        clearTimeout(resizeTimeout);
+      }, Math.max(...checkTimes) + 150);
     }
   };
 
   const startPositionChecking = () => {
     if (positionCheckInterval) return;
     
-    // Add resize observer for continuous layout monitoring
+    // Debounced resize observer for continuous layout monitoring
+    let resizeTimeout: number;
     const galleryElement = document.getElementById('gallery');
     if (galleryElement) {
       const resizeObserver = new ResizeObserver(() => {
-        if (!autoScrolling() && gallery.selected !== null) {
-          requestAnimationFrame(() => scrollToSelected(true));
-        }
+        clearTimeout(resizeTimeout);
+        resizeTimeout = window.setTimeout(() => {
+          if (!autoScrolling() && gallery.selected !== null) {
+            debouncedRAF(() => scrollToSelected(true));
+          }
+        }, 100);
       });
       resizeObserver.observe(galleryElement);
 
       // Cleanup on component unmount
       onCleanup(() => {
         resizeObserver.disconnect();
+        clearTimeout(resizeTimeout);
       });
     }
     
+    // Reduced check frequency
     positionCheckInterval = window.setInterval(() => {
       const selectedIdx = gallery.selected;
       if (selectedIdx === null || autoScrolling() || checkingPosition()) return;
@@ -179,12 +212,12 @@ export function useGalleryScroll() {
 
       if (isOutOfView) {
         setCheckingPosition(true);
-        requestAnimationFrame(() => {
+        debouncedRAF(() => {
           scrollToSelected(true);
           setTimeout(() => setCheckingPosition(false), 200);
         });
       }
-    }, 100); // Check more frequently
+    }, 250); // Reduced frequency
   };
 
   const setupWheelHandler = () => {
@@ -254,23 +287,6 @@ export function useGalleryScroll() {
       galleryElement.addEventListener('wheel', wheelHandler, { passive: false });
     }
   };
-
-  // Add touchpad delta tracking
-  let touchpadDelta = 0;
-
-  onCleanup(() => {
-    if (positionCheckInterval) {
-      clearInterval(positionCheckInterval);
-      positionCheckInterval = null;
-    }
-    if (wheelHandler) {
-      const galleryElement = document.getElementById('gallery');
-      if (galleryElement) {
-        galleryElement.removeEventListener('wheel', wheelHandler);
-      }
-      wheelHandler = null;
-    }
-  });
 
   return {
     scrollToSelected,

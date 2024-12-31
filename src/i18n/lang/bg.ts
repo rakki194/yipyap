@@ -113,6 +113,7 @@ export default {
     quickJump: "Бързо прескачане",
     loadingFolders: "Зареждане на папки...",
     noResults: "Няма резултати",
+    pathNotFound: "Пътят не е намерен",
     uploadFiles: "Качи файлове",
     deleteCurrentFolder: "Изтрий текущата папка",
     folderCount: createPluralTranslation({

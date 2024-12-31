@@ -77,6 +77,8 @@ export default {
     wdv3CharThreshold: "Charakter-Tag-Schwellenwert",
     wdv3CharThresholdTooltip: "Konfidenzschwellenwert für Charakter-Tags (Standard: 0.75)",
     wdv3ConfigUpdateError: "WDv3-Einstellungen konnten nicht aktualisiert werden",
+    wdv3ForceCpu: "WDv3 auf CPU erzwingen",
+    wdv3ForceCpuTooltip: "WDv3 zwingen, CPU statt GPU zu verwenden",
     downloadModel: "Modell herunterladen (1.8GB)",
     downloadTags: "Tags herunterladen (195KB)",
     viewMode: "Ansichtsmodus",
@@ -104,8 +106,6 @@ export default {
     thumbnailSize: "Vorschaubildgröße",
     thumbnailSizeDescription: "Größe der Vorschaubilder in Pixeln (z.B. 250)",
     thumbnailSizeUpdateError: "Fehler beim Aktualisieren der Vorschaubildgröße",
-    wdv3ForceCpu: "WDv3 auf CPU erzwingen",
-    wdv3ForceCpuTooltip: "WDv3 zwingen, CPU statt GPU zu verwenden",
   },
   gallery: {
     addTag: "Tag hinzufügen",
@@ -115,6 +115,7 @@ export default {
     uploadFiles: "Dateien hochladen",
     deleteCurrentFolder: "Aktuellen Ordner löschen",
     noResults: "Keine Ergebnisse",
+    pathNotFound: "Pfad nicht gefunden",
     folderCount: createPluralTranslation({
       one: "1 Ordner",
       other: "${count} Ordner"

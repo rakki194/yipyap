@@ -76,6 +76,8 @@ export default {
     wdv3GenThresholdTooltip: "Genel etiketler için güven eşiği (varsayılan: 0.35)",
     wdv3CharThreshold: "Karakter Etiket Eşiği",
     wdv3CharThresholdTooltip: "Karakter etiketleri için güven eşiği (varsayılan: 0.75)",
+    wdv3ForceCpu: "WDv3 CPU Zorla",
+    wdv3ForceCpuTooltip: "WDv3'ü GPU yerine CPU kullanmaya zorla",
     wdv3ConfigUpdateError: "WDv3 yapılandırması güncellenirken hata oluştu",
     downloadModel: "Modeli indir (1.8GB)",
     downloadTags: "Etiketleri indir (195KB)",
@@ -111,6 +113,7 @@ export default {
     quickJump: "Hızlı geçiş",
     loadingFolders: "Klasörler yükleniyor...",
     noResults: "Sonuç yok",
+    pathNotFound: "Yol bulunamadı",
     folderCount: createPluralTranslation({
       one: "1 klasör",
       other: "${count} klasör"
