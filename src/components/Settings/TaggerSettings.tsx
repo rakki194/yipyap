@@ -17,7 +17,10 @@ export const TaggerSettings: Component = () => {
     try {
       await Promise.resolve(updater());
     } catch (error) {
-      // Error is already handled in the app context
+      app.createNotification({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Update failed'
+      });
     } finally {
       setIsUpdating(false);
     }
@@ -29,7 +32,10 @@ export const TaggerSettings: Component = () => {
     try {
       await Promise.resolve(updater());
     } catch (error) {
-      // Error is already handled in the app context
+      app.createNotification({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Update failed'
+      });
     } finally {
       setIsUpdating(false);
     }

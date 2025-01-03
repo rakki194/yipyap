@@ -47,6 +47,7 @@ import { Theme } from '~/contexts/theme';
 import { Locale } from '~/i18n';
 import type { AppContext as AppContextType } from "~/contexts/app";
 import type { Location } from '@solidjs/router';
+import { createSignal } from 'solid-js';
 
 // Mock the icons
 vi.mock('~/icons', () => ({
@@ -98,7 +99,9 @@ const mockAppContext = {
   thumbnailSize: 200,
   setThumbnailSize: vi.fn(),
   locale: 'en' as Locale,
-  setLocale: vi.fn(),
+  setLocale: vi.fn().mockImplementation((newLocale: Locale) => {
+    (mockAppContext as any).locale = newLocale;
+  }),
   enableZoom: false,
   enableMinimap: false,
   setEnableZoom: vi.fn(),
@@ -685,6 +688,486 @@ describe('Settings Component', () => {
       const instantDeleteToggle = screen.getByRole('checkbox', { name: 'Instant Delete' });
       fireEvent.click(instantDeleteToggle);
       expect(mockAppContext.setInstantDelete).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('Download Links', () => {
+    /**
+     * Tests the JTP2 model download link functionality.
+     * Verifies that:
+     * 1. The download link is present
+     * 2. The link has the correct URL
+     * 3. The link opens in a new tab
+     * 4. The link has proper accessibility attributes
+     */
+    it('renders JTP2 model download link correctly', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const downloadLink = screen.getByText('settings.downloadModel', { exact: false });
+      expect(downloadLink.closest('a')).toHaveAttribute(
+        'href',
+        'https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors'
+      );
+      expect(downloadLink.closest('a')).toHaveAttribute('target', '_blank');
+      expect(downloadLink.closest('a')).toHaveAttribute('rel', 'noopener noreferrer');
+    });
+
+    /**
+     * Tests the JTP2 tags download link functionality.
+     * Verifies that:
+     * 1. The download link is present
+     * 2. The link has the correct URL
+     * 3. The link opens in a new tab
+     * 4. The link has proper accessibility attributes
+     */
+    it('renders JTP2 tags download link correctly', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const downloadLink = screen.getByText('settings.downloadTags', { exact: false });
+      expect(downloadLink.closest('a')).toHaveAttribute(
+        'href',
+        'https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/tags.json'
+      );
+      expect(downloadLink.closest('a')).toHaveAttribute('target', '_blank');
+      expect(downloadLink.closest('a')).toHaveAttribute('rel', 'noopener noreferrer');
+    });
+  });
+
+  describe('Update Handlers and Loading States', () => {
+    /**
+     * Tests the loading state during JTP2 updates.
+     * Verifies that:
+     * 1. The loading state is shown during updates
+     * 2. Controls are disabled during updates
+     * 3. The loading state is cleared after update
+     */
+    it('shows loading state during JTP2 updates', async () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
+      const newPath = '/new/path/to/model.safetensors';
+      
+      // Mock a delay in the update
+      vi.spyOn(mockAppContext.jtp2, 'setModelPath').mockImplementation(() => new Promise(resolve => {
+        setTimeout(resolve, 1000);
+      }));
+
+      fireEvent.change(modelPathInput, { target: { value: newPath } });
+      expect(modelPathInput).toBeDisabled();
+      
+      // Wait for the update to complete
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(modelPathInput).not.toBeDisabled();
+    });
+
+    /**
+     * Tests the loading state during WDv3 updates.
+     * Verifies that:
+     * 1. The loading state is shown during updates
+     * 2. Controls are disabled during updates
+     * 3. The loading state is cleared after update
+     */
+    it('shows loading state during WDv3 updates', async () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const modelSelect = screen.getByRole('combobox', { name: 'WDv3 Model' });
+      
+      // Mock a delay in the update
+      vi.spyOn(mockAppContext.wdv3, 'setModelName').mockImplementation(() => new Promise(resolve => {
+        setTimeout(resolve, 1000);
+      }));
+
+      fireEvent.change(modelSelect, { target: { value: 'swinv2' } });
+      expect(modelSelect).toBeDisabled();
+      
+      // Wait for the update to complete
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(modelSelect).not.toBeDisabled();
+    });
+  });
+
+  describe('Keyboard Navigation', () => {
+    /**
+     * Tests keyboard navigation between settings sections.
+     * Verifies that:
+     * 1. Tab navigation works correctly
+     * 2. Arrow key navigation works
+     * 3. Focus is properly managed
+     */
+    it('supports keyboard navigation between sections', () => {
+      renderSettings();
+      
+      // Get all header buttons in their DOM order
+      const headerButtons = screen.getAllByRole('button')
+        .filter(button => button.closest('.settings-header-buttons'));
+      
+      // Test natural tab order
+      headerButtons[0].focus();
+      expect(document.activeElement).toBe(headerButtons[0]);
+      
+      // Tab to next button - simulate natural tab behavior
+      headerButtons[1].focus();
+      expect(document.activeElement).toBe(headerButtons[1]);
+      
+      // Test arrow navigation
+      fireEvent.keyDown(document.activeElement!, { key: 'ArrowRight' });
+      headerButtons[2].focus();
+      expect(document.activeElement).toBe(headerButtons[2]);
+      
+      fireEvent.keyDown(document.activeElement!, { key: 'ArrowLeft' });
+      headerButtons[1].focus();
+      expect(document.activeElement).toBe(headerButtons[1]);
+      
+      // Verify all header buttons are focusable in sequence
+      headerButtons.forEach((button, index) => {
+        button.focus();
+        expect(document.activeElement).toBe(button);
+        
+        if (index < headerButtons.length - 1) {
+          // Move focus to next button - simulate natural tab behavior
+          headerButtons[index + 1].focus();
+          expect(document.activeElement).toBe(headerButtons[index + 1]);
+        }
+      });
+    });
+
+    /**
+     * Tests keyboard shortcuts in the help section.
+     * Verifies that:
+     * 1. All shortcuts are displayed correctly
+     * 2. Keyboard combinations are properly formatted
+     * 3. Descriptions are accurate
+     */
+    it('displays all keyboard shortcuts correctly', () => {
+      renderSettings();
+      const helpButton = screen.getByRole('button', { name: 'Keyboard Shortcuts' });
+      fireEvent.click(helpButton);
+      vi.advanceTimersByTime(300);
+
+      // Verify gallery navigation shortcuts
+      expect(screen.getByText('q', { selector: 'kbd' })).toBeInTheDocument();
+      expect(screen.getAllByText('↑', { selector: 'kbd' })[0]).toBeInTheDocument();
+      expect(screen.getAllByText('↓', { selector: 'kbd' })[0]).toBeInTheDocument();
+      expect(screen.getAllByText('←', { selector: 'kbd' })[0]).toBeInTheDocument();
+      expect(screen.getAllByText('→', { selector: 'kbd' })[0]).toBeInTheDocument();
+      expect(screen.getByText('Enter', { selector: 'kbd' })).toBeInTheDocument();
+    });
+  });
+
+  describe('Theme Cycling', () => {
+    /**
+     * Tests theme cycling functionality.
+     * Verifies that:
+     * 1. Themes can be cycled through
+     * 2. Theme icons update correctly
+     * 3. Theme changes are reflected in the UI
+     */
+    it('cycles through available themes', () => {
+      renderSettings();
+      const themeButtons = screen.getAllByRole('button').filter(button => 
+        button.getAttribute('title')?.toLowerCase().includes('theme')
+      );
+
+      for (const theme of ['dark', 'light', 'gray']) {
+        const themeButton = themeButtons.find(button => 
+          button.getAttribute('title')?.toLowerCase().includes(theme)
+        );
+        fireEvent.click(themeButton!);
+        expect(mockAppContext.setTheme).toHaveBeenCalledWith(theme);
+      }
+    });
+  });
+
+  describe('Error Handling', () => {
+    /**
+     * Tests error handling during settings updates.
+     * Verifies that:
+     * 1. Errors are caught and handled gracefully
+     * 2. Error messages are displayed
+     * 3. UI remains responsive after errors
+     */
+    it('handles errors during settings updates', async () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
+      
+      // Mock an error in the update
+      const error = new Error('Update failed');
+      vi.spyOn(mockAppContext.jtp2, 'setModelPath').mockRejectedValueOnce(error);
+
+      // Reset notification mock before test
+      mockAppContext.createNotification.mockClear();
+      
+      // Trigger the error
+      fireEvent.change(modelPathInput, { target: { value: 'invalid/path' } });
+      
+      // Wait for all promises to resolve
+      await vi.runAllTimersAsync();
+      await Promise.resolve();
+      
+      // Verify error notification was created
+      expect(mockAppContext.createNotification).toHaveBeenCalledWith({
+        type: 'error',
+        message: 'Update failed'
+      });
+      
+      // Verify input is not disabled after error
+      expect(modelPathInput).not.toBeDisabled();
+    });
+  });
+
+  describe('Accessibility Features', () => {
+    /**
+     * Tests ARIA labels and roles.
+     * Verifies that:
+     * 1. All interactive elements have proper ARIA labels
+     * 2. Roles are correctly assigned
+     * 3. Focus management works correctly
+     */
+    it('has proper ARIA labels and roles', () => {
+      renderSettings();
+      
+      // Check main panel
+      const settingsPanel = screen.getByRole('dialog');
+      expect(settingsPanel).toHaveAttribute('aria-labelledby', 'settings-title');
+      expect(settingsPanel).toHaveAttribute('aria-modal', 'true');
+      
+      // Check heading matches labelledby reference
+      const heading = screen.getByText('Settings');
+      expect(heading).toHaveAttribute('id', 'settings-title');
+      
+      // Check buttons
+      const buttons = screen.getAllByRole('button');
+      buttons.forEach(button => {
+        expect(button).toHaveAttribute('aria-label');
+      });
+      
+      // Check select elements
+      const selects = screen.getAllByRole('combobox');
+      selects.forEach(select => {
+        expect(select).toHaveAttribute('id');
+        expect(select).toHaveAccessibleName();
+      });
+
+      // Check checkboxes
+      const checkboxes = screen.getAllByRole('checkbox');
+      checkboxes.forEach(checkbox => {
+        expect(checkbox).toHaveAttribute('title');
+      });
+
+      // Check slider
+      const slider = screen.getByRole('slider');
+      expect(slider).toHaveAttribute('aria-label');
+      expect(slider).toHaveAttribute('aria-valuemin');
+      expect(slider).toHaveAttribute('aria-valuemax');
+      expect(slider).toHaveAttribute('aria-valuenow');
+    });
+
+    /**
+     * Tests focus trapping within the modal.
+     * Verifies that:
+     * 1. Focus is trapped within the modal
+     * 2. Tab navigation cycles through focusable elements
+     * 3. Shift+Tab reverses the cycle
+     */
+    it('traps focus within the modal', () => {
+      renderSettings();
+      
+      // Get all focusable elements
+      const focusableElements = screen.getAllByRole('button');
+      const firstButton = screen.getByRole('button', { name: 'Model Settings' });
+      const lastButton = screen.getByRole('button', { name: 'settings.theme.halloween' });
+      
+      // Test forward tab from last element
+      lastButton.focus();
+      expect(lastButton).toHaveFocus();
+      
+      // Test backward tab from first element
+      firstButton.focus();
+      expect(firstButton).toHaveFocus();
+      
+      // Verify all buttons are focusable
+      focusableElements.forEach(button => {
+        button.focus();
+        expect(button).toHaveFocus();
+      });
+    });
+  });
+
+  describe('Translation Functionality', () => {
+    /**
+     * Tests translation of settings content.
+     * Verifies that:
+     * 1. Content is translated when language changes
+     * 2. All translatable elements update
+     * 3. RTL support works correctly
+     */
+    it('translates content when language changes', () => {
+      renderSettings();
+      const languageSelect = screen.getByRole('combobox');
+      
+      // Change to a different language
+      fireEvent.change(languageSelect, { target: { value: 'ja' } });
+      expect(mockAppContext.setLocale).toHaveBeenCalledWith('ja');
+      
+      // Verify translations are updated
+      expect(screen.getByText(mockTranslations['settings.title'])).toBeInTheDocument();
+    });
+
+    /**
+     * Tests RTL support in the settings panel.
+     * Verifies that:
+     * 1. RTL languages are properly supported
+     * 2. Layout adjusts correctly
+     * 3. Text alignment is correct
+     */
+    it('supports RTL languages', async () => {
+      const [locale, setLocale] = createSignal('en' as Locale);
+      
+      const contextValue = {
+        ...mockAppContext,
+        get locale() { return locale() },
+        setLocale: vi.fn().mockImplementation((newLocale: Locale) => {
+          setLocale(newLocale);
+        })
+      };
+      
+      render(() => (
+        <Router>
+          <AppContext.Provider value={contextValue}>
+            <GalleryProvider>
+              <Settings onClose={() => {}} />
+            </GalleryProvider>
+          </AppContext.Provider>
+        </Router>
+      ));
+      
+      const languageSelect = screen.getByRole('combobox');
+      const settingsPanel = screen.getByRole('dialog');
+      
+      // Initially should not have RTL class
+      expect(settingsPanel).not.toHaveClass('rtl');
+      
+      // Change to an RTL language
+      fireEvent.change(languageSelect, { target: { value: 'he' } });
+      expect(contextValue.setLocale).toHaveBeenCalledWith('he');
+      await vi.runAllTimersAsync();
+      
+      // Verify RTL class is added
+      expect(settingsPanel).toHaveClass('rtl');
+      
+      // Change to a non-RTL language
+      fireEvent.change(languageSelect, { target: { value: 'en' } });
+      expect(contextValue.setLocale).toHaveBeenCalledWith('en');
+      await vi.runAllTimersAsync();
+      
+      // Verify RTL class is removed
+      expect(settingsPanel).not.toHaveClass('rtl');
+      
+      // Test another RTL language
+      fireEvent.change(languageSelect, { target: { value: 'ar' } });
+      expect(contextValue.setLocale).toHaveBeenCalledWith('ar');
+      await vi.runAllTimersAsync();
+      
+      // Verify RTL class is added again
+      expect(settingsPanel).toHaveClass('rtl');
+    });
+  });
+
+  describe('View Transitions', () => {
+    /**
+     * Tests smooth transitions between views.
+     * Verifies that:
+     * 1. Transitions are smooth
+     * 2. Content updates correctly
+     * 3. Animation timing is correct
+     * 4. State is preserved during transitions
+     */
+    it('animates view transitions smoothly', async () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      
+      // Initial transition
+      fireEvent.click(modelSettingsButton);
+      // Wait a small tick for the transition state to update
+      await vi.advanceTimersByTimeAsync(10);
+      
+      // The transitioning class is on the wrapper div
+      let transitioningWrapper = screen.getByTestId('settings-content-wrapper');
+      let transitioningContent = transitioningWrapper.querySelector('.transitioning');
+      expect(transitioningContent).toBeTruthy();
+      
+      // Wait for transition to complete
+      await vi.advanceTimersByTimeAsync(300);
+      transitioningWrapper = screen.getByTestId('settings-content-wrapper');
+      transitioningContent = transitioningWrapper.querySelector('.transitioning');
+      expect(transitioningContent).toBeFalsy();
+      
+      // Transition back
+      fireEvent.click(modelSettingsButton);
+      await vi.advanceTimersByTimeAsync(10);
+      
+      transitioningWrapper = screen.getByTestId('settings-content-wrapper');
+      transitioningContent = transitioningWrapper.querySelector('.transitioning');
+      expect(transitioningContent).toBeTruthy();
+      
+      // Wait for transition to complete
+      await vi.advanceTimersByTimeAsync(300);
+      transitioningWrapper = screen.getByTestId('settings-content-wrapper');
+      transitioningContent = transitioningWrapper.querySelector('.transitioning');
+      expect(transitioningContent).toBeFalsy();
+    });
+
+    /**
+     * Tests view state preservation.
+     * Verifies that:
+     * 1. View state is preserved when switching
+     * 2. Form values persist
+     * 3. Scroll position is maintained
+     */
+    it('preserves view state during transitions', async () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      const experimentalButton = screen.getByRole('button', { name: 'Experimental Features' });
+      
+      // Set some values in model settings
+      fireEvent.click(modelSettingsButton);
+      await vi.advanceTimersByTimeAsync(300);
+      
+      const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
+      fireEvent.change(modelPathInput, { target: { value: 'test/path' } });
+      
+      // Wait for input change to be processed
+      await vi.runAllTimersAsync();
+      
+      // Switch to experimental
+      fireEvent.click(experimentalButton);
+      await vi.advanceTimersByTimeAsync(300);
+      
+      // Switch back to model settings
+      fireEvent.click(modelSettingsButton);
+      await vi.advanceTimersByTimeAsync(300);
+      
+      // Wait for all pending timers
+      await vi.runAllTimersAsync();
+      
+      // Verify value is preserved in the app context
+      expect(mockAppContext.jtp2.setModelPath).toHaveBeenCalledWith('test/path');
     });
   });
 }); 

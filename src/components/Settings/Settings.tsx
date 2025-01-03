@@ -22,6 +22,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
   const [isTransitioning, setIsTransitioning] = createSignal(false);
   const t = useTranslations();
 
+  // RTL languages
+  const rtlLanguages = ['he', 'ar', 'fa'];
+  const isRtl = () => rtlLanguages.includes(app.locale);
+
   onMount(() => {
     escape.setOverlayState("settings", true);
     const unregister = escape.registerHandler("settings", props.onClose);
@@ -56,6 +60,10 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
   return (
     <div 
       class="settings-panel card" 
+      classList={{ rtl: isRtl() }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-title"
       onKeyDown={(e) => {
         e.stopPropagation();
         if (e.key === "Escape") {
@@ -68,7 +76,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
       }}
     >
       <div class="settings-header">
-        <h2>{t('settings.title')}</h2>
+        <h2 id="settings-title">{t('settings.title')}</h2>
         <div class="settings-header-buttons">
           <button
             type="button"
@@ -124,6 +132,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
       
       <div 
         class="settings-content-wrapper"
+        data-testid="settings-content-wrapper"
         onKeyDown={(e) => {
           e.stopPropagation();
         }}
@@ -131,7 +140,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
         <Show
           when={activeView() === 'main'}
           fallback={
-            <div classList={{ transitioning: isTransitioning() }}>
+            <div data-testid="settings-transition-wrapper" classList={{ transitioning: isTransitioning() }}>
               <Show
                 when={activeView() === 'transformations'}
                 fallback={
@@ -141,7 +150,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                       <Show
                         when={activeView() === 'tagger'}
                         fallback={
-                          <div class="help-content">
+                          <div class="help-content" data-testid="settings-content">
                             <h3>{t('shortcuts.title')}</h3>
                             <div class="shortcuts-grid">
                               <div class="shortcuts-section">
@@ -223,13 +232,13 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                           </div>
                         }
                       >
-                        <div class="tagger-content">
+                        <div class="tagger-content" data-testid="settings-content">
                           <TaggerSettings />
                         </div>
                       </Show>
                     }
                   >
-                    <div class="experimental-content">
+                    <div class="experimental-content" data-testid="settings-content">
                       <h3>{t('settings.experimentalFeatures')}</h3>
                       <div class="experimental-options">
                         <Tooltip content={t('settings.enableZoomTooltip')} position="top">
@@ -267,14 +276,14 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   </Show>
                 }
               >
-                <div class="transformations-content">
+                <div class="transformations-content" data-testid="settings-content">
                   <TransformationSettings onClose={() => switchView('main')} />
                 </div>
               </Show>
             </div>
           }
         >
-          <div class="settings-content" classList={{ transitioning: isTransitioning() }}>
+          <div class="settings-content" data-testid="settings-content" classList={{ transitioning: isTransitioning() }}>
             <div class="settings-row">
               <div class="settings-column">
                 <h3>{t('settings.appearance')}</h3>
