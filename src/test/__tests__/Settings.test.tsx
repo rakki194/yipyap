@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@solidjs/testing-library';
+import { render, screen, fireEvent, cleanup } from '@solidjs/testing-library';
 import { Settings } from '../../components/Settings/Settings';
 import { AppProvider } from '~/contexts/app';
 import { AppContext } from '~/contexts/contexts';
@@ -7,121 +7,86 @@ import { GalleryProvider } from '~/contexts/GalleryContext';
 import { Router } from '@solidjs/router';
 import { Theme } from '~/contexts/theme';
 import { Locale } from '~/i18n';
+import type { AppContext as AppContextType } from "~/contexts/app";
+import type { Location } from '@solidjs/router';
 
 // Mock the icons
 vi.mock('~/icons', () => ({
   default: () => '<svg data-testid="mock-icon" />',
 }));
 
+// Mock translations for testing
+const mockTranslations: Record<string, string> = {
+  'settings.title': 'Settings',
+  'settings.modelSettings': 'Model Settings',
+  'shortcuts.title': 'Keyboard Shortcuts',
+  'settings.experimentalFeatures': 'Experimental Features',
+  'settings.disableAnimations': 'Disable Animations',
+  'settings.theme.dark': 'Dark Theme',
+  'settings.enableZoom': 'Enable Zoom',
+  'settings.enableMinimap': 'Enable Minimap',
+  'settings.gallery.navigation': 'Gallery Navigation',
+  'shortcuts.galleryNavigation': 'Gallery Navigation',
+  'shortcuts.tagNavigation': 'Tag Navigation',
+  'shortcuts.other': 'Other'
+};
+
 // Mock app context with translation function and required settings
 const mockAppContext = {
-  t: (key: string) => {
-    const translations: Record<string, string> = {
-      'settings.title': 'Settings',
-      'shortcuts.title': 'Keyboard Shortcuts',
-      'shortcuts.galleryNavigation': 'Gallery Navigation',
-      'shortcuts.tagNavigation': 'Tag Navigation',
-      'shortcuts.other': 'Other',
-      'shortcuts.quickFolderSwitch': 'Quick Folder Switch',
-      'shortcuts.aboveImage': 'Above Image',
-      'shortcuts.belowImage': 'Below Image',
-      'shortcuts.previousImage': 'Previous Image',
-      'shortcuts.nextImage': 'Next Image',
-      'shortcuts.togglePreview': 'Toggle Preview',
-      'shortcuts.previousTag': 'Previous Tag',
-      'shortcuts.nextTag': 'Next Tag',
-      'shortcuts.switchTagBubble': 'Switch Tag Bubble',
-      'shortcuts.switchTagInput': 'Switch Tag Input',
-      'shortcuts.cycleCaptions': 'Cycle Captions',
-      'shortcuts.firstTagRow': 'First Tag Row',
-      'shortcuts.lastTagRow': 'Last Tag Row',
-      'shortcuts.removeTag': 'Remove Tag',
-      'shortcuts.closePreview': 'Close Preview',
-      'shortcuts.deleteImage': 'Delete Image',
-      'shortcuts.doubleShift': 'Double Shift',
-      'shortcuts.shift': 'Shift',
-      'shortcuts.del': 'Del',
-      'shortcuts.esc': 'Esc',
-      'settings.appearance': 'Appearance',
-      'settings.gallery': 'Gallery',
-      'settings.language': 'Language',
-      'settings.modelSettings': 'Model Settings',
-      'settings.experimentalFeatures': 'Experimental Features',
-      'settings.disableAnimations': 'Disable Animations',
-      'settings.enableZoom': 'Enable Zoom',
-      'settings.enableMinimap': 'Enable Minimap',
-      'settings.thumbnailSize': 'Thumbnail Size',
-      'settings.thumbnailSizeDescription': 'Change the size of thumbnails in the gallery',
-      'common.theme': 'Theme',
-      'common.close': 'Close',
-      'common.language': 'Language',
-      'settings.theme.dark': 'Dark Theme',
-      'settings.theme.light': 'Light Theme',
-      'settings.theme.gray': 'Gray Theme',
-      'settings.theme.banana': 'Banana Theme',
-      'settings.theme.strawberry': 'Strawberry Theme',
-      'settings.theme.peanut': 'Peanut Theme',
-      'settings.theme.christmas': 'Christmas Theme',
-      'settings.theme.halloween': 'Halloween Theme',
-      'settings.theme.high-contrast-black': 'High Contrast Black Theme',
-      'settings.theme.high-contrast-inverse': 'High Contrast Inverse Theme',
-      'settings.disableNonsense': 'Disable Nonsense',
-      'settings.instantDelete': 'Instant Delete',
-      'settings.preserveLatents': 'Preserve Latents',
-      'settings.preserveLatentsTooltip': 'Preserve latents tooltip',
-      'settings.preserveTxt': 'Preserve TXT',
-      'settings.preserveTxtTooltip': 'Preserve TXT tooltip',
-      'settings.alwaysShowCaptionEditor': 'Always Show Caption Editor',
-      'settings.jtp2ModelPath': 'JTP2 Model Path',
-      'settings.jtp2TagsPath': 'JTP2 Tags Path',
-      'settings.downloadModel': 'Download Model',
-      'settings.downloadTags': 'Download Tags',
-      'tools.transformations': 'Transformations',
-      'settings.enableZoomTooltip': 'Enable zoom functionality in the image viewer',
-      'settings.enableMinimapTooltip': 'Enable minimap in the image viewer'
-    };
-    return translations[key] || key;
-  },
-  theme: 'light' as Theme,
-  setTheme: vi.fn((theme: Theme) => {
-    mockAppContext.theme = theme;
-  }),
+  t: (key: string) => mockTranslations[key] || key,
+  theme: 'dark' as Theme,
+  setTheme: vi.fn(),
   disableAnimations: false,
   setDisableAnimations: vi.fn(),
   disableNonsense: false,
   setDisableNonsense: vi.fn(),
-  enableZoom: false,
-  setEnableZoom: vi.fn(),
-  enableMinimap: false,
-  setEnableMinimap: vi.fn(),
-  thumbnailSize: 200,
-  setThumbnailSize: vi.fn(),
-  prevRoute: undefined,
-  location: { 
-    pathname: '/',
-    search: '',
-    hash: '',
-    query: {},
-    state: null,
-    key: ''
-  },
   instantDelete: false,
   setInstantDelete: vi.fn(),
-  jtp2ModelPath: '',
-  jtp2TagsPath: '',
-  setJtp2ModelPath: vi.fn(),
-  setJtp2TagsPath: vi.fn(),
-  locale: 'en' as Locale,
-  setLocale: vi.fn(),
   preserveLatents: false,
   setPreserveLatents: vi.fn(),
   preserveTxt: false,
   setPreserveTxt: vi.fn(),
+  thumbnailSize: 200,
+  setThumbnailSize: vi.fn(),
+  locale: 'en' as Locale,
+  setLocale: vi.fn(),
+  enableZoom: false,
+  enableMinimap: false,
+  setEnableZoom: vi.fn(),
+  setEnableMinimap: vi.fn(),
+  createNotification: vi.fn(),
+  jtp2: {
+    modelPath: '',
+    tagsPath: '',
+    threshold: 0.35,
+    forceCpu: false,
+    setModelPath: vi.fn(),
+    setTagsPath: vi.fn(),
+    setThreshold: vi.fn(),
+    setForceCpu: vi.fn()
+  },
+  wdv3: {
+    modelName: 'vit',
+    genThreshold: 0.35,
+    charThreshold: 0.35,
+    forceCpu: false,
+    setModelName: vi.fn(),
+    setGenThreshold: vi.fn(),
+    setCharThreshold: vi.fn(),
+    setForceCpu: vi.fn()
+  },
+  wdv3ModelName: 'vit',
+  wdv3GenThreshold: 0.35,
+  wdv3CharThreshold: 0.35,
+  setWdv3ModelName: vi.fn(),
+  setWdv3GenThreshold: vi.fn(),
+  setWdv3CharThreshold: vi.fn(),
+  prevRoute: undefined,
+  location: { pathname: '/', search: '', hash: '', query: {}, state: null, key: '' } as Location,
   alwaysShowCaptionEditor: false,
   setAlwaysShowCaptionEditor: vi.fn(),
-  notify: vi.fn(),
-  createNotification: vi.fn()
-};
+  notify: vi.fn()
+} satisfies AppContextType;
 
 // Mock router with proper location context
 vi.mock('@solidjs/router', async () => {
@@ -170,6 +135,7 @@ describe('Settings Component', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    cleanup();
   });
 
   const renderSettings = () => {
@@ -199,7 +165,7 @@ describe('Settings Component', () => {
 
   it('toggles help section when help button is clicked', async () => {
     renderSettings();
-    const helpButton = screen.getByTitle('Keyboard Shortcuts');
+    const helpButton = screen.getByRole('button', { name: 'Keyboard Shortcuts' });
     
     // Click to show help
     fireEvent.click(helpButton);
@@ -222,7 +188,7 @@ describe('Settings Component', () => {
 
   it('changes theme when theme button is clicked', () => {
     renderSettings();
-    const darkThemeButton = screen.getByTitle('Dark Theme');
+    const darkThemeButton = screen.getByRole('button', { name: 'Dark Theme' });
     fireEvent.click(darkThemeButton);
     expect(mockAppContext.setTheme).toHaveBeenCalledWith('dark');
   });
@@ -236,7 +202,7 @@ describe('Settings Component', () => {
 
   it('toggles animations when checkbox is clicked', () => {
     renderSettings();
-    const animationsCheckbox = screen.getByLabelText('Disable Animations');
+    const animationsCheckbox = screen.getByRole('checkbox', { name: 'Disable Animations' });
     fireEvent.click(animationsCheckbox);
     expect(animationsCheckbox).toBeChecked();
   });
@@ -277,6 +243,14 @@ describe('Settings Component', () => {
 
   it('updates model paths when input values change', () => {
     renderSettings();
+    
+    // Click the model settings button first
+    const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+    fireEvent.click(modelSettingsButton);
+
+    // Wait for the transition animation
+    vi.advanceTimersByTime(300);
+
     const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
     const newPath = '/new/path/to/model.safetensors';
     fireEvent.change(modelPathInput, { target: { value: newPath } });
@@ -293,15 +267,7 @@ describe('Settings Component', () => {
   });
 
   it('toggles experimental features correctly', async () => {
-    render(() => (
-      <Router>
-        <AppContext.Provider value={mockAppContext}>
-          <GalleryProvider>
-            <Settings onClose={() => {}} />
-          </GalleryProvider>
-        </AppContext.Provider>
-      </Router>
-    ));
+    renderSettings();
 
     // Find the experimental features button using the translated text
     const experimentalButton = screen.getByRole('button', { name: 'Experimental Features' });
