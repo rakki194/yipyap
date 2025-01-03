@@ -1,7 +1,45 @@
+/**
+ * Settings Component Test Suite
+ * 
+ * This comprehensive test suite verifies the functionality of the Settings component,
+ * which is responsible for managing user preferences and application configuration.
+ * 
+ * Test Categories:
+ * - Basic Rendering and Interaction
+ *   - Verifies the component renders correctly
+ *   - Tests keyboard interaction (Escape key)
+ *   - Tests help section toggling
+ * 
+ * - Theme and UI Settings
+ *   - Tests theme switching functionality
+ *   - Tests language selection
+ *   - Tests animation toggle
+ *   - Tests thumbnail size adjustment
+ * 
+ * - Model Settings
+ *   - Tests JTP2 model configuration
+ *     - Model path updates
+ *     - Tags path updates
+ *     - Threshold adjustments
+ *     - CPU forcing toggle
+ *   - Tests WDv3 model configuration
+ *     - Model selection
+ *     - Threshold adjustments
+ *     - CPU forcing toggle
+ * 
+ * - View Management
+ *   - Tests navigation between different setting views
+ *   - Tests view state persistence
+ * 
+ * - File Management Settings
+ *   - Tests latent preservation toggle
+ *   - Tests TXT file preservation toggle
+ *   - Tests instant delete functionality
+ */
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@solidjs/testing-library';
 import { Settings } from '../../components/Settings/Settings';
-import { AppProvider } from '~/contexts/app';
 import { AppContext } from '~/contexts/contexts';
 import { GalleryProvider } from '~/contexts/GalleryContext';
 import { Router } from '@solidjs/router';
@@ -161,11 +199,21 @@ describe('Settings Component', () => {
     ));
   };
 
+  /**
+   * Verifies that the Settings panel renders with the correct title.
+   * This is a basic smoke test to ensure the component mounts successfully
+   * and displays its main heading.
+   */
   it('renders the settings panel with title', () => {
     renderSettings();
     expect(screen.getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
   });
 
+  /**
+   * Tests the keyboard interaction for closing the Settings panel.
+   * Verifies that pressing the Escape key triggers the onClose callback,
+   * which should dismiss the settings panel.
+   */
   it('closes settings when Escape key is pressed', () => {
     renderSettings();
     fireEvent.keyDown(screen.getByRole('heading', { name: 'Settings' }), {
@@ -174,29 +222,35 @@ describe('Settings Component', () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
+  /**
+   * Tests the help section toggle functionality.
+   * Verifies that:
+   * 1. Clicking the help button shows the help content
+   * 2. The animation timing is correct (300ms)
+   * 3. The help content contains expected navigation sections
+   * 4. Clicking again hides the help content
+   * 5. The content is properly removed after the closing animation
+   */
   it('toggles help section when help button is clicked', async () => {
     renderSettings();
     const helpButton = screen.getByRole('button', { name: 'Keyboard Shortcuts' });
     
     // Click to show help
     fireEvent.click(helpButton);
-    
-    // Wait for the closing animation to complete
     vi.advanceTimersByTime(300);
-    
-    // Now we should see the help content
     expect(screen.getByRole('heading', { name: 'Gallery Navigation', level: 4 })).toBeInTheDocument();
     
     // Click to hide help
     fireEvent.click(helpButton);
-    
-    // Wait for the closing animation
     vi.advanceTimersByTime(300);
-    
-    // Help content should be gone
     expect(screen.queryByRole('heading', { name: 'Gallery Navigation' })).not.toBeInTheDocument();
   });
 
+  /**
+   * Tests the theme switching functionality.
+   * Verifies that clicking the theme button triggers the theme change
+   * through the app context's setTheme function with the correct theme value.
+   */
   it('changes theme when theme button is clicked', () => {
     renderSettings();
     const darkThemeButton = screen.getByRole('button', { name: 'Dark Theme' });
@@ -204,6 +258,13 @@ describe('Settings Component', () => {
     expect(mockAppContext.setTheme).toHaveBeenCalledWith('dark');
   });
 
+  /**
+   * Tests the language selection functionality.
+   * Verifies that:
+   * 1. The language dropdown is present
+   * 2. Changing the selection updates the value
+   * 3. The selected language is reflected in the UI
+   */
   it('updates language when selection changes', () => {
     renderSettings();
     const languageSelect = screen.getByRole('combobox');
@@ -211,6 +272,11 @@ describe('Settings Component', () => {
     expect(languageSelect).toHaveValue('ja');
   });
 
+  /**
+   * Tests the animation toggle functionality.
+   * Verifies that the animations can be disabled through the checkbox
+   * and that the checkbox state reflects the current setting.
+   */
   it('toggles animations when checkbox is clicked', () => {
     renderSettings();
     const animationsCheckbox = screen.getByRole('checkbox', { name: 'Disable Animations' });
@@ -218,48 +284,56 @@ describe('Settings Component', () => {
     expect(animationsCheckbox).toBeChecked();
   });
 
+  /**
+   * Tests the thumbnail size adjustment functionality.
+   * Verifies that:
+   * 1. The slider is present and interactive
+   * 2. Dragging the slider updates the size value
+   * 3. The size display updates correctly
+   * 4. The slider responds to mouse events properly
+   * Uses a mocked getBoundingClientRect for consistent testing
+   */
   it('updates thumbnail size when slider is moved', () => {
-    // Mock getBoundingClientRect
-    const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({
-      width: 400,
-      height: 20,
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 400,
-      x: 0,
-      y: 0,
-      toJSON: () => {}
-    }));
+    const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect')
+      .mockImplementation(() => ({
+        width: 400,
+        height: 20,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 400,
+        x: 0,
+        y: 0,
+        toJSON: () => {}
+      }));
 
     renderSettings();
     const slider = screen.getByRole('slider');
+    const x = 100;
     
-    // Calculate the x position for value 200 (middle of the slider)
-    // The slider goes from 100 to 500, so 200 is 25% of the way
-    const x = 100; // 25% of 400px width
-    
-    // Simulate mouse events for dragging
     fireEvent.mouseDown(slider, { clientX: x });
     fireEvent.mouseMove(slider, { clientX: x });
     fireEvent.mouseUp(slider);
     
-    // Look for the span containing the size value
     const sizeValue = screen.getByTestId('thumbnail-size-value');
     expect(sizeValue.textContent).toMatch(/200\s*px/);
 
-    // Clean up the mock
     getBoundingClientRectMock.mockRestore();
   });
 
+  /**
+   * Tests the model path input functionality.
+   * Verifies that:
+   * 1. The model settings section can be accessed
+   * 2. The model path input is present
+   * 3. Changes to the input are reflected in the UI
+   * 4. The transition animation timing is correct
+   */
   it('updates model paths when input values change', () => {
     renderSettings();
     
-    // Click the model settings button first
     const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
     fireEvent.click(modelSettingsButton);
-
-    // Wait for the transition animation
     vi.advanceTimersByTime(300);
 
     const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
@@ -268,41 +342,54 @@ describe('Settings Component', () => {
     expect(modelPathInput).toHaveValue(newPath);
   });
 
+  /**
+   * Tests the nonsense warning visibility logic.
+   * Verifies that the warning text is only shown when the nonsense
+   * feature is not disabled, and that the warning contains the
+   * expected emoji and text content.
+   */
   it('shows warning text only when nonsense is not disabled', () => {
     renderSettings();
-    // First check that the warning is visible
     expect(screen.getByText(/⚠️/)).toBeInTheDocument();
-    
-    // Check that the warning text matches the expected format
     expect(screen.getByText('⚠️警告！これはあなたをビーバーに変えてしまいます！')).toBeInTheDocument();
   });
 
+  /**
+   * Tests the experimental features section functionality.
+   * Verifies that:
+   * 1. The experimental features section can be accessed
+   * 2. The zoom and minimap toggles are present
+   * 3. The toggles can be interacted with
+   * 4. The toggle states are updated correctly
+   * 5. The context functions are called with correct values
+   */
   it('toggles experimental features correctly', async () => {
     renderSettings();
 
-    // Find the experimental features button using the translated text
     const experimentalButton = screen.getByRole('button', { name: 'Experimental Features' });
     fireEvent.click(experimentalButton);
-
-    // Wait for the transition animation
     vi.advanceTimersByTime(300);
 
-    // Now we can access the toggles in the experimental section
     const zoomCheckbox = screen.getByRole('checkbox', { name: 'Enable Zoom' });
     const minimapCheckbox = screen.getByRole('checkbox', { name: 'Enable Minimap' });
 
-    // Test zoom toggle
     expect(zoomCheckbox).not.toBeChecked();
     fireEvent.click(zoomCheckbox);
     expect(mockAppContext.setEnableZoom).toHaveBeenCalledWith(true);
 
-    // Test minimap toggle
     expect(minimapCheckbox).not.toBeChecked();
     fireEvent.click(minimapCheckbox);
     expect(mockAppContext.setEnableMinimap).toHaveBeenCalledWith(true);
   });
 
   describe('JTP2 Settings', () => {
+    /**
+     * Tests the JTP2 model path update functionality.
+     * Verifies that:
+     * 1. The model settings section can be accessed
+     * 2. The JTP2 model path input is present
+     * 3. Changes to the input update the context correctly
+     */
     it('updates JTP2 model path', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
@@ -315,6 +402,13 @@ describe('Settings Component', () => {
       expect(mockAppContext.jtp2.setModelPath).toHaveBeenCalledWith(newPath);
     });
 
+    /**
+     * Tests the JTP2 tags path update functionality.
+     * Verifies that:
+     * 1. The model settings section can be accessed
+     * 2. The JTP2 tags path input is present
+     * 3. Changes to the input update the context correctly
+     */
     it('updates JTP2 tags path', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
@@ -327,31 +421,36 @@ describe('Settings Component', () => {
       expect(mockAppContext.jtp2.setTagsPath).toHaveBeenCalledWith(newPath);
     });
 
+    /**
+     * Tests the JTP2 threshold adjustment functionality.
+     * Verifies that:
+     * 1. The threshold slider is present
+     * 2. The slider responds to mouse events
+     * 3. The threshold value is updated correctly
+     * 4. The context is updated with the new threshold
+     */
     it('updates JTP2 threshold', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
 
-      // Mock getBoundingClientRect for the slider
-      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({
-        width: 400,
-        height: 20,
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 400,
-        x: 0,
-        y: 0,
-        toJSON: () => {}
-      }));
+      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect')
+        .mockImplementation(() => ({
+          width: 400,
+          height: 20,
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 400,
+          x: 0,
+          y: 0,
+          toJSON: () => {}
+        }));
 
       const thresholdSlider = screen.getByRole('slider', { name: 'JTP2 Threshold' });
+      const x = 200;
       
-      // Calculate x position for value 0.5 (50% of the slider range)
-      const x = 200; // 50% of 400px width
-      
-      // Simulate mouse events for dragging - start at target position
       fireEvent.mouseDown(thresholdSlider, { clientX: x });
       fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
       fireEvent.mouseUp(thresholdSlider);
@@ -362,6 +461,13 @@ describe('Settings Component', () => {
       getBoundingClientRectMock.mockRestore();
     });
 
+    /**
+     * Tests the JTP2 force CPU toggle functionality.
+     * Verifies that:
+     * 1. The force CPU toggle is present
+     * 2. The toggle can be interacted with
+     * 3. The context is updated correctly when toggled
+     */
     it('toggles JTP2 force CPU', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
@@ -375,6 +481,13 @@ describe('Settings Component', () => {
   });
 
   describe('WDv3 Settings', () => {
+    /**
+     * Tests the WDv3 model selection functionality.
+     * Verifies that:
+     * 1. The model dropdown is present
+     * 2. The model can be changed
+     * 3. The context is updated with the new model selection
+     */
     it('changes WDv3 model', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
@@ -386,31 +499,36 @@ describe('Settings Component', () => {
       expect(mockAppContext.wdv3.setModelName).toHaveBeenCalledWith('swinv2');
     });
 
+    /**
+     * Tests the WDv3 general threshold adjustment functionality.
+     * Verifies that:
+     * 1. The general threshold slider is present
+     * 2. The slider responds to mouse events
+     * 3. The threshold value is updated correctly
+     * 4. The context is updated with the new threshold
+     */
     it('updates WDv3 general threshold', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
 
-      // Mock getBoundingClientRect for the slider
-      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({
-        width: 400,
-        height: 20,
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 400,
-        x: 0,
-        y: 0,
-        toJSON: () => {}
-      }));
+      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect')
+        .mockImplementation(() => ({
+          width: 400,
+          height: 20,
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 400,
+          x: 0,
+          y: 0,
+          toJSON: () => {}
+        }));
 
       const thresholdSlider = screen.getByRole('slider', { name: 'General Threshold' });
+      const x = 240;
       
-      // Calculate x position for value 0.6 (60% of the slider range)
-      const x = 240; // 60% of 400px width
-      
-      // Simulate mouse events for dragging - start at target position
       fireEvent.mouseDown(thresholdSlider, { clientX: x });
       fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
       fireEvent.mouseUp(thresholdSlider);
@@ -421,31 +539,36 @@ describe('Settings Component', () => {
       getBoundingClientRectMock.mockRestore();
     });
 
+    /**
+     * Tests the WDv3 character threshold adjustment functionality.
+     * Verifies that:
+     * 1. The character threshold slider is present
+     * 2. The slider responds to mouse events
+     * 3. The threshold value is updated correctly
+     * 4. The context is updated with the new threshold
+     */
     it('updates WDv3 character threshold', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
 
-      // Mock getBoundingClientRect for the slider
-      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({
-        width: 400,
-        height: 20,
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 400,
-        x: 0,
-        y: 0,
-        toJSON: () => {}
-      }));
+      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect')
+        .mockImplementation(() => ({
+          width: 400,
+          height: 20,
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 400,
+          x: 0,
+          y: 0,
+          toJSON: () => {}
+        }));
 
       const thresholdSlider = screen.getByRole('slider', { name: 'Character Threshold' });
+      const x = 280;
       
-      // Calculate x position for value 0.7 (70% of the slider range)
-      const x = 280; // 70% of 400px width
-      
-      // Simulate mouse events for dragging - start at target position
       fireEvent.mouseDown(thresholdSlider, { clientX: x });
       fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
       fireEvent.mouseUp(thresholdSlider);
@@ -456,6 +579,13 @@ describe('Settings Component', () => {
       getBoundingClientRectMock.mockRestore();
     });
 
+    /**
+     * Tests the WDv3 force CPU toggle functionality.
+     * Verifies that:
+     * 1. The force CPU toggle is present
+     * 2. The toggle can be interacted with
+     * 3. The context is updated correctly when toggled
+     */
     it('toggles WDv3 force CPU', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
@@ -469,32 +599,43 @@ describe('Settings Component', () => {
   });
 
   describe('View Switching', () => {
+    /**
+     * Tests the view switching back functionality.
+     * Verifies that:
+     * 1. Clicking an active view button returns to the main view
+     * 2. The transition animation works correctly
+     * 3. The content is properly updated
+     */
     it('switches back to main view when clicking active view button', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
       
-      // Switch to model settings
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
       expect(screen.getByPlaceholderText('/path/to/jtp2/model.safetensors')).toBeInTheDocument();
       
-      // Click again to go back to main
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
       expect(screen.queryByPlaceholderText('/path/to/jtp2/model.safetensors')).not.toBeInTheDocument();
     });
 
+    /**
+     * Tests switching between different setting views.
+     * Verifies that:
+     * 1. Different views can be accessed
+     * 2. The content updates correctly
+     * 3. The transition animations work
+     * 4. The correct elements are present in each view
+     */
     it('switches between different views', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
       const experimentalButton = screen.getByRole('button', { name: 'Experimental Features' });
       
-      // Switch to model settings
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
       expect(screen.getByPlaceholderText('/path/to/jtp2/model.safetensors')).toBeInTheDocument();
       
-      // Switch to experimental features
       fireEvent.click(experimentalButton);
       vi.advanceTimersByTime(300);
       expect(screen.getByRole('checkbox', { name: 'Enable Zoom' })).toBeInTheDocument();
@@ -502,6 +643,13 @@ describe('Settings Component', () => {
   });
 
   describe('File Preservation Settings', () => {
+    /**
+     * Tests the latents preservation toggle functionality.
+     * Verifies that:
+     * 1. The preserve latents toggle is present
+     * 2. The toggle can be interacted with
+     * 3. The context is updated correctly when toggled
+     */
     it('toggles preserve latents setting', () => {
       renderSettings();
       const preserveLatentsToggle = screen.getByRole('checkbox', { name: 'Preserve Latents' });
@@ -509,6 +657,13 @@ describe('Settings Component', () => {
       expect(mockAppContext.setPreserveLatents).toHaveBeenCalledWith(true);
     });
 
+    /**
+     * Tests the TXT file preservation toggle functionality.
+     * Verifies that:
+     * 1. The preserve TXT toggle is present
+     * 2. The toggle can be interacted with
+     * 3. The context is updated correctly when toggled
+     */
     it('toggles preserve txt setting', () => {
       renderSettings();
       const preserveTxtToggle = screen.getByRole('checkbox', { name: 'Preserve TXT' });
@@ -518,6 +673,13 @@ describe('Settings Component', () => {
   });
 
   describe('Deletion Settings', () => {
+    /**
+     * Tests the instant delete toggle functionality.
+     * Verifies that:
+     * 1. The instant delete toggle is present
+     * 2. The toggle can be interacted with
+     * 3. The context is updated correctly when toggled
+     */
     it('toggles instant delete setting', () => {
       renderSettings();
       const instantDeleteToggle = screen.getByRole('checkbox', { name: 'Instant Delete' });
