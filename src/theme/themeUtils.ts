@@ -63,11 +63,19 @@ export function computeHoverStyles(theme: ThemeName): Record<string, string> {
 export function computeAnimation(theme: ThemeName): string {
   // Different animation styles for different themes
   switch (theme) {
-    case "christmas":
-      return "twinkle 2s infinite";
-    case "halloween":
-      return "spooky 3s infinite";
+    case "dark":
+      return "moon";
+    case "light":
+      return "sun";
+    case "gray":
+      return "cloud";
+    case "banana":
+      return "banana";
+    case "strawberry":
+      return "strawberry";
+    case "peanut":
+      return "peanut";
     default:
-      return "none";
+      return "sun";
   }
 } 

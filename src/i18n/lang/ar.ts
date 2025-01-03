@@ -51,8 +51,6 @@ export default {
       banana: "موز",
       strawberry: "فراولة",
       peanut: "فول سوداني",
-      christmas: "عيد الميلاد",
-      halloween: "هالوين",
       "high-contrast-black": "تباين عالي أسود",
       "high-contrast-inverse": "تباين عالي معكوس",
     },

@@ -51,8 +51,6 @@ export default {
       banana: "Muz",
       strawberry: "Çilek",
       peanut: "Fıstık",
-      christmas: "Noel",
-      halloween: "Cadılar Bayramı",
       "high-contrast-black": "Yüksek Kontrast Siyah",
       "high-contrast-inverse": "Yüksek Kontrast Ters",
     },

@@ -181,7 +181,7 @@ describe("TagBubble Component", () => {
   });
 
   describe("Theme-specific Styling", () => {
-    const themes = ["christmas", "halloween", "strawberry"] as const;
+    const themes = ["dark", "light", "gray", "banana", "strawberry", "peanut"] as const;
 
     themes.forEach(theme => {
       it(`applies correct styles for ${theme} theme`, () => {
@@ -195,12 +195,6 @@ describe("TagBubble Component", () => {
         expect(tagBubble).toHaveStyle({
           transition: "transform 0.2s ease",
         });
-
-        // For halloween theme, check the hover styles in the style attribute
-        if (theme === "halloween") {
-          expect(tagBubble.style.transform).toMatch(/scale\(1\.0[12]\)/);
-          // We can't test hover styles directly in JSDOM, so we'll verify the base transform
-        }
       });
     });
   });

@@ -50,8 +50,6 @@ export default {
       banana: "바나나",
       strawberry: "딸기",
       peanut: "땅콩",
-      christmas: "크리스마스",
-      halloween: "할로윈",
       "high-contrast-black": "고대비 검정",
       "high-contrast-inverse": "고대비 반전",
     },

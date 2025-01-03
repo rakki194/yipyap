@@ -332,28 +332,6 @@
   --json-colon: #b8860b;
 }
 
-/* Christmas theme specific colors */
-[data-theme="christmas"] {
-  --json-key: #c41e3a;
-  --json-number: #ffd700;
-  --json-boolean: #ff0000;
-  --json-null: #32cd32;
-  --json-bracket: #ffffff;
-  --json-comma: #f8b229;
-  --json-colon: #c0c0c0;
-}
-
-/* Halloween theme specific colors */
-[data-theme="halloween"] {
-  --json-key: #ff6600;
-  --json-number: #50c878;
-  --json-boolean: #ff4500;
-  --json-null: #800080;
-  --json-bracket: #ffa500;
-  --json-comma: #9370db;
-  --json-colon: #98fb98;
-}
-
 /* Gray theme specific colors */
 [data-theme="gray"] {
   --json-key: #404040;

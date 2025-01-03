@@ -51,8 +51,6 @@ export default {
       banana: "Μπανάνα",
       strawberry: "Φράουλα",
       peanut: "Φιστίκι",
-      halloween: "Halloween",
-      christmas: "Χριστούγεννα",
       "high-contrast-black": "Υψηλή αντίθεση (Μαύρο)",
       "high-contrast-inverse": "Υψηλή αντίθεση (Αντίστροφο)",
     },

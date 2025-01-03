@@ -51,8 +51,6 @@ export default {
       banana: "Бананова",
       strawberry: "Ягодова",
       peanut: "Фъстъчена",
-      christmas: "Коледна",
-      halloween: "Хелоуин",
       "high-contrast-black": "Висок контраст - черно",
       "high-contrast-inverse": "Висок контраст - обърнат",
     },

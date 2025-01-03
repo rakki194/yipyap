@@ -20,12 +20,11 @@
     - [Component Level](#component-level)
     - [Global Level](#global-level)
   - [Special Theme Variants](#special-theme-variants)
-    - [Holiday Themes](#holiday-themes)
     - [Colorful Themes](#colorful-themes)
     - [High Contrast Themes](#high-contrast-themes)
   - [Best Practices](#best-practices)
 
-The application implements a robust theming system with multiple built-in themes (light, dark, gray, strawberry, peanut, christmas, halloween, etc.) that affect not just colors but also animations, visual effects, and component-specific behaviors. Each theme provides custom scrollbar styling, keyboard shortcut visual indicators, and consistent contrast ratios for accessibility. Theme changes are persisted across sessions and can be toggled via keyboard shortcuts or the theme switcher in the settings panel.
+The application implements a robust theming system with multiple built-in themes (light, dark, gray, strawberry, peanut, high-contrast-black, high-contrast-inverse) that affect not just colors but also animations, visual effects, and component-specific behaviors. Each theme provides custom scrollbar styling, keyboard shortcut visual indicators, and consistent contrast ratios for accessibility. Theme changes are persisted across sessions and can be toggled via keyboard shortcuts or the theme switcher in the settings panel.
 
 ## Project Structure
 
@@ -211,9 +210,6 @@ Example:
 ```
 
 ## Special Theme Variants
-
-### Holiday Themes
-The Christmas theme incorporates festive colors and delightful snow effects to create a seasonal atmosphere. The Halloween theme features spooky colors and animations that enhance the holiday experience.
 
 ### Colorful Themes
 The Banana theme utilizes cheerful yellow accents throughout the interface. The Strawberry theme employs vibrant red accents for a bold look. The Peanut theme incorporates warm brown accents for an earthy feel.

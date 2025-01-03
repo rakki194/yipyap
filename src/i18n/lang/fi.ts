@@ -51,8 +51,6 @@ export default {
       banana: "Banaani",
       strawberry: "Mansikka",
       peanut: "Maapähkinä",
-      christmas: "Joulu",
-      halloween: "Halloween",
       "high-contrast-black": "Korkea kontrasti (musta)",
       "high-contrast-inverse": "Korkea kontrasti (käänteinen)",
     },

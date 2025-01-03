@@ -51,8 +51,6 @@ export default {
       banana: "Banánový",
       strawberry: "Jahodový",
       peanut: "Arašídový",
-      christmas: "Vánoční",
-      halloween: "Halloween",
       "high-contrast-black": "Vysoký kontrast - černá",
       "high-contrast-inverse": "Vysoký kontrast - inverzní",
     },

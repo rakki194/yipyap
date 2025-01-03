@@ -51,8 +51,6 @@ export default {
       banana: "בננה",
       strawberry: "תות",
       peanut: "בוטנים",
-      halloween: "ליל כל הקדושים",
-      christmas: "חג המולד",
       "high-contrast-black": "ניגודיות גבוהה - שחור",
       "high-contrast-inverse": "ניגודיות גבוהה - הפוך",
     },

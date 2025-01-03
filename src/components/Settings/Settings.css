@@ -456,20 +456,6 @@ kbd {
   box-shadow: 0 1px 1px rgba(139, 69, 19, 0.1);
 }
 
-[data-theme="christmas"] kbd {
-  background: #2d4a3e;
-  border-color: #c41e3a;
-  color: #f8b229;
-  box-shadow: 0 1px 2px rgba(196, 30, 58, 0.3);
-}
-
-[data-theme="halloween"] kbd {
-  background: #2d1b00;
-  border-color: #ff6600;
-  color: #ff9933;
-  box-shadow: 0 1px 2px rgba(255, 102, 0, 0.3);
-}
-
 /* Responsive adjustments for shortcuts */
 @media (max-width: 640px) {
   .shortcuts-grid {

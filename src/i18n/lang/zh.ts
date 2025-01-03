@@ -50,8 +50,6 @@ export default {
       banana: "香蕉",
       strawberry: "草莓",
       peanut: "花生",
-      christmas: "圣诞",
-      halloween: "万圣节",
       "high-contrast-black": "高对比度黑色",
       "high-contrast-inverse": "高对比度反转",
     },

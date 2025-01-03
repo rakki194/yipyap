@@ -1039,7 +1039,7 @@ describe('Settings Component', () => {
       // Get all focusable elements
       const focusableElements = screen.getAllByRole('button');
       const firstButton = screen.getByRole('button', { name: 'Model Settings' });
-      const lastButton = screen.getByRole('button', { name: 'settings.theme.halloween' });
+      const lastButton = screen.getByRole('button', { name: 'settings.theme.peanut' });
       
       // Test forward tab from last element
       lastButton.focus();

@@ -50,8 +50,6 @@ export default {
       banana: "Banana",
       strawberry: "Morango",
       peanut: "Amendoim",
-      christmas: "Natal",
-      halloween: "Halloween",
       "high-contrast-black": "Alto Contraste Preto",
       "high-contrast-inverse": "Alto Contraste Inverso",
     },

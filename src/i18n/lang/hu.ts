@@ -52,8 +52,6 @@ export default {
       banana: "Banán",
       strawberry: "Eper",
       peanut: "Mogyoró",
-      halloween: "Halloween",
-      christmas: "Karácsony",
       "high-contrast-black": "Magas kontraszt (fekete)",
       "high-contrast-inverse": "Magas kontraszt (inverz)",
     },

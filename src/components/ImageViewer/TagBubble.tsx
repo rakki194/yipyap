@@ -55,8 +55,6 @@ type OKLCHColor = {
  * - banana: Warm yellows and creams with high lightness
  * - strawberry: Red/pink tones with green accents
  * - peanut: Warm browns and tans
- * - christmas: Alternating red and green
- * - halloween: Orange, purple, and green palette
  * 
  * @returns A function that computes and caches OKLCH colors for tags
  */
@@ -135,19 +133,6 @@ function createTagColorGenerator() {
               c: 0.15 + (hash % 10) / 100,  // Moderate chroma
               h: 20 + (hash % 30),  // Brown hue range
             };
-
-          case "christmas":
-            // Christmas theme: Alternating red and green
-            return hash % 2 === 0
-              ? { l: 35, c: 0.2, h: 350 } // Red
-              : { l: 25, c: 0.2, h: 120 }; // Green
-
-          case "halloween": {
-            // Halloween theme: Orange, purple, and green
-            const halloweenHues = [25, 280, 150]; // Orange, purple, green
-            const selectedHue = halloweenHues[hash % halloweenHues.length];
-            return { l: 45, c: 0.2, h: selectedHue };
-          }
 
           default:
             // Default theme: Soft, neutral colors
@@ -236,18 +221,6 @@ export const TagBubble: Component<{
     const baseScale = isEditing() ? 1.02 : 1.01;
 
     switch (currentTheme) {
-      case "christmas":
-        return {
-          transform: `scale(${baseScale})`,
-          boxShadow: "0 0 8px rgba(196, 30, 58, 0.5)",
-        };
-
-      case "halloween":
-        return {
-          transform: `scale(${baseScale}) rotate(-2deg)`,
-          boxShadow: "0 0 8px rgba(255, 102, 0, 0.5)",
-        };
-
       case "strawberry":
         return {
           transform: `scale(${baseScale})`,
@@ -272,12 +245,6 @@ export const TagBubble: Component<{
     const currentTheme = document.documentElement.getAttribute("data-theme");
 
     switch (currentTheme) {
-      case "christmas":
-        return "tag-bubble-twinkle 2s ease-in-out infinite alternate";
-
-      case "halloween":
-        return "tag-bubble-float 3s ease-in-out infinite";
-
       case "strawberry":
         return "tag-bubble-strawberry 3s ease-in-out infinite";
 

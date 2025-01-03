@@ -64,8 +64,6 @@ export interface ThemeTranslations {
   banana: string;
   strawberry: string;
   peanut: string;
-  christmas: string;
-  halloween: string;
   "high-contrast-black": string;
   "high-contrast-inverse": string;
 }

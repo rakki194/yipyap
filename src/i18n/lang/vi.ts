@@ -50,8 +50,6 @@ export default {
       banana: "Chuối",
       strawberry: "Dâu tây",
       peanut: "Đậu phộng",
-      christmas: "Giáng sinh",
-      halloween: "Halloween",
       "high-contrast-black": "Tương phản cao (Đen)",
       "high-contrast-inverse": "Tương phản cao (Đảo ngược)",
     },

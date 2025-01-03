@@ -51,8 +51,6 @@ export default {
       banana: "Banaan",
       strawberry: "Aardbei",
       peanut: "Pinda",
-      christmas: "Kerst",
-      halloween: "Halloween",
       "high-contrast-black": "Hoog contrast zwart",
       "high-contrast-inverse": "Hoog contrast omgekeerd",
     },

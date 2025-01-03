@@ -1,36 +1,14 @@
-/* Theme-specific tag bubble animations */
-@keyframes tag-bubble-twinkle {
-  0% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-
-  100% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
+/* Base styles */
+.tag-bubble {
+  transition: all 0.3s ease;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--half-spacing);
 }
 
-@keyframes tag-bubble-float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-
-  50% {
-    transform: translateY(-5px) rotate(2deg);
-  }
-}
-
-/* Theme-specific tag bubble styles */
-[data-theme="christmas"] .tag-bubble {
-  border: 1px solid rgb(196 30 58 / 30%);
-  text-shadow: 0 1px 2px rgb(0 0 0 / 20%);
-}
-
-[data-theme="halloween"] .tag-bubble {
-  border: 1px solid rgb(255 102 0 / 30%);
-  text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+.tag-bubble:hover {
+  z-index: 1;
 }
 
 /* Add hover transitions */
@@ -44,17 +22,6 @@
 
 .tag-bubble:hover {
   z-index: 1;
-}
-
-/* Theme-specific remove button styles */
-[data-theme="christmas"] .tag-bubble .remove-tag:hover {
-  opacity: 1;
-  color: #c41e3a;
-}
-
-[data-theme="halloween"] .tag-bubble .remove-tag:hover {
-  opacity: 1;
-  color: #f60;
 }
 
 /* Add strawberry-specific styles */
@@ -181,17 +148,6 @@
 .tag-bubble input::placeholder {
   color: currentcolor;
   opacity: 0.7;
-}
-
-/* Theme-specific input focus styles */
-[data-theme="christmas"] .tag-bubble input:focus {
-  box-shadow: 0 0 0 1px #c41e3a;
-  outline: none;
-}
-
-[data-theme="halloween"] .tag-bubble input:focus {
-  box-shadow: 0 0 0 1px #f60;
-  outline: none;
 }
 
 [data-theme="strawberry"] .tag-bubble input:focus {

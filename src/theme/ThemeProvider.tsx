@@ -7,7 +7,7 @@ import {
   computeAnimation
 } from "./themeUtils";
 
-export type ThemeName = "dark" | "light" | "gray" | "banana" | "strawberry" | "peanut" | "christmas" | "halloween";
+export type ThemeName = "dark" | "light" | "gray" | "banana" | "strawberry" | "peanut";
 
 interface ThemeContext {
   theme: ThemeName;

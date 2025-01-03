@@ -50,8 +50,6 @@ export default {
       banana: "กล้วย",
       strawberry: "สตรอเบอร์รี่",
       peanut: "ถั่วลิสง",
-      christmas: "คริสต์มาส",
-      halloween: "ฮาโลวีน",
       "high-contrast-black": "ความคมชัดสูง-ดำ",
       "high-contrast-inverse": "ความคมชัดสูง-กลับสี",
     },

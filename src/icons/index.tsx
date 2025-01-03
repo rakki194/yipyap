@@ -90,8 +90,6 @@ export const themeIconMap = {
   banana: "banana",
   strawberry: "strawberry",
   peanut: "peanut",
-  christmas: "christmas",
-  halloween: "ghost",
   "high-contrast-black": "contrast",
   "high-contrast-inverse": "contrast-inverse",
 };

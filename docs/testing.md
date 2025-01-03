@@ -27,6 +27,7 @@
     - [Best Practices Derived](#best-practices-derived)
     - [Common Pitfalls to Avoid](#common-pitfalls-to-avoid-1)
     - [Recommendations for Similar Components](#recommendations-for-similar-components)
+    - [JSX Transform Configuration Issues](#jsx-transform-configuration-issues)
 
 The project uses Vitest with SolidJS testing utilities. All tests are centralized in the `/src/test/__tests__/` directory and organized by functionality:
 
@@ -390,23 +391,6 @@ beforeEach(() => {
     writable: true
   });
 });
-```
-
-```typescript
-// Error 4: Type issues with theme objects
-// Problem: Missing type definitions for seasonal themes
-const baseThemes = {
-  light: "sun",
-  dark: "moon"
-}; // Error: Property 'christmas' does not exist
-
-// Solution: Define proper types with optional seasonal themes
-type ThemeIconMap = {
-  light: string;
-  dark: string;
-  christmas?: string;
-  halloween?: string;
-};
 ```
 
 #### Best Practices for Theme Testing

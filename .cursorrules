@@ -64,7 +64,8 @@ The gallery system is the heart of the application, featuring a sophisticated im
     - Dark theme: Low lightness (25%), subtle chroma
     - Light theme: High lightness (85%), subtle chroma
     - Gray theme: Variable lightness, zero chroma
-    - Themed variants (banana, strawberry, peanut, christmas, halloween)
+    - Themed variants (banana, strawberry, peanut,
+  - High contrast, `high-contrast-black`, `high-contrast-inverse` accessibility themes.
   - Deterministic color generation for consistent tag colors
   - Automatic contrast adjustment for text readability
 

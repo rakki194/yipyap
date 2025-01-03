@@ -11,8 +11,6 @@ export type Theme =
   | "banana"
   | "strawberry"
   | "peanut"
-  | "christmas"
-  | "halloween"
   | "high-contrast-black"
   | "high-contrast-inverse";
 
@@ -28,41 +26,8 @@ const baseThemes: Record<string, string> = {
   "high-contrast-inverse": "contrast-inverse",
 };
 
-function isSeasonalThemeAvailable(theme: Theme): boolean {
-  // Non-seasonal themes are always available
-  if (theme !== 'christmas' && theme !== 'halloween') {
-    return true;
-  }
-
-  // Always show seasonal themes in development mode
-  if (import.meta.env.DEV) {
-    return true;
-  }
-
-  const today = new Date();
-  const month = today.getMonth();
-  const date = today.getDate();
-
-  switch (theme) {
-    case 'christmas':
-      return (month === 11) || (month === 0 && date <= 10);
-    case 'halloween':
-      return (month === 9 && date >= 24) || (month === 10 && date <= 4);
-    default:
-      return true;
-  }
-}
-
 export function makeThemeList(): Partial<Record<Theme, string>> {
   const themeIconMap = { ...baseThemes };
-
-  // Only add seasonal themes if they're available
-  if (isSeasonalThemeAvailable('christmas' as Theme)) {
-    themeIconMap.christmas = "christmas";
-  }
-  if (isSeasonalThemeAvailable('halloween' as Theme)) {
-    themeIconMap.halloween = "ghost";
-  }
 
   return themeIconMap;
 }
@@ -71,7 +36,15 @@ export function makeThemeList(): Partial<Record<Theme, string>> {
  * Maps theme names to their corresponding icon identifiers.
  * Used for theme switching UI elements.
  */
-export const themeIconMap: Readonly<Partial<Record<Theme, string>>> = makeThemeList();
+export const themeIconMap: Record<string, string> = {
+  dark: "moon",
+  light: "sun",
+  gray: "cloud",
+  banana: "banana",
+  strawberry: "strawberry",
+  peanut: "peanut"
+};
+
 export const themes = Object.keys(themeIconMap) as Readonly<Theme[]>;
 
 /**
@@ -89,37 +62,8 @@ export function getNextTheme(theme: Theme): Theme {
 
 export function getInitialTheme(): Theme {
   const stored = localStorage.getItem("theme") as Theme | null;
-
-  // Helper function to check if a theme is currently available
-  const isThemeAvailable = (theme: string): boolean => {
-    if (!theme) return false;
-    
-    // Check if it's a base theme
-    if (theme in baseThemes) return true;
-    
-    // Check if it's a seasonal theme and available
-    if (theme === 'christmas' || theme === 'halloween') {
-      return isSeasonalThemeAvailable(theme as Theme);
-    }
-    
-    return false;
-  };
-
-  // Check that the theme is still valid and available for the current date
-  if (stored && isThemeAvailable(stored)) {
-    return stored;
-  }
-
-  const dsTheme = document.documentElement.dataset.theme;
-  if (dsTheme && isThemeAvailable(dsTheme)) {
-    return dsTheme as Theme;
-  }
-
-  if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    return "dark";
-  } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+  if (!stored || !Object.keys(themeIconMap).includes(stored)) {
     return "light";
   }
-
-  return "gray";
+  return stored;
 }

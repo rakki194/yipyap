@@ -67,8 +67,6 @@ export default {
       banana: "Banană",
       strawberry: "Căpșună",
       peanut: "Arahidă",
-      halloween: "Halloween",
-      christmas: "Crăciun",
       "high-contrast-black": "Contrast ridicat negru",
       "high-contrast-inverse": "Contrast ridicat inversat",
     },
