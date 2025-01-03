@@ -28,7 +28,18 @@ const mockTranslations: Record<string, string> = {
   'settings.gallery.navigation': 'Gallery Navigation',
   'shortcuts.galleryNavigation': 'Gallery Navigation',
   'shortcuts.tagNavigation': 'Tag Navigation',
-  'shortcuts.other': 'Other'
+  'shortcuts.other': 'Other',
+  'settings.jtp2ModelPath': 'JTP2 Model Path',
+  'settings.jtp2TagsPath': 'JTP2 Tags Path',
+  'settings.jtp2Threshold': 'JTP2 Threshold',
+  'settings.jtp2ForceCpu': 'Force CPU (JTP2)',
+  'settings.wdv3ModelName': 'WDv3 Model',
+  'settings.wdv3GenThreshold': 'General Threshold',
+  'settings.wdv3CharThreshold': 'Character Threshold',
+  'settings.wdv3ForceCpu': 'Force CPU (WDv3)',
+  'settings.preserveLatents': 'Preserve Latents',
+  'settings.preserveTxt': 'Preserve TXT',
+  'settings.instantDelete': 'Instant Delete'
 };
 
 // Mock app context with translation function and required settings
@@ -289,5 +300,229 @@ describe('Settings Component', () => {
     expect(minimapCheckbox).not.toBeChecked();
     fireEvent.click(minimapCheckbox);
     expect(mockAppContext.setEnableMinimap).toHaveBeenCalledWith(true);
+  });
+
+  describe('JTP2 Settings', () => {
+    it('updates JTP2 model path', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
+      const newPath = '/new/path/to/model.safetensors';
+      fireEvent.change(modelPathInput, { target: { value: newPath } });
+      expect(mockAppContext.jtp2.setModelPath).toHaveBeenCalledWith(newPath);
+    });
+
+    it('updates JTP2 tags path', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const tagsPathInput = screen.getByPlaceholderText('/path/to/jtp2/tags.json');
+      const newPath = '/new/path/to/tags.json';
+      fireEvent.change(tagsPathInput, { target: { value: newPath } });
+      expect(mockAppContext.jtp2.setTagsPath).toHaveBeenCalledWith(newPath);
+    });
+
+    it('updates JTP2 threshold', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      // Mock getBoundingClientRect for the slider
+      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({
+        width: 400,
+        height: 20,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 400,
+        x: 0,
+        y: 0,
+        toJSON: () => {}
+      }));
+
+      const thresholdSlider = screen.getByRole('slider', { name: 'JTP2 Threshold' });
+      
+      // Calculate x position for value 0.5 (50% of the slider range)
+      const x = 200; // 50% of 400px width
+      
+      // Simulate mouse events for dragging - start at target position
+      fireEvent.mouseDown(thresholdSlider, { clientX: x });
+      fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
+      fireEvent.mouseUp(thresholdSlider);
+
+      expect(mockAppContext.jtp2.setThreshold).toHaveBeenCalledTimes(1);
+      expect(mockAppContext.jtp2.setThreshold.mock.calls[0][0]).toBeCloseTo(0.5, 5);
+
+      getBoundingClientRectMock.mockRestore();
+    });
+
+    it('toggles JTP2 force CPU', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const forceCpuToggle = screen.getByRole('checkbox', { name: 'Force CPU (JTP2)' });
+      fireEvent.click(forceCpuToggle);
+      expect(mockAppContext.jtp2.setForceCpu).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('WDv3 Settings', () => {
+    it('changes WDv3 model', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const modelSelect = screen.getByRole('combobox', { name: 'WDv3 Model' });
+      fireEvent.change(modelSelect, { target: { value: 'swinv2' } });
+      expect(mockAppContext.wdv3.setModelName).toHaveBeenCalledWith('swinv2');
+    });
+
+    it('updates WDv3 general threshold', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      // Mock getBoundingClientRect for the slider
+      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({
+        width: 400,
+        height: 20,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 400,
+        x: 0,
+        y: 0,
+        toJSON: () => {}
+      }));
+
+      const thresholdSlider = screen.getByRole('slider', { name: 'General Threshold' });
+      
+      // Calculate x position for value 0.6 (60% of the slider range)
+      const x = 240; // 60% of 400px width
+      
+      // Simulate mouse events for dragging - start at target position
+      fireEvent.mouseDown(thresholdSlider, { clientX: x });
+      fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
+      fireEvent.mouseUp(thresholdSlider);
+
+      expect(mockAppContext.wdv3.setGenThreshold).toHaveBeenCalledTimes(1);
+      expect(mockAppContext.wdv3.setGenThreshold.mock.calls[0][0]).toBeCloseTo(0.6, 5);
+
+      getBoundingClientRectMock.mockRestore();
+    });
+
+    it('updates WDv3 character threshold', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      // Mock getBoundingClientRect for the slider
+      const getBoundingClientRectMock = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(() => ({
+        width: 400,
+        height: 20,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 400,
+        x: 0,
+        y: 0,
+        toJSON: () => {}
+      }));
+
+      const thresholdSlider = screen.getByRole('slider', { name: 'Character Threshold' });
+      
+      // Calculate x position for value 0.7 (70% of the slider range)
+      const x = 280; // 70% of 400px width
+      
+      // Simulate mouse events for dragging - start at target position
+      fireEvent.mouseDown(thresholdSlider, { clientX: x });
+      fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
+      fireEvent.mouseUp(thresholdSlider);
+
+      expect(mockAppContext.wdv3.setCharThreshold).toHaveBeenCalledTimes(1);
+      expect(mockAppContext.wdv3.setCharThreshold.mock.calls[0][0]).toBeCloseTo(0.7, 5);
+
+      getBoundingClientRectMock.mockRestore();
+    });
+
+    it('toggles WDv3 force CPU', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+
+      const forceCpuToggle = screen.getByRole('checkbox', { name: 'Force CPU (WDv3)' });
+      fireEvent.click(forceCpuToggle);
+      expect(mockAppContext.wdv3.setForceCpu).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('View Switching', () => {
+    it('switches back to main view when clicking active view button', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      
+      // Switch to model settings
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+      expect(screen.getByPlaceholderText('/path/to/jtp2/model.safetensors')).toBeInTheDocument();
+      
+      // Click again to go back to main
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+      expect(screen.queryByPlaceholderText('/path/to/jtp2/model.safetensors')).not.toBeInTheDocument();
+    });
+
+    it('switches between different views', () => {
+      renderSettings();
+      const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
+      const experimentalButton = screen.getByRole('button', { name: 'Experimental Features' });
+      
+      // Switch to model settings
+      fireEvent.click(modelSettingsButton);
+      vi.advanceTimersByTime(300);
+      expect(screen.getByPlaceholderText('/path/to/jtp2/model.safetensors')).toBeInTheDocument();
+      
+      // Switch to experimental features
+      fireEvent.click(experimentalButton);
+      vi.advanceTimersByTime(300);
+      expect(screen.getByRole('checkbox', { name: 'Enable Zoom' })).toBeInTheDocument();
+    });
+  });
+
+  describe('File Preservation Settings', () => {
+    it('toggles preserve latents setting', () => {
+      renderSettings();
+      const preserveLatentsToggle = screen.getByRole('checkbox', { name: 'Preserve Latents' });
+      fireEvent.click(preserveLatentsToggle);
+      expect(mockAppContext.setPreserveLatents).toHaveBeenCalledWith(true);
+    });
+
+    it('toggles preserve txt setting', () => {
+      renderSettings();
+      const preserveTxtToggle = screen.getByRole('checkbox', { name: 'Preserve TXT' });
+      fireEvent.click(preserveTxtToggle);
+      expect(mockAppContext.setPreserveTxt).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('Deletion Settings', () => {
+    it('toggles instant delete setting', () => {
+      renderSettings();
+      const instantDeleteToggle = screen.getByRole('checkbox', { name: 'Instant Delete' });
+      fireEvent.click(instantDeleteToggle);
+      expect(mockAppContext.setInstantDelete).toHaveBeenCalledWith(true);
+    });
   });
 }); 
