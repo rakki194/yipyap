@@ -16,6 +16,24 @@ vi.mock('import.meta', () => ({
   }
 }));
 
+function isSeasonalThemeAvailable(theme: string): boolean {
+  // Always show seasonal themes in development mode
+  if (isDev) return true;
+  
+  const today = new Date();
+  const month = today.getMonth();
+  const date = today.getDate();
+
+  switch (theme) {
+    case 'christmas':
+      return (month === 11) || (month === 0 && date <= 10);
+    case 'halloween':
+      return (month === 9 && date >= 24) || (month === 10 && date <= 4);
+    default:
+      return true;
+  }
+}
+
 // Mock the theme module before importing it
 vi.mock('../../contexts/theme', () => {
   type ThemeIconMap = {
@@ -47,6 +65,7 @@ vi.mock('../../contexts/theme', () => {
     makeThemeList: () => {
       const themeIconMap = { ...baseThemes };
 
+      // Only add seasonal themes if they're available
       if (isDev || isSeasonalThemeAvailable('christmas')) {
         themeIconMap.christmas = "christmas";
       }
@@ -77,23 +96,6 @@ vi.mock('../../contexts/theme', () => {
     themeIconMap: {} // This will be populated by makeThemeList later
   };
 });
-
-function isSeasonalThemeAvailable(theme: string): boolean {
-  if (isDev) return true;
-  
-  const today = new Date();
-  const month = today.getMonth();
-  const date = today.getDate();
-
-  switch (theme) {
-    case 'christmas':
-      return (month === 11) || (month === 0 && date <= 10);
-    case 'halloween':
-      return (month === 9 && date >= 24) || (month === 10 && date <= 4);
-    default:
-      return true;
-  }
-}
 
 import { Theme, makeThemeList, getInitialTheme } from "./theme";
 import { ThemeProvider } from "../theme/ThemeProvider";
