@@ -95,8 +95,8 @@ function isSeasonalThemeAvailable(theme: string): boolean {
   }
 }
 
-import { Theme, makeThemeList, getInitialTheme } from "../../contexts/theme";
-import { ThemeProvider } from "../../theme/ThemeProvider";
+import { Theme, makeThemeList, getInitialTheme } from "./theme";
+import { ThemeProvider } from "../theme/ThemeProvider";
 
 // Store reference to real Date constructor
 const RealDate = global.Date;

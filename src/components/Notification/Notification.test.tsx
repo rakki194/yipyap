@@ -1,6 +1,6 @@
 import { render, fireEvent, cleanup } from "@solidjs/testing-library";
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import { Notification } from "../../components/Notification/Notification";
+import { Notification } from "./Notification";
 import { createSignal } from "solid-js";
 import getIcon from "~/icons";
 

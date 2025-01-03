@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRoot } from "solid-js";
-import { useSelection } from "../../contexts/selection";
+import { useSelection } from "./selection";
 import type { BrowsePagesCached, DirectoryItem, ImageItem } from "~/resources/browse";
 import type { Resource } from "solid-js";
 

@@ -1,9 +1,8 @@
 import { render, cleanup } from "@solidjs/testing-library";
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "solid-js";
-import { Router, useLocation } from "@solidjs/router";
 import { AppProvider } from "~/contexts/app";
-import useConnectionStatus from "../../composables/useConnectionStatus";
+import useConnectionStatus from "./useConnectionStatus";
 
 // Mock router hooks
 vi.mock("@solidjs/router", () => ({

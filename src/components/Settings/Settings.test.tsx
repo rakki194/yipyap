@@ -39,7 +39,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@solidjs/testing-library';
-import { Settings } from '../../components/Settings/Settings';
+import { Settings } from './Settings';
 import { AppContext } from '~/contexts/contexts';
 import { GalleryProvider } from '~/contexts/GalleryContext';
 import { Router } from '@solidjs/router';

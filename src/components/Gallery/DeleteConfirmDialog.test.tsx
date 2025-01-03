@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, fireEvent, screen } from "@solidjs/testing-library";
-import { DeleteConfirmDialog } from "../../components/Gallery/DeleteConfirmDialog";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { Component } from "solid-js";
 import { AppContext } from "~/contexts/contexts";
 import type { Theme } from "~/contexts/theme";
@@ -40,10 +40,16 @@ const mockAppContext: Parameters<typeof AppContext.Provider>[0]['value'] = {
   setThumbnailSize: vi.fn(),
   instantDelete: false,
   setInstantDelete: vi.fn(),
-  jtp2ModelPath: "",
-  jtp2TagsPath: "",
-  setJtp2ModelPath: vi.fn(),
-  setJtp2TagsPath: vi.fn(),
+  jtp2: {
+    modelPath: "",
+    tagsPath: "",
+    threshold: 0.35,
+    forceCpu: false,
+    setModelPath: vi.fn(),
+    setTagsPath: vi.fn(),
+    setThreshold: vi.fn(),
+    setForceCpu: vi.fn()
+  },
   locale: "en" as Locale,
   setLocale: vi.fn(),
   preserveLatents: false,
@@ -53,7 +59,23 @@ const mockAppContext: Parameters<typeof AppContext.Provider>[0]['value'] = {
   notify: vi.fn(),
   createNotification: vi.fn(),
   alwaysShowCaptionEditor: false,
-  setAlwaysShowCaptionEditor: vi.fn()
+  setAlwaysShowCaptionEditor: vi.fn(),
+  wdv3: {
+    modelName: 'vit',
+    genThreshold: 0.35,
+    charThreshold: 0.35,
+    forceCpu: false,
+    setModelName: vi.fn(),
+    setGenThreshold: vi.fn(),
+    setCharThreshold: vi.fn(),
+    setForceCpu: vi.fn()
+  },
+  wdv3ModelName: 'vit',
+  wdv3GenThreshold: 0.35,
+  wdv3CharThreshold: 0.35,
+  setWdv3ModelName: vi.fn(),
+  setWdv3GenThreshold: vi.fn(),
+  setWdv3CharThreshold: vi.fn()
 };
 
 // Test wrapper component that provides the app context

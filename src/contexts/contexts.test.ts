@@ -1,11 +1,11 @@
 import { describe, test, expect } from 'vitest';
 import { createRoot, JSX, createResource } from 'solid-js';
 import { action } from '@solidjs/router';
-import { AppContext, GalleryContext } from '../../contexts/contexts';
-import type { AppContext as AppContextType } from '../../contexts/app';
-import type { GalleryContextType } from '../../contexts/gallery';
+import { AppContext, GalleryContext } from './contexts';
+import type { AppContext as AppContextType } from './app';
+import type { GalleryContextType } from './gallery';
 import type { BrowsePagesCached, AnyItem } from '~/resources/browse';
-import type { Mode } from '../../contexts/selection';
+import type { Mode } from './selection';
 
 describe('Context Creation', () => {
   test('AppContext should be defined', () => {
@@ -38,11 +38,33 @@ describe('Context Usage', () => {
         disableAnimations: false,
         setDisableAnimations: () => {},
         disableNonsense: false,
-        setdisableNonsense: () => {},
-        jtp2ModelPath: '',
-        jtp2TagsPath: '',
-        setJtp2ModelPath: () => {},
-        setJtp2TagsPath: () => {},
+        setDisableNonsense: () => {},
+        jtp2: {
+          modelPath: '',
+          tagsPath: '',
+          threshold: 0.35,
+          forceCpu: false,
+          setModelPath: () => {},
+          setTagsPath: () => {},
+          setThreshold: () => {},
+          setForceCpu: () => {}
+        },
+        wdv3: {
+          modelName: 'vit',
+          genThreshold: 0.35,
+          charThreshold: 0.35,
+          forceCpu: false,
+          setModelName: () => {},
+          setGenThreshold: () => {},
+          setCharThreshold: () => {},
+          setForceCpu: () => {}
+        },
+        wdv3ModelName: 'vit',
+        wdv3GenThreshold: 0.35,
+        wdv3CharThreshold: 0.35,
+        setWdv3ModelName: () => {},
+        setWdv3GenThreshold: () => {},
+        setWdv3CharThreshold: () => {},
         enableZoom: false,
         enableMinimap: false,
         setEnableZoom: () => {},
@@ -55,10 +77,11 @@ describe('Context Usage', () => {
         preserveTxt: false,
         setPreserveTxt: () => {},
         notify: () => {},
-        setDisableNonsense: () => {},
         thumbnailSize: 250,
         setThumbnailSize: () => {},
         createNotification: () => {},
+        alwaysShowCaptionEditor: false,
+        setAlwaysShowCaptionEditor: () => {}
       };
 
       const provider = AppContext.Provider({
@@ -156,6 +179,9 @@ describe('Context Usage', () => {
         selected: null,
         setColumns: (columns: number | null) => {},
         multiSelected: new Set<number>(),
+        refetchGallery: () => {},
+        setData: () => undefined,
+        invalidateFolderCache: () => {}
       };
 
       const provider = GalleryContext.Provider({

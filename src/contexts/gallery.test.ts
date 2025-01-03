@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRoot } from "solid-js";
 import type { Resource } from "solid-js";
-import { makeGalleryState } from "../../contexts/gallery";
+import { makeGalleryState } from "./gallery";
 import type { BrowsePagesCached, ImageData, AnyItem, Captions, ImageItem, SaveCaption } from "~/resources/browse";
 import { generateCaption } from "~/resources/browse";
 import { action } from "@solidjs/router";

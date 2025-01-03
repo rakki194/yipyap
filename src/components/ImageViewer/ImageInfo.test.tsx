@@ -24,7 +24,7 @@
 
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@solidjs/testing-library";
-import { ImageInfo } from "../../components/ImageViewer/ImageInfo";
+import { ImageInfo } from "./ImageInfo";
 
 // Mock the app context
 vi.mock("~/contexts/app", () => ({

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { fireEvent, screen, render } from "@solidjs/testing-library";
-import { CaptionInput } from "../../components/ImageViewer/CaptionInput";
+import { CaptionInput } from "./CaptionInput";
 import { useBasicTestSetup } from "~/test/test-hooks";
 import { renderWithContext, mockAppContext, createMockResource, mockBrowseData } from "~/test/test-utils";
 import { GalleryContext } from "~/contexts/contexts";

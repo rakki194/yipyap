@@ -1,6 +1,6 @@
 import { render, cleanup } from "@solidjs/testing-library";
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
-import { AppProvider, useAppContext } from "../../contexts/app";
+import { AppProvider, useAppContext } from "./app";
 import { createRoot } from "solid-js";
 import { Router } from "@solidjs/router";
 
