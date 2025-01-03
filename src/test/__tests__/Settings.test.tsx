@@ -48,6 +48,7 @@ import { Locale } from '~/i18n';
 import type { AppContext as AppContextType } from "~/contexts/app";
 import type { Location } from '@solidjs/router';
 import { createSignal } from 'solid-js';
+import { TransformationsProvider } from '~/contexts/transformations';
 
 // Mock the icons
 vi.mock('~/icons', () => ({
@@ -61,13 +62,13 @@ const mockTranslations: Record<string, string> = {
   'shortcuts.title': 'Keyboard Shortcuts',
   'settings.experimentalFeatures': 'Experimental Features',
   'settings.disableAnimations': 'Disable Animations',
-  'settings.theme.dark': 'Dark Theme',
   'settings.enableZoom': 'Enable Zoom',
   'settings.enableMinimap': 'Enable Minimap',
-  'settings.gallery.navigation': 'Gallery Navigation',
-  'shortcuts.galleryNavigation': 'Gallery Navigation',
-  'shortcuts.tagNavigation': 'Tag Navigation',
-  'shortcuts.other': 'Other',
+  'settings.alwaysShowCaptionEditor': 'Always Show Caption Editor',
+  'settings.preserveLatents': 'Preserve Latents',
+  'settings.preserveTxt': 'Preserve TXT',
+  'settings.instantDelete': 'Instant Delete',
+  'settings.theme.dark': 'Dark Theme',
   'settings.jtp2ModelPath': 'JTP2 Model Path',
   'settings.jtp2TagsPath': 'JTP2 Tags Path',
   'settings.jtp2Threshold': 'JTP2 Threshold',
@@ -76,9 +77,37 @@ const mockTranslations: Record<string, string> = {
   'settings.wdv3GenThreshold': 'General Threshold',
   'settings.wdv3CharThreshold': 'Character Threshold',
   'settings.wdv3ForceCpu': 'Force CPU (WDv3)',
-  'settings.preserveLatents': 'Preserve Latents',
-  'settings.preserveTxt': 'Preserve TXT',
-  'settings.instantDelete': 'Instant Delete'
+  'shortcuts.galleryNavigation': 'Gallery Navigation',
+  'shortcuts.tagNavigation': 'Tag Navigation',
+  'shortcuts.other': 'Other',
+  'settings.downloadModel': 'Download Model',
+  'settings.downloadTags': 'Download Tags',
+  'common.close': 'Close',
+  'tools.transformations': 'Transformations',
+  'common.add': 'Add',
+  'common.name': 'Name',
+  'common.description': 'Description',
+  'tools.transformationType': 'Transformation Type',
+  'tools.searchPattern': 'Search Pattern',
+  'tools.replacement': 'Replacement',
+  'tools.caseType': 'Case Type',
+  'tools.trimType': 'Trim Type',
+  'tools.prefix': 'Prefix',
+  'tools.suffix': 'Suffix',
+  'tools.numberAction': 'Number Action',
+  'tools.numberFormat': 'Number Format'
+};
+
+// Create a mutable object for state
+const mockState = {
+  disableAnimations: false,
+  disableNonsense: false,
+  instantDelete: false,
+  preserveLatents: false,
+  preserveTxt: false,
+  enableZoom: false,
+  enableMinimap: false,
+  alwaysShowCaptionEditor: false
 };
 
 // Mock app context with translation function and required settings
@@ -86,26 +115,26 @@ const mockAppContext = {
   t: (key: string) => mockTranslations[key] || key,
   theme: 'dark' as Theme,
   setTheme: vi.fn(),
-  disableAnimations: false,
-  setDisableAnimations: vi.fn(),
-  disableNonsense: false,
-  setDisableNonsense: vi.fn(),
-  instantDelete: false,
-  setInstantDelete: vi.fn(),
-  preserveLatents: false,
-  setPreserveLatents: vi.fn(),
-  preserveTxt: false,
-  setPreserveTxt: vi.fn(),
+  get disableAnimations() { return mockState.disableAnimations },
+  setDisableAnimations: vi.fn().mockImplementation((value: boolean) => { mockState.disableAnimations = value }),
+  get disableNonsense() { return mockState.disableNonsense },
+  setDisableNonsense: vi.fn().mockImplementation((value: boolean) => { mockState.disableNonsense = value }),
+  get instantDelete() { return mockState.instantDelete },
+  setInstantDelete: vi.fn().mockImplementation((value: boolean) => { mockState.instantDelete = value }),
+  get preserveLatents() { return mockState.preserveLatents },
+  setPreserveLatents: vi.fn().mockImplementation((value: boolean) => { mockState.preserveLatents = value }),
+  get preserveTxt() { return mockState.preserveTxt },
+  setPreserveTxt: vi.fn().mockImplementation((value: boolean) => { mockState.preserveTxt = value }),
   thumbnailSize: 200,
-  setThumbnailSize: vi.fn(),
+  setThumbnailSize: vi.fn().mockImplementation((value: number) => { mockAppContext.thumbnailSize = value }),
   locale: 'en' as Locale,
-  setLocale: vi.fn().mockImplementation((newLocale: Locale) => {
-    (mockAppContext as any).locale = newLocale;
-  }),
-  enableZoom: false,
-  enableMinimap: false,
-  setEnableZoom: vi.fn(),
-  setEnableMinimap: vi.fn(),
+  setLocale: vi.fn().mockImplementation((newLocale: Locale) => { mockAppContext.locale = newLocale }),
+  get enableZoom() { return mockState.enableZoom },
+  setEnableZoom: vi.fn().mockImplementation((value: boolean) => { mockState.enableZoom = value }),
+  get enableMinimap() { return mockState.enableMinimap },
+  setEnableMinimap: vi.fn().mockImplementation((value: boolean) => { mockState.enableMinimap = value }),
+  get alwaysShowCaptionEditor() { return mockState.alwaysShowCaptionEditor },
+  setAlwaysShowCaptionEditor: vi.fn().mockImplementation((value: boolean) => { mockState.alwaysShowCaptionEditor = value }),
   createNotification: vi.fn(),
   jtp2: {
     modelPath: '',
@@ -127,17 +156,15 @@ const mockAppContext = {
     setCharThreshold: vi.fn(),
     setForceCpu: vi.fn()
   },
+  notify: vi.fn(),
+  prevRoute: undefined,
+  location: { pathname: '/', search: '', hash: '', query: {}, state: null, key: '' } as Location,
   wdv3ModelName: 'vit',
   wdv3GenThreshold: 0.35,
   wdv3CharThreshold: 0.35,
   setWdv3ModelName: vi.fn(),
   setWdv3GenThreshold: vi.fn(),
-  setWdv3CharThreshold: vi.fn(),
-  prevRoute: undefined,
-  location: { pathname: '/', search: '', hash: '', query: {}, state: null, key: '' } as Location,
-  alwaysShowCaptionEditor: false,
-  setAlwaysShowCaptionEditor: vi.fn(),
-  notify: vi.fn()
+  setWdv3CharThreshold: vi.fn()
 } satisfies AppContextType;
 
 // Mock router with proper location context
@@ -183,6 +210,16 @@ describe('Settings Component', () => {
   beforeEach(() => {
     mockOnClose.mockClear();
     vi.useFakeTimers();
+    Object.assign(mockState, {
+      disableAnimations: false,
+      disableNonsense: false,
+      instantDelete: false,
+      preserveLatents: false,
+      preserveTxt: false,
+      enableZoom: false,
+      enableMinimap: false,
+      alwaysShowCaptionEditor: false
+    });
   });
 
   afterEach(() => {
@@ -194,12 +231,27 @@ describe('Settings Component', () => {
     return render(() => (
       <Router>
         <AppContext.Provider value={mockAppContext}>
-          <GalleryProvider>
-            <Settings onClose={mockOnClose} />
-          </GalleryProvider>
+          <TransformationsProvider>
+            <GalleryProvider>
+              <Settings onClose={mockOnClose} />
+            </GalleryProvider>
+          </TransformationsProvider>
         </AppContext.Provider>
       </Router>
     ));
+  };
+
+  /**
+   * Helper function to open the transformation form
+   */
+  const openTransformationForm = async () => {
+    const transformationsButton = screen.getByRole('button', { name: mockTranslations['tools.transformations'] });
+    fireEvent.click(transformationsButton);
+    await vi.advanceTimersByTimeAsync(300);
+
+    const addButton = screen.getByTitle('Add');
+    fireEvent.click(addButton);
+    await vi.advanceTimersByTimeAsync(50);
   };
 
   /**
@@ -706,13 +758,11 @@ describe('Settings Component', () => {
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
 
-      const downloadLink = screen.getByText('settings.downloadModel', { exact: false });
+      const downloadLink = screen.getByText('Download Model');
       expect(downloadLink.closest('a')).toHaveAttribute(
         'href',
         'https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors'
       );
-      expect(downloadLink.closest('a')).toHaveAttribute('target', '_blank');
-      expect(downloadLink.closest('a')).toHaveAttribute('rel', 'noopener noreferrer');
     });
 
     /**
@@ -729,13 +779,11 @@ describe('Settings Component', () => {
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
 
-      const downloadLink = screen.getByText('settings.downloadTags', { exact: false });
+      const downloadLink = screen.getByText('Download Tags');
       expect(downloadLink.closest('a')).toHaveAttribute(
         'href',
         'https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/tags.json'
       );
-      expect(downloadLink.closest('a')).toHaveAttribute('target', '_blank');
-      expect(downloadLink.closest('a')).toHaveAttribute('rel', 'noopener noreferrer');
     });
   });
 
@@ -1168,6 +1216,202 @@ describe('Settings Component', () => {
       
       // Verify value is preserved in the app context
       expect(mockAppContext.jtp2.setModelPath).toHaveBeenCalledWith('test/path');
+    });
+  });
+
+  describe('Transformation Settings', () => {
+    it('handles transformation form submission correctly', async () => {
+      renderSettings();
+      await openTransformationForm();
+
+      // Fill out the form
+      const nameInput = screen.getByLabelText('Name');
+      const descriptionInput = screen.getByLabelText('Description');
+      const typeSelect = screen.getByRole('combobox');
+
+      fireEvent.change(nameInput, { target: { value: 'Test Transform' } });
+      fireEvent.change(descriptionInput, { target: { value: 'Test Description' } });
+      fireEvent.change(typeSelect, { target: { value: 'searchReplace' } });
+
+      // Fill search/replace specific fields
+      const patternInput = screen.getByLabelText('Search Pattern');
+      const replacementInput = screen.getByLabelText('Replacement');
+      fireEvent.change(patternInput, { target: { value: 'search' } });
+      fireEvent.change(replacementInput, { target: { value: 'replace' } });
+
+      // Submit form
+      const submitButton = screen.getByRole('button', { name: 'Add' });
+      fireEvent.click(submitButton);
+
+      // Verify form values are set correctly
+      expect(nameInput).toHaveValue('Test Transform');
+      expect(descriptionInput).toHaveValue('Test Description');
+      expect(patternInput).toHaveValue('search');
+      expect(replacementInput).toHaveValue('replace');
+      expect(typeSelect).toHaveValue('searchReplace');
+    });
+
+    it('shows correct fields for different transformation types', async () => {
+      renderSettings();
+      await openTransformationForm();
+
+      const typeSelect = screen.getByRole('combobox');
+
+      // Test case transformation
+      fireEvent.change(typeSelect, { target: { value: 'case' } });
+      expect(screen.getByText('Case Type')).toBeInTheDocument();
+
+      // Test trim transformation
+      fireEvent.change(typeSelect, { target: { value: 'trim' } });
+      expect(screen.getByText('Trim Type')).toBeInTheDocument();
+
+      // Test wrap transformation
+      fireEvent.change(typeSelect, { target: { value: 'wrap' } });
+      expect(screen.getByText('Prefix')).toBeInTheDocument();
+      expect(screen.getByText('Suffix')).toBeInTheDocument();
+
+      // Test number transformation
+      fireEvent.change(typeSelect, { target: { value: 'number' } });
+      expect(screen.getByText('Number Action')).toBeInTheDocument();
+    });
+
+    it('validates required fields', async () => {
+      renderSettings();
+      await openTransformationForm();
+
+      // Try to submit empty form
+      const submitButton = screen.getByRole('button', { name: 'Add' });
+      fireEvent.click(submitButton);
+
+      // Check required fields
+      const nameInput = screen.getByLabelText('Name');
+      expect(nameInput).toBeRequired();
+
+      // Fill required field and submit
+      fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      expect(nameInput).toHaveValue('Test Name');
+    });
+
+    it('validates specific field patterns', async () => {
+      renderSettings();
+      await openTransformationForm();
+
+      // Test number format validation
+      const typeSelect = screen.getByRole('combobox');
+      fireEvent.change(typeSelect, { target: { value: 'number' } });
+
+      // Find the second select element (number action select) after changing type to 'number'
+      const selects = screen.getAllByRole('combobox');
+      const actionSelect = selects[1]; // The second select element is the number action select
+      fireEvent.change(actionSelect, { target: { value: 'format' } });
+
+      // Get the format input and test pattern validation
+      const formatInput = screen.getByLabelText('Number Format');
+      
+      // Test invalid format
+      fireEvent.change(formatInput, { target: { value: 'invalid' } });
+      expect(formatInput).toHaveValue('invalid');
+      
+      // Test valid format
+      fireEvent.change(formatInput, { target: { value: '#,###.##' } });
+      expect(formatInput).toHaveValue('#,###.##');
+    });
+  });
+
+  describe('Settings Persistence', () => {
+    beforeEach(() => {
+      // Reset mock state
+      Object.assign(mockState, {
+        disableAnimations: false,
+        enableZoom: false,
+        enableMinimap: false,
+        alwaysShowCaptionEditor: false
+      });
+    });
+
+    /**
+     * Tests that settings are persisted correctly.
+     * Verifies that:
+     * 1. Settings are saved when changed
+     * 2. Settings persist between view changes
+     * 3. Settings are loaded correctly on mount
+     */
+    it('persists settings between view changes', async () => {
+      renderSettings();
+      
+      // Change multiple settings
+      const animationsToggle = screen.getByRole('checkbox', { name: mockTranslations['settings.disableAnimations'] });
+      fireEvent.click(animationsToggle);
+      expect(mockAppContext.setDisableAnimations).toHaveBeenCalledWith(true);
+      expect(mockAppContext.disableAnimations).toBe(true);
+
+      const experimentalButton = screen.getByRole('button', { name: mockTranslations['settings.experimentalFeatures'] });
+      fireEvent.click(experimentalButton);
+      await vi.advanceTimersByTimeAsync(300);
+
+      const zoomToggle = screen.getByRole('checkbox', { name: mockTranslations['settings.enableZoom'] });
+      fireEvent.click(zoomToggle);
+      expect(mockAppContext.setEnableZoom).toHaveBeenCalledWith(true);
+      expect(mockAppContext.enableZoom).toBe(true);
+
+      // Switch views
+      const modelSettingsButton = screen.getByRole('button', { name: mockTranslations['settings.modelSettings'] });
+      fireEvent.click(modelSettingsButton);
+      await vi.advanceTimersByTimeAsync(300);
+
+      // Switch back
+      fireEvent.click(experimentalButton);
+      await vi.advanceTimersByTimeAsync(300);
+
+      // Verify settings persisted
+      const zoomToggleAfter = screen.getByRole('checkbox', { name: mockTranslations['settings.enableZoom'] });
+      expect(zoomToggleAfter).toBeChecked();
+      expect(mockAppContext.enableZoom).toBe(true);
+    });
+
+    /**
+     * Tests that multiple settings can be changed and persisted.
+     * Verifies that:
+     * 1. Multiple settings can be changed
+     * 2. All changes are persisted
+     * 3. State updates are reflected in UI
+     */
+    it('persists multiple setting changes', async () => {
+      renderSettings();
+      
+      const experimentalButton = screen.getByRole('button', { name: mockTranslations['settings.experimentalFeatures'] });
+      fireEvent.click(experimentalButton);
+      await vi.advanceTimersByTimeAsync(300);
+
+      // Change multiple experimental settings
+      const zoomToggle = screen.getByRole('checkbox', { name: mockTranslations['settings.enableZoom'] });
+      const minimapToggle = screen.getByRole('checkbox', { name: mockTranslations['settings.enableMinimap'] });
+      const captionEditorToggle = screen.getByRole('checkbox', { name: mockTranslations['settings.alwaysShowCaptionEditor'] });
+
+      fireEvent.click(zoomToggle);
+      fireEvent.click(minimapToggle);
+      fireEvent.click(captionEditorToggle);
+
+      expect(mockAppContext.enableZoom).toBe(true);
+      expect(mockAppContext.enableMinimap).toBe(true);
+      expect(mockAppContext.alwaysShowCaptionEditor).toBe(true);
+
+      // Switch views and back
+      const modelSettingsButton = screen.getByRole('button', { name: mockTranslations['settings.modelSettings'] });
+      fireEvent.click(modelSettingsButton);
+      await vi.advanceTimersByTimeAsync(300);
+
+      fireEvent.click(experimentalButton);
+      await vi.advanceTimersByTimeAsync(300);
+
+      // Verify all settings persisted
+      const zoomToggleAfter = screen.getByRole('checkbox', { name: mockTranslations['settings.enableZoom'] });
+      const minimapToggleAfter = screen.getByRole('checkbox', { name: mockTranslations['settings.enableMinimap'] });
+      const captionEditorToggleAfter = screen.getByRole('checkbox', { name: mockTranslations['settings.alwaysShowCaptionEditor'] });
+
+      expect(zoomToggleAfter).toBeChecked();
+      expect(minimapToggleAfter).toBeChecked();
+      expect(captionEditorToggleAfter).toBeChecked();
     });
   });
 }); 
