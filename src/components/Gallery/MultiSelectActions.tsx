@@ -12,6 +12,8 @@ export const MultiSelectActions: Component = () => {
   const [deleteProgress, setDeleteProgress] = createSignal<{ current: number, total: number } | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   
+  type DeleteResult = Response | { error: true };
+  
   const selectedCount = () => {
     const imageCount = selection.multiSelected.size;
     const folderCount = selection.multiFolderSelected.size;
@@ -41,9 +43,13 @@ export const MultiSelectActions: Component = () => {
                 {getIcon("delete")}
               </button>
               <Show when={deleteProgress()}>
-                <div class="delete-progress-bar">
+                <div 
+                  class="delete-progress-bar"
+                  data-testid="delete-progress-bar"
+                >
                   <div 
                     class="delete-progress-fill" 
+                    data-testid="delete-progress-fill"
                     style={{ 
                       width: `${(deleteProgress()!.current / deleteProgress()!.total) * 100}%` 
                     }}
@@ -58,6 +64,7 @@ export const MultiSelectActions: Component = () => {
             onClick={() => {
               if (hasSelection()) {
                 selection.clearMultiSelect();
+                selection.clearFolderMultiSelect();
               } else {
                 selection.selectAll();
               }
@@ -84,115 +91,73 @@ export const MultiSelectActions: Component = () => {
                 "info"
               );
 
-              let failedFolders = 0;
-              let failedCount = 0;
-
-              // Handle folder deletions
-              const selectedFolders = Array.from(selection.multiFolderSelected);
-              if (selectedFolders.length > 0) {
-                setDeleteProgress({ current: 0, total: selectedFolders.length });
-                let completed = 0;
-                
-                const folderResults = await Promise.allSettled(
-                  selectedFolders.map(async (idx) => {
-                    const item = data.items[idx];
-                    if (item?.type !== 'directory') return;
-                    
-                    const folderPath = data.path
-                      ? `${data.path}/${item.file_name}`
-                      : item.file_name;
-                      
-                    const params = new URLSearchParams();
-                    params.append("confirm", "true");
-                    
-                    const response = await fetch(`/api/browse/${folderPath}?${params.toString()}`, {
-                      method: 'DELETE',
-                    });
-                    
-                    completed++;
-                    setDeleteProgress(prev => prev ? { 
-                      ...prev, 
-                      current: completed
-                    } : null);
-                    
-                    return response;
-                  })
-                );
-
-                failedFolders = folderResults.filter(r => r.status === 'rejected').length;
-                if (failedFolders > 0) {
-                  app.notify(
-                    app.t('gallery.folderDeleteError'),
-                    "error"
-                  );
-                }
-              }
-
               // Handle image deletions
-              if (!hasFolderSelection()) {
-                const selectedImages = Array.from(selection.multiSelected);
+              const selectedImages = Array.from(selection.multiSelected);
+              if (selectedImages.length > 0) {
                 setDeleteProgress({ current: 0, total: selectedImages.length });
                 let completed = 0;
+                let hasError = false;
                 
-                const results = await Promise.allSettled(
-                  selectedImages.map(async (idx) => {
-                    const item = data.items[idx];
-                    if (item?.type !== 'image') return;
+                for (const idx of selectedImages) {
+                  const item = data.items[idx];
+                  if (item?.type !== 'image') continue;
+                  
+                  const imagePath = data.path
+                    ? `${data.path}/${item.file_name}`
+                    : item.file_name;
                     
-                    const imagePath = data.path
-                      ? `${data.path}/${item.file_name}`
-                      : item.file_name;
-                      
-                    const params = new URLSearchParams();
-                    params.append("confirm", "true");
-                    
-                    if (app.preserveLatents) {
-                      params.append("preserve_latents", "true");
-                    }
-                    if (app.preserveTxt) {
-                      params.append("preserve_txt", "true");
-                    }
+                  const params = new URLSearchParams();
+                  params.append("confirm", "true");
+                  
+                  if (app.preserveLatents) {
+                    params.append("preserve_latents", "true");
+                  }
+                  if (app.preserveTxt) {
+                    params.append("preserve_txt", "true");
+                  }
 
+                  try {
                     const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
                       method: "DELETE",
                     });
                     
+                    if (!response.ok) {
+                      hasError = true;
+                      break;
+                    }
+
                     completed++;
                     setDeleteProgress(prev => prev ? { 
                       ...prev, 
                       current: completed
                     } : null);
-                    
-                    return response;
-                  })
-                );
+                  } catch (error) {
+                    hasError = true;
+                    break;
+                  }
+                }
 
-                failedCount = results.filter(r => r.status === 'rejected').length;
-                if (failedCount > 0) {
+                if (hasError) {
                   app.notify(
-                    app.t('gallery.someDeletesFailed', { count: failedCount }),
+                    app.t('gallery.deleteError'),
                     "error"
                   );
+                  return;
                 }
-              }
-              
-              // Show success notification if no errors
-              if (!failedFolders && !failedCount) {
+
+                // Show success notification if no errors
                 app.notify(
                   app.t('gallery.deleteSuccess'),
                   "success"
                 );
+                
+                // Clear selection after all operations
+                gallery.selection.clearMultiSelect();
+                gallery.selection.clearFolderMultiSelect();
+                
+                // Force a refetch
+                gallery.refetchGallery();
               }
-              
-              // Clear selection after all operations
-              gallery.selection.clearMultiSelect();
-              gallery.selection.clearFolderMultiSelect();
-              
-              // Force a refetch
-              gallery.refetchGallery();
-              
-              setShowDeleteConfirm(false);
-              
             } catch (error) {
               console.error('Error in bulk delete operation:', error);
               app.notify(
