@@ -11,6 +11,7 @@ export const MultiSelectActions: Component = () => {
   const selection = gallery.selection;
   const [deleteProgress, setDeleteProgress] = createSignal<{ current: number, total: number } | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
+  const [isDeleting, setIsDeleting] = createSignal(false);
   
   type DeleteResult = Response | { error: true };
   
@@ -34,14 +35,23 @@ export const MultiSelectActions: Component = () => {
         <div class="multi-select-actions">
           <Show when={hasSelection()}>
             <div class="delete-button-container">
-              <button
-                type="button"
-                class="icon delete-button"
-                onClick={handleDelete}
-                title={app.t('gallery.deleteSelected', { count: selectedCount() })}
+              <Show 
+                when={!isDeleting()} 
+                fallback={
+                  <div class="spinner-container">
+                    {getIcon("spinner")}
+                  </div>
+                }
               >
-                {getIcon("delete")}
-              </button>
+                <button
+                  type="button"
+                  class="icon delete-button"
+                  onClick={handleDelete}
+                  title={app.t('gallery.deleteSelected', { count: selectedCount() })}
+                >
+                  {getIcon("delete")}
+                </button>
+              </Show>
               <Show when={deleteProgress()}>
                 <div 
                   class="delete-progress-bar"
@@ -80,11 +90,13 @@ export const MultiSelectActions: Component = () => {
         <DeleteConfirmDialog
           imageCount={selection.multiSelected.size}
           folderCount={selection.multiFolderSelected.size}
+          isDeleting={isDeleting()}
           onConfirm={async () => {
             const data = gallery.data();
             if (!data) return;
             
             try {
+              setIsDeleting(true);
               // Show initial deletion notification
               app.notify(
                 app.t('gallery.deletingFiles'),
@@ -165,6 +177,7 @@ export const MultiSelectActions: Component = () => {
                 "error"
               );
             } finally {
+              setIsDeleting(false);
               setDeleteProgress(null);
               setShowDeleteConfirm(false);
             }

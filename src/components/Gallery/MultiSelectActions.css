@@ -38,4 +38,27 @@
   opacity: 1;
   background-color: var(--danger-bg);
   color: color-mix(in srgb, var(--error) 85%, black);
+}
+
+.spinner-container {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--error);
+  opacity: 0.8;
+}
+
+.spinner-container svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 } 
