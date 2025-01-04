@@ -1,4 +1,4 @@
-import { Resource } from "solid-js";
+import { Resource, createEffect, on } from "solid-js";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { BrowsePagesCached } from "~/resources/browse";
 
@@ -26,19 +26,76 @@ export type Selection = ReturnType<typeof useSelection>;
  * @returns An object containing selection state and methods to manipulate it
  */
 export function useSelection(backendData: Resource<BrowsePagesCached>) {
+  // Initialize with empty state first
   const [state, setState] = createStaticStore<{
     selected: number | null;
     multiSelected: Set<number>;
     multiFolderSelected: Set<number>;
-    mode: "view" | "edit";
+    mode: Mode;
     columns: number | null;
+    path: string;
   }>({
     selected: null,
     multiSelected: new Set(),
     multiFolderSelected: new Set(),
     mode: "view",
     columns: null,
+    path: '',
   });
+
+  // Save state to localStorage whenever it changes
+  const saveState = () => {
+    const currentData = backendData();
+    if (!currentData) return;
+    
+    const stateToSave = {
+      selected: state.selected,
+      multiSelected: Array.from(state.multiSelected),
+      multiFolderSelected: Array.from(state.multiFolderSelected),
+      mode: state.mode,
+      columns: state.columns,
+      path: currentData.path || '',
+    };
+    localStorage.setItem('gallerySelection', JSON.stringify(stateToSave));
+  };
+
+  // Effect to restore saved state when backendData loads
+  createEffect(
+    on(
+      () => backendData(),
+      (currentData) => {
+        if (!currentData) return;
+        
+        const savedState = localStorage.getItem('gallerySelection');
+        if (!savedState) return;
+
+        const parsed = JSON.parse(savedState);
+        // Only restore state if the path matches
+        if (parsed.path === currentData.path) {
+          setState(prev => ({
+            ...prev,
+            selected: parsed.selected,
+            multiSelected: new Set(parsed.multiSelected),
+            multiFolderSelected: new Set(parsed.multiFolderSelected),
+            mode: parsed.mode,
+            columns: parsed.columns,
+            path: parsed.path,
+          }));
+        } else {
+          // Clear selections when path doesn't match
+          setState(prev => ({
+            ...prev,
+            selected: null,
+            multiSelected: new Set(),
+            multiFolderSelected: new Set(),
+            mode: "view",
+            path: currentData.path || '',
+          }));
+          saveState();
+        }
+      }
+    )
+  );
 
   /**
    * Scrolls to the selected item smoothly
@@ -251,25 +308,27 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
       
       const item = data.items[idx];
       if (item.type === "image") {
-        setState(prev => {
+        setState((prev) => {
           const newSet = new Set(prev.multiSelected);
           if (newSet.has(idx)) {
             newSet.delete(idx);
           } else {
             newSet.add(idx);
           }
-          return { ...prev, multiSelected: newSet };
+          return { multiSelected: newSet };
         });
-      } else if (item.type === "directory" && item.file_name !== "..") {
-        setState(prev => {
+        saveState(); // Save after toggling
+      } else if (item.type === "directory") {
+        setState((prev) => {
           const newSet = new Set(prev.multiFolderSelected);
           if (newSet.has(idx)) {
             newSet.delete(idx);
           } else {
             newSet.add(idx);
           }
-          return { ...prev, multiFolderSelected: newSet };
+          return { multiFolderSelected: newSet };
         });
+        saveState(); // Save after toggling
       }
     },
     /**
@@ -280,33 +339,35 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
       if (!data?.items.length) return;
       
       setState(prev => {
-        const newImageSet = new Set<number>();
-        const newFolderSet = new Set<number>();
+        const newMultiSelected = new Set<number>();
+        const newMultiFolderSelected = new Set<number>();
         
         data.items.forEach((item, idx) => {
-          if (item.type === "directory" && item.file_name !== "..") {
-            newFolderSet.add(idx);
-          } else if (item.type === "image") {
-            newImageSet.add(idx);
+          if (item.type === "image") {
+            newMultiSelected.add(idx);
+          } else if (item.type === "directory" && item.file_name !== "..") {
+            newMultiFolderSelected.add(idx);
           }
         });
         
-        return { 
-          ...prev, 
-          multiSelected: newImageSet,
-          multiFolderSelected: newFolderSet
+        return {
+          ...prev,
+          multiSelected: newMultiSelected,
+          multiFolderSelected: newMultiFolderSelected,
         };
       });
+      saveState();
     },
     /**
      * Clears all multi-selections (both images and folders)
      */
     clearMultiSelect: () => {
-      setState(prev => ({ 
-        ...prev, 
+      setState(prev => ({
+        ...prev,
         multiSelected: new Set(),
-        multiFolderSelected: new Set() 
+        multiFolderSelected: new Set(),
       }));
+      saveState();
     },
     /**
      * Gets the set of multi-selected folder indices
@@ -325,8 +386,9 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
         } else {
           newSet.add(idx);
         }
-        return { ...prev, multiFolderSelected: newSet };
+        return { multiFolderSelected: newSet };
       });
+      saveState(); // Add save after folder toggle
     },
     /**
      * Selects all folders in the current view
@@ -342,14 +404,19 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
             newSet.add(idx);
           }
         });
-        return { ...prev, multiFolderSelected: newSet, multiSelected: new Set() };
+        return { multiFolderSelected: newSet, multiSelected: new Set() };
       });
+      saveState(); // Add save after selecting all folders
     },
     /**
      * Clears all folder multi-selections
      */
     clearFolderMultiSelect: () => {
-      setState(prev => ({ ...prev, multiFolderSelected: new Set() }));
+      setState(prev => ({
+        ...prev,
+        multiFolderSelected: new Set(),
+      }));
+      saveState(); // Save after clearing
     },
     /**
      * Selects the previous page of items
