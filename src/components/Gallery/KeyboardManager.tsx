@@ -30,6 +30,7 @@ export const useKeyboardManager = ({
   const appContext = useAppContext();
   const { state: keyboardState } = useGlobalEscapeManager();
   const [shiftSelectionStart, setShiftSelectionStart] = createSignal<number | null>(null);
+  const [preventAutoScroll, setPreventAutoScroll] = createSignal(false);
 
   const keyDownHandler = async (event: KeyboardEvent) => {
     // Check global keyboard state
@@ -178,6 +179,60 @@ export const useKeyboardManager = ({
       const targetY = galleryElement.scrollTop + (galleryElement.clientHeight * 0.25);
       smoothScroll(targetY);
       gallery.selection.selectDown();
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      const galleryElement = document.getElementById('gallery');
+      if (!galleryElement) return;
+
+      console.debug('Home key pressed:', {
+        path: data.path,
+        scrollHeight: galleryElement.scrollHeight,
+        clientHeight: galleryElement.clientHeight,
+        scrollTop: galleryElement.scrollTop
+      });
+
+      // Set flag to prevent auto-scroll
+      setPreventAutoScroll(true);
+
+      // Then handle selection
+      if (data.path) {
+        console.debug('Selecting parent directory (null)');
+        gallery.selection.select(null);
+        // Force scroll to top by scrolling the first item into view
+        const firstItem = galleryElement.querySelector('.responsive-grid .item');
+        if (firstItem) {
+          firstItem.scrollIntoView({ block: 'start', behavior: 'instant' });
+        }
+      } else {
+        const firstItemIndex = data.items.findIndex(item => item.type === "image" || item.type === "directory");
+        console.debug('Selecting first item:', {
+          firstItemIndex,
+          itemType: firstItemIndex !== -1 ? data.items[firstItemIndex].type : 'none'
+        });
+        if (firstItemIndex !== -1) {
+          gallery.selection.select(firstItemIndex);
+          // Force scroll to top by scrolling the first item into view
+          const firstItem = galleryElement.querySelector('.responsive-grid .item');
+          if (firstItem) {
+            firstItem.scrollIntoView({ block: 'start', behavior: 'instant' });
+          }
+        }
+      }
+
+      // Reset flag after a short delay
+      setTimeout(() => setPreventAutoScroll(false), 100);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      const lastItemIndex = data.items.length - 1;
+      if (lastItemIndex >= 0) {
+        const galleryElement = document.getElementById('gallery');
+        if (galleryElement) {
+          // For last item, select first then scroll
+          gallery.selection.select(lastItemIndex);
+          const targetY = galleryElement.scrollHeight - galleryElement.clientHeight;
+          smoothScroll(targetY, true);
+        }
+      }
     } else {
       return;
     }
@@ -199,8 +254,16 @@ export const useKeyboardManager = ({
     window.removeEventListener("keyup", keyUpHandler);
   });
 
+  // Modify scrollToSelected to respect the flag
+  const originalScrollToSelected = scrollToSelected;
+  const wrappedScrollToSelected = (force?: boolean) => {
+    if (preventAutoScroll()) return;
+    originalScrollToSelected(force);
+  };
+
   return {
     shiftSelectionStart,
     setShiftSelectionStart,
+    scrollToSelected: wrappedScrollToSelected
   };
 }; 

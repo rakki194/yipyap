@@ -89,7 +89,7 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
      */
     select: (idx: number | "last" | null) => {
       const data = backendData();
-      // Return false if no data or explicitly selecting null
+      // Return false if no data
       if (!data?.items.length) {
         setState("selected", null);
         return false;
@@ -97,18 +97,21 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
       const l = data.items.length;
       // Handle special cases:
       if (idx === null) {
-        idx = null;
+        // When selecting null (parent directory), always allow it and set view mode
+        setState({ selected: null, mode: "view" });
+        return true;
       } else if (idx === "last" || idx >= l) {
         // "last" or overflow - select last item
         idx = l - 1;
       } else if (idx < 0) {
         // Negative index means deselect or select the parent directory item (..)
         // This happens when navigating up from first item
-        idx = null;
+        setState({ selected: null, mode: "view" });
+        return true;
       }
       let changed = false;
       setState((prev) => {
-        const mode = idx === null || data.items[idx].type !== "image" ? "view" : prev.mode;
+        const mode = data.items[idx].type !== "image" ? "view" : prev.mode;
         if (prev.selected === idx && prev.mode === mode) return prev;
         changed = true;
         return { selected: idx, mode };

@@ -4,11 +4,16 @@
 }
 
 #gallery {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
   & > * {
     padding: var(--spacing);
   }
 
   & > .responsive-grid {
+    flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: var(--spacing);
@@ -17,6 +22,8 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    margin: 0;
+    padding: var(--spacing);
   }
 
   &.crop > .responsive-grid > .item > img {

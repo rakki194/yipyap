@@ -53,11 +53,17 @@ export function useGalleryEffects({
   // Handle selection changes
   createEffect(() => {
     const selected = gallery.selected;
+    const mode = gallery.mode;
     if (selected !== null && !autoScrolling()) {
-      const frame = requestAnimationFrame(() => {
+      let frame: number | undefined;
+      frame = requestAnimationFrame(() => {
         scrollToSelected(true);
       });
-      onCleanup(() => cancelAnimationFrame(frame));
+      onCleanup(() => {
+        if (frame) {
+          cancelAnimationFrame(frame);
+        }
+      });
     }
   });
 
