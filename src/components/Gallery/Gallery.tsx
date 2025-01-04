@@ -117,6 +117,20 @@ export const Gallery: Component = () => {
     setShowDeleteConfirm(false);
   };
 
+  // Store scroll position
+  const handleModalClose = (e?: MouseEvent | KeyboardEvent | TouchEvent) => {
+    if (e?.preventDefault) e.preventDefault();
+    const galleryElement = document.getElementById('gallery');
+    const scrollPos = galleryElement?.scrollTop || 0;
+    gallery.setMode("view");
+    // Restore scroll position after a short delay
+    requestAnimationFrame(() => {
+      if (galleryElement) {
+        galleryElement.scrollTop = scrollPos;
+      }
+    });
+  };
+
   return (
     <>
       <UploadOverlay isVisible={isDragging()} />
@@ -140,7 +154,11 @@ export const Gallery: Component = () => {
                 data={data()}
                 items={data().items}
                 path={data().path}
-                onImageClick={gallery.edit}
+                onImageClick={(e, ...args) => {
+                  // Prevent scroll restoration
+                  if (e?.preventDefault) e.preventDefault();
+                  gallery.edit(...args);
+                }}
               />
             );
           }}
@@ -168,7 +186,7 @@ export const Gallery: Component = () => {
         <ImageModal
           imageInfo={gallery.getEditedImage()!}
           captions={gallery.getEditedImage()!.captions}
-          onClose={() => gallery.setMode("view")}
+          onClose={handleModalClose}
           generateTags={gallery.generateTags}
           saveCaption={gallery.saveCaption}
           deleteCaption={gallery.deleteCaption}

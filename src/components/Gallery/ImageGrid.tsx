@@ -34,7 +34,7 @@ export const ImageGrid = (props: {
   data: BrowsePagesCached;
   items: AnyItem[];
   path: string;
-  onImageClick: (idx: number) => void;
+  onImageClick: (e: MouseEvent | undefined, idx: number) => void;
 }) => {
   const gallery = useGallery();
   const setColumns = gallery.selection.setColumns;
@@ -120,7 +120,7 @@ export const ImageGrid = (props: {
               path={props.path}
               selected={isActive(ref, getIdx())}
               onClick={() => {
-                props.onImageClick(getIdx());
+                props.onImageClick(undefined, getIdx());
                 gallery.select(getIdx());
               }}
             />
@@ -239,7 +239,7 @@ export const ImageItem = (props: {
   item: ImageItemType;
   idx: number;
   path: string;
-  onClick: () => void;
+  onClick: (e?: MouseEvent) => void;
   selected: boolean;
 }) => {
   const gallery = useGallery();
@@ -267,11 +267,12 @@ export const ImageItem = (props: {
   }));
 
   const handleClick = (e: MouseEvent) => {
-    
-    if (e.ctrlKey || e.metaKey) {
+    if (e.shiftKey || e.ctrlKey || e.metaKey) {
+      // Handle multi-select
+      e.preventDefault();
       gallery.selection.toggleMultiSelect(props.idx);
     } else {
-      props.onClick();
+      props.onClick(e);
     }
   };
 
@@ -339,20 +340,15 @@ export const ImageItem = (props: {
     <div
       ref={props.ref}
       class="item image"
-      classList={{ 
+      classList={{
         selected: props.selected,
-        "multi-selected": isMultiSelected()
+        "multi-selected": isMultiSelected(),
+        loading: isLoading()
       }}
       onClick={handleClick}
-      draggable={true}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      data-idx={props.idx}
       role="gridcell"
       aria-selected={props.selected || isMultiSelected()}
-      aria-label={`Image: ${props.item.file_name}`}
-      aria-describedby={`image-details-${props.idx}`}
-      style={containerStyle()}
+      tabIndex={0}
     >
       <Show when={props.item()} keyed>
         {(item) => {
