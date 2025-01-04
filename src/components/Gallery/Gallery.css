@@ -51,7 +51,6 @@
 
   &:hover,
   &.selected {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     transform: var(--hover-transform);
   }
 
@@ -62,9 +61,18 @@
 
     & > img {
       filter: var(--focus-pop);
-      /*
-      filter: saturate(1.2) contrast(1.3);
-      */
+      transform: scale(1.02);
+    }
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--card-bg), var(--accent) 40%);
+      backdrop-filter: blur(15px);
+      box-shadow: 6px 12px 12px rgba(0, 0, 0, 0.5);
+      
+      & > img {
+        transform: scale(1.08);
+        filter: var(--focus-pop) brightness(1.1);
+      }
     }
   }
 
@@ -72,12 +80,16 @@
     transform: var(--hover-transform);
     box-shadow: var(--shadow-hover);
 
+    &:not(.selected) {
+      background-color: color-mix(in srgb, var(--card-bg), var(--text-primary) 10%);
+    }
+
     &.image > .overlay {
       opacity: 1;
     }
 
     & > img {
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
   }
 
