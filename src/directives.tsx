@@ -117,13 +117,13 @@ export function preserveState(
       scrollTop: textarea.scrollTop,
     };
 
-    if (import.meta.env.DEV) {
-      console.debug("preserving input state", {
-        signal: v,
-        input: textarea.value,
-        state,
-      });
-    }
+    //if (import.meta.env.DEV) {
+    //  console.debug("preserving input state", {
+    //    signal: v,
+    //    input: textarea.value,
+    //    state,
+    //  });
+    //}
 
     textarea.value = v;
 

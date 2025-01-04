@@ -46,16 +46,6 @@ class ImageDataSource:
     async def ensure_thumbnail(self, path: Path) -> Path:
         raise NotImplementedError
 
-    async def scan_directory(
-        self,
-        directory: Path,
-        search: Optional[str] = None,
-        sort_by: str = "name",
-        page: int = 1,
-        page_size: int = 50,
-    ) -> Dict:
-        raise NotImplementedError
-
     def is_image_file(self, path: Path) -> bool:
         """
         Check if file has an allowed image extension.

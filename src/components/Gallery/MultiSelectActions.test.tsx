@@ -577,11 +577,14 @@ describe("MultiSelectActions", () => {
     // Wait for all promises to resolve
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    expect(mockAppContext.notify).toHaveBeenCalledWith(
+    // Check notifications in order
+    expect(mockAppContext.notify).toHaveBeenNthCalledWith(
+      1,
       "Deleting files...",
       "info"
     );
-    expect(mockAppContext.notify).toHaveBeenCalledWith(
+    expect(mockAppContext.notify).toHaveBeenNthCalledWith(
+      2,
       "Files deleted successfully",
       "success"
     );

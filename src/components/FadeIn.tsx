@@ -27,16 +27,16 @@ const FadeIn: Component<FadeInProps> = (props) => {
     return prevRoute && prevRoute.pathname === "/";
   };
   const [getOpacity, setOpacity] = createSignal(fadeIn() ? 0 : 1);
-  if (import.meta.env.DEV) {
-    createEffect(() => {
-      console.debug("fade-in", {
-        isVisible: getOpacity(),
-        fadeIn: fadeIn(),
-        prev: appContext?.prevRoute?.pathname,
-        route: location.pathname,
-      });
-    });
-  }
+  //if (import.meta.env.DEV) {
+  //  createEffect(() => {
+  //    console.debug("fade-in", {
+  //      isVisible: getOpacity(),
+  //      fadeIn: fadeIn(),
+  //      prev: appContext?.prevRoute?.pathname,
+  //      route: location.pathname,
+  //    });
+  //  });
+  //}
 
   const getStyle = () => {
     const style = {

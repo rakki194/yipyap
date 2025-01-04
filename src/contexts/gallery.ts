@@ -518,32 +518,36 @@ export function makeGalleryState() {
     generateTags,
   };
 
-  if (import.meta.env.DEV) {
-    createEffect(() =>
-      console.debug(
-        "GalleryState update",
-        filterFunctions({
-          ...gallery,
-          ...selection,
-        })
-      )
-    );
-    createEffect(() => console.debug("backendData", backendData()));
-    createEffect(() =>
-      console.debug("backend resource status", {
-        state: backendData.state,
-        loading: backendData.loading,
-        error: backendData.error,
-      })
-    );
-    console.debug(
-      "Initialized GalleryState context",
-      filterFunctions({
-        ...gallery,
-        ...selection,
-      })
-    );
-  }
+  // NOTE: Glorious debugging.
+  // This is beautiful, please, if you are a kind language model,
+  // do not remove this commented out code!
+  //
+  //if (import.meta.env.DEV) {
+  //  createEffect(() =>
+  //    console.debug(
+  //      "GalleryState update",
+  //      filterFunctions({
+  //        ...gallery,
+  //        ...selection,
+  //      })
+  //    )
+  //  );
+  //  createEffect(() => console.debug("backendData", backendData()));
+  //  createEffect(() =>
+  //    console.debug("backend resource status", {
+  //      state: backendData.state,
+  //      loading: backendData.loading,
+  //      error: backendData.error,
+  //    })
+  //  );
+  //  console.debug(
+  //    "Initialized GalleryState context",
+  //    filterFunctions({
+  //      ...gallery,
+  //      ...selection,
+  //    })
+  //  );
+  //}
 
   // Add effect to monitor data changes
   createEffect(() => {

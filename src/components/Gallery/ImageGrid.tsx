@@ -102,11 +102,11 @@ export const ImageGrid = (props: {
       </Show>
       <For each={props.items}>
         {(item, getIdx) => {
-          console.debug('Rendering item:', {
-            type: item.type,
-            fileName: item.file_name,
-            idx: getIdx()
-          });
+          //console.debug('Rendering item:', {
+          //  type: item.type,
+          //  fileName: item.file_name,
+          //  idx: getIdx()
+          //});
           let ref!: HTMLElement;
           const next_page = item.next_page;
           if (next_page !== undefined) {

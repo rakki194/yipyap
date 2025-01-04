@@ -1,6 +1,5 @@
 import { onCleanup, createSignal } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
-import { useAppContext } from "~/contexts/app";
 import { useNavigate } from "@solidjs/router";
 import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 
@@ -17,17 +16,12 @@ export interface KeyboardHandlerProps {
 
 export const useKeyboardManager = ({
   onShowQuickJump,
-  onShowSettings,
   onShowDeleteConfirm,
-  onShowNewFolderDialog,
   scrollToSelected,
   smoothScroll,
-  isSettingsOpen,
-  isQuickJumpOpen
 }: KeyboardHandlerProps) => {
   const navigate = useNavigate();
   const gallery = useGallery();
-  const appContext = useAppContext();
   const { state: keyboardState } = useGlobalEscapeManager();
   const [shiftSelectionStart, setShiftSelectionStart] = createSignal<number | null>(null);
   const [preventAutoScroll, setPreventAutoScroll] = createSignal(false);
@@ -184,19 +178,19 @@ export const useKeyboardManager = ({
       const galleryElement = document.getElementById('gallery');
       if (!galleryElement) return;
 
-      console.debug('Home key pressed:', {
-        path: data.path,
-        scrollHeight: galleryElement.scrollHeight,
-        clientHeight: galleryElement.clientHeight,
-        scrollTop: galleryElement.scrollTop
-      });
+      //console.debug('Home key pressed:', {
+      //  path: data.path,
+      //  scrollHeight: galleryElement.scrollHeight,
+      //  clientHeight: galleryElement.clientHeight,
+      //  scrollTop: galleryElement.scrollTop
+      //});
 
       // Set flag to prevent auto-scroll
       setPreventAutoScroll(true);
 
       // Then handle selection
       if (data.path) {
-        console.debug('Selecting parent directory (null)');
+        //console.debug('Selecting parent directory (null)');
         gallery.selection.select(null);
         // Force scroll to top by scrolling the first item into view
         const firstItem = galleryElement.querySelector('.responsive-grid .item');
@@ -205,10 +199,10 @@ export const useKeyboardManager = ({
         }
       } else {
         const firstItemIndex = data.items.findIndex(item => item.type === "image" || item.type === "directory");
-        console.debug('Selecting first item:', {
-          firstItemIndex,
-          itemType: firstItemIndex !== -1 ? data.items[firstItemIndex].type : 'none'
-        });
+        //console.debug('Selecting first item:', {
+        //  firstItemIndex,
+        //  itemType: firstItemIndex !== -1 ? data.items[firstItemIndex].type : 'none'
+        //});
         if (firstItemIndex !== -1) {
           gallery.selection.select(firstItemIndex);
           // Force scroll to top by scrolling the first item into view

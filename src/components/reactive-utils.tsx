@@ -78,9 +78,9 @@ export const makeImage = (
     img,
     isLoaded,
     unload: () => {
-      if (import.meta.env.DEV) {  
-        console.debug("makeImage: unloading image", src);
-      }
+      //if (import.meta.env.DEV) {  
+      //  console.debug("makeImage: unloading image", src);
+      //}
       img.setAttribute('src', ''); // Use setAttribute instead of src property
       cleanup();
     },

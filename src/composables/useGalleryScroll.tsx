@@ -98,23 +98,18 @@ export function useGalleryScroll() {
     const galleryRect = galleryElement.getBoundingClientRect();
     const selectedRect = selectedElement.getBoundingClientRect();
 
-    console.debug('Scroll check:', {
-      selectedIdx,
-      galleryRect: {
-        top: galleryRect.top,
-        bottom: galleryRect.bottom,
-        height: galleryRect.height
-      },
-      selectedRect: {
-        top: selectedRect.top,
-        bottom: selectedRect.bottom,
-        height: selectedRect.height
-      }
-    });
-
     // Calculate visible area with margins
     const visibleTop = galleryRect.top + (galleryRect.height * 0.15);
     const visibleBottom = galleryRect.bottom - (galleryRect.height * 0.15);
+
+    // Check if the element is already mostly visible
+    const elementMostlyVisible = 
+      selectedRect.top >= visibleTop - selectedRect.height * 0.5 && 
+      selectedRect.bottom <= visibleBottom + selectedRect.height * 0.5;
+
+    if (elementMostlyVisible && !forceScroll) {
+      return;
+    }
 
     const needsScroll = forceScroll || 
       selectedRect.top < visibleTop || 
@@ -122,75 +117,40 @@ export function useGalleryScroll() {
       selectedRect.top > visibleBottom || 
       selectedRect.bottom < visibleTop;
 
-    console.debug('Scroll decision:', {
-      visibleTop,
-      visibleBottom,
-      needsScroll,
-      forceScroll
-    });
-
     if (needsScroll) {
       const targetY = galleryElement.scrollTop + 
         (selectedRect.top - galleryRect.top) - 
         (galleryRect.height / 2) + 
         (selectedRect.height / 2);
 
-      console.debug('Initiating scroll:', {
-        currentScrollTop: galleryElement.scrollTop,
-        targetY,
-        offset: selectedRect.top - galleryRect.top
-      });
-
       setAutoScrolling(true);
       const initialSelectedIdx = selectedIdx;
       
-      smoothScroll(targetY, true);
+      smoothScroll(targetY, forceScroll);
 
-      // Debounced resize observer
-      let resizeTimeout: number;
-      const resizeObserver = new ResizeObserver(() => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = window.setTimeout(() => {
-          if (gallery.selected === initialSelectedIdx) {
-            debouncedRAF(() => scrollToSelected(true));
-          }
-        }, 100);
-      });
-      resizeObserver.observe(galleryElement);
-
-      // Verify position multiple times after scroll
-      const verifyPosition = () => {
-        if (gallery.selected !== initialSelectedIdx) {
-          resizeObserver.disconnect();
-          return;
-        }
-
-        const newSelectedElement = document.querySelector(
-          `#gallery .responsive-grid .item:nth-child(${initialSelectedIdx + 1})`
-        );
-        if (newSelectedElement) {
-          const newRect = newSelectedElement.getBoundingClientRect();
-          const newGalleryRect = galleryElement.getBoundingClientRect();
-          
-          if (newRect.top < newGalleryRect.top || 
-              newRect.bottom > newGalleryRect.bottom) {
-            debouncedRAF(() => scrollToSelected(true));
-          }
-        }
+      // Cleanup and position verification
+      const cleanup = () => {
+        setAutoScrolling(false);
       };
 
-      // Reduced number of checks and increased intervals
-      const checkTimes = [100, 300];
-      checkTimes.forEach(delay => {
-        setTimeout(verifyPosition, delay);
-      });
-
-      // Cleanup
+      // Single verification after scroll
       setTimeout(() => {
-        setAutoScrolling(false);
-        resizeObserver.disconnect();
-        clearTimeout(resizeTimeout);
-      }, Math.max(...checkTimes) + 150);
+        if (gallery.selected === initialSelectedIdx) {
+          const newSelectedElement = document.querySelector(
+            `#gallery .responsive-grid .item:nth-child(${initialSelectedIdx + 1})`
+          );
+          if (newSelectedElement) {
+            const newRect = newSelectedElement.getBoundingClientRect();
+            const newGalleryRect = galleryElement.getBoundingClientRect();
+            
+            if (newRect.top < newGalleryRect.top || 
+                newRect.bottom > newGalleryRect.bottom) {
+              debouncedRAF(() => scrollToSelected(true));
+            }
+          }
+        }
+        cleanup();
+      }, 300);
     }
   };
 
@@ -259,12 +219,12 @@ export function useGalleryScroll() {
       // Detect if the event is from a touchpad
       const isTouchpad = Math.abs(e.deltaY) < 50 && e.deltaMode === 0;
       
-      console.debug('Wheel event:', {
-        deltaY: e.deltaY,
-        deltaMode: e.deltaMode,
-        isTouchpad,
-        currentIdx: gallery.selected
-      });
+      //console.debug('Wheel event:', {
+      //  deltaY: e.deltaY,
+      //  deltaMode: e.deltaMode,
+      //  isTouchpad,
+      //  currentIdx: gallery.selected
+      //});
 
       // Dynamic scaling for touchpad - less dampening for fast scrolls
       const scaleFactor = isTouchpad 
@@ -272,11 +232,11 @@ export function useGalleryScroll() {
         : 1;
       const delta = e.deltaY * scaleFactor;
 
-      console.debug('Scroll processing:', {
-        scaleFactor,
-        delta,
-        touchpadDelta: touchpadDelta || 0
-      });
+      //console.debug('Scroll processing:', {
+      //  scaleFactor,
+      //  delta,
+      //  touchpadDelta: touchpadDelta || 0
+      //});
 
       const data = gallery.data();
       if (!data) return;
