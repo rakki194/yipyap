@@ -77,6 +77,7 @@ export interface ImageData extends BaseData {
   width: number;    // Image width in pixels
   height: number;   // Image height in pixels
   captions: Captions; // Associated captions
+  favorite_state?: number; // Favorite state (0-6)
 }
 
 /**

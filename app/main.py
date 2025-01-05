@@ -909,3 +909,44 @@ async def update_wdv3_config(config: dict):
     except Exception as e:
         logger.error(f"Error updating WDv3 config: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/api/favorite/{path:path}")
+async def update_favorite_state(
+    path: str,
+    config: dict = Body(...)
+):
+    """Update the favorite state of an image."""
+    try:
+        # Extract and validate favorite state from request body
+        if "favorite_state" not in config:
+            raise HTTPException(status_code=400, detail="Missing favorite_state in request body")
+        
+        try:
+            favorite_state = int(config["favorite_state"])
+        except (ValueError, TypeError):
+            raise HTTPException(status_code=400, detail="favorite_state must be an integer")
+
+        # Validate favorite state range
+        if not 0 <= favorite_state <= 6:
+            raise HTTPException(status_code=400, detail="Invalid favorite state")
+
+        # Get the full path
+        full_path = utils.resolve_path(path, ROOT_DIR)
+        if not full_path.exists():
+            raise HTTPException(status_code=404, detail="Image not found")
+
+        # Save favorite state to a .favorite file
+        favorite_path = full_path.with_suffix(".favorite")
+        async with aiofiles.open(favorite_path, "w") as f:
+            await f.write(str(favorite_state))
+
+        # Clear cache to force reload
+        data_source.directory_cache.pop(full_path.parent, None)
+
+        return {"success": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating favorite state for {path}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

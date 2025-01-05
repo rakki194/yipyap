@@ -7,6 +7,8 @@ import {
   mergeProps,
   batch,
   startTransition,
+  createMemo,
+  createSignal,
 } from "solid-js";
 import { createStaticStore } from "@solid-primitives/static-store";
 import { useParams, useSearchParams, action } from "@solidjs/router";
@@ -60,6 +62,11 @@ export type ImageInfo = {
   preview_img: ReactiveImage;
   thumbnail_img: ReactiveImage;
   readonly captions: Captions;
+  favorite_state: number;
+};
+
+export type FavoriteState = {
+    favorite_state: number;
 };
 
 const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
@@ -68,13 +75,15 @@ const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
   const image = item();
   if (!image) return undefined;
 
-  const { name, width, height, size, mime, mtime } = image;
+  const { name, width, height, size, mime, mtime, favorite_state } = image;
   const resolvedPath = pathParam || "/";
 
   const thumbnail_path = joinUrlParts("/thumbnail", resolvedPath, name);
   const preview_path = joinUrlParts("/preview", resolvedPath, name);
   const download_path = joinUrlParts("/download", resolvedPath, name);
   const aspect_ratio = `${width}/${height}`;
+
+  const [getFavoriteState, setFavoriteState] = createSignal(favorite_state ?? 0);
 
   const imageInfo = {
     idx,
@@ -88,6 +97,12 @@ const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
     preview_path,
     thumbnail_path,
     download_path,
+    get favorite_state() {
+      return getFavoriteState();
+    },
+    set favorite_state(value: number) {
+      setFavoriteState(value);
+    },
     get captions() {
       return item()!.captions;
     },
@@ -275,6 +290,112 @@ export function makeGalleryState() {
     } catch (error) {
       console.error("Failed to save caption:", error);
       return new Error("Failed to save caption");
+    }
+  });
+
+  const setFavoriteState = action(async (image: ImageInfo, state: number) => {
+    const database = untrack(backendData);
+    if (!database) return new Error("No page fetched yet!");
+
+    try {
+        if (typeof state !== 'number' || isNaN(state)) {
+            throw new Error('Invalid state value: must be a number');
+        }
+
+        console.debug('setFavoriteState input:', {
+            image: image.name,
+            state,
+            stateType: typeof state
+        });
+
+        // Find the original image data
+        const imageItem = database.items.find(item => 
+            item?.type === 'image' && 
+            item()?.name === image.name
+        );
+        
+        if (!imageItem || imageItem.type !== 'image') {
+            throw new Error('Image not found in database');
+        }
+
+        const currentImageData = imageItem();
+        if (!currentImageData) {
+            throw new Error('Image data not found');
+        }
+
+        // Ensure state is an integer
+        const intState = Math.floor(state);
+        if (intState < 0 || intState > 6) {
+            throw new Error('Invalid state value: must be between 0 and 6');
+        }
+
+        console.debug('Processed state:', {
+            original: state,
+            intState,
+            intStateType: typeof intState
+        });
+
+        // Handle paths that start with _/ by removing it
+        const basePath = database.path.startsWith('_/') ? database.path.slice(2) : database.path;
+        const imagePath = basePath ? `${basePath}/${image.name}` : image.name;
+        
+        const payload = { favorite_state: intState };
+        console.debug('API request:', {
+            url: `/api/favorite/${imagePath}`,
+            payload,
+            payloadStringified: JSON.stringify(payload)
+        });
+
+        const response = await fetch(`/api/favorite/${imagePath}`, {
+            method: "PUT",
+            headers: { 
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('API error response:', {
+                status: response.status,
+                errorData,
+                requestPayload: payload
+            });
+            throw new Error(`Failed to update favorite state: ${JSON.stringify(errorData)}`);
+        }
+
+        // Update both the ImageData and ImageInfo states
+        const updatedImageData = {
+            ...currentImageData,
+            favorite_state: intState,
+            type: 'image' as const
+        };
+
+        // Update the ImageData state
+        const setter = database.setters[image.name];
+        if (setter) {
+            console.debug('Updating ImageData state:', {
+                name: image.name,
+                newState: intState,
+                updatedImageData
+            });
+            setter(updatedImageData);
+        } else {
+            console.warn('No setter found for image:', image.name);
+        }
+
+        // Update the ImageInfo state directly
+        image.favorite_state = intState;
+        console.debug('Updated ImageInfo state:', {
+            name: image.name,
+            newState: intState,
+            currentState: image.favorite_state
+        });
+
+        return response;
+    } catch (error) {
+        console.error("Failed to update favorite state:", error);
+        throw error; // Re-throw to allow proper error handling upstream
     }
   });
 
@@ -516,6 +637,7 @@ export function makeGalleryState() {
     getAllKnownFolders,
     invalidateFolderCache,
     generateTags,
+    setFavoriteState,
   };
 
   // NOTE: Glorious debugging.

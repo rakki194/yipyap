@@ -99,6 +99,14 @@ class ImageModel(BaseItem):
         width (int): Image width in pixels
         height (int): Image height in pixels
         captions (List[Tuple[str, str]]): List of (type, text) caption pairs
+        favorite_state (int): Favorite state (0-6) where:
+            0 = no star
+            1 = one quarter star
+            2 = half star
+            3 = three quarter star
+            4 = full star
+            5 = emphasis star
+            6 = off star
     """
     type: Literal["image"] = "image"
     size: int  # File size in bytes
@@ -107,6 +115,7 @@ class ImageModel(BaseItem):
     width: int = Field(default=0)  # Image width
     height: int = Field(default=0)  # Image height
     captions: List[Tuple[str, str]] = Field(default=[])  # [(type, text), ...]
+    favorite_state: int = Field(default=0)  # Favorite state (0-6)
 
 
 class DirectoryModel(BaseItem):

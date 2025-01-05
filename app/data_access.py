@@ -24,6 +24,7 @@ logger = logging.getLogger("uvicorn.error")
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl", ".avif"}
 CAPTION_EXTENSIONS = {".caption", ".txt", ".tags"}
+METADATA_EXTENSIONS = {".favorite"}
 
 try:
     import pillow_avif
@@ -306,6 +307,16 @@ class CachedFileSystemDataSource(ImageDataSource):
             assert ext[0] == "."
             captions.append((ext[1:], caption))
 
+        # Get favorite state
+        favorite_state = 0
+        if ".favorite" in item.get("metadata", {}):
+            favorite_path = directory / item["metadata"][".favorite"]
+            try:
+                with open(favorite_path, "r") as f:
+                    favorite_state = int(f.read().strip())
+            except (ValueError, IOError) as e:
+                logger.warning(f"Error reading favorite state for {path}: {e}")
+
         # Generate thumbnail in memory
         with open_srgb(path, force_load=False) as img:
             width, height = img.size
@@ -326,6 +337,7 @@ class CachedFileSystemDataSource(ImageDataSource):
             width=width,
             height=height,
             captions=captions,
+            favorite_state=favorite_state,
         )
 
         # Cache image info and thumbnail
@@ -402,6 +414,11 @@ class CachedFileSystemDataSource(ImageDataSource):
                     all_side_car_files[stem][suffix] = name
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
                     continue
+                elif suffix in METADATA_EXTENSIONS:
+                    stem = entry.stem
+                    all_side_car_files[stem][suffix] = name
+                    mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
+                    continue
                 else:
                     continue
             else:
@@ -409,7 +426,8 @@ class CachedFileSystemDataSource(ImageDataSource):
 
         for entry in img_entries:
             side_car_files = all_side_car_files.get(entry["stem"], {})
-            entry["captions"] = side_car_files
+            entry["captions"] = {k: v for k, v in side_car_files.items() if k in CAPTION_EXTENSIONS}
+            entry["metadata"] = {k: v for k, v in side_car_files.items() if k in METADATA_EXTENSIONS}
             entry["mtime"] = datetime.fromtimestamp(
                 mtimes[entry["stem"]], tz=timezone.utc
             )

@@ -333,12 +333,14 @@ const ModalHeader = (props: {
 }) => {
   const gallery = useGallery();
   const generateTags = useAction(gallery.generateTags);
+  const setFavoriteState = useAction(gallery.setFavoriteState);
   const { t } = useAppContext();
 
   return (
     <div class="modal-header">
       <h2>{props.imageInfo.name}</h2>
       <div class="modal-actions">
+        <FavoriteButton imageInfo={props.imageInfo} setFavoriteState={setFavoriteState} />
         <button
           type="button"
           class="icon metadata-button"
@@ -376,6 +378,79 @@ const ModalHeader = (props: {
         </button>
       </div>
     </div>
+  );
+};
+
+const FavoriteButton = (props: {
+  imageInfo: ImageInfoType;
+  setFavoriteState: (image: ImageInfoType, state: number) => void;
+}) => {
+  const [favoriteState, setFavoriteState] = createSignal(props.imageInfo.favorite_state ?? 0);
+
+  const getStarIcon = (state: number | undefined) => {
+    const flooredState = Math.floor(state ?? 0);
+    console.debug('getStarIcon input:', { original: state, floored: flooredState });
+    switch (flooredState) {
+      case 0: return "star";
+      case 1: return "starOneQuarter";
+      case 2: return "starHalf";
+      case 3: return "starThreeQuarter";
+      case 4: return "starFilled";
+      case 5: return "starEmphasisFilled";
+      case 6: return "starOff";
+      default: return "star";
+    }
+  };
+
+  const getNextState = (currentState: number | undefined) => {
+    const current = currentState ?? 0;
+    const nextState = Math.floor((current + 1) % 7);
+    console.debug('getNextState:', { 
+      currentState: current, 
+      currentStateType: typeof current,
+      nextState,
+      nextStateType: typeof nextState
+    });
+    return nextState;
+  };
+
+  const handleClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    const currentState = favoriteState();
+    console.debug('Current favorite_state:', {
+      value: currentState,
+      type: typeof currentState,
+      original: props.imageInfo.favorite_state
+    });
+    const nextState = getNextState(currentState);
+    console.debug('Setting favorite state:', {
+      image: props.imageInfo.name,
+      nextState,
+      nextStateType: typeof nextState
+    });
+    setFavoriteState(nextState);
+    props.setFavoriteState(props.imageInfo, nextState);
+  };
+
+  // Create an effect to update the local state when the prop changes
+  createEffect(() => {
+    setFavoriteState(props.imageInfo.favorite_state ?? 0);
+  });
+
+  return (
+    <button
+      type="button"
+      class="icon favorite-button"
+      classList={{
+        'favorite-emphasis': Math.floor(favoriteState()) === 5,
+        'favorite-off': Math.floor(favoriteState()) === 6
+      }}
+      onClick={handleClick}
+      aria-label="Toggle favorite"
+      title="Toggle favorite"
+    >
+      {getIcon(getStarIcon(favoriteState()))}
+    </button>
   );
 };
 
