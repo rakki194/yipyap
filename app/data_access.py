@@ -24,7 +24,7 @@ logger = logging.getLogger("uvicorn.error")
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl", ".avif"}
 CAPTION_EXTENSIONS = {".caption", ".txt", ".tags"}
-METADATA_EXTENSIONS = {".favorite"}
+METADATA_EXTENSIONS = set()
 
 try:
     import pillow_avif
@@ -173,11 +173,37 @@ class CachedFileSystemDataSource(ImageDataSource):
                 cache_time INTEGER NOT NULL,
                 thumbnail_webp BLOB NOT NULL,
                 deleted INTEGER NOT NULL DEFAULT 0,
+                favorite_state INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY (directory, name)
             )
             """
         )
         conn.commit()
+
+        # Add favorite_state column if it doesn't exist (for backwards compatibility)
+        try:
+            conn.execute("SELECT favorite_state FROM image_info LIMIT 1")
+        except sqlite3.OperationalError:
+            logger.info("Adding favorite_state column to image_info table")
+            conn.execute("ALTER TABLE image_info ADD COLUMN favorite_state INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+
+            # Migrate existing favorite states from files to SQLite
+            logger.info("Migrating existing favorite states to SQLite")
+            for directory, name in conn.execute("SELECT directory, name FROM image_info").fetchall():
+                try:
+                    favorite_path = Path(directory) / f"{Path(name).stem}.favorite"
+                    if favorite_path.exists():
+                        with open(favorite_path, "r") as f:
+                            favorite_state = int(f.read().strip())
+                            conn.execute(
+                                "UPDATE image_info SET favorite_state = ? WHERE directory = ? AND name = ?",
+                                (favorite_state, directory, name)
+                            )
+                        favorite_path.unlink()  # Delete the file after migration
+                except (ValueError, IOError) as e:
+                    logger.warning(f"Error migrating favorite state for {directory}/{name}: {e}")
+            conn.commit()
 
     def _get_connection(self):
         """
@@ -282,7 +308,7 @@ class CachedFileSystemDataSource(ImageDataSource):
         # Use exact filename match
         result = conn.execute(
             r"""
-            SELECT info, cache_time, deleted FROM image_info 
+            SELECT info, cache_time, deleted, favorite_state FROM image_info 
             WHERE directory = ? AND name = ? AND deleted = 0
             """,
             (str(directory), item["name"]),
@@ -293,7 +319,10 @@ class CachedFileSystemDataSource(ImageDataSource):
         if result:
             cache_mtime = datetime.fromtimestamp(result[1], tz=timezone.utc)
             if cache_mtime >= current_mtime:
-                return ImageModel.model_validate_json(result[0])
+                info = ImageModel.model_validate_json(result[0])
+                # Update favorite state from the dedicated column
+                info.favorite_state = result[3]
+                return info
 
         # Cache miss - generate new info
         md5sum = self._compute_md5(path)
@@ -307,15 +336,14 @@ class CachedFileSystemDataSource(ImageDataSource):
             assert ext[0] == "."
             captions.append((ext[1:], caption))
 
-        # Get favorite state
+        # Get favorite state from SQLite if it exists, otherwise default to 0
         favorite_state = 0
-        if ".favorite" in item.get("metadata", {}):
-            favorite_path = directory / item["metadata"][".favorite"]
-            try:
-                with open(favorite_path, "r") as f:
-                    favorite_state = int(f.read().strip())
-            except (ValueError, IOError) as e:
-                logger.warning(f"Error reading favorite state for {path}: {e}")
+        existing_favorite = conn.execute(
+            "SELECT favorite_state FROM image_info WHERE directory = ? AND name = ?",
+            (str(directory), item["name"])
+        ).fetchone()
+        if existing_favorite:
+            favorite_state = existing_favorite[0]
 
         # Generate thumbnail in memory
         with open_srgb(path, force_load=False) as img:
@@ -344,8 +372,8 @@ class CachedFileSystemDataSource(ImageDataSource):
         conn.execute(
             """
             INSERT OR REPLACE INTO image_info 
-            (directory, name, info, cache_time, thumbnail_webp, deleted) 
-            VALUES (?, ?, ?, ?, ?, 0)
+            (directory, name, info, cache_time, thumbnail_webp, deleted, favorite_state) 
+            VALUES (?, ?, ?, ?, ?, 0, ?)
             """,
             (
                 str(directory),
@@ -353,6 +381,7 @@ class CachedFileSystemDataSource(ImageDataSource):
                 info.model_dump_json(),
                 int(datetime.now(timezone.utc).timestamp()),
                 thumbnail_data,
+                favorite_state,
             ),
         )
         conn.commit()
@@ -409,7 +438,7 @@ class CachedFileSystemDataSource(ImageDataSource):
                         }
                     )
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))
-                elif suffix in {".caption", ".txt", ".tags", ".wd"}:
+                elif suffix in CAPTION_EXTENSIONS:
                     stem = entry.stem
                     all_side_car_files[stem][suffix] = name
                     mtimes[stem] = max(stat.st_mtime, mtimes.get(stem, 0))

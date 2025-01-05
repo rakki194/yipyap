@@ -30,6 +30,8 @@ import asyncio
 from pathlib import Path
 import logging
 import os
+import json
+from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException, Query, Request, File, UploadFile, Body
 from fastapi.responses import FileResponse, Response, StreamingResponse
@@ -936,15 +938,44 @@ async def update_favorite_state(
         if not full_path.exists():
             raise HTTPException(status_code=404, detail="Image not found")
 
-        # Save favorite state to a .favorite file
-        favorite_path = full_path.with_suffix(".favorite")
-        async with aiofiles.open(favorite_path, "w") as f:
-            await f.write(str(favorite_state))
+        # Update favorite state in SQLite
+        conn = data_source._get_connection()
+        directory = str(full_path.parent)
+        filename = full_path.name
 
-        # Clear cache to force reload
-        data_source.directory_cache.pop(full_path.parent, None)
+        # Update both the favorite_state column and the info JSON
+        result = conn.execute(
+            "SELECT info FROM image_info WHERE directory = ? AND name = ?",
+            (directory, filename)
+        ).fetchone()
 
-        return {"success": True}
+        if result:
+            info = json.loads(result[0])
+            info["favorite_state"] = favorite_state
+            
+            conn.execute(
+                """
+                UPDATE image_info 
+                SET favorite_state = ?, info = ?, cache_time = ?
+                WHERE directory = ? AND name = ?
+                """,
+                (
+                    favorite_state,
+                    json.dumps(info),
+                    int(datetime.now(timezone.utc).timestamp()),
+                    directory,
+                    filename,
+                )
+            )
+            conn.commit()
+
+            # Clear directory cache to force reload
+            data_source.directory_cache.pop(full_path.parent, None)
+
+            return {"success": True}
+        else:
+            raise HTTPException(status_code=404, detail="Image info not found in cache")
+
     except HTTPException:
         raise
     except Exception as e:
