@@ -35,16 +35,80 @@
     }
   }
 
-  /* Modal Actions */
-  .modal-actions {
+  /* Modal Header Title */
+  .modal-header-title {
+    flex: 1;
+    padding: var(--spacing);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Modal Header Buttons */
+  .modal-header-buttons {
     display: flex;
     gap: var(--spacing);
     padding: var(--spacing);
     position: relative;
     pointer-events: auto;
 
-    /* Metadata Button */
-    .metadata-button {
+    /* Favorite Button */
+    .favorite-button {
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+
+      &.active {
+        color: var(--accent);
+        transform: scale(1.1);
+      }
+
+      &.negative {
+        color: var(--error);
+        transform: scale(1.1);
+      }
+
+      &:hover {
+        color: var(--accent);
+        transform: scale(1.1);
+      }
+
+      &.negative:hover {
+        color: var(--error);
+      }
+
+      &:active {
+        transform: scale(0.9);
+      }
+
+      /* Star Rating Colors */
+      &[data-rating="quarter"] {
+        color: color-mix(in srgb, var(--accent) 25%, var(--text-muted));
+      }
+
+      &[data-rating="half"] {
+        color: color-mix(in srgb, var(--accent) 50%, var(--text-muted));
+      }
+
+      &[data-rating="threeQuarter"] {
+        color: color-mix(in srgb, var(--accent) 75%, var(--text-muted));
+      }
+
+      &[data-rating="full"] {
+        color: var(--accent);
+      }
+
+      &[data-rating="emphasis"] {
+        color: var(--accent);
+        filter: drop-shadow(0 0 2px var(--accent));
+      }
+
+      &[data-rating="off"] {
+        color: var(--error);
+      }
+    }
+
+    /* Info Button */
+    .info-button {
       transition: background-color 0.2s ease, transform 0.2s ease;
 
       &.active {

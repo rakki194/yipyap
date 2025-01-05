@@ -49,6 +49,58 @@
   pointer-events: auto;
   cursor: pointer;
 
+  & .rating-indicator {
+    position: absolute;
+    top: var(--spacing);
+    left: var(--spacing);
+    z-index: 3;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+
+    & .icon {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      & svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &[data-rating="quarter"] {
+      color: color-mix(in srgb, var(--accent) 25%, var(--text-muted));
+    }
+
+    &[data-rating="half"] {
+      color: color-mix(in srgb, var(--accent) 50%, var(--text-muted));
+    }
+
+    &[data-rating="threeQuarter"] {
+      color: color-mix(in srgb, var(--accent) 75%, var(--text-muted));
+    }
+
+    &[data-rating="full"] {
+      color: var(--accent);
+    }
+
+    &[data-rating="emphasis"] {
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    &[data-rating="off"] {
+      color: var(--error);
+    }
+  }
+
   &:hover,
   &.selected {
     transform: var(--hover-transform);
@@ -611,6 +663,9 @@
 .item.being-dragged {
   opacity: 0.6 !important;
   filter: grayscale(50%) !important;
+  cursor: grabbing !important;
+  transform: scale(0.98) !important;
+  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease !important;
 }
 
 /* Ensure the drag target outline is above other effects */
@@ -648,4 +703,51 @@
 
 .gallery-error .error-message {
   font-weight: 500;
+}
+
+/* Add strawberry theme-specific drag target styles */
+[data-theme="strawberry"] .item.directory.drag-target {
+  outline: none;
+  background-color: var(--accent);
+  color: white;
+  transition: background-color 0.4s ease, color 0.4s ease;
+
+  svg {
+    fill: white;
+    transition: fill 0.4s ease;
+  }
+}
+
+/* Add banana theme-specific drag target styles */
+[data-theme="banana"] .item.directory.drag-target {
+  outline: 4px solid var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 20%, var(--card-bg));
+}
+
+/* Add peanut theme-specific drag target styles */
+[data-theme="peanut"] .item.directory.drag-target {
+  outline: 4px solid var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+}
+
+/* Add high-contrast theme-specific drag target styles */
+[data-theme="high-contrast-black"] .item.directory.drag-target,
+[data-theme="high-contrast-inverse"] .item.directory.drag-target {
+  outline: 4px solid var(--accent);
+  background-color: var(--accent);
+  color: var(--bg-color);
+}
+
+/* Add animation for drag target state */
+.item.directory.drag-target {
+  animation: dragTargetPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes dragTargetPulse {
+  0%, 100% {
+    outline-color: var(--accent);
+  }
+  50% {
+    outline-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  }
 }

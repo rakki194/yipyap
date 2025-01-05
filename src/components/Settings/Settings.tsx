@@ -271,6 +271,13 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                             <span>{t('settings.alwaysShowCaptionEditor')}</span>
                           </label>
                         </Tooltip>
+                        <label class="setting">
+                          <span>{t('settings.enableFavorites')}</span>
+                          <Toggle
+                            checked={app.enableFavorites}
+                            onChange={(checked) => app.setEnableFavorites(checked)}
+                          />
+                        </label>
                       </div>
                     </div>
                   </Show>

@@ -64,6 +64,15 @@ import BeakerRegular from "@fluentui/svg-icons/icons/beaker_24_regular.svg?raw";
 import RocketFilled from "@fluentui/svg-icons/icons/rocket_24_filled.svg?raw";
 import TextLowerCaseRegular from "@fluentui/svg-icons/icons/text_case_lowercase_24_regular.svg?raw";
 import TextUpperCaseRegular from "@fluentui/svg-icons/icons/text_case_uppercase_24_regular.svg?raw";
+import StarFilled from "@fluentui/svg-icons/icons/star_24_filled.svg?raw";
+import StarHalfRegular from "@fluentui/svg-icons/icons/star_half_24_regular.svg?raw";
+import StarRegular from "@fluentui/svg-icons/icons/star_24_regular.svg?raw";
+import StarHalfFilled from "@fluentui/svg-icons/icons/star_half_24_filled.svg?raw";
+import StarEmphasisFilled from "@fluentui/svg-icons/icons/star_emphasis_24_filled.svg?raw";
+import StarEmphasisRegular from "@fluentui/svg-icons/icons/star_emphasis_24_regular.svg?raw";
+import StarOffFilled from "@fluentui/svg-icons/icons/star_off_24_filled.svg?raw";
+import StarOneQuarterRegular from "@fluentui/svg-icons/icons/star_one_quarter_24_regular.svg?raw";
+import StarThreeQuarterRegular from "@fluentui/svg-icons/icons/star_three_quarter_24_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -159,6 +168,15 @@ const iconMap: Readonly<Record<string, string>> = {
   christmas: ChristmasTreeIcon,
   ghost: GhostIcon,
   beakerRegular: BeakerRegular,
+  star: StarRegular,
+  starFilled: StarFilled,
+  starHalf: StarHalfRegular,
+  starHalfFilled: StarHalfFilled,
+  starEmphasis: StarEmphasisRegular,
+  starEmphasisFilled: StarEmphasisFilled,
+  starOff: StarOffFilled,
+  starOneQuarter: StarOneQuarterRegular,
+  starThreeQuarter: StarThreeQuarterRegular,
 };
 
 /* Returns a SVGElement from the icon map */
