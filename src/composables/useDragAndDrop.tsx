@@ -64,6 +64,13 @@ export interface DragAndDropProps {
 }
 
 /**
+ * Extended File type that includes the relative path
+ */
+interface FileWithPath extends File {
+  relativePath: string;
+}
+
+/**
  * Hook that implements drag and drop file upload functionality.
  * Handles drag events, file validation, upload progress tracking,
  * and provides feedback through the notification system.
@@ -388,11 +395,88 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
       }
     }
 
-    // Handle external file drops
-    const files = e.dataTransfer.files;
-    if (!files || files.length === 0) return;
+    // Handle external file/folder drops
+    if (e.dataTransfer.items) {
+      // Use DataTransferItemList interface for folder support
+      const items = Array.from(e.dataTransfer.items);
+      const entries = items
+        .filter(item => item.kind === 'file')
+        .map(item => item.webkitGetAsEntry());
 
-    await uploadFiles(files);
+      const files: FileWithPath[] = [];
+      
+      const processEntry = async (entry: any, path: string = '') => {
+        if (!entry) return;
+
+        if (entry.isFile) {
+          // Get file with its relative path preserved
+          return new Promise<void>((resolve) => {
+            entry.file((file: File) => {
+              // Create a new file with the full path
+              const relativePath = path ? `${path}/${entry.name}` : entry.name;
+              const fileWithPath = file as FileWithPath;
+              fileWithPath.relativePath = relativePath;
+              files.push(fileWithPath);
+              resolve();
+            });
+          });
+        } else if (entry.isDirectory) {
+          // Get folder contents with path updated
+          const dirReader = entry.createReader();
+          const dirPath = path ? `${path}/${entry.name}` : entry.name;
+          
+          return new Promise<void>((resolve) => {
+            const readEntries = () => {
+              dirReader.readEntries(async (entries: any[]) => {
+                if (entries.length === 0) {
+                  resolve();
+                  return;
+                }
+                
+                // Process all entries with updated path
+                await Promise.all(entries.map(e => processEntry(e, dirPath)));
+                
+                // Continue reading if there might be more entries
+                readEntries();
+              });
+            };
+            readEntries();
+          });
+        }
+      };
+
+      try {
+        // Process all root entries
+        await Promise.all(entries.map(entry => processEntry(entry)));
+        
+        // Create a new FileList-like object
+        const dt = new DataTransfer();
+        files.forEach(file => {
+          // Create a new file with the preserved path as the name
+          const newFile = new File([file], file.relativePath, {
+            type: file.type,
+            lastModified: file.lastModified
+          });
+          dt.items.add(newFile);
+        });
+        
+        // Upload the files
+        if (dt.files.length > 0) {
+          await uploadFiles(dt.files);
+        }
+      } catch (err) {
+        console.error('Error processing dropped items:', err);
+        appContext.notify(
+          t("gallery.uploadError", { error: err instanceof Error ? err.message : "Unknown error" }),
+          "error"
+        );
+      }
+    } else {
+      // Fallback to simple FileList for browsers that don't support DataTransferItemList
+      const files = e.dataTransfer.files;
+      if (!files || files.length === 0) return;
+      await uploadFiles(files);
+    }
   };
 
   const handleDragStart = (e: DragEvent) => {

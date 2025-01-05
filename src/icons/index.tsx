@@ -73,6 +73,7 @@ import StarEmphasisRegular from "@fluentui/svg-icons/icons/star_emphasis_24_regu
 import StarOffFilled from "@fluentui/svg-icons/icons/star_off_24_filled.svg?raw";
 import StarOneQuarterRegular from "@fluentui/svg-icons/icons/star_one_quarter_24_regular.svg?raw";
 import StarThreeQuarterRegular from "@fluentui/svg-icons/icons/star_three_quarter_24_regular.svg?raw";
+import ImageAddRegular from "@fluentui/svg-icons/icons/image_add_24_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -177,6 +178,7 @@ const iconMap: Readonly<Record<string, string>> = {
   starOff: StarOffFilled,
   starOneQuarter: StarOneQuarterRegular,
   starThreeQuarter: StarThreeQuarterRegular,
+  imageAdd: ImageAddRegular,
 };
 
 /* Returns a SVGElement from the icon map */

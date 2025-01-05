@@ -667,7 +667,10 @@ async def update_jtp2_config(config: dict):
 
 
 @app.post("/api/upload/{path:path}")
-async def upload_files(path: str, files: List[UploadFile] = File(...)):
+async def upload_files(
+    path: str,
+    files: List[UploadFile] = File(...)
+):
     """
     Upload files to a specified directory.
     
@@ -693,23 +696,55 @@ async def upload_files(path: str, files: List[UploadFile] = File(...)):
         if not target_dir.exists():
             target_dir.mkdir(parents=True, exist_ok=True)
             
+        uploaded_files = []
+        failed_files = []
+        
         for file in files:
-            # Get the relative path from the file name/path
-            relative_path = file.filename
-            if not relative_path:
+            try:
+                # Get the relative path from the file name/path
+                relative_path = file.filename
+                if not relative_path:
+                    continue
+                    
+                # Skip hidden files and directories
+                if any(part.startswith('.') for part in Path(relative_path).parts):
+                    continue
+                
+                # Create full target path
+                full_path = target_dir / relative_path
+                
+                # Ensure the parent directory exists
+                full_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Save the file
+                async with aiofiles.open(full_path, "wb") as buffer:
+                    while content := await file.read(8192):  # Read in 8KB chunks
+                        await buffer.write(content)
+                
+                uploaded_files.append(relative_path)
+                
+            except Exception as e:
+                logger.error(f"Error uploading file {file.filename}: {e}")
+                failed_files.append(file.filename)
                 continue
                 
-            # Create full target path
-            full_path = target_dir / relative_path
+        # Touch the directory to force cache update
+        target_dir.touch()
+        
+        # Clear directory cache
+        if target_dir in data_source.directory_cache:
+            del data_source.directory_cache[target_dir]
             
-            # Ensure the parent directory exists
-            full_path.parent.mkdir(parents=True, exist_ok=True)
+        result = {
+            "message": "Upload complete",
+            "uploaded": uploaded_files,
+            "failed": failed_files
+        }
+        
+        if failed_files:
+            result["error"] = "Some files failed to upload"
             
-            # Save the file
-            with full_path.open("wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-                
-        return {"message": "Files uploaded successfully"}
+        return result
         
     except Exception as e:
         logger.error(f"Error uploading files: {e}")
