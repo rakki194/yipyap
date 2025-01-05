@@ -62,9 +62,6 @@ export default {
     // Controls whether to show Japanese text and other playful UI elements
     disableNonsense: "Disable nonsense",
     disableNonsenseTooltip: "Hide Japanese text and other nonsensical elements",
-    enableFavorites: "Enable favorites",
-    enableFavoritesTooltip: "Enable favorite system for images",
-    sortByFavorites: "Sort by favorites",
     modelSettings: "Model settings",
     // Path to the JTP2 machine learning model file used for image analysis
     jtp2ModelPath: "JTP2 Model Path",
@@ -339,7 +336,6 @@ export default {
     moveFailedMissing: "Cannot move {files} because they no longer exist",
     moveError: "Move failed: {error}",
     sameDirectoryMove: "Cannot move items to the same directory they are already in",
-    toggleFavorite: "Toggle favorite",
   },
   shortcuts: {
     title: "Keyboard shortcuts",

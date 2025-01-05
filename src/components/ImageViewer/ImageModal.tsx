@@ -19,7 +19,7 @@ import { useGallery } from "~/contexts/GalleryContext";
 import getIcon from "~/icons";
 import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions, SaveCaption } from "~/types";
-import { useAppContext, type FavoriteState } from "~/contexts/app";
+import { useAppContext } from "~/contexts/app";
 import { captionIconsMap } from "~/icons";
 import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 
@@ -331,79 +331,46 @@ const ModalHeader = (props: {
   showMetadata: boolean;
   setShowMetadata: (show: boolean) => void;
 }) => {
-  const app = useAppContext();
   const gallery = useGallery();
-
-  const getNextRating = (currentRating: FavoriteState): FavoriteState => {
-    const ratingOrder: FavoriteState[] = ['none', 'quarter', 'half', 'threeQuarter', 'full', 'emphasis', 'off'];
-    const currentIndex = ratingOrder.indexOf(currentRating);
-    return ratingOrder[(currentIndex + 1) % ratingOrder.length];
-  };
-
-  const getRatingIcon = (rating: FavoriteState): string => {
-    switch (rating) {
-      case 'quarter':
-        return 'starOneQuarter';
-      case 'half':
-        return 'starHalf';
-      case 'threeQuarter':
-        return 'starThreeQuarter';
-      case 'full':
-        return 'starFilled';
-      case 'emphasis':
-        return 'starEmphasisFilled';
-      case 'off':
-        return 'starOff';
-      default:
-        return 'star';
-    }
-  };
-
-  const handleRatingClick = () => {
-    const currentRating = app.getImageRating(props.imageInfo.download_path);
-    const nextRating = getNextRating(currentRating);
-    app.setImageRating(props.imageInfo.download_path, nextRating);
-  };
+  const generateTags = useAction(gallery.generateTags);
+  const { t } = useAppContext();
 
   return (
     <div class="modal-header">
-      <div class="modal-header-title">
-        {props.imageInfo.name}
-      </div>
-      <div class="modal-header-buttons">
-        <Show when={app.enableFavorites}>
-          <button
-            type="button"
-            class="icon favorite-button"
-            classList={{ 
-              active: app.getImageRating(props.imageInfo.download_path) !== 'none',
-              negative: app.getImageRating(props.imageInfo.download_path) === 'off'
-            }}
-            data-rating={app.getImageRating(props.imageInfo.download_path)}
-            onClick={handleRatingClick}
-            title={app.t('gallery.toggleFavorite')}
-            aria-label={app.t('gallery.toggleFavorite')}
-          >
-            {getIcon(getRatingIcon(app.getImageRating(props.imageInfo.download_path)))}
-          </button>
-        </Show>
+      <h2>{props.imageInfo.name}</h2>
+      <div class="modal-actions">
         <button
           type="button"
-          class="icon info-button"
+          class="icon metadata-button"
           classList={{ active: props.showMetadata }}
           onClick={() => props.setShowMetadata(!props.showMetadata)}
-          title={app.t('gallery.toggleInfo')}
-          aria-label={app.t('gallery.toggleInfo')}
+          title={t('imageViewer.showMetadata')}
+          aria-label={t('imageViewer.showMetadata')}
         >
           {getIcon("info")}
         </button>
-        <DeleteButton imageInfo={props.imageInfo} onClose={props.onClose} />
+        <ExpandableMenu generateTags={generateTags} />
         <button
           type="button"
-          class="icon close-button"
+          class="icon"
+          onClick={() => {
+            window.location.href = props.imageInfo.download_path;
+          }}
+          aria-label="Download image"
+          title="Download image"
+        >
+          {getIcon("download")}
+        </button>
+        <DeleteButton
+          imageInfo={props.imageInfo}
+          onClose={props.onClose}
+        />
+        <button
+          type="button"
+          class="icon"
           onClick={props.onClose}
-          title={app.t('common.close')}
-          aria-label={app.t('common.close')}
+          aria-label="Close image viewer"
+          title="Close image viewer"
         >
           {getIcon("dismiss")}
         </button>

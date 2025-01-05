@@ -1,29 +1,7 @@
 .breadcrumb-actions {
   display: flex;
   gap: var(--spacing);
-  padding: var(--spacing);
-  position: relative;
-  pointer-events: auto;
-
-  /* Favorite Button */
-  .favorite-button {
-    transition: all 0.2s ease;
-    color: var(--text-muted);
-
-    &.active {
-      color: var(--accent);
-      transform: scale(1.1);
-    }
-
-    &:hover {
-      color: var(--accent);
-      transform: scale(1.1);
-    }
-
-    &:active {
-      transform: scale(0.9);
-    }
-  }
+  align-items: center;
 }
 
 .breadcrumb-actions .icon {

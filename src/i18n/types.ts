@@ -78,9 +78,6 @@ export interface SettingsTranslations {
   languageTooltip: string;
   disableNonsense: string;
   disableNonsenseTooltip: string;
-  enableFavorites: string;
-  enableFavoritesTooltip: string;
-  sortByFavorites: string;
   modelSettings: string | ((params: TranslationParams) => string);
   jtp2ModelPath: string;
   jtp2ModelPathTooltip: string;
@@ -254,7 +251,6 @@ export interface GalleryTranslations {
   moveFailedMissing?: string;
   moveError?: string;
   sameDirectoryMove?: string;
-  toggleFavorite?: string;
 }
 
 export interface ShortcutsTranslations {

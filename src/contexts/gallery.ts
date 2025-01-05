@@ -24,17 +24,16 @@ import type {
   BrowsePagesCached,
   AnyItem,
   Captions,
-  DirectoryData,
 } from "~/resources/browse";
 import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
 import { joinUrlParts, replaceExtension, cacheNavigation } from "~/utils";
-import { useAppContext, type FavoriteState } from "~/contexts/app";
+import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
 
 export interface GalleryState {
   viewMode: "grid" | "list";
-  sort: "name" | "date" | "size" | "favorites";
+  sort: "name" | "date" | "size";
   search: string;
   page: number;
   path: string;
@@ -481,95 +480,20 @@ export function makeGalleryState() {
     folderCachePromise = null;
   };
 
-  // Effect: Sort items based on current sort mode
-  createEffect(() => {
-    const data = backendData();
-    if (!data) return;
-
-    const getRatingValue = (rating: FavoriteState): number => {
-      switch (rating) {
-        case 'emphasis': return 6;
-        case 'full': return 5;
-        case 'threeQuarter': return 4;
-        case 'half': return 3;
-        case 'quarter': return 2;
-        case 'none': return 1;
-        case 'off': return 0;
-        default: return 1;
-      }
-    };
-
-    // Create a stable sort key for each item based on sort mode
-    const getSortKey = (item: DirectoryData | ImageData): string => {
-      if (item.type === "directory") return "0:" + item.name;
-      
-      switch (state.sort) {
-        case "favorites":
-          if (!app.enableFavorites) return "1:" + item.name;
-          const rating = app.getImageRating(joinUrlParts("/download", data.path, item.name));
-          const ratingValue = getRatingValue(rating);
-          return `${rating === 'off' ? '2' : '1'}:${String(6 - ratingValue).padStart(2, '0')}:${item.name}`;
-        case "date":
-          return "1:" + item.mtime + ":" + item.name;
-        case "size":
-          return "1:" + String(item.size).padStart(20, '0') + ":" + item.name;
-        case "name":
-        default:
-          return "1:" + item.name;
-      }
-    };
-
-    // Sort the items
-    const sortedItems = [...data.items].sort((a, b) => {
-      const aItem = a();
-      const bItem = b();
-      if (!aItem || !bItem) return 0;
-      return getSortKey(aItem).localeCompare(getSortKey(bItem));
-    });
-
-    // Only update if the order has changed
-    const currentOrder = sortedItems.map(item => item()?.name).join('|');
-    const previousOrder = untrack(() => data.items.map(item => item()?.name).join('|'));
-    
-    if (currentOrder !== previousOrder) {
-      // Update the data with new indices
-      const newData: BrowsePagesCached = {
-        ...data,
-        items: sortedItems.map((item, index) => {
-          const currentItem = item();
-          if (!currentItem) return item;
-          return item;
-        })
-      };
-
-      untrack(() => {
-        setData(newData);
-      });
-    }
-  });
-
-  // Add effect to monitor data changes
-  createEffect(() => {
-    const data = backendData();
-    console.debug('Gallery data updated:', {
-      path: data?.path,
-      totalItems: data?.items?.length,
-      totalFolders: data?.total_folders,
-      totalImages: data?.total_images
-    });
-  });
-
   // Gallery actions and getters
   const gallery = {
     setViewMode: (mode: "grid" | "list") => {
       setState("viewMode", mode);
+      // setSearchParams({ view: mode });
     },
-    setSort: (sort: "name" | "date" | "size" | "favorites") => {
+    setSort: (sort: "name" | "date" | "size") => {
       setState("sort", sort);
+      // setSearchParams({ sort });
     },
     setSearch: (search: string) => {
       setState("search", search);
       setState("page", 1);
+      // setSearchParams({ search, page: '1' });
     },
     setPage,
     getPreviewSize: (image: Size) =>
@@ -592,9 +516,6 @@ export function makeGalleryState() {
     getAllKnownFolders,
     invalidateFolderCache,
     generateTags,
-    get sortMode() {
-      return state.sort;
-    },
   };
 
   // NOTE: Glorious debugging.
@@ -627,6 +548,17 @@ export function makeGalleryState() {
   //    })
   //  );
   //}
+
+  // Add effect to monitor data changes
+  createEffect(() => {
+    const data = backendData();
+    console.debug('Gallery data updated:', {
+      path: data?.path,
+      totalItems: data?.items?.length,
+      totalFolders: data?.total_folders,
+      totalImages: data?.total_images
+    });
+  });
 
   // Merge gallery and selection properties
   return mergeProps(gallery, selection);

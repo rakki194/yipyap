@@ -82,11 +82,6 @@ export interface AppContext {
   setPreserveTxt: (value: boolean) => void;
   readonly alwaysShowCaptionEditor: boolean;
   setAlwaysShowCaptionEditor: (value: boolean) => void;
-  readonly enableFavorites: boolean;
-  setEnableFavorites: (value: boolean) => void;
-  readonly favoriteImages: Map<string, FavoriteState>;
-  setImageRating: (imagePath: string, rating: FavoriteState) => void;
-  getImageRating: (imagePath: string) => FavoriteState;
   notify: (
     message: string,
     type?: "error" | "success" | "info" | "warning",
@@ -103,8 +98,6 @@ export interface AppContext {
     progress?: number;
   }) => void;
 }
-
-export type FavoriteState = 'none' | 'quarter' | 'half' | 'threeQuarter' | 'full' | 'emphasis' | 'off';
 
 const translations: Record<Locale, () => Promise<{ default: Translations }>> = {
   en: () => import("~/i18n/lang/en") as Promise<{ default: Translations }>,
@@ -164,8 +157,6 @@ const createAppContext = (): AppContext => {
     wdv3GenThreshold: number;
     wdv3CharThreshold: number;
     wdv3ForceCpu: boolean;
-    enableFavorites: boolean;
-    favoriteImages: Record<string, FavoriteState>;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
@@ -184,8 +175,6 @@ const createAppContext = (): AppContext => {
     wdv3GenThreshold: parseFloat(localStorage.getItem("wdv3GenThreshold") || "0.35"),
     wdv3CharThreshold: parseFloat(localStorage.getItem("wdv3CharThreshold") || "0.75"),
     wdv3ForceCpu: localStorage.getItem("wdv3ForceCpu") === "true",
-    enableFavorites: localStorage.getItem("enableFavorites") === "true",
-    favoriteImages: JSON.parse(localStorage.getItem("favoriteImages") || "{}"),
   });
 
   // Previous Location tracking
@@ -262,12 +251,6 @@ const createAppContext = (): AppContext => {
   );
   createRenderEffect(() =>
     localStorage.setItem("wdv3ForceCpu", store.wdv3ForceCpu.toString())
-  );
-  createRenderEffect(() =>
-    localStorage.setItem("enableFavorites", store.enableFavorites.toString())
-  );
-  createRenderEffect(() =>
-    localStorage.setItem("favoriteImages", JSON.stringify(store.favoriteImages))
   );
 
   const setJtp2ModelPath = (value: string) => {
@@ -606,27 +589,6 @@ const createAppContext = (): AppContext => {
         setCharThreshold: (value: number) => updateWdv3Config({ char_threshold: value }),
         setForceCpu: (value: boolean) => updateWdv3Config({ force_cpu: value }),
       } as WDv3Settings;
-    },
-    get enableFavorites() {
-      return store.enableFavorites;
-    },
-    setEnableFavorites(value: boolean) {
-      setStore("enableFavorites", value);
-    },
-    get favoriteImages() {
-      return new Map(Object.entries(store.favoriteImages));
-    },
-    setImageRating(imagePath: string, rating: FavoriteState) {
-      const newFavorites = { ...store.favoriteImages };
-      if (rating === 'none') {
-        delete newFavorites[imagePath];
-      } else {
-        newFavorites[imagePath] = rating;
-      }
-      setStore("favoriteImages", newFavorites);
-    },
-    getImageRating(imagePath: string) {
-      return store.favoriteImages[imagePath] || 'none';
     },
   };
 

@@ -371,9 +371,8 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         // Only refetch if something actually moved
         if (result.moved.length > 0) {
           // Clear selections after successful move
-          gallery.selection.clearMultiSelect();
-          gallery.selection.clearFolderMultiSelect();
-          gallery.select(null);
+          gallery.selection.multiSelected.clear();
+          gallery.selection.multiFolderSelected.clear();
           // Refresh both source and target directories
           gallery.refetchGallery();
         }

@@ -12,7 +12,7 @@ import type {
   ImageItem as ImageItemType,
   BrowsePagesCached,
 } from "~/resources/browse";
-import { useAppContext, type FavoriteState } from "~/contexts/app";
+import { useAppContext } from "~/contexts/app";
 
 /**
  * Grid component that displays images and directories in a responsive layout
@@ -243,7 +243,6 @@ export const ImageItem = (props: {
   selected: boolean;
 }) => {
   const gallery = useGallery();
-  const app = useAppContext();
   const { getThumbnailSize } = gallery;
   const [isLoading, setIsLoading] = createSignal(true);
   const isMultiSelected = () => gallery.selection.multiSelected.has(props.idx);
@@ -266,32 +265,6 @@ export const ImageItem = (props: {
     "justify-content": "center",
     "overflow": "hidden"
   }));
-
-  const getRatingIcon = (rating: FavoriteState): string => {
-    switch (rating) {
-      case 'quarter':
-        return 'starOneQuarter';
-      case 'half':
-        return 'starHalf';
-      case 'threeQuarter':
-        return 'starThreeQuarter';
-      case 'full':
-        return 'starFilled';
-      case 'emphasis':
-        return 'starEmphasisFilled';
-      case 'off':
-        return 'starOff';
-      default:
-        return 'star';
-    }
-  };
-
-  const rating = createMemo(() => app.getImageRating(joinUrlParts("/download", props.path, props.item.file_name)));
-
-  const imageData = createMemo(() => {
-    const item = props.item();
-    return item?.type === "image" ? item : undefined;
-  });
 
   const handleClick = (e: MouseEvent) => {
     if (e.shiftKey || e.ctrlKey || e.metaKey) {
@@ -370,53 +343,77 @@ export const ImageItem = (props: {
       classList={{
         selected: props.selected,
         "multi-selected": isMultiSelected(),
+        loading: isLoading()
       }}
-      style={containerStyle()}
       onClick={handleClick}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
       role="gridcell"
-      aria-selected={props.selected}
-      data-idx={props.idx}
-      draggable={true}
+      aria-selected={props.selected || isMultiSelected()}
+      tabIndex={0}
     >
-      <Show when={app.enableFavorites && rating() !== 'none'}>
-        <div 
-          class="rating-indicator" 
-          data-rating={rating()}
-          title={app.t('gallery.rating.' + rating())}
-        >
-          <span class="icon">
-            {getIcon(getRatingIcon(rating()))}
-          </span>
-        </div>
+      <Show when={props.item()} keyed>
+        {(item) => {
+          const thumbnailPath = joinUrlParts("/thumbnail", props.path, item.name);
+          const aspectRatio = item.width / item.height;
+          const { width, height } = getThumbnailSize(item);
+
+          let imgRef!: HTMLImageElement;
+          onMount(() => {
+            if (imgRef.complete) {
+              setIsLoading(false);
+            }
+          });
+
+          return (
+            <>
+              <img
+                ref={imgRef}
+                src={thumbnailPath}
+                width={width}
+                height={height}
+                style={{
+                  "object-position": aspectRatio > 1 ? "center" : "top",
+                }}
+                classList={{ loaded: !isLoading() }}
+                onLoad={() => setIsLoading(false)}
+                alt={`Thumbnail of ${item.name}`}
+                aria-busy={isLoading()}
+              />
+              <Show when={isLoading()}>
+                <div class="spin-icon" role="status" aria-live="polite">
+                  <span class="icon" aria-hidden="true">{getIcon("spinner")}</span>
+                  <span class="sr-only">Loading image...</span>
+                </div>
+              </Show>
+            </>
+          );
+        }}
       </Show>
-      <img
-        src={joinUrlParts("/thumbnail", props.path, props.item.file_name)}
-        alt={props.item.file_name}
-        loading="lazy"
-        onLoad={() => setIsLoading(false)}
-        classList={{ loaded: !isLoading() }}
-      />
-      <div class="overlay">
-        <span class="filename">{props.item.file_name}</span>
-        <Show when={imageData()?.captions && Object.keys(imageData()?.captions || {}).length > 0}>
-          <div class="caption-icons">
-            <For each={Object.keys(imageData()?.captions || {})}>
-              {(type) => (
-                <Show when={type in captionIconsMap}>
-                  <span class="icon" title={`Has ${type} caption`}>
-                    {getIcon(captionIconsMap[type as keyof typeof captionIconsMap])}
-                  </span>
-                </Show>
-              )}
-            </For>
-          </div>
+      <div class="overlay" id={`image-details-${props.idx}`}>
+        <p>{props.item.file_name}</p>
+        <Show when={props.item()} keyed>
+          {(item) => (
+            <>
+              <p>
+                {item.width}x{item.height} {formatFileSize(item.size)}
+              </p>
+              <p>
+                <For each={item.captions.map((c) => c[0]).toSorted()}>
+                  {(c) => (
+                    <span class="icon" title={c} role="img" aria-label={c}>
+                      {getIcon(
+                        captionIconsMap[c as keyof typeof captionIconsMap]
+                      )}
+                    </span>
+                  )}
+                </For>
+              </p>
+            </>
+          )}
         </Show>
       </div>
-      <Show when={isLoading()}>
-        <div class="spin-icon">
-          <div class="icon">{getIcon("spinner")}</div>
+      <Show when={isMultiSelected()}>
+        <div class="multi-select-indicator" aria-hidden="true">
+          <span class="icon">{getIcon("check")}</span>
         </div>
       </Show>
     </div>

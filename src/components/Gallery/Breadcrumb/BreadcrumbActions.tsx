@@ -270,53 +270,42 @@ export const BreadcrumbActions: Component = () => {
   };
 
   return (
-    <div class="breadcrumb-actions">
-      <Show when={app.enableFavorites}>
-        <Tooltip content={t('settings.sortByFavorites')} position="bottom">
-          <button
-            type="button"
-            class="icon"
-            classList={{ active: gallery.sortMode === "favorites" }}
-            onClick={() => gallery.setSort(gallery.sortMode === "favorites" ? "name" : "favorites")}
-            title={t('settings.sortByFavorites')}
-            aria-label={t('settings.sortByFavorites')}
-          >
-            {getIcon(gallery.sortMode === "favorites" ? "starFilled" : "star")}
-          </button>
-        </Tooltip>
-      </Show>
-      <Show when={isInSubfolder()}>
+    <>
+      <div class="breadcrumb-actions">
+        <MultiSelectActions />
+        <BatchTransformButton />
         <button
           type="button"
           class="icon"
-          onClick={() => setShowDeleteDialog(true)}
-          title={t('gallery.deleteCurrentFolder')}
-          aria-label={t('gallery.deleteCurrentFolder')}
+          onClick={() => setShowNewFolderDialog(true)}
+          title={t('gallery.createFolder')}
+          aria-label={t('gallery.createFolder')}
         >
-          {getIcon("trash")}
+          {getIcon("folderAdd")}
         </button>
-      </Show>
-      <button
-        type="button"
-        class="icon"
-        onClick={() => setShowNewFolderDialog(true)}
-        title={t('common.create')}
-        aria-label={t('common.create')}
-      >
-        {getIcon("folderAdd")}
-      </button>
-      <FileUpload />
-      <BatchTransformButton />
-      <button
-        type="button"
-        class="icon"
-        onClick={() => setShowSettings(true)}
-        title={t('common.openSettings')}
-        aria-label={t('common.openSettings')}
-      >
-        {getIcon("settings")}
-      </button>
-      <ThemeToggle />
+        <FileUpload />
+        <Show when={isInSubfolder()}>
+          <button
+            type="button"
+            class="icon delete-button"
+            onClick={() => setShowDeleteDialog(true)}
+            title={t('gallery.deleteCurrentFolder')}
+            aria-label={t('gallery.deleteCurrentFolder')}
+          >
+            {getIcon("trash")}
+          </button>
+        </Show>
+        <ThemeToggle />
+        <button
+          type="button"
+          class="icon"
+          onClick={() => setShowSettings(!showSettings())}
+          title={t('settings.title')}
+          aria-label={t('common.openSettings')}
+        >
+          {getIcon("settings")}
+        </button>
+      </div>
 
       <Show when={showSettings()}>
         <SettingsOverlay onClose={() => setShowSettings(false)} />
@@ -330,11 +319,14 @@ export const BreadcrumbActions: Component = () => {
         <DeleteConfirmDialog
           imageCount={0}
           folderCount={1}
-          onConfirm={handleDeleteCurrentFolder}
+          onConfirm={() => {
+            setShowDeleteDialog(false);
+            handleDeleteCurrentFolder();
+          }}
           onCancel={() => setShowDeleteDialog(false)}
         />
       </Show>
-    </div>
+    </>
   );
 };
 
