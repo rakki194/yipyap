@@ -77,11 +77,9 @@ if is_dev:
 else:
     # Production-only: serve the built frontend assets
     logger.info("Mounting production static files from /dist/")
-    app.mount("/static", StaticFiles(directory="dist"), name="static")
-
-# mount /assets for Vite's bundled files
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
-
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    # mount /assets for Vite's bundled files
+    app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
 
 # Initialize data source
 ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd())).resolve()
