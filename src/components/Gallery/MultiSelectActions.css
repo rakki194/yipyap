@@ -28,15 +28,6 @@
   transition: width 0.2s ease-out;
 }
 
-/* Only override specific states for delete button */
-.delete-button {
-  opacity: 0.6;
-}
-
-.delete-button:hover {
-  opacity: 1;
-}
-
 .spinner-container {
   width: 32px;
   height: 32px;

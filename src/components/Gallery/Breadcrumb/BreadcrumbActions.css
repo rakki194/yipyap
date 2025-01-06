@@ -4,29 +4,6 @@
   align-items: center;
 }
 
-.breadcrumb-actions .icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: calc(var(--spacing) * 0.5);
-  border: none;
-  background: none;
-  color: var(--text-primary);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: color 0.2s ease, background-color 0.2s ease;
-}
-
-.breadcrumb-actions .icon:hover {
-  color: var(--accent);
-  background-color: var(--hover-bg);
-}
-
-.breadcrumb-actions .icon:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .breadcrumb-actions .icon svg {
   width: 1rem;
   height: 1rem;
@@ -108,16 +85,6 @@
   cursor: pointer;
 }
 
-/* Icon styles */
-.transform-item .icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  color: var(--text-2);
-}
-
 /* Text styles */
 .transform-item .transform-name,
 .caption-type label span {
@@ -143,38 +110,6 @@
   justify-content: flex-end;
   gap: var(--spacing);
   margin-top: var(--spacing-lg);
-}
-
-.dialog-actions button {
-  padding: calc(var(--spacing) * 0.75) var(--spacing);
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-
-.dialog-actions button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.dialog-actions button:not(.primary) {
-  background: var(--bg-alt);
-  color: var(--text-2);
-}
-
-.dialog-actions button:not(.primary):hover:not(:disabled) {
-  background: var(--hover-bg);
-}
-
-.dialog-actions button.primary {
-  background: var(--accent);
-  color: white;
-}
-
-.dialog-actions button.primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 85%, white);
 }
 
 [data-theme="strawberry"] .breadcrumb-actions .icon:hover {

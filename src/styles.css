@@ -127,31 +127,12 @@ code {
 /* Inputs */
 
 input,
-button,
 select {
   margin: 0;
   padding: var(--spacing);
   border-style: solid;
   background-color: var(--secondary-bg);
   color: var(--text-primary);
-}
-
-button {
-  margin: 0;
-  text-decoration: none;
-  border-style: solid;
-  transition-property: background, color;
-
-  &:hover,
-  &:focus,
-  &:focus-visible {
-    background: var(--secondary-bg);
-    color: var(--accent);
-  }
-
-  &.active {
-    background: var(--secondary-bg);
-  }
 }
 
 textarea,
@@ -247,27 +228,20 @@ td {
 /* Icons */
 
 .icon {
-  display: inline-block;
-  vertical-align: middle;
-  padding: var(--half-spacing);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   & > svg {
     width: var(--icon-size);
     height: var(--icon-size);
-
-    /* fill: var(--text-secondary); */
-    transition-property: fill;
-  }
-
-  span& {
-    padding: var(--half-spacing);
-    margin-top: -0.2em;
+    fill: currentColor;
+    transition: fill 0.2s ease-out;
   }
 }
 
 .spin-icon {
   & > svg {
-    fill: var(--accent);
     animation: spin-animation 1s infinite linear;
     transform-origin: center;
   }
@@ -277,52 +251,179 @@ td {
   from {
     transform: rotate(0deg);
   }
-
   to {
     transform: rotate(360deg);
   }
 }
 
-.accent {
+/* Shared Button Root */
+button.icon {
+  transition: all 0.2s ease-out;
+  box-shadow: 0 0 0 transparent;
+  transform: translateY(0);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--spacing) * 0.5);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  min-width: 32px;
+  min-height: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+button.icon svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  transition: fill 0.2s ease-out;
+}
+
+button.icon:hover {
+  transform: translateY(-1px) scale(1.1);
+  background-color: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+  border-color: var(--accent);
   color: var(--accent);
 }
 
-.accent-hover {
-  color: var(--text-primary);
-  transition-property: color;
-
-  & > svg {
-    transition-property: fill;
-  }
-
-  &:hover,
-  &.focus {
-    color: var(--accent);
-
-    & > svg {
-      fill: var(--accent);
-    }
-  }
+button.icon:hover svg {
+  fill: var(--accent);
 }
 
-.accent-hover-inverted {
-  transition-property: background-color, border-color, color;
+button.icon:active {
+  transform: translateY(1px) scale(1.05);
+  box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.5);
+}
+
+button.icon.active {
+  color: var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+  border-color: var(--accent);
+  box-shadow: 0 2px 4px var(--accent), 0 0 8px var(--accent);
+  transform: translateY(-2px) scale(1.1);
+}
+
+button.icon.active:hover {
+  box-shadow: 0 3px 6px var(--accent), 0 0 12px var(--accent);
+  transform: translateY(-3px) scale(1.15);
+  background-color: color-mix(in srgb, var(--accent) 25%, var(--card-bg));
+}
+
+button.icon.active:active {
+  transform: translateY(-1px) scale(1.1);
+  box-shadow: 0 1px 3px var(--accent), 0 0 6px var(--accent);
+}
+
+button.icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
   background-color: var(--secondary-bg);
+  border-color: var(--border-color);
+}
 
-  & > svg {
-    transition-property: fill;
-  }
+button.icon.error {
+  color: var(--error);
+  border-color: var(--error);
+}
 
-  &:hover,
-  &.focus {
-    color: var(--text-tertiary);
-    background-color: var(--accent);
-    border-color: var(--accent);
-  }
+button.icon.error svg {
+  fill: var(--error);
+}
 
-  &:hover > svg {
-    fill: var(--text-tertiary);
-  }
+button.icon.error:hover {
+  color: color-mix(in srgb, var(--error) 85%, black);
+  background-color: var(--error-bg);
+  border-color: var(--error);
+}
+
+button.icon.error:hover svg {
+  fill: color-mix(in srgb, var(--error) 85%, black);
+}
+
+button.icon.warning {
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+button.icon.warning svg {
+  fill: var(--warning);
+}
+
+button.icon.warning:hover {
+  background-color: var(--warning-bg);
+}
+
+button.icon.success {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+button.icon.success svg {
+  fill: var(--success);
+}
+
+button.icon.success:hover {
+  background-color: var(--success-bg);
+}
+
+button.icon.info {
+  color: var(--info);
+  border-color: var(--info);
+}
+
+button.icon.info svg {
+  fill: var(--info);
+}
+
+button.icon.info:hover {
+  background-color: var(--info-bg);
+}
+
+/* Primary Button */
+button.icon.primary {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: var(--accent);
+  font-weight: 500;
+}
+
+button.icon.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 85%, black);
+  border-color: color-mix(in srgb, var(--accent) 85%, black);
+  color: var(--text-on-accent);
+}
+
+button.icon.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-on-accent);
+}
+
+/* Theme-specific styles */
+[data-theme="strawberry"] button.icon:hover {
+  background-color: rgba(255, 51, 102, 0.1);
+  border-color: #ff3366;
+}
+
+[data-theme="strawberry"] button.icon:hover svg {
+  fill: #ff3366;
+}
+
+[data-theme="banana"] button.icon:hover {
+  background-color: rgba(128, 62, 0, 0.1);
+  border-color: #ffb700;
+}
+
+[data-theme="banana"] button.icon:hover svg {
+  fill: #ffb700;
 }
 
 input::placeholder,
@@ -399,75 +500,4 @@ body:lang(th) {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-
-/* Shared Button Root */
-button.icon {
-  transition: all 0.2s ease-out;
-  box-shadow: 0 0 0 transparent;
-  transform: translateY(0);
-  cursor: pointer;
-  border: none;
-  background: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: calc(var(--spacing) * 0.5);
-  border-radius: var(--border-radius);
-  color: var(--text-primary);
-}
-
-button.icon:hover {
-  transform: translateY(-1px) scale(1.1);
-  background-color: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
-}
-
-button.icon:active {
-  transform: translateY(1px) scale(1.05);
-  box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.5);
-}
-
-button.icon.active {
-  color: var(--accent);
-  box-shadow: 0 2px 4px var(--accent), 0 0 8px var(--accent);
-  transform: translateY(-2px) scale(1.1);
-}
-
-button.icon.active:hover {
-  box-shadow: 0 3px 6px var(--accent), 0 0 12px var(--accent);
-  transform: translateY(-3px) scale(1.15);
-}
-
-button.icon.active:active {
-  transform: translateY(-1px) scale(1.1);
-  box-shadow: 0 1px 3px var(--accent), 0 0 6px var(--accent);
-}
-
-/* Special states */
-button.icon:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-button.icon.error {
-  color: var(--error);
-}
-
-button.icon.error:hover {
-  color: color-mix(in srgb, var(--error) 85%, black);
-  background-color: var(--danger-bg);
-}
-
-button.icon.warning {
-  color: var(--warning);
-}
-
-button.icon.success {
-  color: var(--success);
-}
-
-button.icon.info {
-  color: var(--info);
 }

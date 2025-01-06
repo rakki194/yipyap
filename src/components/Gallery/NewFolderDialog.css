@@ -50,17 +50,4 @@
   position: absolute;
   top: var(--half-spacing);
   right: var(--half-spacing);
-  padding: var(--half-spacing);
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-close-button:hover {
-  color: var(--accent);
 } 

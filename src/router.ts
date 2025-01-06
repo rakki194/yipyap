@@ -8,7 +8,6 @@ import { NotFound } from "./pages/not_found";
 
 // Lazy load components for code splitting
 const GalleryPage = lazy(() => import("./pages/Gallery"));
-const AudioPage = lazy(() => import("./pages/Audio"));
 
 /**
  * Application route definitions using SolidJS Router
@@ -16,7 +15,6 @@ const AudioPage = lazy(() => import("./pages/Audio"));
  * Defines the following routes:
  * - / - Gallery view (root)
  * - /* - Main gallery view with nested paths
- * - /audio/* - Main audio view with nested paths
  * - *404 - Catch-all route for 404 errors
  */
 export const routes: RouteDefinition[] = [
@@ -27,10 +25,6 @@ export const routes: RouteDefinition[] = [
   {
     path: "/*path",
     component: GalleryPage,
-  },
-  {
-    path: "/audio/*path",
-    component: AudioPage,
   },
   {
     path: "*404",

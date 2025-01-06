@@ -44,17 +44,7 @@
     pointer-events: auto;
   }
 
-  /* Metadata Button - only override specific states */
-  .metadata-button.active {
-    background-color: var(--accent);
-    color: var(--text-on-accent);
-  }
-
   /* Delete Button - only override specific states */
-  .delete-button {
-    color: var(--error);
-  }
-
   .delete-button.holding {
     color: white;
     background: transparent;
