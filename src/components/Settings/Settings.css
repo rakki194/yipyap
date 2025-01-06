@@ -33,17 +33,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2);
+  padding: var(--spacing);
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-color);
-  border-top-left-radius: var(--border-radius);
-  border-top-right-radius: var(--border-radius);
-  position: relative;
-  z-index: 2;
 }
 
-.settings-header h2,
-.settings-header h3 {
+.settings-header h2 {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
@@ -55,19 +49,7 @@
   gap: var(--half-spacing);
 }
 
-/* Common button styles */
-.settings-header button.icon {
-  padding: var(--half-spacing);
-  border-radius: var(--border-radius);
-  transition: background-color 0.2s ease;
-  color: var(--text-secondary);
-}
-
-.settings-header button.icon:hover {
-  background-color: var(--hover-color);
-  color: var(--text-primary);
-}
-
+/* Only override specific states */
 .settings-header button.icon.active {
   background-color: var(--accent);
   color: var(--bg-color);

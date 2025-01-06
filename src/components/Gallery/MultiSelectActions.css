@@ -28,16 +28,13 @@
   transition: width 0.2s ease-out;
 }
 
+/* Only override specific states for delete button */
 .delete-button {
-  color: var(--error);
   opacity: 0.6;
-  transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .delete-button:hover {
   opacity: 1;
-  background-color: var(--danger-bg);
-  color: color-mix(in srgb, var(--error) 85%, black);
 }
 
 .spinner-container {

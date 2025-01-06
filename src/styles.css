@@ -400,3 +400,74 @@ body:lang(th) {
   white-space: nowrap;
   border: 0;
 }
+
+/* Shared Button Root */
+button.icon {
+  transition: all 0.2s ease-out;
+  box-shadow: 0 0 0 transparent;
+  transform: translateY(0);
+  cursor: pointer;
+  border: none;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--spacing) * 0.5);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+}
+
+button.icon:hover {
+  transform: translateY(-1px) scale(1.1);
+  background-color: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
+}
+
+button.icon:active {
+  transform: translateY(1px) scale(1.05);
+  box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.5);
+}
+
+button.icon.active {
+  color: var(--accent);
+  box-shadow: 0 2px 4px var(--accent), 0 0 8px var(--accent);
+  transform: translateY(-2px) scale(1.1);
+}
+
+button.icon.active:hover {
+  box-shadow: 0 3px 6px var(--accent), 0 0 12px var(--accent);
+  transform: translateY(-3px) scale(1.15);
+}
+
+button.icon.active:active {
+  transform: translateY(-1px) scale(1.1);
+  box-shadow: 0 1px 3px var(--accent), 0 0 6px var(--accent);
+}
+
+/* Special states */
+button.icon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+button.icon.error {
+  color: var(--error);
+}
+
+button.icon.error:hover {
+  color: color-mix(in srgb, var(--error) 85%, black);
+  background-color: var(--danger-bg);
+}
+
+button.icon.warning {
+  color: var(--warning);
+}
+
+button.icon.success {
+  color: var(--success);
+}
+
+button.icon.info {
+  color: var(--info);
+}
