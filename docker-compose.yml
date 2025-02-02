@@ -1,5 +1,3 @@
-version: "3.8"
-
 x-common-build: &common-build
   build:
     context: .
@@ -17,10 +15,10 @@ services:
       - "127.0.0.1:7000:7000"
     environment:
       ROOT_DIR: /app/images
-      RUN_MODE: backend
+      RUN_MODE: both
       PORT: 7000
     volumes:
       - ./:/app
       - ${YIPYAP_DATA_DIR:-./data}:/app/images
     user: "${UID}:${GID}"
-    command: "/app/entrypoint.sh"
+    command: "/entrypoint/entrypoint.sh"
