@@ -1,0 +1,21 @@
+version: "3.8"
+
+x-common-build: &common-build
+  build:
+    context: .
+    dockerfile: Dockerfile
+    args:
+      UID: ${UID:-1000}
+      GID: ${GID:-1000}
+  image: yipyap:latest
+  working_dir: /app
+
+services:
+  yipyap:
+    <<: *common-build
+    ports:
+      - "127.0.0.1:7000:7000"
+    volumes:
+      - ./:/app
+    user: "${UID}:${GID}"
+    command: "npx serve -l tcp://0.0.0.0:7000 dist"

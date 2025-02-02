@@ -4,6 +4,9 @@ python-magic
 python-multipart
 pillow
 aiofiles
+# I do not know if and why we would need both but the venv
+# didn't work without `uvicorn` last time I fucked with it
+#uvicorn
 uvicorn[standard]
 watchfiles
 
@@ -14,6 +17,7 @@ natsort  # Used in data_access.py for natural sorting
 
 # Machine learning and model dependencies
 torch  # Used by caption generators
+torchvision # Yeah, it is used by the caption generators...
 timm  # Used by caption generators
 safetensors  # Used by JTP2Generator
 huggingface_hub  # Used by WDv3Generator
