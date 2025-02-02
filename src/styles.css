@@ -32,7 +32,7 @@
   --shadow-accent: var(--accent);
   --shadow-default: 0 2px 4px var(--shadow-color);
   --shadow-hover: 0 4px 6px var(--shadow-accent);
-  --hover-transform: translateY(-4px);
+  --hover-transform: translate3d(0, -4px, 0);
   --overlay-bg: rgb(0 0 0 / 20%);
   --overlay-backdrop: brightness(0.5) saturate(0.5);
   --text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
@@ -249,10 +249,10 @@ td {
 
 @keyframes spin-animation {
   from {
-    transform: rotate(0deg);
+    transform: rotate(0deg) translateZ(0);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(360deg) translateZ(0);
   }
 }
 
@@ -260,7 +260,7 @@ td {
 button.icon {
   transition: all 0.2s ease-out;
   box-shadow: 0 0 0 transparent;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
   cursor: pointer;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
@@ -284,7 +284,7 @@ button.icon svg {
 }
 
 button.icon:hover {
-  transform: translateY(-1px) scale(1.1);
+  transform: translate3d(0, -1px, 0) scale3d(1.1, 1.1, 1);
   background-color: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
   border-color: var(--accent);
   color: var(--accent);
@@ -295,7 +295,7 @@ button.icon:hover svg {
 }
 
 button.icon:active {
-  transform: translateY(1px) scale(1.05);
+  transform: translate3d(0, 1px, 0) scale3d(1.05, 1.05, 1);
   box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.5);
 }
 
@@ -304,17 +304,17 @@ button.icon.active {
   background-color: color-mix(in srgb, var(--accent) 15%, var(--card-bg));
   border-color: var(--accent);
   box-shadow: 0 2px 4px var(--accent), 0 0 8px var(--accent);
-  transform: translateY(-2px) scale(1.1);
+  transform: translate3d(0, -2px, 0) scale3d(1.1, 1.1, 1);
 }
 
 button.icon.active:hover {
   box-shadow: 0 3px 6px var(--accent), 0 0 12px var(--accent);
-  transform: translateY(-3px) scale(1.15);
+  transform: translate3d(0, -3px, 0) scale3d(1.15, 1.15, 1);
   background-color: color-mix(in srgb, var(--accent) 25%, var(--card-bg));
 }
 
 button.icon.active:active {
-  transform: translateY(-1px) scale(1.1);
+  transform: translate3d(0, -1px, 0) scale3d(1.1, 1.1, 1);
   box-shadow: 0 1px 3px var(--accent), 0 0 6px var(--accent);
 }
 

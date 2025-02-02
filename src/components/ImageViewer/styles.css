@@ -71,15 +71,15 @@
 
 @keyframes pulse {
   0% {
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
   }
 
   50% {
-    transform: scale(1.05);
+    transform: scale3d(1.05, 1.05, 1);
   }
 
   100% {
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
   }
 }
 
@@ -179,11 +179,11 @@ body.modal-open {
   width: 40rem;
   background: var(--preview-bg);
   backdrop-filter: saturate(50%) brightness(0.5) blur(10px);
-  transform: translateX(100%);
+  transform: translate3d(100%, 0, 0);
   transition: transform 0.3s ease;
 
   &.focused {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 
   [data-theme="light"] & {
@@ -344,15 +344,15 @@ body.modal-open {
 
 @keyframes pulse {
   0% {
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
   }
 
   50% {
-    transform: scale(1.05);
+    transform: scale3d(1.05, 1.05, 1);
   }
 
   100% {
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
   }
 }
 
@@ -428,11 +428,11 @@ body.modal-open {
 @keyframes metadata-popup {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.95);
+    transform: translate3d(0, -8px, 0) scale3d(0.95, 0.95, 1);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
   }
 }
 
@@ -446,7 +446,7 @@ body.modal-open {
   background: var(--bg-color);
   border-left: 1px solid var(--border-color);
   border-top: 1px solid var(--border-color);
-  transform: rotate(45deg);
+  transform: rotate(45deg) translateZ(0);
 }
 
 /* Add zoom indicator */
@@ -600,7 +600,7 @@ body.modal-open {
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate3d(-50%, 0, 0);
   margin-top: 0.5rem;
   min-width: 150px;
   z-index: 1090;
@@ -749,11 +749,11 @@ body.modal-open {
 @keyframes slide-in {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translate3d(-20px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
