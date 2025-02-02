@@ -42,6 +42,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 # Set working directory
 WORKDIR /app
 
+# Install Python dependencies for the backend
+COPY requirements.txt /app/requirements.txt
+RUN pip install --break-system-packages -r /app/requirements.txt
+
+# Ensure uvicorn is installed
+RUN pip install --break-system-packages uvicorn
+
 # Create a non-root user using provided UID and GID
 ARG UID
 ARG GID
@@ -55,8 +62,15 @@ RUN if getent passwd ${UID} > /dev/null 2>&1; then \
 # Expose the port the application will run on
 EXPOSE 7000
 
+# Copy the entrypoint script to a separate directory and set executable permissions
+COPY entrypoint.sh /entrypoint/entrypoint.sh
+RUN chmod +x /entrypoint/entrypoint.sh
+
+# Copy the backend code
+COPY app/ /app/app/
+
 # Switch to non-root user
 USER yipyap
 
-# Start the static file server to serve the built assets
-CMD [ "npx", "serve", "-l", "tcp://0.0.0.0:7000", "dist" ] 
+# Start the appropriate server based on RUN_MODE environment variable
+CMD [ "/entrypoint/entrypoint.sh" ] 

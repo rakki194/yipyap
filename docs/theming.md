@@ -1,6 +1,11 @@
 # Theming System
 
+The application implements a robust theming system with multiple built-in themes (light, dark, gray, strawberry, peanut, high-contrast-black, high-contrast-inverse) that affect not just colors but also animations, visual effects, and component-specific behaviors. Each theme provides custom scrollbar styling, keyboard shortcut visual indicators, and consistent contrast ratios for accessibility. Theme changes are persisted across sessions and can be toggled via keyboard shortcuts or the theme switcher in the settings panel.
+
 ## Table of Contents
+
+---
+
 - [Theming System](#theming-system)
   - [Table of Contents](#table-of-contents)
   - [Project Structure](#project-structure)
@@ -24,13 +29,14 @@
     - [High Contrast Themes](#high-contrast-themes)
   - [Best Practices](#best-practices)
 
-The application implements a robust theming system with multiple built-in themes (light, dark, gray, strawberry, peanut, high-contrast-black, high-contrast-inverse) that affect not just colors but also animations, visual effects, and component-specific behaviors. Each theme provides custom scrollbar styling, keyboard shortcut visual indicators, and consistent contrast ratios for accessibility. Theme changes are persisted across sessions and can be toggled via keyboard shortcuts or the theme switcher in the settings panel.
-
 ## Project Structure
+
+---
 
 The frontend of yipyap is built with SolidJS and follows this structure:
 
 ### Core Files
+
 - `/src/main.tsx`: Application entry point, sets up routing and error boundaries
 - `/src/contexts/app.tsx`: Global state management for app settings and preferences
 - `/src/router.ts`: Route definitions and navigation logic
@@ -38,6 +44,7 @@ The frontend of yipyap is built with SolidJS and follows this structure:
 - `/src/themes.css`: Theme-specific styles and variables
 
 ### Directory Organization
+
 - `/src/components/`: Feature-based components
   - `Gallery/`: Image gallery and related components
   - `ImageViewer/`: Image viewing and manipulation
@@ -56,13 +63,19 @@ The frontend of yipyap is built with SolidJS and follows this structure:
 
 ## State Management
 
+---
+
 The application implements state management through multiple complementary approaches. At the global level, the App Context defined in `/src/contexts/app.tsx` handles application-wide settings and user preferences. For more focused functionality, components maintain their own local state using SolidJS primitives to manage feature-specific data and UI states. Additionally, certain application states are preserved in the URL through route parameters and query strings, enabling shareable and bookmarkable states across sessions.
 
 ## Theme Implementation
 
+---
+
 Theme management is centralized through the app context defined in `/src/contexts/app.tsx`. This context provides comprehensive theme handling by persisting the user's theme selection in localStorage to maintain preferences across sessions. When themes change, it automatically updates the document's data-theme attribute to apply the new styles. The context also provides built-in support for RTL (right-to-left) layouts when using locales that require it, ensuring proper text and layout direction. Beyond basic theme switching, it manages animation preferences to respect user settings for reduced motion and other accessibility considerations.
 
 ## Making Style Changes
+
+---
 
 To make style changes to the application, follow these steps:
 
@@ -95,7 +108,10 @@ To make style changes to the application, follow these steps:
 
 ## Theme Variables
 
+---
+
 ### Core Colors
+
 - `--accent`: Primary accent color
 - `--text-primary`: Main text color
 - `--text-secondary`: Secondary text color
@@ -106,6 +122,7 @@ To make style changes to the application, follow these steps:
 - `--success-text`: Success state text
 
 ### Component-Specific Variables
+
 - `--notification-bg`: Notification background
 - `--tooltip-bg`: Tooltip background
 - `--modal-overlay`: Modal overlay background
@@ -113,12 +130,15 @@ To make style changes to the application, follow these steps:
 - `--scrollbar-track`: Scrollbar track color
 
 ### Animation Variables
+
 - `--transition-speed`: Base transition duration
 - `--animation-curve`: Default easing function
 - `--hover-lift`: Hover elevation amount
 - `--press-depth`: Press animation depth
 
 ## Example Usage
+
+---
 
 ### Basic Theme-Aware Styling
 
@@ -158,6 +178,8 @@ To make style changes to the application, follow these steps:
 
 ## Theme Integration
 
+---
+
 ### Component Level
 
 When building components, proper theme integration is essential. All colors and animations should utilize the theme variables rather than hard-coded values to maintain consistency across the application. Components need to implement both dark and light mode variants to ensure a cohesive experience regardless of the user's theme preference. Right-to-left (RTL) layout support should be incorporated when necessary to accommodate languages that read from right to left.
@@ -165,6 +187,7 @@ When building components, proper theme integration is essential. All colors and 
 sFinally, components must handle theme transitions smoothly to avoid jarring visual changes when the theme is switched.
 
 Example:
+
 ```css
 .button {
   background: var(--accent);
@@ -185,12 +208,14 @@ Example:
 ### Global Level
 
 Global styles should:
+
 - Define theme-specific root variables
 - Handle system preference detection
 - Manage theme transitions
 - Set up base component styles
 
 Example:
+
 ```css
 :root {
   /* Light theme defaults */
@@ -211,13 +236,19 @@ Example:
 
 ## Special Theme Variants
 
+---
+
 ### Colorful Themes
+
 The Banana theme utilizes cheerful yellow accents throughout the interface. The Strawberry theme employs vibrant red accents for a bold look. The Peanut theme incorporates warm brown accents for an earthy feel.
 
 ### High Contrast Themes
+
 High contrast themes prioritize accessibility with enhanced contrast ratios. These themes feature simplified animations to reduce visual noise and clear focus indicators to aid navigation.
 
 ## Best Practices
+
+---
 
 The color usage system relies on semantic color variables to maintain consistency. All colors must meet sufficient contrast ratios and support both dark and light modes. Color choices take into account color blindness considerations to ensure accessibility for all users.
 

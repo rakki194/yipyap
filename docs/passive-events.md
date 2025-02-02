@@ -2,6 +2,20 @@
 
 Passive event listeners are a crucial performance optimization feature in yipyap, particularly important for smooth scrolling and touch interactions. This document outlines our implementation approach and best practices.
 
+## Table of Contents
+
+- [Passive Event Listeners](#passive-event-listeners)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Implementation Guidelines](#implementation-guidelines)
+  - [When to Use Passive Listeners](#when-to-use-passive-listeners)
+  - [Performance Impact](#performance-impact)
+  - [Browser Support](#browser-support)
+  - [Implementation Examples](#implementation-examples)
+  - [Best Practices](#best-practices)
+  - [Common Pitfalls](#common-pitfalls)
+  - [Related Documentation](#related-documentation)
+
 ## Overview
 
 ---

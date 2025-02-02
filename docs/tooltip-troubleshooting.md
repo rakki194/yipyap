@@ -2,11 +2,40 @@
 
 This document covers common issues, solutions, and best practices for working with the Tooltip system in yipyap.
 
+## Table of Contents
+
+---
+
+- [Tooltip System: Troubleshooting and Best Practices](#tooltip-system-troubleshooting-and-best-practices)
+  - [Table of Contents](#table-of-contents)
+  - [Common Issues and Solutions](#common-issues-and-solutions)
+    - [Timing Issues](#timing-issues)
+      - [Problem: Tooltip appears too quickly/slowly](#problem-tooltip-appears-too-quicklyslowly)
+      - [Problem: Animation feels abrupt](#problem-animation-feels-abrupt)
+    - [Visibility Issues](#visibility-issues)
+      - [Problem: Tooltip doesn't fade smoothly](#problem-tooltip-doesnt-fade-smoothly)
+      - [Problem: Blur effect not working](#problem-blur-effect-not-working)
+    - [Accessibility Issues](#accessibility-issues)
+      - [Problem: Screen reader announces tooltip too early](#problem-screen-reader-announces-tooltip-too-early)
+    - [Performance Issues](#performance-issues)
+      - [Problem: Janky animations](#problem-janky-animations)
+  - [Best Practices](#best-practices)
+    - [Content Guidelines](#content-guidelines)
+    - [Interaction Guidelines](#interaction-guidelines)
+    - [Performance Guidelines](#performance-guidelines)
+    - [Accessibility Guidelines](#accessibility-guidelines)
+  - [Testing Guidelines](#testing-guidelines)
+    - [Unit Tests](#unit-tests)
+    - [Visual Tests](#visual-tests)
+
 ## Common Issues and Solutions
+
+---
 
 ### Timing Issues
 
 #### Problem: Tooltip appears too quickly/slowly
+
 ```typescript
 // Default behavior is 0.5s delay
 const showTooltip = () => {
@@ -18,6 +47,7 @@ const showTooltip = () => {
 The 0.5 second delay is intentionally designed to provide an optimal user experience. When implementing tooltips, it's important to ensure there are no conflicting timeouts that could interfere with this delay. Additionally, proper cleanup of timeouts should be performed when components unmount to prevent memory leaks and unexpected behavior.
 
 #### Problem: Animation feels abrupt
+
 ```css
 .tooltip-content {
   transition: opacity 0.2s ease-out;  /* Too short */
@@ -30,6 +60,7 @@ For optimal tooltip animations, use a 0.4 second duration for the fade-in transi
 ### Visibility Issues
 
 #### Problem: Tooltip doesn't fade smoothly
+
 ```typescript
 // Incorrect: Using Show component
 <Show when={isVisible()}>
@@ -75,6 +106,7 @@ To implement proper blur effects, add a backdrop-filter property to create a fro
 ### Accessibility Issues
 
 #### Problem: Screen reader announces tooltip too early
+
 ```typescript
 <div role="tooltip">  /* Missing aria-hidden */
   {content}
@@ -107,6 +139,8 @@ For optimal animation performance, it's important to be specific about which pro
 ```
 
 ## Best Practices
+
+---
 
 ### Content Guidelines
 
@@ -183,6 +217,8 @@ For optimal animation performance, it's important to be specific about which pro
 - Consider focus indicators
 
 ## Testing Guidelines
+
+---
 
 ### Unit Tests
 

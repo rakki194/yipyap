@@ -30,7 +30,7 @@ The project uses Vitest with SolidJS testing utilities. All tests are centralize
     - [Initial Approach and Challenges](#initial-approach-and-challenges)
     - [Key Lessons Learned](#key-lessons-learned)
     - [Best Practices Derived](#best-practices-derived)
-    - [Common Pitfalls to Avoid](#common-pitfalls-to-avoid-1)
+    - [Pitfalls to Avoid](#pitfalls-to-avoid)
     - [Recommendations for Similar Components](#recommendations-for-similar-components)
     - [JSX Transform Configuration Issues](#jsx-transform-configuration-issues)
 
@@ -458,53 +458,53 @@ This case study demonstrates common testing challenges and their solutions throu
 
 1. **CSS Module Testing Issues**
 
-```typescript
-// Initial attempt: Testing CSS module classes directly
-it("should have proper theme-aware styles", () => {
-  const { container } = render(() => <UploadOverlay isVisible={true} />);
-  const overlay = container.firstChild as HTMLElement;
-  const styles = window.getComputedStyle(overlay);
-  expect(styles.background).toContain("var(--card-bg)"); // Failed
-});
+    ```typescript
+    // Initial attempt: Testing CSS module classes directly
+    it("should have proper theme-aware styles", () => {
+      const { container } = render(() => <UploadOverlay isVisible={true} />);
+      const overlay = container.firstChild as HTMLElement;
+      const styles = window.getComputedStyle(overlay);
+      expect(styles.background).toContain("var(--card-bg)"); // Failed
+    });
 
-// Problem: CSS modules generate unique class names, and styles aren't computed in jsdom
-// Solution: Use data-testid attributes instead
-it("should render correctly", () => {
-  const { getByTestId } = render(() => <UploadOverlay isVisible={true} />);
-  expect(getByTestId("upload-overlay")).toBeInTheDocument();
-});
-```
+    // Problem: CSS modules generate unique class names, and styles aren't computed in jsdom
+    // Solution: Use data-testid attributes instead
+    it("should render correctly", () => {
+      const { getByTestId } = render(() => <UploadOverlay isVisible={true} />);
+      expect(getByTestId("upload-overlay")).toBeInTheDocument();
+    });
+    ```
 
 2. **Visibility State Changes**
 
-```typescript
-// Initial attempt: Using cleanup and re-render
-it("should handle visibility changes", () => {
-  const { container } = render(() => <UploadOverlay isVisible={false} />);
-  cleanup();
-  render(() => <UploadOverlay isVisible={true} />); // Lost component reference
-});
+    ```typescript
+    // Initial attempt: Using cleanup and re-render
+    it("should handle visibility changes", () => {
+      const { container } = render(() => <UploadOverlay isVisible={false} />);
+      cleanup();
+      render(() => <UploadOverlay isVisible={true} />); // Lost component reference
+    });
 
-// Solution: Use SolidJS createSignal for reactive state changes
-it("should handle visibility changes correctly", () => {
-  const [isVisible, setIsVisible] = createSignal(false);
-  const TestWrapper = () => <UploadOverlay isVisible={isVisible()} />;
-  const { queryByTestId } = render(TestWrapper);
-  
-  setIsVisible(true);
-  expect(queryByTestId("upload-overlay")).toBeInTheDocument();
-});
-```
+    // Solution: Use SolidJS createSignal for reactive state changes
+    it("should handle visibility changes correctly", () => {
+      const [isVisible, setIsVisible] = createSignal(false);
+      const TestWrapper = () => <UploadOverlay isVisible={isVisible()} />;
+      const { queryByTestId } = render(TestWrapper);
+      
+      setIsVisible(true);
+      expect(queryByTestId("upload-overlay")).toBeInTheDocument();
+    });
+    ```
 
 3. **Element Querying Strategy**
 
-```typescript
-// Initial attempt: Using querySelector with class names
-const overlay = container.querySelector('.overlay'); // Unreliable with CSS modules
+    ```typescript
+    // Initial attempt: Using querySelector with class names
+    const overlay = container.querySelector('.overlay'); // Unreliable with CSS modules
 
-// Solution: Using data-testid attributes
-const overlay = getByTestId("upload-overlay"); // Reliable and explicit
-```
+    // Solution: Using data-testid attributes
+    const overlay = getByTestId("upload-overlay"); // Reliable and explicit
+    ```
 
 ### Key Lessons Learned
 
@@ -553,7 +553,7 @@ Test structure and organization should follow logical groupings that make the te
    expect(overlay).toHaveAttribute('aria-label', 'Drop files to upload');
    ```
 
-### Common Pitfalls to Avoid
+### Pitfalls to Avoid
 
 When writing tests, there are several important pitfalls to avoid regarding style testing. Testing computed styles in jsdom should be avoided, as should relying on CSS module class names or testing implementation details of styling.
 

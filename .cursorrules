@@ -172,6 +172,7 @@ Composables are functions that encapsulate reactive logic and return signals, me
 The composables directory structure reflects the feature-based organization of the application. For example, gallery-related composables like `useGalleryScroll`, `useGalleryUI`, and `useGalleryEffects` are grouped together to maintain clear boundaries and dependencies.
 
 When creating new composables, ensure they:
+
 - Have a clear, single responsibility
 - Return only the necessary reactive primitives
 - Clean up resources when no longer needed
