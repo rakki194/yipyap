@@ -4,9 +4,13 @@ Passive event listeners are a crucial performance optimization feature in yipyap
 
 ## Overview
 
+---
+
 Passive event listeners allow the browser to optimize event handling by indicating that a listener will not call `preventDefault()`. This enables the browser to immediately begin scrolling operations without waiting for JavaScript execution, significantly improving scroll performance.
 
 ## Implementation Guidelines
+
+---
 
 When adding event listeners in yipyap, follow these principles:
 
@@ -21,13 +25,17 @@ element.addEventListener('touchstart', handler, { passive: false });
 
 ## When to Use Passive Listeners
 
+---
+
 Use passive listeners for:
+
 - Scroll events (`wheel`, `touchstart`, `touchmove`)
 - Touch events when not preventing default behavior
 - Performance-critical event handlers
 - Analytics and tracking code
 
 Do not use passive listeners when:
+
 - You need to call `preventDefault()`
 - Implementing custom scroll behavior
 - Building drag-and-drop interfaces
@@ -35,7 +43,10 @@ Do not use passive listeners when:
 
 ## Performance Impact
 
+---
+
 Passive event listeners can improve scroll performance by:
+
 - Reducing main thread blocking
 - Enabling immediate scroll initiation
 - Decreasing input latency
@@ -43,7 +54,10 @@ Passive event listeners can improve scroll performance by:
 
 ## Browser Support
 
+---
+
 Yipyap supports passive event listeners across all modern browsers:
+
 - Chrome/Edge: 51+
 - Firefox: 49+
 - Safari: 10+
@@ -51,6 +65,8 @@ Yipyap supports passive event listeners across all modern browsers:
 - Android Browser: 51+
 
 ## Implementation Examples
+
+---
 
 ```typescript
 // Gallery scroll handling
@@ -89,6 +105,8 @@ const useTouchInteraction = () => {
 
 ## Best Practices
 
+---
+
 1. Always explicitly declare the `passive` option rather than relying on defaults
 2. Use TypeScript's `EventListenerOptions` type for proper type checking
 3. Consider performance implications when setting `passive: false`
@@ -97,6 +115,8 @@ const useTouchInteraction = () => {
 
 ## Common Pitfalls
 
+---
+
 - Attempting to call `preventDefault()` in a passive listener (will be ignored)
 - Forgetting to remove event listeners during cleanup
 - Using non-passive listeners unnecessarily
@@ -104,6 +124,8 @@ const useTouchInteraction = () => {
 
 ## Related Documentation
 
+---
+
 - [Performance Documentation](performance.md)
 - [Event Handling Guide](event-handling.md)
-- [Touch Interaction Guide](touch-interactions.md) 
+- [Touch Interaction Guide](touch-interactions.md)

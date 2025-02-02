@@ -4,15 +4,61 @@
 
 ## Introduction
 
+---
+
 **Y**our **I**ntuitive **P**latform for **Y**ielding, **A**nnotating, and **P**rocessing or `yipyap` for short is a web application for uploading, browsing and managing image, audio and video dataset directories with caption support, generating and caching thumbnails, running various tagging and captioning models, editing dataset configuration and sample prompts, built with Python and SolidJS.
 
 The frontend of yipyap is built with SolidJS, a reactive JavaScript framework that emphasizes fine-grained reactivity and performance, using Vite as the build tool for fast development and optimized production builds. The application follows a component-based architecture with a central app context managing global state. The main entry point is `/src/main.tsx`, which sets up the app context and error boundaries, while the routing configuration is defined in `/src/router.ts`. The core application state management resides in `/src/contexts/app.tsx`, which handles theme management, locale/translation management, settings persistence, notification system, and various feature flags and configurations.
 
 Components are organized in feature-based directories under `/src/components`, with CSS modules or shared stylesheets for styling. Global styles are defined in `/src/styles.css`, while theme-specific styles are in `/src/themes.css`. All tests are centralized in the `/src/test/__tests__/` directory, organized by functionality including component tests, context tests, utility tests, and internationalization tests.
 
+## Table of Contents
+
+---
+
+- [yipyap](#yipyap)
+  - [Introduction](#introduction)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+    - [Core Features](#core-features)
+    - [Image Viewing](#image-viewing)
+    - [File Management](#file-management)
+    - [Captions \& Tags](#captions--tags)
+    - [Customization](#customization)
+    - [Languages](#languages)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Development](#development)
+    - [Quick Start](#quick-start)
+    - [Environment Variables](#environment-variables)
+  - [Deployment](#deployment)
+  - [Developer Documentation](#developer-documentation)
+    - [Project Structure](#project-structure)
+    - [Key Components](#key-components)
+    - [Security Features](#security-features)
+    - [URL Patterns Handled (main.py)](#url-patterns-handled-mainpy)
+    - [Additional API Calls from Frontend](#additional-api-calls-from-frontend)
+    - [Caching Mechanisms (data\_access.py)](#caching-mechanisms-data_accesspy)
+  - [License](#license)
+  - [Acknowledgements](#acknowledgements)
+  - [Getting Help](#getting-help)
+  - [Backend Architecture](#backend-architecture)
+    - [Core Components](#core-components)
+    - [Key Features](#key-features)
+  - [Test Organization](#test-organization)
+  - [Docker Installation and Management Guide](#docker-installation-and-management-guide)
+    - [Prerequisites](#prerequisites)
+    - [Getting Started](#getting-started)
+    - [Managing the Docker Environment](#managing-the-docker-environment)
+    - [Using GPU with Docker (Optional)](#using-gpu-with-docker-optional)
+    - [Conclusion](#conclusion)
+
 ## Features
 
+---
+
 ### Core Features
+
 - Browse directories with breadcrumbs
 - View images with thumbnails and captions
 - Search and sort files easily
@@ -20,6 +66,7 @@ Components are organized in feature-based directories under `/src/components`, w
 - Secure file access and rate limiting
 
 ### Image Viewing
+
 - Zoom and pan smoothly
 - Navigate with minimap
 - Support for multiple caption formats
@@ -27,6 +74,7 @@ Components are organized in feature-based directories under `/src/components`, w
 - Keyboard shortcuts
 
 ### File Management
+
 - Drag and drop files to upload
 - Upload entire folders at once
 - Track upload progress
@@ -34,6 +82,7 @@ Components are organized in feature-based directories under `/src/components`, w
 - Quick folder navigation
 
 ### Captions & Tags
+
 - Add captions and tags
 - Beautiful tag colors that match your theme
 - Generate captions automatically
@@ -41,47 +90,53 @@ Components are organized in feature-based directories under `/src/components`, w
 - Edit multiple files at once
 
 ### Customization
+
 - Choose from multiple themes
 - Customize animations and layout
 - Set your own keyboard shortcuts
 - Save your preferences
 
 ### Languages
+
 - Available in multiple languages
 - Right-to-left support
 - Locale-aware formatting
 
 ## Installation
 
+---
+
 1. Clone the repository:
 
-```bash
-git clone https://github.com/elias-gaeros/yipyap
-cd yipyap
-```
+    ```bash
+    git clone https://github.com/elias-gaeros/yipyap
+    cd yipyap
+    ```
 
 2. Create a virtual environment:
 
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
 
 3. Install dependencies:
 
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 4. Run the application:
 
-```bash
-ROOT_DIR=$HOME/datasets uvicorn app.main:app --reload --log-level=trace
-```
+    ```bash
+    ROOT_DIR=$HOME/datasets uvicorn app.main:app --reload --log-level=trace
+    ```
 
 The application will be available at `http://localhost:8000`
 
 ## Usage
+
+---
 
 1. Navigate to `http://localhost:8000` to start browsing the current working directory.
 2. Use the controls at the top to:
@@ -93,28 +148,30 @@ The application will be available at `http://localhost:8000`
 
 ## Development
 
+---
+
 ### Quick Start
 
 1. Install Python dependencies:
 
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    pip install -r requirements.txt
+    ```
 
 2. Run the development server:
 
-```bash
-python -m app
-```
+    ```bash
+    python -m app
+    ```
 
 This will:
 
 - Install npm dependencies if needed
 - Start the Vite dev server (port 5173)
 - Start the FastAPI backend (port 8000)
-- Open your browser to http://localhost:5173
+- Open your browser to <http://localhost:5173>
 - Enable hot reload for both frontend and backend
 
 ### Environment Variables
@@ -126,23 +183,27 @@ This will:
 
 ## Deployment
 
+---
+
 1. Build the frontend:
 
-```bash
-npm run build
-```
+    ```bash
+    npm run build
+    ```
 
 2. Start the production server:
 
-```bash
-ENVIRONMENT=production ROOT_DIR=/path/to/images python -m app
-```
+    ```bash
+    ENVIRONMENT=production ROOT_DIR=/path/to/images python -m app
+    ```
 
 ## Developer Documentation
 
+---
+
 ### Project Structure
 
-```
+```bash
 yipyap/
 ├── app/
 │   ├── __init__.py          # Package initialization
@@ -178,17 +239,17 @@ yipyap/
 
 1. **FastAPI Routes** (main.py)
 
-Main route handling directory browsing with sorting and filtering.
+   - Main route handling directory browsing with sorting and filtering.
 
 2. **Directory Scanning** (image_handler.py)
 
-Handles directory scanning with pagination, sorting, and filtering.
+   - Handles directory scanning with pagination, sorting, and filtering.
 
 3. **Template Structure**
 
-- Base template: Provides layout and common resources
-- Gallery template: Directory listing with HTMX integration
-- Image view template: Modal view for images and captions
+   - Base template: Provides layout and common resources
+   - Gallery template: Directory listing with HTMX integration
+   - Image view template: Modal view for images and captions
 
 ### Security Features
 
@@ -207,6 +268,7 @@ The following URL patterns are handled by the FastAPI application in `main.py`:
     - `sort`: The sorting criteria (name, date, size).
     - `search`: The search term for filtering items.
   - **Response Schema**:
+
     ```json
     {
       "items": [
@@ -243,12 +305,15 @@ The following URL patterns are handled by the FastAPI application in `main.py`:
 
 - **PUT /caption/{path:path}**: Updates the caption for a specific image.
   - **Request Body**:
+
     ```json
     {
       "caption": "string"
     }
     ```
+
   - **Response Schema**:
+
     ```json
     {
       "status": "string"
@@ -285,9 +350,13 @@ The application implements caching in `data_access.py` to improve performance an
 
 ## License
 
+---
+
 This project is licensed under the MIT License. See the `LICENSE.md` file for details.
 
 ## Acknowledgements
+
+---
 
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [SolidJS](https://www.solidjs.com/)
@@ -295,9 +364,13 @@ This project is licensed under the MIT License. See the `LICENSE.md` file for de
 
 ## Getting Help
 
+---
+
 If you encounter any issues or have questions, feel free to open an issue on the GitHub repository.
 
 ## Backend Architecture
+
+---
 
 The backend is built with FastAPI and provides a comprehensive API for image management and caption generation. It uses a layered architecture with the following components:
 
@@ -337,9 +410,121 @@ The caching and caption management systems work together to provide a robust med
 
 ## Test Organization
 
+---
+
 The testing system is centralized in the `/src/test/__tests__/` directory and organized by functionality:
 
 1. Component Tests (e.g., `ImageView.test.tsx`, `TagBubble.test.tsx`)
 2. Context and State Tests (e.g., `app.test.tsx`, `gallery.test.ts`)
 3. Utility Tests (e.g., `reactive-utils.test.tsx`, `theme.test.ts`)
 4. Internationalization Tests (e.g., `translations.test.ts`, language-specific plural tests)
+
+## Docker Installation and Management Guide
+
+---
+
+This guide explains how to install and manage yipyap using Docker. The yipyap project is containerized using a multi-stage Docker build, and the provided Docker Compose file simplifies the process of building and running the application.
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed on your host system:
+
+- Docker
+- Docker Compose
+- (Optional) NVIDIA Container Toolkit if you plan to use GPU acceleration. Refer to [NVIDIA's documentation](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) for installation instructions.
+
+### Getting Started
+
+1. **Clone the Repository**
+
+   ```bash
+   git clone https://github.com/elias-gaeros/yipyap.git
+   cd yipyap
+   ```
+
+2. **Setting Environment Variables**
+
+   The Docker Compose configuration uses a few environment variables:
+   - `UID` and `GID`: Your host user and group IDs, used to create a non-root user inside the container.
+   - `YIPYAP_DATA_DIR`: (Optional) The host directory where image data is stored. Defaults to `./data` if not set.
+   - `ROOT_DIR`: This is automatically set inside the container to `/app/images`, which is where your image data is mounted.
+
+   You can create a `.env` file in the project root to persist these variables. For example:
+
+   ```env
+   UID=1000
+   GID=1000
+   YIPYAP_DATA_DIR=/absolute/path/to/your/data
+   ```
+
+3. **Building and Running the Container**
+
+   Use Docker Compose to build the image and start the container. The provided `docker-compose.yml` handles both the build and runtime configuration:
+
+   ```bash
+   docker-compose up --build -d
+   ```
+
+   This command builds the Docker image and starts the yipyap service in detached mode.
+
+4. **Accessing the Application**
+
+   Once the container is running, the application is served at [http://localhost:7000](http://localhost:7000).
+
+### Managing the Docker Environment
+
+- **Viewing Logs:**  
+  To view logs for the yipyap container, run:
+
+  ```bash
+  docker-compose logs -f yipyap
+  ```
+
+- **Restarting the Container:**  
+  After making changes to the application or configuration, you can restart the container:
+
+  ```bash
+  docker-compose restart yipyap
+  ```
+
+- **Stopping the Container:**
+
+  ```bash
+  docker-compose down
+  ```
+
+- **Accessing the Container Shell:**  
+  To open a shell inside the running container:
+
+  ```bash
+  docker-compose exec yipyap sh
+  ```
+
+- **Updating Host Volume for Image Data:**  
+  The Docker Compose file mounts the host directory specified by `YIPYAP_DATA_DIR` (defaulting to `./data`) to `/app/images` in the container. You can change the path by modifying the `YIPYAP_DATA_DIR` variable in your `.env` file or directly in the Compose file.
+
+### Using GPU with Docker (Optional)
+
+If your host system has a compatible NVIDIA GPU and you have the NVIDIA Container Toolkit installed, you can enable GPU support by modifying the Docker Compose file to include the following under the `yipyap` service:
+
+```yaml
+deploy:
+  resources:
+    reservations:
+      devices:
+        - capabilities: [gpu]
+ipc: host
+ulimits:
+  memlock: -1
+  stack: 67108864
+```
+
+Then, start the container with GPU support:
+
+```bash
+docker-compose up --build -d
+```
+
+### Conclusion
+
+This guide provides a step-by-step process for deploying and managing yipyap in a Docker environment. By using Docker Compose, you can easily manage the application's build process, environment variables, and container lifecycles. If you encounter any issues, please refer to the project documentation or open an issue in the repository.

@@ -15,7 +15,10 @@ services:
     <<: *common-build
     ports:
       - "127.0.0.1:7000:7000"
+    environment:
+      ROOT_DIR: /app/images
     volumes:
       - ./:/app
+      - ${YIPYAP_DATA_DIR:-./data}:/app/images
     user: "${UID}:${GID}"
     command: "npx serve -l tcp://0.0.0.0:7000 dist"

@@ -2,13 +2,47 @@
 
 The drag and drop system in yipyap provides a powerful and flexible way to handle both external file uploads and internal gallery item movements. This document covers the implementation details, usage patterns, and best practices for working with the drag and drop functionality.
 
+## Table of Contents
+
+---
+
+- [Drag and Drop System](#drag-and-drop-system)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Usage](#usage)
+    - [Basic Implementation](#basic-implementation)
+    - [Prerequisites](#prerequisites)
+  - [Features](#features)
+    - [External File Upload](#external-file-upload)
+    - [Gallery Item Movement](#gallery-item-movement)
+    - [Multi-Selection Support](#multi-selection-support)
+  - [Events and States](#events-and-states)
+    - [Drag State Changes](#drag-state-changes)
+    - [Visual Feedback](#visual-feedback)
+  - [Error Handling](#error-handling)
+    - [Move Operations](#move-operations)
+    - [Upload Operations](#upload-operations)
+  - [Best Practices](#best-practices)
+  - [API Reference](#api-reference)
+    - [`useDragAndDrop`](#usedraganddrop)
+      - [Props](#props)
+      - [Returns](#returns)
+  - [CSS Classes](#css-classes)
+  - [Examples](#examples)
+    - [Implementing a Drop Zone](#implementing-a-drop-zone)
+    - [Handling Directory Drops](#handling-directory-drops)
+
 ## Overview
+
+---
 
 The drag and drop system is implemented through the `useDragAndDrop` composable, which serves as a unified interface for managing drag and drop interactions in the application. This composable handles both external file uploads and internal gallery item movements, ensuring a consistent and intuitive user experience.
 
 The system provides comprehensive functionality for uploading files via drag and drop, moving items between directories within the gallery, managing multi-item selections, and delivering visual feedback during drag operations. Through careful state management and event handling, it creates a seamless drag and drop experience that feels natural and responsive.
 
 ## Usage
+
+---
 
 ### Basic Implementation
 
@@ -34,10 +68,13 @@ const MyComponent = () => {
 ### Prerequisites
 
 The drag and drop system requires the following contexts to be available in your component tree:
+
 - `GalleryContext` - For managing gallery state and operations
 - `AppContext` - For notifications and global settings
 
 ## Features
+
+---
 
 ### External File Upload
 
@@ -59,6 +96,8 @@ The multi-selection integration maintains proper selection state throughout drag
 
 ## Events and States
 
+---
+
 ### Drag State Changes
 
 The `onDragStateChange` callback is triggered in the following scenarios:
@@ -72,27 +111,36 @@ The `onDragStateChange` callback is triggered in the following scenarios:
 ### Visual Feedback
 
 The system provides several visual indicators:
+
 - `.being-dragged` class on items being dragged
 - `.drag-target` class on valid drop targets
 - `.move-failed` class for failed operations (automatically removed after animation)
 
 ## Error Handling
 
+---
+
 The system includes comprehensive error handling:
 
 ### Move Operations
+
 The system reports any failed move operations through the notification system, ensuring users are immediately aware when an operation cannot be completed successfully. This provides clear feedback and helps users understand what went wrong.
 
 For common error scenarios, the system provides specific and helpful error messages that explain the exact nature of the failure, such as when a target file already exists, when a source file is missing, or when other types of operation failures occur. These detailed messages help users quickly identify and resolve issues during file operations.
 
 ### Upload Operations
+
 The system performs thorough validation of file sizes prior to initiating any uploads, ensuring compliance with size limits. Throughout the upload process, it provides continuous progress updates and clear failure notifications through the notification system. Network errors are handled gracefully with appropriate error messages and recovery options, maintaining a smooth user experience even when connectivity issues occur.
 
 ## Best Practices
 
+---
+
 When implementing drag and drop functionality, proper state management is essential - always clean up drag state when components unmount and handle both success and error states in the UI feedback. Visual feedback should be clear and intuitive, with obvious indicators for valid drop targets, progress indicators for long-running operations, and smooth animations for state changes to enhance the user experience. Error handling must be comprehensive, with graceful handling of potential failures, clear feedback for validation errors, and detailed error logging for debugging purposes. Performance considerations are also critical - event listeners should be properly cleaned up on component unmount, appropriate file size validation should be implemented, and large selections must be handled efficiently to maintain smooth operation.
 
 ## API Reference
+
+---
 
 ### `useDragAndDrop`
 
@@ -114,6 +162,8 @@ interface DragAndDropProps {
 
 ## CSS Classes
 
+---
+
 The system uses several CSS classes for visual feedback:
 
 | Class | Purpose |
@@ -123,6 +173,8 @@ The system uses several CSS classes for visual feedback:
 | `.move-failed` | Applied briefly to items that failed to move |
 
 ## Examples
+
+---
 
 ### Implementing a Drop Zone
 

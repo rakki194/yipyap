@@ -1,6 +1,11 @@
 # Writing Tests
 
+The project uses Vitest with SolidJS testing utilities. All tests are centralized in the `/src/test/__tests__/` directory and organized by functionality:
+
 ## Table of Contents
+
+---
+
 - [Writing Tests](#writing-tests)
   - [Table of Contents](#table-of-contents)
   - [Test Organization](#test-organization)
@@ -29,9 +34,9 @@
     - [Recommendations for Similar Components](#recommendations-for-similar-components)
     - [JSX Transform Configuration Issues](#jsx-transform-configuration-issues)
 
-The project uses Vitest with SolidJS testing utilities. All tests are centralized in the `/src/test/__tests__/` directory and organized by functionality:
-
 ## Test Organization
+
+---
 
 1. **Component Tests**:
    Tests for UI components and their behavior
@@ -73,9 +78,13 @@ When writing component tests, your test file should be added to the `/src/test/_
 
 ## Test Environment Setup
 
+---
+
 The test environment is configured in `/src/test/setup.ts`. This configuration provides a DOM environment powered by jsdom for simulating browser behavior. Global mocks are included for various browser APIs to enable testing of browser-dependent functionality. The environment is set up to automatically clean up after each test to prevent state leakage between test cases. Additionally, it includes the necessary SolidJS testing utilities setup to enable proper testing of SolidJS components and reactivity.
 
 ## Test Utilities
+
+---
 
 The project provides comprehensive test utilities in three files:
 
@@ -88,6 +97,8 @@ The project provides comprehensive test utilities in three files:
 A dedicated `tsconfig.json` in the `/src/test` directory ensures proper TypeScript configuration for the test environment.
 
 ## Component Testing
+
+---
 
 When writing component tests, there are several important guidelines to follow. First, your test file should be added to the `/src/test/__tests__/` directory and follow the naming pattern `ComponentName.test.tsx`. You should make use of the provided test utilities from `/src/test/test-utils.ts` to maintain consistency across tests. It's important to follow the established patterns for test setup and teardown to ensure proper isolation between tests. Finally, related tests should be grouped together in the same file for better organization and maintainability.
 
@@ -120,87 +131,91 @@ describe("ComponentName", () => {
 
 ## Testing Patterns
 
+---
+
 1. Context Testing:
 
-```typescript
-describe("Context Creation", () => {
-  test("Context should be defined", () => {
-    expect(AppContext).toBeDefined();
-    expect(AppContext.id).toBeDefined();
-    expect(typeof AppContext.id).toBe("symbol");
-  });
-});
-```
+    ```typescript
+    describe("Context Creation", () => {
+      test("Context should be defined", () => {
+        expect(AppContext).toBeDefined();
+        expect(AppContext.id).toBeDefined();
+        expect(typeof AppContext.id).toBe("symbol");
+      });
+    });
+    ```
 
 2. Utility Function Testing:
 
-```typescript
-describe("Utility Function", () => {
-  it("should handle normal input", () => {
-    expect(utilityFunction(input)).toBe(expectedOutput);
-  });
+    ```typescript
+    describe("Utility Function", () => {
+      it("should handle normal input", () => {
+        expect(utilityFunction(input)).toBe(expectedOutput);
+      });
 
-  it("should handle edge cases", () => {
-    expect(utilityFunction(edgeCase)).toBe(expectedOutput);
-  });
+      it("should handle edge cases", () => {
+        expect(utilityFunction(edgeCase)).toBe(expectedOutput);
+      });
 
-  it("should throw on invalid input", () => {
-    expect(() => utilityFunction(invalidInput)).toThrow();
-  });
-});
-```
+      it("should throw on invalid input", () => {
+        expect(() => utilityFunction(invalidInput)).toThrow();
+      });
+    });
+    ```
 
 3. i18n Testing:
 
-```typescript
-describe("Translation System", () => {
-  it("should handle pluralization correctly", () => {
-    const forms = {
-      one: "item",
-      few: "items",
-      many: "items"
-    };
-    expect(getPlural(1, forms)).toBe("item");
-    expect(getPlural(2, forms)).toBe("items");
-  });
-});
-```
+    ```typescript
+    describe("Translation System", () => {
+      it("should handle pluralization correctly", () => {
+        const forms = {
+          one: "item",
+          few: "items",
+          many: "items"
+        };
+        expect(getPlural(1, forms)).toBe("item");
+        expect(getPlural(2, forms)).toBe("items");
+      });
+    });
+    ```
 
 ## Mocking
 
+---
+
 1. API Calls:
 
-```typescript
-vi.mock("~/resources/browse", () => ({
-  fetchData: vi.fn().mockResolvedValue({ data: "mocked" }),
-  saveCaptionToBackend: vi.fn().mockResolvedValue({ success: true })
-}));
-```
+    ```typescript
+    vi.mock("~/resources/browse", () => ({
+      fetchData: vi.fn().mockResolvedValue({ data: "mocked" }),
+      saveCaptionToBackend: vi.fn().mockResolvedValue({ success: true })
+    }));
+    ```
 
 2. Browser APIs:
 
-```typescript
-beforeEach(() => {
-  Object.defineProperty(window, "matchMedia", {
-    value: vi.fn().mockImplementation(query => ({
-      matches: false,
-      media: query,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
-    }))
-  });
-});
-```
+    ```typescript
+    beforeEach(() => {
+      Object.defineProperty(window, "matchMedia", {
+        value: vi.fn().mockImplementation(query => ({
+          matches: false,
+          media: query,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn()
+        }))
+      });
+    });
+    ```
 
 3. Router:
 
-```typescript
-vi.mock("@solidjs/router", () => ({
-  useParams: () => ({ path: "test/path" }),
-  useSearchParams: () => [{ page: "1" }, vi.fn()],
-  useNavigate: () => vi.fn()
-}));
-```
+    ```typescript
+    vi.mock("@solidjs/router", () => ({
+      useParams: () => ({ path: "test/path" }),
+      useSearchParams: () => [{ page: "1" }, vi.fn()],
+      useNavigate: () => vi.fn()
+    }));
+    ```
 
 ## Test Documentation
 
@@ -226,6 +241,8 @@ Example:
 ```
 
 ## Common Testing Errors and Solutions
+
+---
 
 ### Timer-Based Test Failures
 
@@ -502,6 +519,7 @@ Test structure and organization should follow logical groupings that make the te
 ### Best Practices Derived
 
 1. **Component Setup**:
+
    ```typescript
    // Add data-testid attributes to testable elements
    <div 
@@ -512,6 +530,7 @@ Test structure and organization should follow logical groupings that make the te
    ```
 
 2. **State Testing**:
+
    ```typescript
    // Use createSignal for reactive state changes
    const [isVisible, setIsVisible] = createSignal(false);
@@ -519,6 +538,7 @@ Test structure and organization should follow logical groupings that make the te
    ```
 
 3. **Element Queries**:
+
    ```typescript
    // Use appropriate query methods based on expectations
    expect(queryByTestId("upload-overlay")).not.toBeInTheDocument(); // For absent elements
@@ -526,6 +546,7 @@ Test structure and organization should follow logical groupings that make the te
    ```
 
 4. **Accessibility Testing**:
+
    ```typescript
    // Include ARIA attribute checks
    expect(overlay).toHaveAttribute('role', 'dialog');
@@ -582,6 +603,7 @@ import { render } from "@solidjs/testing-library";
 This error occurs when trying to configure the JSX transform at the file level using the `@jsxImportSource` pragma. The warning indicates that the JSX transform needs to be configured at the build tool level instead.
 
 Key points about the solution:
+
 - Move JSX configuration to `vitest.config.ts`
 - Configure both `jsx: 'automatic'` and `jsxImportSource: 'solid-js'`
 - Remove `@jsxImportSource` pragmas from individual test files
@@ -589,12 +611,14 @@ Key points about the solution:
 - Update test dependencies to include `@solidjs/testing-library`
 
 The configuration in `vitest.config.ts` ensures:
+
 - Proper JSX transform for SolidJS
 - Correct type checking
 - Consistent behavior across all test files
 - Integration with the testing library
 
 Common mistakes to avoid:
+
 - Don't mix file-level and config-level JSX settings
 - Don't remove necessary type references
 - Don't forget to include testing library in dependencies

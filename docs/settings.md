@@ -1,26 +1,31 @@
 # Adding New Settings
 
-## Table of Contents
-- [Step-by-Step Guide](#step-by-step-guide)
-  - [Update App Context](#1-update-app-context)
-  - [Add to Store](#2-add-to-store)
-  - [Add Persistence](#3-add-persistence)
-  - [Add Getter and Setter](#4-add-getter-and-setter)
-  - [Add Translation Types](#5-add-translation-types)
-  - [Add UI Component](#6-add-ui-component)
-  - [Add Translations](#7-add-translations)
-- [Best Practices](#best-practices)
-  - [Type Safety](#1-type-safety)
-  - [State Management](#2-state-management)
-  - [Persistence](#3-persistence)
-  - [UI/UX](#4-uiux)
-  - [Translations](#5-translations)
-- [Testing](#testing)
-  - [State Tests](#1-state-tests)
-  - [UI Tests](#2-ui-tests)
-  - [Translation Tests](#3-translation-tests)
-
 This document outlines the process of adding new settings to the yipyap application.
+
+## Table of Contents
+
+---
+
+- [Adding New Settings](#adding-new-settings)
+  - [Table of Contents](#table-of-contents)
+  - [Step-by-Step Guide](#step-by-step-guide)
+    - [1. Update App Context](#1-update-app-context)
+    - [2. Add to Store](#2-add-to-store)
+    - [3. Add Persistence](#3-add-persistence)
+    - [4. Add Getter and Setter](#4-add-getter-and-setter)
+    - [5. Add Translation Types](#5-add-translation-types)
+    - [6. Add UI Component](#6-add-ui-component)
+    - [7. Add Translations](#7-add-translations)
+  - [Best Practices](#best-practices)
+    - [Type Safety](#type-safety)
+    - [State Management](#state-management)
+    - [Persistence](#persistence)
+    - [UI/UX](#uiux)
+    - [Translations](#translations)
+  - [Testing](#testing)
+    - [1. State Tests](#1-state-tests)
+    - [2. UI Tests](#2-ui-tests)
+    - [3. Translation Tests](#3-translation-tests)
 
 ## Step-by-Step Guide
 

@@ -1,29 +1,40 @@
 # ARIA Labeling Guide for yipyap
 
-## Table of Contents
-- [Component-Specific Guidelines](#component-specific-guidelines)
-  - [Gallery Components](#gallery-components)
-  - [Image Viewer Components](#image-viewer-components)
-  - [Settings Components](#settings-components)
-  - [Upload Components](#upload-components)
-- [General Requirements](#general-requirements)
-  - [Core Requirements](#core-requirements)
-  - [Label Text Guidelines](#label-text-guidelines)
-  - [ID Requirements](#id-requirements)
-- [Testing](#testing)
-  - [Manual Testing](#manual-testing)
-  - [Automated Testing](#automated-testing)
-- [Common Patterns](#common-patterns)
-
 This document outlines best practices for ARIA labeling in the yipyap project, focusing on our specific components and use cases.
 
+## Table of Contents
+
+---
+
+- [ARIA Labeling Guide for yipyap](#aria-labeling-guide-for-yipyap)
+  - [Table of Contents](#table-of-contents)
+  - [Component-Specific Guidelines](#component-specific-guidelines)
+    - [Gallery Components](#gallery-components)
+    - [Image Viewer Components](#image-viewer-components)
+    - [Settings Components](#settings-components)
+    - [Upload Components](#upload-components)
+  - [General Requirements](#general-requirements)
+    - [Core Requirements](#core-requirements)
+    - [Label Text Guidelines](#label-text-guidelines)
+    - [ID Requirements](#id-requirements)
+  - [Testing](#testing)
+    - [Manual Testing](#manual-testing)
+    - [Automated Testing](#automated-testing)
+  - [Common Patterns](#common-patterns)
+    - [Status Updates](#status-updates)
+    - [Modal Dialogs](#modal-dialogs)
+    - [Loading States](#loading-states)
+
 ## Component-Specific Guidelines
+
+---
 
 ### Gallery Components
 
 The Gallery is a core feature of yipyap that requires careful attention to accessibility. Key considerations include:
 
 - Image Grid Items:
+
   ```tsx
   <div 
     role="gridcell"
@@ -35,6 +46,7 @@ The Gallery is a core feature of yipyap that requires careful attention to acces
   ```
 
 - Batch Selection Controls:
+
   ```tsx
   <button
     aria-label="Select all images"
@@ -49,6 +61,7 @@ The Gallery is a core feature of yipyap that requires careful attention to acces
 The Image Viewer needs clear labeling for its controls and interactive elements:
 
 - Zoom Controls:
+
   ```tsx
   <button
     aria-label={`Zoom ${isZoomedIn ? 'out' : 'in'}`}
@@ -59,6 +72,7 @@ The Image Viewer needs clear labeling for its controls and interactive elements:
   ```
 
 - Navigation Controls:
+
   ```tsx
   <button
     aria-label="Previous image"
@@ -73,6 +87,7 @@ The Image Viewer needs clear labeling for its controls and interactive elements:
 Settings panels require clear labeling to ensure users understand configuration options:
 
 - Theme Selection:
+
   ```tsx
   <div role="radiogroup" aria-label="Theme selection">
     <label>
@@ -88,6 +103,7 @@ Settings panels require clear labeling to ensure users understand configuration 
   ```
 
 - Feature Toggles:
+
   ```tsx
   <label class="toggle">
     <input
@@ -104,6 +120,7 @@ Settings panels require clear labeling to ensure users understand configuration 
 The Upload Overlay needs clear status and instruction communication:
 
 - Drop Zone:
+
   ```tsx
   <div
     role="region"
@@ -118,6 +135,8 @@ The Upload Overlay needs clear status and instruction communication:
 
 ## General Requirements
 
+---
+
 ### Core Requirements
 
 - Every interactive element must have an accessible name via one of:
@@ -131,6 +150,7 @@ The Upload Overlay needs clear status and instruction communication:
 ### Label Text Guidelines
 
 In yipyap, labels should:
+
 - Be concise and action-oriented
 - Describe the purpose or result of interaction
 - Include state information when relevant (e.g., "selected", "expanded")
@@ -147,9 +167,12 @@ In yipyap, labels should:
 
 ## Testing
 
+---
+
 ### Manual Testing
 
 Test the following scenarios:
+
 1. Navigate the gallery using only keyboard
 2. Verify screen reader announces:
    - Image titles and selection state
@@ -161,13 +184,17 @@ Test the following scenarios:
 ### Automated Testing
 
 Use these tools in the yipyap development workflow:
+
 1. ESLint with jsx-a11y plugin
 2. Automated accessibility tests in component test suites
 3. Regular full-app scans with axe-core
 
 ## Common Patterns
 
+---
+
 ### Status Updates
+
 ```tsx
 <div 
   role="status"
@@ -179,6 +206,7 @@ Use these tools in the yipyap development workflow:
 ```
 
 ### Modal Dialogs
+
 ```tsx
 <div
   role="dialog"
@@ -191,6 +219,7 @@ Use these tools in the yipyap development workflow:
 ```
 
 ### Loading States
+
 ```tsx
 <div
   aria-busy={isLoading}
@@ -201,6 +230,7 @@ Use these tools in the yipyap development workflow:
 ```
 
 When implementing ARIA labels in yipyap, always consider:
+
 1. The component's role in the larger application flow
 2. How the component's state affects the user experience
 3. The most natural way to describe the component to a screen reader user

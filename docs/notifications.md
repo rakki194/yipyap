@@ -1,40 +1,47 @@
 # Notification System
 
 ## Table of Contents
-- [Components](#components)
-  - [NotificationContainer](#notificationcontainer-notificationcontainertsx)
-  - [Notification](#notification-notificationtsx)
-- [Styling](#styling)
-- [Usage](#usage)
-- [Features](#features)
-  - [Notification Types](#notification-types)
-  - [Progress Tracking](#progress-tracking)
-  - [Grouping](#grouping)
-  - [Accessibility](#accessibility)
-  - [Animations](#animations)
-- [Best Practices](#best-practices)
-- [Implementation Details](#implementation-details)
-- [Customization](#customization)
+
+---
+
+- [Notification System](#notification-system)
+  - [Table of Contents](#table-of-contents)
+  - [Components](#components)
+    - [NotificationContainer (`NotificationContainer.tsx`)](#notificationcontainer-notificationcontainertsx)
+    - [Notification (`Notification.tsx`)](#notification-notificationtsx)
+  - [Styling](#styling)
+  - [Usage](#usage)
+  - [Features](#features)
+  - [Best Practices](#best-practices)
+  - [Implementation Details](#implementation-details)
+  - [Customization](#customization)
 
 The notification system in yipyap provides a flexible and accessible way to display toast notifications. It consists of two main components:
 
 ## Components
 
+---
+
 ### NotificationContainer (`NotificationContainer.tsx`)
 
 The `NotificationContainer` serves as a global container component that manages all notifications in the application. It handles the stacking and positioning of notifications as they appear and disappear. The container is responsible for managing the full lifecycle of notifications, including their entrance and exit animations.
 
-### Notification (`Notification.tsx`) 
+### Notification (`Notification.tsx`)
 
 The `Notification` component represents an individual notification element that can be displayed to the user. It provides support for different notification types including error, success, info, and warning messages. Each notification includes appropriate progress indicators and icons based on its type and state.
 
 ## Styling
 
+---
+
 The notification system uses dedicated CSS files:
+
 - `Notification.css` (3.3KB): Individual notification styling
 - `NotificationContainer.css` (739B): Container and layout styling
 
 ## Usage
+
+---
 
 Notifications can be created through the app context:
 
@@ -59,6 +66,8 @@ createNotification({
 
 ## Features
 
+---
+
 The notification system supports several notification types including error messages for failures, success notifications for completed operations, info messages for general updates, and warning notifications for cautionary alerts. Each type is visually distinct and appropriately styled.
 
 Progress tracking is a key feature, allowing notifications to display progress indicators that automatically update as operations proceed. Users can cancel in-progress operations when supported.
@@ -71,6 +80,8 @@ Smooth animations enhance the user experience, with enter/exit transitions, prog
 
 ## Best Practices
 
+---
+
 When creating notification messages, keep the content concise while ensuring it provides actionable information. Choose the appropriate notification type to match the message severity and purpose.
 
 Different notification types have recommended display durations - success and info messages typically show for 3 seconds, while errors and warnings remain visible for 5 seconds. Progress notifications stay until the operation completes.
@@ -80,6 +91,8 @@ Use notification grouping judiciously to organize related operations together. U
 For long-running operations, show progress indicators that update frequently to keep users informed. Ensure progress notifications can be cancelled when the underlying operation supports cancellation.
 
 ## Implementation Details
+
+---
 
 The notification system is implemented using SolidJS's fine-grained reactivity:
 
@@ -106,5 +119,7 @@ export const removeNotification = (id: string) => {
 ```
 
 ## Customization
+
+---
 
 The notification system offers several customization options. The visual appearance can be adjusted using CSS variables to match the application's theme and styling needs. Component props provide control over notification behavior and interactions. Global defaults for the notification system can be configured through the app context settings to ensure consistent behavior across the application.

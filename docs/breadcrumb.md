@@ -2,7 +2,33 @@
 
 The Breadcrumb component is a crucial navigation element in the yipyap gallery interface. It has been modularized into several focused components for better maintainability and reusability.
 
+## Table of Contents
+
+- [Breadcrumb Component Documentation](#breadcrumb-component-documentation)
+  - [Table of Contents](#table-of-contents)
+  - [Component Structure](#component-structure)
+    - [Main Component (`Breadcrumb.tsx`)](#main-component-breadcrumbtsx)
+    - [Navigation Component (`BreadcrumbNavigation.tsx`)](#navigation-component-breadcrumbnavigationtsx)
+    - [Statistics Component (`BreadcrumbStats.tsx`)](#statistics-component-breadcrumbstatstsx)
+    - [Actions Component (`BreadcrumbActions.tsx`)](#actions-component-breadcrumbactionstsx)
+    - [Supporting Components](#supporting-components)
+      - [FileUpload Component](#fileupload-component)
+      - [MultiSelectActions Component](#multiselectactions-component)
+      - [NewFolderDialog Component](#newfolderdialog-component)
+  - [Context Integration](#context-integration)
+    - [AppContext Usage](#appcontext-usage)
+    - [GalleryContext Usage](#gallerycontext-usage)
+  - [Styling System](#styling-system)
+    - [Core Layout (`Breadcrumb.css`)](#core-layout-breadcrumbcss)
+    - [Navigation Styles (`BreadcrumbNavigation.css`)](#navigation-styles-breadcrumbnavigationcss)
+    - [Statistics Styles (`BreadcrumbStats.css`)](#statistics-styles-breadcrumbstatscss)
+    - [Actions Styles (`BreadcrumbActions.css`)](#actions-styles-breadcrumbactionscss)
+  - [Theme Integration](#theme-integration)
+  - [Best Practices](#best-practices)
+
 ## Component Structure
+
+---
 
 The Breadcrumb system is organized into the following components:
 
@@ -23,6 +49,7 @@ The main Breadcrumb component serves as a container and orchestrator for the sub
 ### Navigation Component (`BreadcrumbNavigation.tsx`)
 
 Handles path-based navigation through:
+
 - Root navigation via the yipyap logo
 - Gallery root access with dimensions icon
 - Dynamic path segments showing the current directory hierarchy
@@ -31,6 +58,7 @@ Handles path-based navigation through:
 ### Statistics Component (`BreadcrumbStats.tsx`)
 
 Provides directory content overview:
+
 - Total folder count with folder icon
 - Total image count with dimensions icon
 - Selection count when items are selected
@@ -39,6 +67,7 @@ Provides directory content overview:
 ### Actions Component (`BreadcrumbActions.tsx`)
 
 Contains all interactive controls:
+
 - Multi-select actions (select all, deselect all)
 - New folder creation
 - File upload functionality
@@ -49,18 +78,21 @@ Contains all interactive controls:
 ### Supporting Components
 
 #### FileUpload Component
+
 - Handles file upload functionality
 - Validates file sizes (max 100MB)
 - Provides upload progress feedback
 - Manages upload notifications
 
 #### MultiSelectActions Component
+
 - Manages selection state
 - Provides bulk delete functionality
 - Shows selection progress
 - Handles both folder and image selections
 
 #### NewFolderDialog Component
+
 - Manages folder creation interface
 - Handles folder name input
 - Provides creation feedback
@@ -68,7 +100,10 @@ Contains all interactive controls:
 
 ## Context Integration
 
+---
+
 ### AppContext Usage
+
 ```typescript
 const app = useAppContext();
 // Theme management
@@ -80,6 +115,7 @@ app.notify(message, "success");
 ```
 
 ### GalleryContext Usage
+
 ```typescript
 const gallery = useGallery();
 // Path management
@@ -93,9 +129,12 @@ gallery.invalidateFolderCache();
 
 ## Styling System
 
+---
+
 Each component has its own CSS module for encapsulated styling:
 
 ### Core Layout (`Breadcrumb.css`)
+
 ```css
 .breadcrumb {
   position: sticky;
@@ -112,6 +151,7 @@ Each component has its own CSS module for encapsulated styling:
 ```
 
 ### Navigation Styles (`BreadcrumbNavigation.css`)
+
 ```css
 .breadcrumb-links {
   display: flex;
@@ -121,6 +161,7 @@ Each component has its own CSS module for encapsulated styling:
 ```
 
 ### Statistics Styles (`BreadcrumbStats.css`)
+
 ```css
 .breadcrumb-stats {
   white-space: nowrap;
@@ -130,6 +171,7 @@ Each component has its own CSS module for encapsulated styling:
 ```
 
 ### Actions Styles (`BreadcrumbActions.css`)
+
 ```css
 .breadcrumb-actions {
   display: flex;
@@ -139,6 +181,8 @@ Each component has its own CSS module for encapsulated styling:
 ```
 
 ## Theme Integration
+
+---
 
 Each component supports theme-specific styling:
 
@@ -153,6 +197,8 @@ Each component supports theme-specific styling:
 ```
 
 ## Best Practices
+
+---
 
 1. **Component Responsibility**
    - Each component should have a single, well-defined responsibility

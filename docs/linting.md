@@ -1,10 +1,29 @@
 # Common Linting Errors and Solutions
 
+## Table of Contents
+
+---
+
+- [Common Linting Errors and Solutions](#common-linting-errors-and-solutions)
+  - [Table of Contents](#table-of-contents)
+  - [Required Props Errors](#required-props-errors)
+    - [Missing Required Props](#missing-required-props)
+  - [Transformation Type Errors](#transformation-type-errors)
+    - [Object Type Mismatch](#object-type-mismatch)
+    - [Unknown Properties](#unknown-properties)
+    - [Discriminated Union Type Issues](#discriminated-union-type-issues)
+  - [Context Provider Errors](#context-provider-errors)
+    - [Hook Usage Error](#hook-usage-error)
+  - [Best Practices to Avoid Linting Errors](#best-practices-to-avoid-linting-errors)
+
 ## Required Props Errors
+
+---
 
 ### Missing Required Props
 
 **Error:**
+
 ```typescript
 Type '{}' is not assignable to type 'IntrinsicAttributes & { onClose: () => void; }'.
   Property 'onClose' is missing in type '{}' but required in type '{ onClose: () => void; }'.
@@ -12,6 +31,7 @@ Type '{}' is not assignable to type 'IntrinsicAttributes & { onClose: () => void
 
 **Solution:**
 Always provide required props when rendering components in tests:
+
 ```typescript
 // Incorrect
 render(() => <Settings />);
@@ -24,15 +44,19 @@ When working with components, always check the prop types before usage to ensure
 
 ## Transformation Type Errors
 
+---
+
 ### Object Type Mismatch
 
 **Error:**
+
 ```typescript
 Argument of type '{ type: "searchReplace"; pattern: string; replacement: string; }' is not assignable to parameter of type 'Omit<Transformation, "id" | "enabled" | "isCustom">'.
 ```
 
 **Solution:**
 Use proper type assertions for specific transformation types:
+
 ```typescript
 const transformation = {
   ...baseTransformation,
@@ -45,12 +69,14 @@ const transformation = {
 ### Unknown Properties
 
 **Error:**
+
 ```typescript
 Object literal may only specify known properties, and 'pattern' does not exist in type 'Omit<Transformation, "id" | "enabled" | "isCustom">'
 ```
 
 **Solution:**
 Import and use specific transformation type interfaces:
+
 ```typescript
 import { SearchReplaceTransformation } from "~/contexts/transformations";
 ```
@@ -58,27 +84,33 @@ import { SearchReplaceTransformation } from "~/contexts/transformations";
 ### Discriminated Union Type Issues
 
 **Error:**
+
 ```typescript
 Type '{ type: string; ... }' is not assignable to type 'Transformation'.
 ```
 
 **Solution:**
 Use const assertions or explicit type annotations:
+
 ```typescript
 type: "searchReplace" as const
 ```
 
 ## Context Provider Errors
 
+---
+
 ### Hook Usage Error
 
 **Error:**
+
 ```typescript
 Error: useTransformations must be used within a TransformationsProvider
 ```
 
 **Solution:**
 Wrap your app with the TransformationsProvider:
+
 ```typescript
 <TransformationsProvider>
   <AppContext.Provider>
@@ -86,12 +118,15 @@ Wrap your app with the TransformationsProvider:
   </AppContext.Provider>
 </TransformationsProvider>
 ```
+
 ## Best Practices to Avoid Linting Errors
+
+---
 
 **Type Imports**
 When working with transformations, it's important to always import specific transformation types from their source files. Type assertions should be used consistently throughout the codebase to maintain type safety. Type definitions should be kept centralized in dedicated type files to avoid duplication and make maintenance easier.
 
-**Context Usage** 
+**Context Usage**
 Proper nesting of providers is crucial for context to work correctly. Always verify that hooks are used within the appropriate provider components in the component hierarchy. The order of providers matters, so maintain a consistent and logical provider ordering based on dependencies.
 
 **Type Safety**
