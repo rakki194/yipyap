@@ -23,6 +23,7 @@ FROM nvcr.io/nvidia/cuda-dl-base:24.12-cuda12.6-devel-ubuntu24.04
 
 # Install system dependencies including Python, build tools, and curl
 RUN apt-get update && apt-get install --no-install-recommends -y \
+    libmagic1 \
     python3 \
     python3-dev \
     python3-pip \
