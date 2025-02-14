@@ -116,6 +116,8 @@ export interface SettingsTranslations {
   instantDeleteTooltip: string;
   warning: string;
   gallery: string;
+  uiScale: string;
+  uiScaleTooltip: string;
   preserveLatents: string;
   preserveLatentsTooltip: string;
   preserveTxt: string;

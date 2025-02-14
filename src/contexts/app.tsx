@@ -82,6 +82,8 @@ export interface AppContext {
   setPreserveTxt: (value: boolean) => void;
   readonly alwaysShowCaptionEditor: boolean;
   setAlwaysShowCaptionEditor: (value: boolean) => void;
+  readonly uiScale: number;
+  setUiScale: (value: number) => void;
   notify: (
     message: string,
     type?: "error" | "success" | "info" | "warning",
@@ -157,6 +159,7 @@ const createAppContext = (): AppContext => {
     wdv3GenThreshold: number;
     wdv3CharThreshold: number;
     wdv3ForceCpu: boolean;
+    uiScale: number;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
@@ -175,6 +178,7 @@ const createAppContext = (): AppContext => {
     wdv3GenThreshold: parseFloat(localStorage.getItem("wdv3GenThreshold") || "0.35"),
     wdv3CharThreshold: parseFloat(localStorage.getItem("wdv3CharThreshold") || "0.75"),
     wdv3ForceCpu: localStorage.getItem("wdv3ForceCpu") === "true",
+    uiScale: parseFloat(localStorage.getItem("uiScale") || "1"),
   });
 
   // Previous Location tracking
@@ -251,6 +255,9 @@ const createAppContext = (): AppContext => {
   );
   createRenderEffect(() =>
     localStorage.setItem("wdv3ForceCpu", store.wdv3ForceCpu.toString())
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("uiScale", store.uiScale.toString())
   );
 
   const setJtp2ModelPath = (value: string) => {
@@ -461,6 +468,11 @@ const createAppContext = (): AppContext => {
     }
   };
 
+  const setUiScale = (value: number) => {
+    setStore("uiScale", value);
+    document.documentElement.style.setProperty("--ui-scale", value.toString());
+  };
+
   const appContext: AppContext = {
     get prevRoute() {
       return store.prevRoute;
@@ -590,6 +602,10 @@ const createAppContext = (): AppContext => {
         setForceCpu: (value: boolean) => updateWdv3Config({ force_cpu: value }),
       } as WDv3Settings;
     },
+    get uiScale() {
+      return store.uiScale;
+    },
+    setUiScale,
   };
 
   return appContext;
