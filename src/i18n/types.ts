@@ -128,6 +128,13 @@ export interface SettingsTranslations {
 }
 
 export interface ToolsTranslations {
+  example: string;
+  original: string;
+  transformed: string;
+  caseType: string;
+  trimType: string;
+  numberAction: string;
+  
   removeCommas: string;
   replaceNewlinesWithCommas: string;
   replaceUnderscoresWithSpaces: string;
@@ -164,6 +171,7 @@ export interface ToolsTranslations {
   numberFormat: string;
   numberFormatPlaceholder: string;
   addTransformation: string;
+  editTransformation: string;
   transformationNamePlaceholder: string;
   transformationDescriptionPlaceholder: string;
   searchPattern: string;

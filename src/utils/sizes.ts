@@ -3,6 +3,7 @@
 // This file contains utility functions for handling image sizes.
 
 import { createResource } from "solid-js";
+import { retryFetch } from "./retry";
 
 /**
  * Interface representing the configuration response from the server
@@ -19,10 +20,7 @@ interface ConfigResponse {
  * @throws Error if the fetch request fails
  */
 const fetchSizes = async () => {
-  const response = await fetch("/config");
-  if (!response.ok) {
-    throw new Error("Failed to fetch sizes");
-  }
+  const response = await retryFetch("/config");
   const config = await response.json();
   return config as ConfigResponse;
 };

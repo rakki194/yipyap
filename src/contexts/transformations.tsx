@@ -213,6 +213,7 @@ interface TransformationsState {
  * @property toggleTransformation - Toggle a transformation's enabled state
  * @property applyTransformation - Apply a single transformation
  * @property applyEnabledTransformations - Apply all enabled transformations
+ * @property updateTransformation - Update an existing transformation
  */
 interface TransformationsContextValue {
   state: TransformationsState;
@@ -221,6 +222,7 @@ interface TransformationsContextValue {
   toggleTransformation: (id: string) => void;
   applyTransformation: (transformationId: string, text: string) => string;
   applyEnabledTransformations: (text: string) => string;
+  updateTransformation: (id: string, transformation: Omit<Transformation, "id" | "enabled" | "isCustom">) => void;
 }
 
 const defaultTransformations: Transformation[] = [
@@ -283,7 +285,11 @@ const applyTransformationToText = (transformation: Transformation, text: string)
         case "title":
           return text.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
         case "sentence":
-          return text.replace(/(^\w|\.\s+\w)/g, letter => letter.toUpperCase());
+          // Split into sentences and process each one
+          return text.split(/(?<=[.!?]\s+)/).map(sentence => {
+            const lowered = sentence.toLowerCase();
+            return lowered.charAt(0).toUpperCase() + lowered.slice(1);
+          }).join('');
       }
       break;
 
@@ -436,6 +442,24 @@ export const TransformationsProvider: ParentComponent = (props) => {
     }, text);
   };
 
+  const updateTransformation = (id: string, transformation: Omit<Transformation, "id" | "enabled" | "isCustom">) => {
+    setState("transformations", (prev) => {
+      const existingTransform = prev.find((t) => t.id === id);
+      if (!existingTransform || !existingTransform.isCustom) return prev;
+
+      const newTransformations = prev.map((t) => 
+        t.id === id ? { 
+          ...transformation, 
+          id, 
+          enabled: existingTransform.enabled, 
+          isCustom: true 
+        } as Transformation : t
+      );
+      saveTransformations(newTransformations);
+      return newTransformations;
+    });
+  };
+
   const value: TransformationsContextValue = {
     state,
     addTransformation,
@@ -443,6 +467,7 @@ export const TransformationsProvider: ParentComponent = (props) => {
     toggleTransformation,
     applyTransformation,
     applyEnabledTransformations,
+    updateTransformation,
   };
 
   return (

@@ -13,6 +13,7 @@
 
 import type {} from "../models";
 import { fetchStreamingJson } from "../utils/streaming_json";
+import { retryFetch } from "../utils/retry";
 import {
   Accessor,
   createResource,
@@ -362,13 +363,14 @@ export function saveCaption(
   imageName: string,
   data: SaveCaption
 ): Promise<Response> {
-  return fetch(`/caption/${path}/${imageName}`, {
+  return retryFetch(`/caption/${path}/${imageName}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       type: data.type,
       caption: data.caption || "" // Ensure empty string if caption is undefined/null
-    })
+    }),
+    maxAttempts: 5
   }).then(response => {
     if (!response.ok) {
       return response.text().then(text => {
@@ -395,10 +397,11 @@ export async function deleteImage(
   imageName: string,
   confirm: boolean = false
 ): Promise<DeleteImageResponse> {
-  const response = await fetch(
+  const response = await retryFetch(
     `/api/browse/${path}/${imageName}?confirm=${confirm}`,
     {
       method: "DELETE",
+      maxAttempts: 5
     }
   );
 
@@ -437,10 +440,11 @@ export async function deleteCaption(
   type: string
 ): Promise<Response> {
   try {
-    const response = await fetch(
+    const response = await retryFetch(
       `${joinUrlParts("/api/caption", path, name)}?caption_type=${type}`,
       {
         method: "DELETE",
+        maxAttempts: 5
       }
     );
     
@@ -481,13 +485,14 @@ export async function generateCaption(
   // For root directory, use "_" as path to match API expectation
   const imagePath = cleanPath ? `${cleanPath}/${name}` : `_/${name}`;
   
-  return fetch(
+  return retryFetch(
     `/api/generate-caption/${imagePath}?generator=${generator}&force=${force}`,
     {
       method: "POST",
       headers: {
         "Accept": "application/json",
       },
+      maxAttempts: 5
     }
   );
 }

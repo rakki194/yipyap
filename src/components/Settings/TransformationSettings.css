@@ -133,7 +133,8 @@
   background: var(--text-tertiary);
 }
 
-.delete-button {
+.delete-button,
+.edit-button {
   color: var(--text-secondary);
   transition: all 0.2s ease;
   display: inline-flex;
@@ -151,7 +152,13 @@
   background-color: var(--hover-bg);
 }
 
-.delete-button svg {
+.edit-button:hover {
+  color: var(--accent);
+  background-color: var(--hover-bg);
+}
+
+.delete-button svg,
+.edit-button svg {
   width: 1rem;
   height: 1rem;
 }
@@ -308,4 +315,65 @@
   .icon-selection button {
     padding: var(--spacing);
   }
+}
+
+.transformation-example {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+}
+
+.transformation-example h4 {
+  margin: 0 0 1rem 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.example-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.example-original,
+.example-transformed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--font-size-sm);
+}
+
+.example-label {
+  color: var(--text-2);
+  min-width: 5rem;
+}
+
+.example-arrow {
+  display: flex;
+  justify-content: center;
+  color: var(--text-3);
+  padding: 0.25rem 0;
+}
+
+.example-arrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.example-original code,
+.example-transformed code {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  font-family: var(--font-mono);
+  color: var(--text-1);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.example-transformed code {
+  background: var(--surface-3);
 } 

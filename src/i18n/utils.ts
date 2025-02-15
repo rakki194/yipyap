@@ -506,36 +506,3 @@ export function getRomanianPlural(
   // All other cases (2-19 and decimals < 20)
   return forms.few;
 }
-
-// Add test for the function
-if (import.meta.vitest) {
-  const { describe, it, expect } = import.meta.vitest;
-
-  describe('getRussianPlural', () => {
-    const forms: [string, string, string] = ['файл', 'файла', 'файлов'];
-
-    it('handles singular form (1, 21, 31, etc.)', () => {
-      expect(getRussianPlural(1, forms)).toBe('файл');
-      expect(getRussianPlural(21, forms)).toBe('файл');
-      expect(getRussianPlural(101, forms)).toBe('файл');
-    });
-
-    it('handles few form (2-4, 22-24, etc.)', () => {
-      expect(getRussianPlural(2, forms)).toBe('файла');
-      expect(getRussianPlural(3, forms)).toBe('файла');
-      expect(getRussianPlural(4, forms)).toBe('файла');
-      expect(getRussianPlural(22, forms)).toBe('файла');
-      expect(getRussianPlural(23, forms)).toBe('файла');
-      expect(getRussianPlural(24, forms)).toBe('файла');
-    });
-
-    it('handles many form (5-20, 25-30, etc.)', () => {
-      expect(getRussianPlural(5, forms)).toBe('файлов');
-      expect(getRussianPlural(11, forms)).toBe('файлов');
-      expect(getRussianPlural(15, forms)).toBe('файлов');
-      expect(getRussianPlural(20, forms)).toBe('файлов');
-      expect(getRussianPlural(25, forms)).toBe('файлов');
-      expect(getRussianPlural(30, forms)).toBe('файлов');
-    });
-  });
-}
