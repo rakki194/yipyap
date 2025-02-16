@@ -18,100 +18,29 @@ The gallery system is the heart of the application, featuring a sophisticated im
 
 ### Image Viewer Core (`ImageView` Component)
 
-- **Smooth Zooming**: Implements a sophisticated zoom system with:
-  - Gradual and smooth zoom transitions (0.001 zoom factor for precision)
-  - Cursor-relative zooming that maintains focus point
-  - Scale limits (1x to 5x) with smooth interpolation
-  - Double-click to reset zoom
-  - Zoom level indicator showing current magnification
-
-- **Advanced Panning**:
-  - Cursor-aware panning when zoomed
-  - Smooth transitions with cubic-bezier easing
-  - Grab/grabbing cursor states
-  - Edge detection to prevent over-panning
-  - Hardware-accelerated transforms for performance
-
-- **Minimap Navigation**:
-  - Real-time viewport tracking
-  - Interactive navigation by clicking
-  - Smooth viewport updates
-  - Theme-aware styling with semi-transparent overlay
-  - Automatic show/hide based on zoom state
-  - Configurable through app settings (`enableMinimap`)
+The Image Viewer Core component offers a rich user experience by combining smooth zooming, advanced panning, and intuitive minimap navigation. It features smooth zooming characterized by gradual transitions with a 0.001 zoom factor for precision, cursor-relative zooming to maintain focus, smoothly interpolated scale limits between 1x and 5x, and a double-click reset function with a zoom level indicator. Additionally, its advanced panning provides cursor-aware movement when zoomed, employing smooth cubic-bezier transitions, distinct grab/grabbing states, edge detection to prevent over-panning, and hardware-accelerated transforms for optimal performance. The minimap navigation enhances usability with real-time viewport tracking, interactive navigation via clicking, seamless viewport updates, and theme-aware styling through a semi-transparent overlay that shows or hides based on the zoom state and is configurable via the 'enableMinimap' setting.
 
 ### Image Loading and Display
 
-- **Progressive Loading**:
-  - Immediate thumbnail display while loading full preview
-  - Smooth opacity transitions between thumbnail and preview
-  - Priority-based image loading system
-  - Automatic resource cleanup
-  - Loading state indicators
-
-- **Performance Optimizations**:
-  - Hardware-accelerated transforms
-  - Will-change hints for smooth animations
-  - Efficient resize handling with ResizeObserver
-  - Memory-conscious image unloading
-  - Touch action handling for mobile devices
+The Image Loading and Display strategy employs progressive loading where a thumbnail is displayed immediately while the full preview loads with smooth opacity transitions. This approach is supported by a priority-based loading system, automatic resource cleanup, and clear loading state indicators. In addition, performance is optimized through hardware-accelerated transforms, the use of will-change hints for smooth animations, efficient resize handling via ResizeObserver, memory-conscious image unloading, and effective touch action handling on mobile devices.
 
 ### Tagging System
 
-- **Advanced Color Generation**:
-  - OKLCH color space for perceptually uniform colors
-  - Theme-aware color generation with specific rules per theme:
-    - Dark theme: Low lightness (25%), subtle chroma
-    - Light theme: High lightness (85%), subtle chroma
-    - Gray theme: Variable lightness, zero chroma
-    - Themed variants (banana, strawberry, peanut,
-  - High contrast, `high-contrast-black`, `high-contrast-inverse` accessibility themes.
-  - Deterministic color generation for consistent tag colors
-  - Automatic contrast adjustment for text readability
+The tagging system includes advanced color generation using the OKLCH color space to achieve perceptually uniform colors. It is theme-aware and applies specific rules for each theme: in the dark theme, it uses a low lightness of about 25% with subtle chroma; in the light theme, a high lightness near 85% with subtle chroma; and in the gray theme, variable lightness with zero chroma is applied. Additionally, it supports pre-defined themed variants along with accessibility modes such as 'high-contrast-black' and 'high-contrast-inverse', ensuring high contrast and readability. The system deterministically generates tag colors and automatically adjusts contrast for text readability.
 
-- **Interactive Tag Management**:
-  - Keyboard navigation between tags
-  - Double-tap detection for quick editing
-  - Smooth animations for tag creation/deletion
-  - Batch operations support
-  - Theme-specific animations and hover effects
-  - RTL language support
+Interactive tag management supports keyboard navigation for moving between tags, double-tap detection for quick editing, smooth animations for tag creation and deletion, batch operations, theme-specific animations and hover effects, and RTL language support.
 
 ### Caption Generation
 
-- **Multiple Model Support**:
-  - JTP2 and WDv3 model integration
-  - Progress tracking with notifications
-  - Error handling with user feedback
-  - Automatic caption type detection
-  - Real-time caption updates
+The Caption Generation feature supports multiple models, including JTP2 and WDv3, and offers progress tracking through notifications, robust error handling with user feedback, automatic detection of caption types, and ensures real-time updates.
 
 ### Accessibility and UX
 
-- **Keyboard Support**:
-  - Full keyboard navigation
-  - Accessible controls with ARIA labels
-  - Focus management
-  - Screen reader support
-
-- **Visual Feedback**:
-  - Loading indicators
-  - Progress notifications
-  - Error states
-  - Theme-aware animations
-  - High contrast support
+The Accessibility and UX guidelines ensure that the application is fully navigable via keyboard, with accessible controls featuring ARIA labels, proper focus management, and support for screen readers. Additionally, the interface provides visual feedback through loading indicators, progress notifications, clear error states, theme-aware animations, and high contrast options.
 
 ### Theme Integration
 
-- **Comprehensive Theming**:
-  - Theme-specific tag colors and animations
-  - Dark/light mode support
-  - Special theme variants with unique effects
-  - Consistent styling across components
-  - Dynamic theme switching
-  - RTL layout support
-
-The system is built with performance and extensibility in mind, using SolidJS's fine-grained reactivity for efficient updates and a modular architecture that allows for easy addition of new features and themes.
+The Theme Integration approach includes comprehensive theming that covers theme-specific tag colors and animations, support for both dark and light modes, special theme variants with unique effects, consistent styling across components, dynamic theme switching, and support for right-to-left layouts.
 
 ## Theming System
 
@@ -165,19 +94,7 @@ Instead of using lists while writing documentation, use paragraphs. Only use lis
 
 ## Composables in SolidJS
 
-The application uses composables for reusable reactive logic, following SolidJS's composition pattern. All composables must be placed in the `/src/composables` directory. Never create a `hooks` directory or use the term "hooks" - this terminology is specific to React and does not align with SolidJS's mental model.
-
-Composables are functions that encapsulate reactive logic and return signals, memos, or other reactive primitives. They should be named with the `use` prefix to indicate their role as composition functions. Each composable should focus on a specific concern, such as state management, event handling, or data fetching.
-
-The composables directory structure reflects the feature-based organization of the application. For example, gallery-related composables like `useGalleryScroll`, `useGalleryUI`, and `useGalleryEffects` are grouped together to maintain clear boundaries and dependencies.
-
-When creating new composables, ensure they:
-
-- Have a clear, single responsibility
-- Return only the necessary reactive primitives
-- Clean up resources when no longer needed
-- Are well-typed with TypeScript
-- Include proper documentation and usage examples
+Composables in SolidJS encapsulate reusable reactive logic and must reside in the `/src/composables` directory with names prefixed by "use" to clearly denote their function. It is imperative not to create a "hooks" directory or use the term "hooks," as that is more aligned with React. Each composable should have a single, clear responsibility, return only the necessary reactive primitives, properly handle resource cleanup, be well-typed in TypeScript, and come with comprehensive documentation and usage examples.
 
 ## Event Handling and Performance
 
