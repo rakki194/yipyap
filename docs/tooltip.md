@@ -61,6 +61,7 @@ const hideTooltip = () => {
 The tooltip's styling uses a modern approach with CSS transitions:
 
 1. **Base Styles**
+
    ```css
    .tooltip-content {
      position: fixed;
@@ -73,6 +74,7 @@ The tooltip's styling uses a modern approach with CSS transitions:
    ```
 
 2. **Visibility and Transitions**
+
    ```css
    .tooltip-content {
      opacity: 0;
@@ -92,6 +94,7 @@ The tooltip's styling uses a modern approach with CSS transitions:
 ## Usage Examples
 
 ### Basic Usage
+
 ```typescript
 <Tooltip content="This is a tooltip">
   <button>Hover me for 1.5s</button>
@@ -99,6 +102,7 @@ The tooltip's styling uses a modern approach with CSS transitions:
 ```
 
 ### With Custom Class
+
 ```typescript
 <Tooltip content="Custom styled tooltip" class="custom-tooltip">
   <span>Hover for info</span>

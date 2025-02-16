@@ -1,30 +1,41 @@
 # Translation System
 
 ## Table of Contents
-- [Directory Structure](#directory-structure)
-- [Type System](#type-system)
-  - [Translation Interfaces](#translation-interfaces)
-  - [Type-Safe Translation Access](#type-safe-translation-access)
-- [Language Support](#language-support)
-  - [Adding New Languages](#adding-new-languages)
-  - [Pluralization Support](#pluralization-support)
-- [RTL Support](#rtl-support)
-- [Dynamic Loading](#dynamic-loading)
-- [Best Practices](#best-practices)
-  - [Translation Keys](#1-translation-keys)
-  - [Translation Content](#2-translation-content)
-  - [Interpolation](#3-interpolation)
-  - [Maintenance](#4-maintenance)
-- [Testing](#testing)
-  - [Translation Key Tests](#translation-key-tests)
-  - [Pluralization Tests](#pluralization-tests)
-  - [RTL Tests](#rtl-tests)
+
+- [Translation System](#translation-system)
+  - [Table of Contents](#table-of-contents)
+  - [Directory Structure](#directory-structure)
+  - [Type System](#type-system)
+    - [Translation Interfaces](#translation-interfaces)
+    - [Type-Safe Translation Access](#type-safe-translation-access)
+  - [Language Support](#language-support)
+    - [Adding New Languages](#adding-new-languages)
+    - [Pluralization Support](#pluralization-support)
+      - [Plural Forms](#plural-forms)
+      - [Language-Specific Rules](#language-specific-rules)
+      - [Usage in Translations](#usage-in-translations)
+      - [Helper Functions](#helper-functions)
+      - [Testing Pluralization](#testing-pluralization)
+  - [RTL Support](#rtl-support)
+    - [Best Practices for RTL Support](#best-practices-for-rtl-support)
+    - [RTL-Aware Components](#rtl-aware-components)
+  - [Dynamic Loading](#dynamic-loading)
+  - [Best Practices](#best-practices)
+    - [Translation Keys](#translation-keys)
+    - [Translation Content](#translation-content)
+    - [Interpolation](#interpolation)
+    - [Maintenance](#maintenance)
+  - [Testing](#testing)
+    - [Translation Key Tests](#translation-key-tests)
+    - [Pluralization Tests](#pluralization-tests)
+    - [RTL Tests](#rtl-tests)
 
 The translation system in yipyap provides comprehensive internationalization support with type-safe translations, pluralization rules, and RTL language support.
 
 ## Directory Structure
 
 The translations are in the `/src/i18n` folder:
+
 - Language files: `en.ts`, `ja.ts`, etc.
 - Type definitions: `/src/i18n/types.ts`
 - Core functionality: `/src/i18n/index.ts`
@@ -82,29 +93,29 @@ const value = getTranslationValue(translations, "gallery.multiSelect.selected");
 
 1. Create a new language file in `/src/i18n/`:
 
-```typescript
-// ja.ts
-export default {
-  common: {
-    ok: "OK",
-    cancel: "キャンセル"
-  },
-  settings: {
-    title: "設定",
-    // ... other translations
-  }
-} satisfies Translations;
-```
+    ```typescript
+    // ja.ts
+    export default {
+      common: {
+        ok: "OK",
+        cancel: "キャンセル"
+      },
+      settings: {
+        title: "設定",
+        // ... other translations
+      }
+    } satisfies Translations;
+    ```
 
 2. Add the language to the supported languages array in `/src/i18n/index.ts`:
 
-```typescript
-export const languages = [
-  { code: "en", name: "English" },
-  { code: "ja", name: "日本語" },
-  // Add new language here
-] as const;
-```
+    ```typescript
+    export const languages = [
+      { code: "en", name: "English" },
+      { code: "ja", name: "日本語" },
+      // Add new language here
+    ] as const;
+    ```
 
 ### Pluralization Support
 
@@ -130,6 +141,7 @@ The system includes specialized plural rules for different language families:
 1. **Default (English-like)**:
    - Two forms: singular (one) and plural (other)
    - Example: "1 book" vs "2 books"
+
    ```typescript
    default: (n: number, forms: PluralForms) => 
      n === 1 ? forms.one : forms.other
@@ -141,6 +153,7 @@ The system includes specialized plural rules for different language families:
      - 1: книга (one)
      - 2-4: книги (few)
      - 5-20: книг (many)
+
    ```typescript
    ru: (n: number, forms: PluralForms) => {
      const lastDigit = n % 10;
@@ -160,6 +173,7 @@ The system includes specialized plural rules for different language families:
      - 2: كتابان (dual)
      - 3-10: كتب (plural)
      - 11+: كتابًا (plural large)
+
    ```typescript
    ar: (n: number, forms: PluralForms) => {
      if (n === 0) return forms.zero || forms.other;
@@ -172,6 +186,7 @@ The system includes specialized plural rules for different language families:
 
 4. **East Asian Languages (Japanese, Chinese, Korean, Vietnamese)**:
    - No grammatical plurals, always use the base form
+
    ```typescript
    ja: (_n: number, forms: PluralForms) => forms.other
    ```
@@ -179,31 +194,33 @@ The system includes specialized plural rules for different language families:
 #### Usage in Translations
 
 1. **Define Plural Forms**:
-```typescript
-const bookTranslations = {
-  en: {
-    one: "${count} book",
-    other: "${count} books"
-  },
-  ru: {
-    one: "${count} книга",
-    few: "${count} книги",
-    many: "${count} книг"
-  },
-  ar: {
-    zero: "لا كتب",
-    one: "كتاب واحد",
-    two: "كتابان",
-    few: "${count} كتب",
-    many: "${count} كتابًا"
-  }
-};
-```
+
+    ```typescript
+    const bookTranslations = {
+      en: {
+        one: "${count} book",
+        other: "${count} books"
+      },
+      ru: {
+        one: "${count} книга",
+        few: "${count} книги",
+        many: "${count} книг"
+      },
+      ar: {
+        zero: "لا كتب",
+        one: "كتاب واحد",
+        two: "كتابان",
+        few: "${count} كتب",
+        many: "${count} كتابًا"
+      }
+    };
+    ```
 
 2. **Use in Components**:
-```typescript
-const message = t("books.count", { count: 5 });
-```
+
+    ```typescript
+    const message = t("books.count", { count: 5 });
+    ```
 
 #### Helper Functions
 
@@ -238,52 +255,56 @@ describe("Pluralization", () => {
 The system provides comprehensive RTL (right-to-left) support for languages like Arabic (ar), Hebrew (he), and Persian (fa). This is implemented through several layers:
 
 1. Automatic Direction Setting:
-```typescript
-// In app context
-createRenderEffect(() => {
-  document.documentElement.lang = store.locale;
-  document.documentElement.dir = ["ar", "he", "fa"].includes(store.locale) ? "rtl" : "ltr";
-});
-```
+
+    ```typescript
+    // In app context
+    createRenderEffect(() => {
+      document.documentElement.lang = store.locale;
+      document.documentElement.dir = ["ar", "he", "fa"].includes(store.locale) ? "rtl" : "ltr";
+    });
+    ```
 
 2. CSS Logical Properties:
-```css
-:root[dir="rtl"] {
-  --start: right;
-  --end: left;
-  --font-family-base: "Noto Sans Arabic", -apple-system, BlinkMacSystemFont, 
-    "Segoe UI", Roboto, sans-serif;
-}
 
-:root[dir="ltr"] {
-  --start: left;
-  --end: right;
-}
-```
+    ```css
+    :root[dir="rtl"] {
+      --start: right;
+      --end: left;
+      --font-family-base: "Noto Sans Arabic", -apple-system, BlinkMacSystemFont, 
+        "Segoe UI", Roboto, sans-serif;
+    }
+
+    :root[dir="ltr"] {
+      --start: left;
+      --end: right;
+    }
+    ```
 
 3. Language-Specific Font Support:
-```css
-body:lang(he) {
-  font-family: "Noto Sans Hebrew", var(--font-family-base);
-  line-height: 1.7;
-}
 
-body:lang(ar) {
-  font-family: "Noto Sans Arabic", var(--font-family-base);
-  line-height: 1.8;
-}
+    ```css
+    body:lang(he) {
+      font-family: "Noto Sans Hebrew", var(--font-family-base);
+      line-height: 1.7;
+    }
 
-body:lang(fa) {
-  font-family: "Noto Sans Arabic", var(--font-family-base);
-  line-height: 1.8;
-}
-```
+    body:lang(ar) {
+      font-family: "Noto Sans Arabic", var(--font-family-base);
+      line-height: 1.8;
+    }
+
+    body:lang(fa) {
+      font-family: "Noto Sans Arabic", var(--font-family-base);
+      line-height: 1.8;
+    }
+    ```
 
 4. Font Loading:
-```css
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew&display=swap');
-```
+
+    ```css
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew&display=swap');
+    ```
 
 ### Best Practices for RTL Support
 
@@ -334,7 +355,7 @@ When creating translation keys, it's important to follow consistent naming patte
 
 Translation content should be written in clear, concise language that users can easily understand. Maintain consistent sentence casing across all translations to provide a polished user experience. Technical jargon should be avoided unless absolutely necessary for the target audience. When the meaning or usage of a translation may not be immediately obvious, include context comments to help other developers and translators understand how the text is used.
 
-### Interpolation 
+### Interpolation
 
 The interpolation system relies on named parameters to provide clarity and prevent errors from parameter order changes. All required parameters should be clearly documented so translators understand what values will be inserted. Special attention must be paid to how word order differences between languages affect interpolated values. The system needs to appropriately handle plural forms based on the grammatical rules of each target language.
 

@@ -49,6 +49,7 @@ Number operations provide specialized handling of numeric content. Users can rem
 Custom transformations provide users with full control over text modifications. Each custom transformation includes a descriptive name and detailed description to identify its purpose. Users can select an icon from a predefined set to visually distinguish the transformation. Type-specific settings allow fine-tuning the transformation behavior. Each transformation can be individually enabled or disabled to control when it is applied.
 
 ### Available Icons
+
 - speaker
 - arrowUndo
 - edit
