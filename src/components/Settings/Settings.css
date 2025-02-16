@@ -26,7 +26,6 @@
   background: var(--bg-color);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-lg);
-  overflow: hidden;
 }
 
 /* Common header styles */
@@ -151,9 +150,9 @@
   position: relative;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
   border-bottom-left-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
-  overflow: hidden;
 }
 
 .settings-content,
@@ -161,14 +160,16 @@
 .experimental-content,
 .transformations-content,
 .tagger-content {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
   position: absolute;
   inset: 0;
   padding: calc(var(--spacing) * 2);
   overflow-y: auto;
   background: var(--bg-color);
-  opacity: 1;
-  transform: translateX(0);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  height: 100%;
+  width: 100%;
 }
 
 .transitioning .settings-content,
@@ -266,6 +267,7 @@
   .transformations-content,
   .tagger-content {
     padding: var(--spacing);
+    -webkit-overflow-scrolling: touch;
     height: calc(100vh - 60px);
   }
 
@@ -459,28 +461,4 @@ kbd {
     flex-wrap: wrap;
     gap: var(--half-spacing);
   }
-}
-
-.setting-label {
-  margin-bottom: var(--half-spacing);
-  color: var(--text-primary);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.scale-value {
-  color: var(--text-secondary);
-  font-size: 0.9em;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: var(--half-spacing);
-  justify-content: flex-start;
-}
-
-.toggle-label span {
-  order: 2;
 }

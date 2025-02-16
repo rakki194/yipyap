@@ -284,9 +284,9 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
           }
         >
           <div class="settings-content" data-testid="settings-content" classList={{ transitioning: isTransitioning() }}>
-            <div class="settings-section">
-              <h3>{t('settings.appearance')}</h3>
-              <div class="settings-group">
+            <div class="settings-row">
+              <div class="settings-column">
+                <h3>{t('settings.appearance')}</h3>
                 <div class="setting-group">
                   <label>{t("common.theme")}</label>
                   <div class="theme-buttons">
@@ -306,72 +306,59 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                     </For>
                   </div>
                 </div>
-
-                <div class="setting-group">
-                  <Tooltip content={t('settings.uiScaleTooltip')} position="top">
-                    <div>
-                      <div class="setting-label">
-                        {t('settings.uiScale')}
-                        <p class="scale-value">{Math.round(app.uiScale * 100)}%</p>
-                      </div>
-                      <Slider
-                        min={0.75}
-                        max={1.5}
-                        step={0.05}
-                        value={app.uiScale}
-                        onChange={(value) => app.setUiScale(value)}
-                      />
-                    </div>
-                  </Tooltip>
-                </div>
-
-                <div class="setting-group">
-                  <Tooltip content={t('settings.disableAnimationsTooltip')} position="top">
-                    <label class="toggle-label">
-                      <Toggle
-                        checked={app.disableAnimations}
-                        onChange={(checked) => app.setDisableAnimations(checked)}
-                        title={t('settings.disableAnimations')}
-                      />
-                      <span>{t('settings.disableAnimations')}</span>
-                    </label>
-                  </Tooltip>
-                </div>
               </div>
-            </div>
 
-            <div class="settings-section">
-              <h3>{t('settings.language')}</h3>
-              <div class="settings-group">
-                <Tooltip content={t('settings.languageTooltip')} position="top">
-                  <label for="language-select">{t('common.language')}</label>
-                </Tooltip>
-                <select
-                  id="language-select"
-                  class="language-select"
-                  value={app.locale}
-                  onChange={(e) => app.setLocale(e.currentTarget.value as any)}
-                >
-                  <For each={languages}>
-                    {(lang) => (
-                      <option value={lang.code}>{lang.name}</option>
-                    )}
-                  </For>
-                </select>
-                <Show when={app.locale !== 'ja'}>
-                  <div class="setting-item">
-                    <Tooltip content={t('settings.disableNonsenseTooltip')} position="top">
+              <div class="settings-column">
+                <h3>{t('settings.gallery')}</h3>
+                <div class="setting-group">
+                  <div class="icon-buttons">
+                    <Tooltip content={t('settings.disableAnimationsTooltip')} position="top">
                       <label>
                         <Toggle
-                          checked={app.disableNonsense}
-                          onChange={(checked) => app.setDisableNonsense(checked)}
-                          title={t('settings.disableNonsense')}
+                          checked={app.disableAnimations}
+                          onChange={(checked) => app.setDisableAnimations(checked)}
+                          title={t('settings.disableAnimations')}
                         />
-                        {t('settings.disableNonsense')}
+                        {t('settings.disableAnimations')}
                       </label>
                     </Tooltip>
                   </div>
-                </Show>
+                </div>
+              </div>
+
+              <div class="settings-column">
+                <h3>{t('settings.language')}</h3>
+                <div class="setting-group">
+                  <Tooltip content={t('settings.languageTooltip')} position="top">
+                    <label for="language-select">{t('common.language')}</label>
+                  </Tooltip>
+                  <select
+                    id="language-select"
+                    class="language-select"
+                    value={app.locale}
+                    onChange={(e) => app.setLocale(e.currentTarget.value as any)}
+                  >
+                    <For each={languages}>
+                      {(lang) => (
+                        <option value={lang.code}>{lang.name}</option>
+                      )}
+                    </For>
+                  </select>
+                  <Show when={app.locale !== 'ja'}>
+                    <div class="setting-item">
+                      <Tooltip content={t('settings.disableNonsenseTooltip')} position="top">
+                        <label>
+                          <Toggle
+                            checked={app.disableNonsense}
+                            onChange={(checked) => app.setDisableNonsense(checked)}
+                            title={t('settings.disableNonsense')}
+                          />
+                          {t('settings.disableNonsense')}
+                        </label>
+                      </Tooltip>
+                    </div>
+                  </Show>
+                </div>
               </div>
             </div>
 

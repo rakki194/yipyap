@@ -102,8 +102,6 @@ export default {
     instantDeleteTooltip: "Delete files without confirmation dialog",
     warning: "Warning",
     gallery: "Gallery",
-    uiScale: "UI Scale",
-    uiScaleTooltip: "Adjust the size of UI elements",
     // When enabled, keeps latent vector files when moving/deleting images
     preserveLatents: "Preserve latents",
     preserveLatentsTooltip: "Preserve latents when moving or deleting files",

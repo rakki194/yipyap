@@ -20,14 +20,13 @@
   --preview-bg: #68686885;
   --border-color: var(--card-bg);
   --border-secondary: var(--accent);
-  --ui-scale: 1;
-  --spacing: calc(0.7rem * var(--ui-scale));
+  --spacing: 0.7rem;
   --quarter-spacing: calc(var(--spacing) / 4);
   --half-spacing: calc(var(--spacing) / 2);
   --double-spacing: calc(var(--spacing) * 2);
   --triple-spacing: calc(var(--spacing) * 3);
   --quad-spacing: calc(var(--spacing) * 4);
-  --border-radius: calc(2px * var(--ui-scale));
+  --border-radius: 2px;
   --container-max-width: 1600px;
   --shadow-color: rgb(0 0 0 / 20%);
   --shadow-accent: var(--accent);
@@ -37,17 +36,17 @@
   --overlay-bg: rgb(0 0 0 / 20%);
   --overlay-backdrop: brightness(0.5) saturate(0.5);
   --text-shadow: 0 1px 2px rgb(0 0 0 / 50%);
-  --grid-item-min-width: calc(250px * var(--ui-scale));
-  --directory-item-min-width: calc(125px * var(--ui-scale));
+  --grid-item-min-width: 250px;
+  --directory-item-min-width: 125px;
   --directory-aspect-ratio: 4/1;
-  --icon-size: calc(1.5em * var(--ui-scale));
-  --loader-size: calc(30px * var(--ui-scale));
-  --loader-border-width: calc(3px * var(--ui-scale));
+  --icon-size: 1.5em;
+  --loader-size: 30px;
+  --loader-border-width: 3px;
   --transition-duration: 0.3s;
   --transition-timing: ease;
   --image-scale: 1;
   --scroll-track: 0;
-  --font-size: calc(14px * var(--ui-scale));
+  --font-size: 14px;
   --line-height: 1.6;
 
   /* Base colors */
