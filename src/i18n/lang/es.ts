@@ -213,7 +213,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return '¿Estás seguro de que quieres eliminar estos elementos?';
       }
@@ -320,7 +320,7 @@ export default {
     },
     caseTypes: {
       upper: "Mayúsculas",
-      lower: "Minúsculas", 
+      lower: "Minúsculas",
       title: "Título",
       sentence: "Oración"
     },
@@ -338,7 +338,7 @@ export default {
     numberFormat: "Formato de número",
     numberFormatPlaceholder: "Ejemplo: #,###.##",
     prefix: "Prefijo",
-    suffix: "Sufijo", 
+    suffix: "Sufijo",
     prefixPlaceholder: "Añadir antes del texto",
     suffixPlaceholder: "Añadir después del texto",
     transformationNamePlaceholder: "Nombre de la transformación",

@@ -22,6 +22,7 @@ import type { ImageInfo as ImageInfoType, Captions, SaveCaption } from "~/types"
 import { useAppContext } from "~/contexts/app";
 import { captionIconsMap } from "~/icons";
 import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
+import { useDoubleTap } from "~/composables/useDoubleTap";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -139,41 +140,25 @@ const ModelBody = (props: {
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
   const [isExpanded, setIsExpanded] = createSignal(false);
 
-  // Add these variables for tracking shift key presses
-  let lastShiftPress = 0;
-  const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
-
-  // Add keyboard event handler
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Shift") {
-      const now = Date.now();
-      if (now - lastShiftPress < DOUBLE_TAP_THRESHOLD) {
-        // Double tap detected - cycle to next caption
-        const currentCaptions = props.captions;
-        if (currentCaptions.length > 0) {
-          const currentIndex = currentCaptions.findIndex(
-            ([type]) => type === focusedType()
-          );
-          const nextIndex =
-            currentIndex === -1 || currentIndex === currentCaptions.length - 1
-              ? 0
-              : currentIndex + 1;
-          setFocused(true);
-          setFocusedType(currentCaptions[nextIndex][0]);
-        }
-        lastShiftPress = 0; // Reset to prevent triple-tap
-      } else {
-        lastShiftPress = now;
-      }
+  const handleDoubleTap = () => {
+    // Double tap detected - cycle to next caption
+    const currentCaptions = props.captions;
+    if (currentCaptions.length > 0) {
+      const currentIndex = currentCaptions.findIndex(
+        ([type]) => type === focusedType()
+      );
+      const nextIndex =
+        currentIndex === -1 || currentIndex === currentCaptions.length - 1
+          ? 0
+          : currentIndex + 1;
+      setFocused(true);
+      setFocusedType(currentCaptions[nextIndex][0]);
     }
   };
 
-  // Add and remove event listener
-  createEffect(() => {
-    window.addEventListener("keydown", handleKeyDown, { passive: true });
-    onCleanup(() => {
-      window.removeEventListener("keydown", handleKeyDown);
-    });
+  useDoubleTap({
+    onDoubleTap: handleDoubleTap,
+    passive: true
   });
 
   // Keep focused state in sync with alwaysShowCaptionEditor setting

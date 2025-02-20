@@ -74,6 +74,7 @@ import StarOffFilled from "@fluentui/svg-icons/icons/star_off_24_filled.svg?raw"
 import StarOneQuarterRegular from "@fluentui/svg-icons/icons/star_one_quarter_24_regular.svg?raw";
 import StarThreeQuarterRegular from "@fluentui/svg-icons/icons/star_three_quarter_24_regular.svg?raw";
 import ImageAddRegular from "@fluentui/svg-icons/icons/image_add_24_regular.svg?raw";
+import MoveIcon from "@fluentui/svg-icons/icons/folder_arrow_right_24_regular.svg?raw";
 
 export const captionIconsMap = {
   txt: "notepad",
@@ -179,6 +180,7 @@ const iconMap: Readonly<Record<string, string>> = {
   starOneQuarter: StarOneQuarterRegular,
   starThreeQuarter: StarThreeQuarterRegular,
   imageAdd: ImageAddRegular,
+  move: MoveIcon,
 };
 
 /* Returns a SVGElement from the icon map */

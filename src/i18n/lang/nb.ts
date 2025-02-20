@@ -193,7 +193,8 @@ export default {
     belowImage: "Bildet under",
     previousImage: "Forrige bilde",
     nextImage: "Neste bilde",
-    togglePreview: "Vis/skjul forhåndsvisning",
+    togglePreview: "Vis/skjul forhåndsvisning (Enter/Space)",
+    multiSelect: "Veksle flervalg (Shift+Enter/Shift+Space)",
     tagNavigation: "Taggnavigasjon",
     previousTag: "Forrige tagg",
     nextTag: "Neste tagg",
@@ -250,7 +251,7 @@ export default {
     trimTypes: {
       all: "Alle",
       start: "Start",
-      end: "Slutt", 
+      end: "Slutt",
       duplicates: "Duplikater"
     },
     numberActions: {

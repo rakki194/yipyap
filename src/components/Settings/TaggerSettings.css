@@ -148,7 +148,6 @@ select:disabled {
   input[type="text"],
   select {
     font-size: 16px;
-    /* Better for mobile touch */
     padding: var(--spacing);
   }
 }

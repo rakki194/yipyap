@@ -213,7 +213,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'Сигурни ли сте, че искате да изтриете тези елементи?';
       }
@@ -338,7 +338,7 @@ export default {
     numberFormat: "Формат на числото",
     numberFormatPlaceholder: "Въведете формат на числото...",
     prefix: "Префикс",
-    suffix: "Суфикс", 
+    suffix: "Суфикс",
     prefixPlaceholder: "Въведете префикс...",
     suffixPlaceholder: "Въведете суфикс...",
     transformationNamePlaceholder: "Въведете име на трансформацията...",

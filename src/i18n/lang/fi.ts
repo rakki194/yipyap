@@ -176,7 +176,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'Haluatko varmasti poistaa nämä kohteet?';
       }
@@ -240,7 +240,8 @@ export default {
     belowImage: "Alempi kuva",
     previousImage: "Edellinen kuva",
     nextImage: "Seuraava kuva",
-    togglePreview: "Vaihda esikatselu",
+    togglePreview: "Vaihda esikatselu (Enter/Space)",
+    multiSelect: "Vaihda monivalinta (Shift+Enter/Shift+Space)",
     tagNavigation: "Tagien navigointi",
     previousTag: "Edellinen tagi",
     nextTag: "Seuraava tagi",
@@ -333,4 +334,3 @@ export default {
     connectionRestored: "Yhteys palvelimeen palautettu",
   },
 } as const satisfies Translations;
- 

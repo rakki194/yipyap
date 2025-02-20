@@ -259,6 +259,17 @@ export interface GalleryTranslations {
   moveFailedMissing?: string;
   moveError?: string;
   sameDirectoryMove?: string;
+  batchTransformError?: string;
+  moveItems: string;
+  moveItemsDescription: (params: TranslationParams) => string;
+  selectTargetFolder: string;
+  searchFolders: string;
+  noFoldersFound: string;
+  noFoldersAvailable: string;
+  moveSuccess: string;
+  moveError: string;
+  moveSelected: string;
+  sameDirectoryMove: string;
 }
 
 export interface ShortcutsTranslations {
@@ -270,6 +281,7 @@ export interface ShortcutsTranslations {
   previousImage: string;
   nextImage: string;
   togglePreview: string;
+  multiSelect: string;
   tagNavigation: string;
   previousTag: string;
   nextTag: string;

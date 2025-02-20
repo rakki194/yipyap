@@ -48,7 +48,7 @@ export const useKeyboardManager = ({
     if (!data) return;
 
     // Handle shift+space for toggling multiselect
-    if (event.key === " " && event.shiftKey) {
+    if ((event.key === " " || event.key === "Enter") && event.shiftKey) {
       event.preventDefault();
       if (gallery.selected !== null) {
         gallery.selection.toggleMultiSelect(gallery.selected);

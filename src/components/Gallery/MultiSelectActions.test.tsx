@@ -6,7 +6,7 @@ import { AppContext, GalleryContext } from "~/contexts/contexts";
 import type { Theme } from "~/contexts/theme";
 import type { Locale } from "~/i18n";
 import type { AppContext as AppContextType } from "~/contexts/app";
-import type { GalleryContextType } from "~/contexts/gallery";
+import type { GalleryContextType, ImageInfo } from "~/contexts/gallery";
 import { createMockResource } from "~/test/test-utils";
 import { action } from "@solidjs/router";
 import getIcon from "~/icons";
@@ -38,8 +38,20 @@ const mockAppContext: AppContextType = {
       'gallery.confirmMultiDelete': params?.count ?
         `Delete ${params.count} items (${params.folders || 0} folders, ${params.images || 0} images)?` :
         'Delete selected items?',
+      'gallery.moveItems': 'Move Items',
+      'gallery.moveItemsDescription': params?.total ?
+        `Move ${params.total} items (${params.folderCount} folders, ${params.imageCount} images)` :
+        'Move selected items',
+      'gallery.selectTargetFolder': 'Select Target Folder',
+      'gallery.searchFolders': 'Search folders...',
+      'gallery.noFoldersFound': 'No folders found',
+      'gallery.noFoldersAvailable': 'No folders available',
+      'gallery.moveSuccess': 'Items moved successfully',
+      'gallery.moveError': 'Error moving items',
+      'gallery.moveSelected': 'Move Selected',
       'common.cancel': 'Cancel',
-      'common.delete': 'Delete'
+      'common.delete': 'Delete',
+      'common.clear': 'Clear'
     };
     return translations[key] || key;
   },
@@ -124,6 +136,7 @@ const createMockGalleryContext = (overrides = {}): GalleryContextType => ({
     toggleFolderMultiSelect: vi.fn(),
     selectAllFolders: vi.fn(),
   },
+  setFavoriteState: action(async (image: ImageInfo, state: number) => new Response()),
   multiSelected: new Set<number>(),
   selectAll: vi.fn(),
   clearMultiSelect: vi.fn(),

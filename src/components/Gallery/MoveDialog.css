@@ -1,0 +1,103 @@
+.folder-list {
+    background: var(--bg-alt);
+    border-radius: var(--radius);
+    padding: var(--spacing);
+    margin: var(--spacing) 0;
+}
+
+.folder-search {
+    position: relative;
+    margin-bottom: var(--spacing);
+}
+
+.folder-search input {
+    width: 100%;
+    padding: var(--half-spacing) var(--spacing);
+    padding-left: calc(var(--spacing) * 2);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-color);
+    color: var(--text-primary);
+}
+
+.folder-search input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.folder-search .search-icon {
+    position: absolute;
+    left: var(--half-spacing);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+}
+
+.folder-search .clear-search {
+    position: absolute;
+    right: var(--half-spacing);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.folder-search .clear-search:hover {
+    color: var(--text-primary);
+}
+
+.folder-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.folder-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    padding: var(--half-spacing) var(--spacing);
+    background: var(--bg-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.folder-option:hover {
+    background: var(--hover-bg);
+}
+
+.folder-option input[type="radio"] {
+    margin: 0;
+}
+
+.folder-icon {
+    display: flex;
+    align-items: center;
+    color: var(--text-2);
+}
+
+.folder-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.no-folders {
+    text-align: center;
+    padding: var(--spacing);
+    color: var(--text-2);
+    font-style: italic;
+}

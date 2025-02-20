@@ -158,7 +158,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'क्या आप वाकई इन आइटम्स को हटाना चाहते हैं?';
       }
@@ -241,7 +241,8 @@ export default {
     belowImage: "नीचे की छवि",
     previousImage: "पिछली छवि",
     nextImage: "अगली छवि",
-    togglePreview: "प्रीव्यू टॉगल करें",
+    togglePreview: "प्रीव्यू टॉगल करें (Enter/Space)",
+    multiSelect: "बहु-चयन टॉगल करें (Shift+Enter/Shift+Space)",
     tagNavigation: "टैग नेविगेशन",
     previousTag: "पिछला टैग",
     nextTag: "अगला टैग",

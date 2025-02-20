@@ -213,7 +213,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'Opravdu chcete smazat tyto položky?';
       }
@@ -270,7 +270,8 @@ export default {
     belowImage: "Obrázek dole",
     previousImage: "Předchozí obrázek",
     nextImage: "Další obrázek",
-    togglePreview: "Přepnout náhled",
+    togglePreview: "Přepnout náhled (Enter/Space)",
+    multiSelect: "Přepnout vícenásobný výběr (Shift+Enter/Shift+Space)",
     tagNavigation: "Navigace štítků",
     previousTag: "Předchozí štítek",
     nextTag: "Další štítek",

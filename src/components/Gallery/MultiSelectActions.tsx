@@ -2,6 +2,7 @@ import { Component, Show, createSignal } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import { useGallery } from "~/contexts/GalleryContext";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { MoveDialog } from "./MoveDialog";
 import getIcon from "~/icons";
 import "./MultiSelectActions.css";
 
@@ -11,7 +12,9 @@ export const MultiSelectActions: Component = () => {
   const selection = gallery.selection;
   const [deleteProgress, setDeleteProgress] = createSignal<{ current: number, total: number } | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
+  const [showMoveDialog, setShowMoveDialog] = createSignal(false);
   const [isDeleting, setIsDeleting] = createSignal(false);
+  const [isMoving, setIsMoving] = createSignal(false);
 
   type DeleteResult = Response | { error: true };
 
@@ -27,6 +30,52 @@ export const MultiSelectActions: Component = () => {
   const handleDelete = async () => {
     if (!hasSelection()) return;
     setShowDeleteConfirm(true);
+  };
+
+  const handleMove = async (targetPath: string) => {
+    if (!hasSelection()) return;
+    setIsMoving(true);
+
+    try {
+      const data = gallery.data();
+      if (!data) return;
+
+      const items = [...selection.multiSelected].map(idx => {
+        const item = data.items[idx];
+        if (!item || item.type !== "image") return null;
+        const image = item();
+        return image?.name || null;
+      }).filter(Boolean);
+
+      const folders = [...selection.multiFolderSelected].map(idx => {
+        const item = data.items[idx];
+        if (!item || item.type !== "directory") return null;
+        const folder = item();
+        return folder?.name || null;
+      }).filter(Boolean);
+
+      const response = await fetch(`/api/move/${data.path}?target=${encodeURIComponent(targetPath)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [...items, ...folders] })
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      // Clear selection and refresh gallery
+      selection.clearMultiSelect();
+      selection.clearFolderMultiSelect();
+      gallery.refetchGallery();
+
+      app.notify(app.t('gallery.moveSuccess'), 'success');
+    } catch (error) {
+      console.error('Error moving items:', error);
+      app.notify(app.t('gallery.moveError'), 'error');
+    } finally {
+      setIsMoving(false);
+    }
   };
 
   return (
@@ -67,7 +116,18 @@ export const MultiSelectActions: Component = () => {
                 </div>
               </Show>
             </div>
+
+            <button
+              type="button"
+              class="icon"
+              onClick={() => setShowMoveDialog(true)}
+              title={app.t('gallery.moveSelected', { count: selectedCount() })}
+              disabled={isMoving()}
+            >
+              {isMoving() ? getIcon("spinner") : getIcon("move")}
+            </button>
           </Show>
+
           <button
             type="button"
             class="icon"
@@ -183,6 +243,15 @@ export const MultiSelectActions: Component = () => {
             }
           }}
           onCancel={() => setShowDeleteConfirm(false)}
+        />
+      </Show>
+
+      <Show when={showMoveDialog()}>
+        <MoveDialog
+          imageCount={selection.multiSelected.size}
+          folderCount={selection.multiFolderSelected.size}
+          onMove={handleMove}
+          onClose={() => setShowMoveDialog(false)}
         />
       </Show>
     </>

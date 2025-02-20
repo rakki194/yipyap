@@ -196,12 +196,12 @@ export default {
     deselectAll: "Скасувати вибір",
     deleteSelected: "Видалити вибране",
     confirmMultiDelete: ({ folders = 0, images = 0 }) => {
-        if (folders && images) {
-            return `Ви впевнені, що хочете видалити ${folders} папок та ${images} зображень?`;
-        } else if (folders) {
-            return `Ви впевнені, що хочете видалити ${folders} папок?`;
-        }
-        return `Ви впевнені, що хочете видалити ${images} зображень?`;
+      if (folders && images) {
+        return `Ви впевнені, що хочете видалити ${folders} папок та ${images} зображень?`;
+      } else if (folders) {
+        return `Ви впевнені, що хочете видалити ${folders} папок?`;
+      }
+      return `Ви впевнені, що хочете видалити ${images} зображень?`;
     },
     confirmFolderDelete: ({ name = "" }) => `Ви впевнені, що хочете видалити папку "${name}"?`,
     someFolderDeletesFailed: "Деякі папки не вдалося видалити",
@@ -236,7 +236,8 @@ export default {
     belowImage: "Зображення нижче",
     previousImage: "Попереднє зображення",
     nextImage: "Наступне зображення",
-    togglePreview: "Перемкнути перегляд",
+    togglePreview: "Перемкнути перегляд (Enter/Space)",
+    multiSelect: "Перемкнути множинний вибір (Shift+Enter/Shift+Space)",
     tagNavigation: "Навігація тегами",
     previousTag: "Попередній тег",
     nextTag: "Наступний тег",

@@ -213,7 +213,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'Möchten Sie diese Elemente wirklich löschen?';
       }

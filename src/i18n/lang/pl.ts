@@ -124,14 +124,14 @@ export default {
       sentence: "Jak w zdaniu"
     },
     trimTypes: {
-      all: "Wszystko", 
+      all: "Wszystko",
       start: "Początek",
       end: "Koniec",
       duplicates: "Duplikaty"
     },
     numberActions: {
       remove: "Usuń",
-      format: "Formatuj", 
+      format: "Formatuj",
       extract: "Wyodrębnij"
     },
     numberFormat: "Format liczby",
@@ -278,7 +278,8 @@ export default {
     belowImage: "Obraz poniżej",
     previousImage: "Poprzedni obraz",
     nextImage: "Następny obraz",
-    togglePreview: "Przełącz podgląd",
+    togglePreview: "Przełącz podgląd (Enter/Space)",
+    multiSelect: "Przełącz wybór wielokrotny (Shift+Enter/Shift+Space)",
     tagNavigation: "Nawigacja tagów",
     previousTag: "Poprzedni tag",
     nextTag: "Następny tag",

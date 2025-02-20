@@ -193,7 +193,8 @@ export default {
     belowImage: "Gambar di bawah",
     previousImage: "Gambar sebelumnya",
     nextImage: "Gambar berikutnya",
-    togglePreview: "Alihkan Pratinjau",
+    togglePreview: "Alihkan Pratinjau (Enter/Space)",
+    multiSelect: "Alihkan Pilihan Ganda (Shift+Enter/Shift+Space)",
     tagNavigation: "Navigasi Tag",
     previousTag: "Tag sebelumnya",
     nextTag: "Tag berikutnya",
@@ -250,7 +251,7 @@ export default {
     trimTypes: {
       all: "Semua",
       start: "Awal",
-      end: "Akhir", 
+      end: "Akhir",
       duplicates: "Duplikat"
     },
     numberActions: {

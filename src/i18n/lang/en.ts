@@ -270,7 +270,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'Are you sure you want to delete these items?';
       }
@@ -343,6 +343,19 @@ export default {
     moveFailedMissing: "Cannot move {files} because they no longer exist",
     moveError: "Move failed: {error}",
     sameDirectoryMove: "Cannot move items to the same directory they are already in",
+    moveItems: "Move Items",
+    moveItemsDescription: (params: TranslationParams) => {
+      const imageCount = Number(params?.imageCount ?? 0);
+      const folderCount = Number(params?.folderCount ?? 0);
+      const total = imageCount + folderCount;
+      return `Move ${total} items (${folderCount} folders, ${imageCount} images)`;
+    },
+    selectTargetFolder: "Select Target Folder",
+    searchFolders: "Search folders...",
+    noFoldersFound: "No folders found",
+    noFoldersAvailable: "No folders available",
+    moveSuccess: "Items moved successfully",
+    moveSelected: "Move Selected",
   },
   shortcuts: {
     title: "Keyboard shortcuts",
@@ -352,7 +365,8 @@ export default {
     belowImage: "Below image",
     previousImage: "Previous image",
     nextImage: "Next image",
-    togglePreview: "Toggle preview",
+    togglePreview: "Toggle preview (Enter/Space)",
+    multiSelect: "Toggle multiselect (Shift+Enter/Shift+Space)",
     tagNavigation: "Tag navigation",
     previousTag: "Previous tag",
     nextTag: "Next tag",

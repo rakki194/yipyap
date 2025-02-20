@@ -211,7 +211,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'Weet je zeker dat je deze items wilt verwijderen?';
       }
@@ -268,7 +268,8 @@ export default {
     belowImage: "Onderste afbeelding",
     previousImage: "Vorige afbeelding",
     nextImage: "Volgende afbeelding",
-    togglePreview: "Voorvertoning aan/uit",
+    togglePreview: "Voorvertoning aan/uit (Enter/Space)",
+    multiSelect: "Meervoudige selectie aan/uit (Shift+Enter/Shift+Space)",
     tagNavigation: "Tag navigatie",
     previousTag: "Vorige tag",
     nextTag: "Volgende tag",

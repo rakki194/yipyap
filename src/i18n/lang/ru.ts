@@ -271,7 +271,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'Вы уверены, что хотите удалить эти элементы?';
       }
@@ -335,7 +335,8 @@ export default {
     belowImage: "Изображение ниже",
     previousImage: "Предыдущее изображение",
     nextImage: "Следующее изображение",
-    togglePreview: "Переключить предпросмотр",
+    togglePreview: "Переключить предпросмотр (Enter/Space)",
+    multiSelect: "Переключить множественный выбор (Shift+Enter/Shift+Space)",
     tagNavigation: "Навигация по тегам",
     previousTag: "Предыдущий тег",
     nextTag: "Следующий тег",
