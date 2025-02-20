@@ -280,7 +280,10 @@ export const QuickJump: Component<{
           onKeyDown={handleKeyDown}
         />
         <Show when={folders.loading}>
-          <div class="loading" role="status">{t('gallery.loadingFolders')}</div>
+          <div class="loading" role="status">
+            <span class="spin-icon icon">{getIcon("spinner")}</span>
+            {t('gallery.loadingFolders')}
+          </div>
         </Show>
         <Show when={!folders.loading && matches().actions.length === 0 && matches().folders.length === 0}>
           <div class="no-results" role="status">{t('gallery.noResults')}</div>
