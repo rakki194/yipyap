@@ -295,4 +295,102 @@ describe("Gallery State Management", () => {
       expect(size).toEqual({ width: 300, height: 300 });
     });
   });
+
+  describe("Folder Cache Management", () => {
+    const mockFolders = [
+      { name: "folder1", path: "folder1", fullPath: "folder1" },
+      { name: "folder2", path: "folder2", fullPath: "folder2" }
+    ];
+
+    beforeEach(() => {
+      localStorage.clear();
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ folders: mockFolders })
+      });
+    });
+
+    it("fetches and caches folders on first call", async () => {
+      const folders = await gallery.getAllKnownFolders();
+      expect(folders).toEqual(mockFolders);
+      
+      // Should be cached in localStorage
+      const cached = JSON.parse(localStorage.getItem('yipyap_folder_cache')!);
+      expect(cached.folders).toEqual(mockFolders);
+      expect(cached.version).toBe(1);
+    });
+
+    it("uses cached data on subsequent calls", async () => {
+      // First call to cache the data
+      await gallery.getAllKnownFolders();
+      
+      // Second call should use cache
+      global.fetch = vi.fn(); // Reset fetch mock
+      const folders = await gallery.getAllKnownFolders();
+      
+      expect(folders).toEqual(mockFolders);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it("invalidates cache correctly", async () => {
+      // First cache the data
+      await gallery.getAllKnownFolders();
+      expect(localStorage.getItem('yipyap_folder_cache')).not.toBeNull();
+      
+      // Invalidate cache
+      gallery.invalidateFolderCache();
+      
+      // Cache should be cleared
+      expect(localStorage.getItem('yipyap_folder_cache')).toBeNull();
+      
+      // Next call should fetch fresh data
+      const folders = await gallery.getAllKnownFolders();
+      expect(folders).toEqual(mockFolders);
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+    });
+
+    it("handles expired cache", async () => {
+      // Cache data with old timestamp
+      const oldCache = {
+        version: 1,
+        folders: mockFolders,
+        timestamp: Date.now() - 3600001 // Just over 1 hour old
+      };
+      localStorage.setItem('yipyap_folder_cache', JSON.stringify(oldCache));
+      
+      // Should ignore expired cache and fetch fresh data
+      const folders = await gallery.getAllKnownFolders();
+      expect(folders).toEqual(mockFolders);
+      expect(global.fetch).toHaveBeenCalled();
+    });
+
+    it("handles invalid cache version", async () => {
+      // Cache data with invalid version
+      const invalidCache = {
+        version: 999,
+        folders: mockFolders,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('yipyap_folder_cache', JSON.stringify(invalidCache));
+      
+      // Should ignore invalid cache and fetch fresh data
+      const folders = await gallery.getAllKnownFolders();
+      expect(folders).toEqual(mockFolders);
+      expect(global.fetch).toHaveBeenCalled();
+    });
+
+    it("handles localStorage errors gracefully", async () => {
+      // Mock localStorage.getItem to throw
+      const mockError = new Error("Storage error");
+      const originalGetItem = localStorage.getItem;
+      localStorage.getItem = vi.fn().mockImplementation(() => { throw mockError; });
+      
+      // Should still work by fetching from API
+      const folders = await gallery.getAllKnownFolders();
+      expect(folders).toEqual(mockFolders);
+      
+      // Restore original localStorage
+      localStorage.getItem = originalGetItem;
+    });
+  });
 }); 

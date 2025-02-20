@@ -121,11 +121,53 @@ export interface FolderInfo {
   fullPath: string;
 }
 
+const FOLDER_CACHE_KEY = 'yipyap_folder_cache';
+const FOLDER_CACHE_VERSION = 1;
+
+interface FolderCache {
+  version: number;
+  folders: FolderInfo[];
+  timestamp: number;
+}
+
 // Call in reactive contexts only
 export function makeGalleryState() {
   const app = useAppContext();
   let folderCache: FolderInfo[] | null = null;
   let folderCachePromise: Promise<FolderInfo[]> | null = null;
+
+  // Load cache from localStorage
+  const loadFolderCache = (): FolderCache | null => {
+    try {
+      const cached = localStorage.getItem(FOLDER_CACHE_KEY);
+      if (!cached) return null;
+      
+      const data = JSON.parse(cached) as FolderCache;
+      if (data.version !== FOLDER_CACHE_VERSION) return null;
+      
+      // Cache expires after 1 hour
+      if (Date.now() - data.timestamp > 3600000) return null;
+      
+      return data;
+    } catch (error) {
+      console.error('Error loading folder cache:', error);
+      return null;
+    }
+  };
+
+  // Save cache to localStorage
+  const saveFolderCache = (folders: FolderInfo[]) => {
+    try {
+      const cache: FolderCache = {
+        version: FOLDER_CACHE_VERSION,
+        folders,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(FOLDER_CACHE_KEY, JSON.stringify(cache));
+    } catch (error) {
+      console.error('Error saving folder cache:', error);
+    }
+  };
 
   // State part of the URL
   // FIXME: Most of these are unused, but eventually we want to have some search params in the URL
@@ -565,8 +607,15 @@ export function makeGalleryState() {
   };
 
   const getAllKnownFolders = async () => {
-    // Return cache if available
+    // Return memory cache if available
     if (folderCache) {
+      return folderCache;
+    }
+
+    // Check localStorage cache
+    const cached = loadFolderCache();
+    if (cached) {
+      folderCache = cached.folders;
       return folderCache;
     }
 
@@ -584,6 +633,10 @@ export function makeGalleryState() {
         }
         const data = await response.json();
         folderCache = data.folders as FolderInfo[];
+        
+        // Save to localStorage
+        saveFolderCache(folderCache);
+        
         return folderCache;
       } catch (error) {
         console.error("Error fetching folders:", error);
@@ -599,6 +652,11 @@ export function makeGalleryState() {
   const invalidateFolderCache = () => {
     folderCache = null;
     folderCachePromise = null;
+    try {
+      localStorage.removeItem(FOLDER_CACHE_KEY);
+    } catch (error) {
+      console.error('Error clearing folder cache:', error);
+    }
   };
 
   // Gallery actions and getters

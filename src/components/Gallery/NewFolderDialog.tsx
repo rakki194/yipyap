@@ -16,7 +16,7 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
   const escape = useGlobalEscapeManager();
   const t = app.t;
 
-  let inputRef: HTMLInputElement;
+  let inputRef!: HTMLInputElement;
   const [newFolderName, setNewFolderName] = createSignal("");
   const [isCreatingFolder, setIsCreatingFolder] = createSignal(false);
 
@@ -82,6 +82,7 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
       batch(() => {
         gallery.setData(data);
         gallery.clearImageCache();
+        gallery.invalidateFolderCache();
       });
 
       // Show success notification
