@@ -205,51 +205,65 @@ This will:
 
 ```bash
 yipyap/
-├── app/
+├── app/                     # Backend application
 │   ├── __init__.py          # Package initialization
 │   ├── main.py              # FastAPI application and routes
 │   ├── image_handler.py     # Image processing and directory scanning
 │   ├── caption_handler.py   # Caption file management
 │   ├── utils.py             # Utility functions
-├── src/
-│   ├── components/          # SolidJS components
-│   │   ├── Gallery/         # Gallery related components
-│   │   └── ImageViewer/     # Image Viewer components
+├── src/                     # Frontend application
+│   ├── Components/          # Main components (capitalized)
+│   ├── components/          # Additional components
+│   ├── composables/         # SolidJS composables (not hooks)
 │   ├── contexts/            # SolidJS contexts
+│   ├── i18n/                # Internationalization
+│   ├── icons/               # Icon components
+│   ├── pages/               # Application pages
 │   ├── resources/           # Frontend data resources
+│   ├── test/                # Test utilities and setup
+│   ├── theme/               # Theme-related components
 │   ├── utils/               # Utility functions
-│   ├── pages/               # SolidJS pages
-│   ├── styles.css           # Global CSS
+│   ├── directives.tsx       # SolidJS directives
+│   ├── main.tsx             # Application entry point
+│   ├── models.ts            # Data models
+│   ├── router.ts            # Routing configuration
+│   ├── styles.css           # Global styles
+│   ├── themes.css           # Theme-specific styles
 │   ├── types.d.ts           # TypeScript declarations
-├── static/
-│   ├── css/
-│   │   └── styles.css       # Application styles
-│   └── thumbnails/          # Generated thumbnails
-├── templates/               # Jinja2 templates
+│   └── utils.ts             # Shared utilities
 ├── package.json             # Frontend dependencies and scripts
 ├── tsconfig.json            # TypeScript configuration
 ├── vite.config.ts           # Vite configuration
-├── .vscode/
-│   └── settings.json        # VSCode settings
+├── .vscode/                 # VSCode configuration
 ├── .gitignore               # Git ignore rules
 └── LICENSE.md               # License information
 ```
 
 ### Key Components
 
-1. **FastAPI Routes** (main.py)
+1. **Frontend Architecture**
+   - Entry point in `src/main.tsx` with app context setup
+   - Global state management in `src/contexts/app.tsx`
+   - Component-based architecture with both capitalized and lowercase component directories
+   - Composables for reusable reactive logic in `src/composables/`
+   - Comprehensive i18n support in `src/i18n/`
 
-   - Main route handling directory browsing with sorting and filtering.
+2. **Testing Infrastructure**
+   - Centralized test utilities in `src/test/`
+   - Test setup and configuration in `src/test/setup.ts`
+   - Custom test hooks in `src/test/test-hooks.ts`
+   - Test utilities in `src/test/test-utils.ts`
 
-2. **Directory Scanning** (image_handler.py)
+3. **Styling System**
+   - Global styles in `src/styles.css`
+   - Theme-specific styles in `src/themes.css`
+   - Theme components in `src/theme/`
+   - Icon components in `src/icons/`
 
-   - Handles directory scanning with pagination, sorting, and filtering.
-
-3. **Template Structure**
-
-   - Base template: Provides layout and common resources
-   - Gallery template: Directory listing with HTMX integration
-   - Image view template: Modal view for images and captions
+4. **Backend Integration**
+   - FastAPI routes in `app/main.py`
+   - Image processing in `app/image_handler.py`
+   - Caption management in `app/caption_handler.py`
 
 ### Security Features
 
@@ -412,12 +426,28 @@ The caching and caption management systems work together to provide a robust med
 
 ---
 
-The testing system is centralized in the `/src/test/__tests__/` directory and organized by functionality:
+The testing infrastructure is centralized in the `src/test` directory and consists of:
 
-1. Component Tests (e.g., `ImageView.test.tsx`, `TagBubble.test.tsx`)
-2. Context and State Tests (e.g., `app.test.tsx`, `gallery.test.ts`)
-3. Utility Tests (e.g., `reactive-utils.test.tsx`, `theme.test.ts`)
-4. Internationalization Tests (e.g., `translations.test.ts`, language-specific plural tests)
+1. **Test Setup (`setup.ts`)**
+   - Test environment configuration
+   - Global test utilities and helpers
+   - Mock data and fixtures
+
+2. **Test Hooks (`test-hooks.ts`)**
+   - Custom test hooks for component testing
+   - State management utilities for tests
+   - Mock context providers
+
+3. **Test Utilities (`test-utils.ts`)**
+   - Helper functions for testing
+   - Common test patterns
+   - Type definitions for testing
+
+4. **Test Configuration (`tsconfig.json`)**
+   - TypeScript configuration specific to tests
+   - Path mappings and compiler options
+
+All tests should use these shared utilities to maintain consistency and reduce code duplication. The test infrastructure is designed to work seamlessly with the SolidJS testing utilities and supports both unit and integration tests.
 
 ## Docker Installation and Management Guide
 
