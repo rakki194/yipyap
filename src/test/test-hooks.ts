@@ -12,7 +12,7 @@ export function useBasicTestSetup() {
 
 export function useResourceTestSetup() {
   useBasicTestSetup();
-  
+
   beforeEach(() => {
     // Setup any resource-specific mocks
     vi.mock("~/contexts/gallery", () => ({

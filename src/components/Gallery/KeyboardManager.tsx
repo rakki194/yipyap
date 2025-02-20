@@ -8,6 +8,7 @@ export interface KeyboardHandlerProps {
   onShowSettings: () => void;
   onShowDeleteConfirm: () => void;
   onShowNewFolderDialog: () => void;
+  onDeleteConfirm: () => Promise<void>;
   scrollToSelected: (force?: boolean) => void;
   smoothScroll: (targetY: number, force?: boolean) => void;
   isSettingsOpen: boolean;
@@ -17,6 +18,7 @@ export interface KeyboardHandlerProps {
 export const useKeyboardManager = ({
   onShowQuickJump,
   onShowDeleteConfirm,
+  onDeleteConfirm,
   scrollToSelected,
   smoothScroll,
 }: KeyboardHandlerProps) => {
@@ -58,7 +60,7 @@ export const useKeyboardManager = ({
     if (event.shiftKey && ["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(event.key)) {
       event.preventDefault();
       let success = false;
-      
+
       // Initialize shift selection start point if not set
       if (shiftSelectionStart() === null && gallery.selected !== null) {
         setShiftSelectionStart(gallery.selected);
@@ -84,11 +86,11 @@ export const useKeyboardManager = ({
         // Select all items between the shift start point and current position
         const start = Math.min(shiftSelectionStart()!, gallery.selected);
         const end = Math.max(shiftSelectionStart()!, gallery.selected);
-        
+
         // Clear existing selection
         gallery.selection.clearMultiSelect();
         gallery.selection.clearFolderMultiSelect();
-        
+
         // Add all items in range to multiselect
         for (let i = start; i <= end; i++) {
           const item = data.items[i];
@@ -98,7 +100,7 @@ export const useKeyboardManager = ({
             gallery.selection.toggleFolderMultiSelect(i);
           }
         }
-        
+
         scrollToSelected();
       }
       return;

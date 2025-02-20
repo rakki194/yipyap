@@ -75,7 +75,7 @@ export const ImageView = (props: ImageViewProps) => {
     const delta = e.deltaY * -0.001; // Reduced from 0.002 to 0.001 for smoother zoom
     const zoomFactor = Math.exp(delta);
     const newScale = Math.min(Math.max(scale() * zoomFactor, 1), 5);
-    
+
     if (newScale !== scale()) {
       const rect = containerRef.getBoundingClientRect();
       const containerWidth = rect.width;
@@ -155,7 +155,7 @@ export const ImageView = (props: ImageViewProps) => {
     // Dependencies that should trigger an update
     const _ = scale();
     const pos = position();
-    
+
     // Update the viewport
     updateMinimapViewport();
   });
@@ -165,7 +165,7 @@ export const ImageView = (props: ImageViewProps) => {
     const resizeObserver = new ResizeObserver(() => {
       updateMinimapViewport();
     });
-    
+
     if (containerRef) {
       resizeObserver.observe(containerRef);
     }
@@ -178,25 +178,25 @@ export const ImageView = (props: ImageViewProps) => {
   // Add handleMinimapClick function
   const handleMinimapClick = (e: MouseEvent) => {
     if (!containerRef || !imageRef) return;
-    
+
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
-    
+
     const imageWidth = imageRef.clientWidth;
     const imageHeight = imageRef.clientHeight;
-    
+
     // Calculate the new position
     const newX = -(x * imageWidth * scale() - containerRef.clientWidth / 2);
     const newY = -(y * imageHeight * scale() - containerRef.clientHeight / 2);
-    
+
     setPosition({ x: newX, y: newY });
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      class="image-container" 
+      class="image-container"
       {...divProps}
       onWheel={(e) => {
         if (!app.enableZoom) return;
@@ -214,7 +214,7 @@ export const ImageView = (props: ImageViewProps) => {
       }}
       data-zoom={scale() > 1 ? `${Math.round(scale() * 100)}%` : undefined}
     >
-      <div 
+      <div
         style={{
           transform: `scale(${scale()}) translate(${position().x / scale()}px, ${position().y / scale()}px)`,
           "transform-origin": "center",
@@ -233,7 +233,7 @@ export const ImageView = (props: ImageViewProps) => {
           class="thumbnail"
           src={localProps.imageInfo.thumbnail_img.img.src}
           alt={localProps.imageInfo.thumbnail_img.img.alt}
-          style={{ 
+          style={{
             width: '100%',
             height: '100%',
             "object-fit": 'contain',
@@ -245,7 +245,7 @@ export const ImageView = (props: ImageViewProps) => {
         />
         {/* Show preview image on top */}
         <Show when={localProps.imageInfo.preview_img.img}>
-          <img 
+          <img
             ref={imageRef}
             src={localProps.imageInfo.preview_img.img.src}
             alt={localProps.imageInfo.preview_img.img.alt}
@@ -253,7 +253,7 @@ export const ImageView = (props: ImageViewProps) => {
             classList={{
               loaded: localProps.imageInfo.preview_img.isLoaded()
             }}
-            style={{ 
+            style={{
               width: '100%',
               height: '100%',
               "object-fit": 'contain',
@@ -263,14 +263,14 @@ export const ImageView = (props: ImageViewProps) => {
           />
         </Show>
       </div>
-      
+
       <Show when={scale() > 1 && app.enableZoom && app.enableMinimap}>
         <div class="minimap" onClick={handleMinimapClick}>
-          <img 
-            src={localProps.imageInfo.thumbnail_img.img.src} 
-            alt="Navigation minimap" 
+          <img
+            src={localProps.imageInfo.thumbnail_img.img.src}
+            alt="Navigation minimap"
           />
-          <div class="overlay" 
+          <div class="overlay"
             style={{
               "--viewport-left": viewportStyle().left,
               "--viewport-top": viewportStyle().top,
@@ -278,8 +278,8 @@ export const ImageView = (props: ImageViewProps) => {
               "--viewport-bottom": `calc(${viewportStyle().top} + ${viewportStyle().height})`
             }}
           />
-          <div 
-            class="viewport" 
+          <div
+            class="viewport"
             style={{
               width: viewportStyle().width,
               height: viewportStyle().height,
@@ -289,7 +289,7 @@ export const ImageView = (props: ImageViewProps) => {
           />
         </div>
       </Show>
-      
+
       <div class="zoom-indicator">
         {Math.round(scale() * 100)}%
       </div>

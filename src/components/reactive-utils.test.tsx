@@ -5,7 +5,7 @@ import { createRoot, JSX } from "solid-js";
 describe("Reactive Utils - makeImage", () => {
   // Mock console methods
   const originalConsole = { ...console };
-  
+
   beforeEach(() => {
     console.error = vi.fn();
     console.debug = vi.fn();
@@ -20,13 +20,13 @@ describe("Reactive Utils - makeImage", () => {
     it("should create an image with basic properties", () => {
       createRoot((dispose) => {
         const { img, isLoaded } = makeImage("test.jpg", "Test Alt");
-        
+
         expect(img).toBeInstanceOf(HTMLImageElement);
         expect(img.src).toContain("test.jpg");
         expect(img.alt).toBe("Test Alt");
         expect(img.fetchPriority).toBe("low");
         expect(isLoaded()).toBe(false);
-        
+
         dispose();
       });
     });
@@ -38,13 +38,13 @@ describe("Reactive Utils - makeImage", () => {
           height: "100px",
           "object-fit": "cover",
         };
-        
+
         const { img } = makeImage("test.jpg", "Test Alt", undefined, styles);
-        
+
         expect(img.style.width).toBe("100px");
         expect(img.style.height).toBe("100px");
         expect(getComputedStyle(img).objectFit).toBe("cover");
-        
+
         dispose();
       });
     });
@@ -53,11 +53,11 @@ describe("Reactive Utils - makeImage", () => {
       createRoot((dispose) => {
         const classes = ["test-class", "another-class"];
         const { img } = makeImage("test.jpg", "Test Alt", classes);
-        
+
         classes.forEach(className => {
           expect(img.classList.contains(className)).toBe(true);
         });
-        
+
         dispose();
       });
     });
@@ -75,15 +75,15 @@ describe("Reactive Utils - makeImage", () => {
     it("should handle already loaded images", () => {
       createRoot((dispose) => {
         const { img, isLoaded } = makeImage("test.jpg");
-        
+
         // Simulate image being already loaded
         Object.defineProperty(img, 'complete', { value: true });
         // Trigger load event
         img.dispatchEvent(new Event('load'));
-        
+
         expect(isLoaded()).toBe(true);
         expect(img.classList.contains("loaded")).toBe(true);
-        
+
         dispose();
       });
     });
@@ -91,15 +91,15 @@ describe("Reactive Utils - makeImage", () => {
     it("should handle async loading", () => {
       createRoot((dispose) => {
         const { img, isLoaded } = makeImage("test.jpg");
-        
+
         expect(isLoaded()).toBe(false);
-        
+
         // Simulate successful load
         img.dispatchEvent(new Event('load'));
-        
+
         expect(isLoaded()).toBe(true);
         expect(img.classList.contains("loaded")).toBe(true);
-        
+
         dispose();
       });
     });
@@ -107,13 +107,13 @@ describe("Reactive Utils - makeImage", () => {
     it("should handle loading errors", () => {
       createRoot((dispose) => {
         const { img, isLoaded } = makeImage("invalid.jpg");
-        
+
         // Simulate load error
         img.dispatchEvent(new Event('error'));
-        
+
         expect(isLoaded()).toBe(false);
         expect(console.error).toHaveBeenCalled();
-        
+
         dispose();
       });
     });
@@ -123,18 +123,18 @@ describe("Reactive Utils - makeImage", () => {
     it("should unload image correctly", () => {
       createRoot((dispose) => {
         const { img, unload } = makeImage("test.jpg");
-        
+
         unload();
-        
+
         // Check for empty relative URL
         expect(img.getAttribute('src')).toBe("");
         expect(img.onload).toBeNull();
         expect(img.onerror).toBeNull();
-        
+
         if (import.meta.env.DEV) {
           expect(console.debug).toHaveBeenCalled();
         }
-        
+
         dispose();
       });
     });
@@ -142,15 +142,15 @@ describe("Reactive Utils - makeImage", () => {
     it("should update priority", () => {
       createRoot((dispose) => {
         const { img, setPriority } = makeImage("test.jpg");
-        
+
         expect(img.fetchPriority).toBe("low");
-        
+
         setPriority("high");
         expect(img.fetchPriority).toBe("high");
-        
+
         setPriority("low");
         expect(img.fetchPriority).toBe("low");
-        
+
         dispose();
       });
     });

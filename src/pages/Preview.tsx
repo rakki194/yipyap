@@ -25,8 +25,8 @@ export default function Preview() {
                   clientHeight: e.currentTarget.clientHeight,
                   clientWidth: e.currentTarget.clientWidth,
                   containerHeight: e.currentTarget.parentElement?.clientHeight,
-                containerWidth: e.currentTarget.parentElement?.clientWidth,
-              });
+                  containerWidth: e.currentTarget.parentElement?.clientWidth,
+                });
             }}
           />
           <img
@@ -41,8 +41,8 @@ export default function Preview() {
                   clientHeight: e.currentTarget.clientHeight,
                   clientWidth: e.currentTarget.clientWidth,
                   containerHeight: e.currentTarget.parentElement?.clientHeight,
-                containerWidth: e.currentTarget.parentElement?.clientWidth,
-              });
+                  containerWidth: e.currentTarget.parentElement?.clientWidth,
+                });
             }}
           />
         </div>

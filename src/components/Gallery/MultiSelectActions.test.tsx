@@ -35,8 +35,8 @@ const mockAppContext: AppContextType = {
       'gallery.folderDeleteError': 'Error deleting folders',
       'gallery.someDeletesFailed': 'Some files failed to delete',
       'gallery.deleteConfirmation': 'Delete Confirmation',
-      'gallery.confirmMultiDelete': params?.count ? 
-        `Delete ${params.count} items (${params.folders || 0} folders, ${params.images || 0} images)?` : 
+      'gallery.confirmMultiDelete': params?.count ?
+        `Delete ${params.count} items (${params.folders || 0} folders, ${params.images || 0} images)?` :
         'Delete selected items?',
       'common.cancel': 'Cancel',
       'common.delete': 'Delete'
@@ -488,7 +488,7 @@ describe("MultiSelectActions", () => {
 
   it("should handle successful deletion", async () => {
     mockFetch.mockImplementation(() => Promise.resolve({ ok: true }));
-    
+
     const mockRefetchGallery = vi.fn();
     const galleryWithSelection = {
       selection: {
@@ -568,10 +568,10 @@ describe("MultiSelectActions", () => {
 
     const dialog = getByTestId("delete-confirm-dialog");
     const confirmButton = getByText("Delete");
-    
+
     // Clear mock before clicking confirm
     (mockAppContext.notify as unknown as Mock).mockClear();
-    
+
     await fireEvent.click(confirmButton);
 
     // Wait for all promises to resolve
@@ -590,119 +590,119 @@ describe("MultiSelectActions", () => {
     );
     expect(mockRefetchGallery).toHaveBeenCalled();
   });
-/*
-  it("should handle deletion errors", async () => {
-    // Mock translations for error messages
-    const mockTranslations: Record<string, string> = {
-      'gallery.deletingFiles': 'Deleting files...',
-      'gallery.deleteError': 'Error deleting files',
-      'gallery.deleteSelected': 'Delete Selected',
-      'gallery.deselectAll': 'Deselect All',
-      'gallery.selectAll': 'Select All',
-      'gallery.deleteSuccess': 'Files deleted successfully'
-    };
-    mockAppContext.t = (key: string, params?: any) => mockTranslations[key] || key;
-
-    // Mock fetch to return a failed response
-    mockFetch.mockImplementation(() => Promise.resolve({ ok: false, status: 500 }));
-    
-    const mockRefetchGallery = vi.fn();
-    const galleryWithSelection = {
-      selection: {
-        multiSelected: new Set([0, 1]),
-        multiFolderSelected: new Set<number>(),
-        clearMultiSelect: vi.fn(),
-        clearFolderMultiSelect: vi.fn(),
-        selectAll: vi.fn(),
-        select: vi.fn(),
-        selectedImage: null,
-        selectPrev: vi.fn(),
-        selectNext: vi.fn(),
-        selectDown: vi.fn(),
-        selectUp: vi.fn(),
-        selectPageUp: vi.fn(),
-        selectPageDown: vi.fn(),
-        toggleEdit: vi.fn(),
-        edit: vi.fn(),
-        setColumns: vi.fn(),
-        toggleMultiSelect: vi.fn(),
-        toggleFolderMultiSelect: vi.fn(),
-        selectAllFolders: vi.fn(),
-        mode: "view" as const,
-        setMode: vi.fn(),
-        selected: null,
-        editedImage: null
-      },
-      refetchGallery: mockRefetchGallery,
-      data: createMockResource({
-        items: [
-          Object.assign(() => ({
-            type: "image" as const,
-            name: "test1.jpg",
-            file_name: "test1.jpg",
-            size: 1024,
-            mime: "image/jpeg",
-            width: 100,
-            height: 100,
-            mtime: new Date().toISOString(),
-            md5sum: "test1",
-            captions: []
-          }), { type: "image" as const, file_name: "test1.jpg" }),
-          Object.assign(() => ({
-            type: "image" as const,
-            name: "test2.jpg",
-            file_name: "test2.jpg",
-            size: 1024,
-            mime: "image/jpeg",
-            width: 100,
-            height: 100,
-            mtime: new Date().toISOString(),
-            md5sum: "test2",
-            captions: []
-          }), { type: "image" as const, file_name: "test2.jpg" })
-        ],
-        path: "test/path",
-        total_folders: 0,
-        total_images: 2,
-        total_pages: 1,
-        mtime: new Date().toISOString(),
-        pages: {},
-        setters: {
-          "test1.jpg": vi.fn(),
-          "test2.jpg": vi.fn()
-        }
-      })
-    };
-
-    const { getByTitle, getByText } = render(() => (
-      <TestWrapper gallery={galleryWithSelection}>
-        <MultiSelectActions />
-      </TestWrapper>
-    ));
-
-    const deleteButton = getByTitle("Delete Selected");
-    await fireEvent.click(deleteButton);
-
-    const confirmButton = getByText("Delete");
-    
-    // Clear mock before clicking confirm
-    (mockAppContext.notify as unknown as Mock).mockClear();
-    
-    // Click and wait for all promises to settle
-    await fireEvent.click(confirmButton);
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(mockAppContext.notify).toHaveBeenCalledWith(
-      "Deleting files...",
-      "info"
-    );
-    expect(mockAppContext.notify).toHaveBeenCalledWith(
-      "Error deleting files",
-      "error"
-    );
-    expect(mockRefetchGallery).not.toHaveBeenCalled();
-  });
-*/
+  /*
+    it("should handle deletion errors", async () => {
+      // Mock translations for error messages
+      const mockTranslations: Record<string, string> = {
+        'gallery.deletingFiles': 'Deleting files...',
+        'gallery.deleteError': 'Error deleting files',
+        'gallery.deleteSelected': 'Delete Selected',
+        'gallery.deselectAll': 'Deselect All',
+        'gallery.selectAll': 'Select All',
+        'gallery.deleteSuccess': 'Files deleted successfully'
+      };
+      mockAppContext.t = (key: string, params?: any) => mockTranslations[key] || key;
+  
+      // Mock fetch to return a failed response
+      mockFetch.mockImplementation(() => Promise.resolve({ ok: false, status: 500 }));
+      
+      const mockRefetchGallery = vi.fn();
+      const galleryWithSelection = {
+        selection: {
+          multiSelected: new Set([0, 1]),
+          multiFolderSelected: new Set<number>(),
+          clearMultiSelect: vi.fn(),
+          clearFolderMultiSelect: vi.fn(),
+          selectAll: vi.fn(),
+          select: vi.fn(),
+          selectedImage: null,
+          selectPrev: vi.fn(),
+          selectNext: vi.fn(),
+          selectDown: vi.fn(),
+          selectUp: vi.fn(),
+          selectPageUp: vi.fn(),
+          selectPageDown: vi.fn(),
+          toggleEdit: vi.fn(),
+          edit: vi.fn(),
+          setColumns: vi.fn(),
+          toggleMultiSelect: vi.fn(),
+          toggleFolderMultiSelect: vi.fn(),
+          selectAllFolders: vi.fn(),
+          mode: "view" as const,
+          setMode: vi.fn(),
+          selected: null,
+          editedImage: null
+        },
+        refetchGallery: mockRefetchGallery,
+        data: createMockResource({
+          items: [
+            Object.assign(() => ({
+              type: "image" as const,
+              name: "test1.jpg",
+              file_name: "test1.jpg",
+              size: 1024,
+              mime: "image/jpeg",
+              width: 100,
+              height: 100,
+              mtime: new Date().toISOString(),
+              md5sum: "test1",
+              captions: []
+            }), { type: "image" as const, file_name: "test1.jpg" }),
+            Object.assign(() => ({
+              type: "image" as const,
+              name: "test2.jpg",
+              file_name: "test2.jpg",
+              size: 1024,
+              mime: "image/jpeg",
+              width: 100,
+              height: 100,
+              mtime: new Date().toISOString(),
+              md5sum: "test2",
+              captions: []
+            }), { type: "image" as const, file_name: "test2.jpg" })
+          ],
+          path: "test/path",
+          total_folders: 0,
+          total_images: 2,
+          total_pages: 1,
+          mtime: new Date().toISOString(),
+          pages: {},
+          setters: {
+            "test1.jpg": vi.fn(),
+            "test2.jpg": vi.fn()
+          }
+        })
+      };
+  
+      const { getByTitle, getByText } = render(() => (
+        <TestWrapper gallery={galleryWithSelection}>
+          <MultiSelectActions />
+        </TestWrapper>
+      ));
+  
+      const deleteButton = getByTitle("Delete Selected");
+      await fireEvent.click(deleteButton);
+  
+      const confirmButton = getByText("Delete");
+      
+      // Clear mock before clicking confirm
+      (mockAppContext.notify as unknown as Mock).mockClear();
+      
+      // Click and wait for all promises to settle
+      await fireEvent.click(confirmButton);
+      await new Promise(resolve => setTimeout(resolve, 100));
+  
+      expect(mockAppContext.notify).toHaveBeenCalledWith(
+        "Deleting files...",
+        "info"
+      );
+      expect(mockAppContext.notify).toHaveBeenCalledWith(
+        "Error deleting files",
+        "error"
+      );
+      expect(mockRefetchGallery).not.toHaveBeenCalled();
+    });
+  */
 
   it("should show progress bar during deletion", async () => {
     // Mock translations
@@ -716,7 +716,7 @@ describe("MultiSelectActions", () => {
     mockAppContext.t = (key: string, params?: any) => mockTranslations[key] || key;
 
     mockFetch.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ ok: true }), 100)));
-    
+
     const galleryWithSelection = {
       selection: {
         multiSelected: new Set([0, 1]),

@@ -8,26 +8,26 @@ interface UploadOverlayProps {
 export const UploadOverlay: Component<UploadOverlayProps> = (props) => {
   return (
     <Show when={props.isVisible}>
-      <div 
-        class={styles.overlay} 
-        role="dialog" 
+      <div
+        class={styles.overlay}
+        role="dialog"
         aria-label="Drop files to upload"
         data-testid="upload-overlay"
       >
-        <div 
+        <div
           class={styles.content}
           data-testid="upload-content"
         >
-          <div 
+          <div
             class={styles.icon}
             data-testid="upload-icon"
           >
-            <svg 
-              width="48" 
-              height="48" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
               stroke-width="2"
               aria-hidden="true"
             >
@@ -36,7 +36,7 @@ export const UploadOverlay: Component<UploadOverlayProps> = (props) => {
               <line x1="12" y1="3" x2="12" y2="15" />
             </svg>
           </div>
-          <div 
+          <div
             class={styles.text}
             data-testid="upload-text"
           >

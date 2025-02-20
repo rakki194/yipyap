@@ -38,7 +38,7 @@
  * - `openNewFolder` - Handler that closes quick jump and opens new folder dialog
  */
 import { createSignal } from "solid-js";
-import { ProgressInfo } from "../components/Gallery/types";
+import { ProgressInfo } from "../components/Gallery/ProgressOverlay";
 
 export function useGalleryUI() {
   const [showQuickJump, setShowQuickJump] = createSignal(false);

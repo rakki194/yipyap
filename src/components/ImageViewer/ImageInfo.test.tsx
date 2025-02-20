@@ -57,21 +57,21 @@ describe("ImageInfo Component", () => {
     mime: "image/jpeg",
     width: 1920,
     height: 1080,
-    aspect_ratio: (1920/1080).toString(),
+    aspect_ratio: (1920 / 1080).toString(),
     download_path: "/test.jpg",
     preview_path: "/preview/test.jpg",
     thumbnail_path: "/thumbnail/test.jpg",
-    preview_img: { 
+    preview_img: {
       img: new Image(),
       isLoaded: () => true,
-      unload: () => {},
-      setPriority: () => {}
+      unload: () => { },
+      setPriority: () => { }
     },
-    thumbnail_img: { 
+    thumbnail_img: {
       img: new Image(),
       isLoaded: () => true,
-      unload: () => {},
-      setPriority: () => {}
+      unload: () => { },
+      setPriority: () => { }
     },
     type: "image" as const,
     captions: [],

@@ -146,12 +146,12 @@ describe("Selection Manager", () => {
   it("initializes with default state", () => {
     createRoot((dispose) => {
       const selection = useSelection(mockResource);
-      
+
       expect(selection.selected).toBe(null);
       expect(selection.mode).toBe("view");
       expect(selection.multiSelected.size).toBe(0);
       expect(selection.multiFolderSelected.size).toBe(0);
-      
+
       dispose();
     });
   });
@@ -160,13 +160,13 @@ describe("Selection Manager", () => {
     it("selects an image by index", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
-        
+
         const success = selection.select(2); // Select first image
-        
+
         expect(success).toBe(true);
         expect(selection.selected).toBe(2);
         expect(selection.selectedImage).not.toBe(null);
-        
+
         dispose();
       });
     });
@@ -174,12 +174,12 @@ describe("Selection Manager", () => {
     it("handles invalid selection indices", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
-        
+
         const success = selection.select(999); // Invalid index
-        
+
         expect(success).toBe(true);
         expect(selection.selected).toBe(mockBrowseData.items.length - 1); // Should select last item
-        
+
         dispose();
       });
     });
@@ -187,13 +187,13 @@ describe("Selection Manager", () => {
     it("maintains view mode when selecting directories", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
-        
+
         selection.setMode("edit");
         selection.select(1); // Select a directory
-        
+
         expect(selection.mode).toBe("view");
         expect(selection.selected).toBe(1);
-        
+
         dispose();
       });
     });
@@ -205,15 +205,15 @@ describe("Selection Manager", () => {
         const selection = useSelection(mockResource);
         selection.setColumns(2);
         selection.select(2); // Start at first image
-        
+
         const downSuccess = selection.selectDown();
         expect(downSuccess).toBe(true);
         expect(selection.selected).toBe(4); // Should move down 2 columns
-        
+
         const upSuccess = selection.selectUp();
         expect(upSuccess).toBe(true);
         expect(selection.selected).toBe(2); // Should move back up
-        
+
         dispose();
       });
     });
@@ -222,17 +222,17 @@ describe("Selection Manager", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
         selection.setColumns(2);
-        
+
         // Try moving up from null selection
         const upSuccess = selection.selectUp();
         expect(upSuccess).toBe(true);
         expect(selection.selected).toBe(mockBrowseData.items.length - 1); // Should select last item
-        
+
         // Try moving down from last item
         selection.select(mockBrowseData.items.length - 1);
         const downSuccess = selection.selectDown();
         expect(downSuccess).toBe(false); // Should fail as we're at the bottom
-        
+
         dispose();
       });
     });
@@ -242,13 +242,13 @@ describe("Selection Manager", () => {
     it("toggles multi-selection for images", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
-        
+
         selection.toggleMultiSelect(2); // Toggle first image
         expect(selection.multiSelected.has(2)).toBe(true);
-        
+
         selection.toggleMultiSelect(2); // Toggle again to remove
         expect(selection.multiSelected.has(2)).toBe(false);
-        
+
         dispose();
       });
     });
@@ -256,13 +256,13 @@ describe("Selection Manager", () => {
     it("handles select all functionality", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
-        
+
         selection.selectAll();
-        
+
         // Should select all images but not directories
         expect(selection.multiSelected.size).toBe(3); // 3 images
         expect(selection.multiFolderSelected.size).toBe(2); // 2 folders (excluding ..)
-        
+
         dispose();
       });
     });
@@ -270,13 +270,13 @@ describe("Selection Manager", () => {
     it("clears multi-selection", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
-        
+
         selection.selectAll();
         selection.clearMultiSelect();
-        
+
         expect(selection.multiSelected.size).toBe(0);
         expect(selection.multiFolderSelected.size).toBe(0);
-        
+
         dispose();
       });
     });
@@ -286,14 +286,14 @@ describe("Selection Manager", () => {
     it("toggles edit mode for images", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
-        
+
         selection.select(2); // Select an image
         const success = selection.toggleEdit();
-        
+
         expect(success).toBe(true);
         expect(selection.mode).toBe("edit");
         expect(selection.editedImage).not.toBe(null);
-        
+
         dispose();
       });
     });
@@ -301,14 +301,14 @@ describe("Selection Manager", () => {
     it("prevents edit mode for directories", () => {
       createRoot((dispose) => {
         const selection = useSelection(mockResource);
-        
+
         selection.select(1); // Select a directory
         const success = selection.setMode("edit");
-        
+
         expect(success).toBe(false);
         expect(selection.mode).toBe("view");
         expect(selection.editedImage).toBe(null);
-        
+
         dispose();
       });
     });

@@ -39,10 +39,10 @@ describe("useConnectionStatus", () => {
       };
     }
     // Mock navigator.onLine
-    Object.defineProperty(navigator, 'onLine', { 
+    Object.defineProperty(navigator, 'onLine', {
       configurable: true,
       value: true,
-      writable: true 
+      writable: true
     });
   });
 

@@ -319,7 +319,7 @@ const createAppContext = (): AppContext => {
       //);
     } catch (error) {
       console.error("Failed to update JTP2 config:", error);
-      
+
       // Revert the changes on error
       setStore("jtp2ModelPath", prevState.model_path);
       setStore("jtp2TagsPath", prevState.tags_path);
@@ -368,14 +368,14 @@ const createAppContext = (): AppContext => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ size })
       });
-      
+
       if (!response.ok) throw new Error('Failed to update thumbnail size');
-      
+
       setStore("thumbnailSize", size);
-      
+
       // Instead of directly calling gallery methods, dispatch a custom event
       window.dispatchEvent(new CustomEvent('thumbnailSizeChanged'));
-      
+
     } catch (error) {
       console.error('Error updating thumbnail size:', error);
       notify(
@@ -393,7 +393,7 @@ const createAppContext = (): AppContext => {
   ) => {
     // If message is a translation key and we have translations loaded, translate it
     const translatedMessage = getTranslationValue(translation(), message) || message;
-    
+
     if (typeof window !== "undefined" && (window as any).__notificationContainer) {
       (window as any).__notificationContainer.addNotification({
         message: translatedMessage,

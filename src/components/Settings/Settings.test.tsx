@@ -173,7 +173,7 @@ vi.mock('@solidjs/router', async () => {
   return {
     ...actual,
     useLocation: () => ({ pathname: '/', search: '', hash: '', query: {}, state: null, key: '' }),
-    useSearchParams: () => [{ path: '' }, () => {}],
+    useSearchParams: () => [{ path: '' }, () => { }],
     useNavigate: () => vi.fn(),
     useParams: () => ({}),
     useRouter: () => ({
@@ -289,12 +289,12 @@ describe('Settings Component', () => {
   it('toggles help section when help button is clicked', async () => {
     renderSettings();
     const helpButton = screen.getByRole('button', { name: 'Keyboard Shortcuts' });
-    
+
     // Click to show help
     fireEvent.click(helpButton);
     vi.advanceTimersByTime(300);
     expect(screen.getByRole('heading', { name: 'Gallery Navigation', level: 4 })).toBeInTheDocument();
-    
+
     // Click to hide help
     fireEvent.click(helpButton);
     vi.advanceTimersByTime(300);
@@ -359,17 +359,17 @@ describe('Settings Component', () => {
         right: 400,
         x: 0,
         y: 0,
-        toJSON: () => {}
+        toJSON: () => { }
       }));
 
     renderSettings();
     const slider = screen.getByRole('slider');
     const x = 100;
-    
+
     fireEvent.mouseDown(slider, { clientX: x });
     fireEvent.mouseMove(slider, { clientX: x });
     fireEvent.mouseUp(slider);
-    
+
     const sizeValue = screen.getByTestId('thumbnail-size-value');
     expect(sizeValue.textContent).toMatch(/200\s*px/);
 
@@ -386,7 +386,7 @@ describe('Settings Component', () => {
    */
   it('updates model paths when input values change', () => {
     renderSettings();
-    
+
     const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
     fireEvent.click(modelSettingsButton);
     vi.advanceTimersByTime(300);
@@ -500,12 +500,12 @@ describe('Settings Component', () => {
           right: 400,
           x: 0,
           y: 0,
-          toJSON: () => {}
+          toJSON: () => { }
         }));
 
       const thresholdSlider = screen.getByRole('slider', { name: 'JTP2 Threshold' });
       const x = 200;
-      
+
       fireEvent.mouseDown(thresholdSlider, { clientX: x });
       fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
       fireEvent.mouseUp(thresholdSlider);
@@ -578,12 +578,12 @@ describe('Settings Component', () => {
           right: 400,
           x: 0,
           y: 0,
-          toJSON: () => {}
+          toJSON: () => { }
         }));
 
       const thresholdSlider = screen.getByRole('slider', { name: 'General Threshold' });
       const x = 240;
-      
+
       fireEvent.mouseDown(thresholdSlider, { clientX: x });
       fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
       fireEvent.mouseUp(thresholdSlider);
@@ -618,12 +618,12 @@ describe('Settings Component', () => {
           right: 400,
           x: 0,
           y: 0,
-          toJSON: () => {}
+          toJSON: () => { }
         }));
 
       const thresholdSlider = screen.getByRole('slider', { name: 'Character Threshold' });
       const x = 280;
-      
+
       fireEvent.mouseDown(thresholdSlider, { clientX: x });
       fireEvent.mouseMove(thresholdSlider, { clientX: x, buttons: 1 });
       fireEvent.mouseUp(thresholdSlider);
@@ -664,11 +664,11 @@ describe('Settings Component', () => {
     it('switches back to main view when clicking active view button', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
-      
+
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
       expect(screen.getByPlaceholderText('/path/to/jtp2/model.safetensors')).toBeInTheDocument();
-      
+
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
       expect(screen.queryByPlaceholderText('/path/to/jtp2/model.safetensors')).not.toBeInTheDocument();
@@ -686,11 +686,11 @@ describe('Settings Component', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
       const experimentalButton = screen.getByRole('button', { name: 'Experimental Features' });
-      
+
       fireEvent.click(modelSettingsButton);
       vi.advanceTimersByTime(300);
       expect(screen.getByPlaceholderText('/path/to/jtp2/model.safetensors')).toBeInTheDocument();
-      
+
       fireEvent.click(experimentalButton);
       vi.advanceTimersByTime(300);
       expect(screen.getByRole('checkbox', { name: 'Enable Zoom' })).toBeInTheDocument();
@@ -803,7 +803,7 @@ describe('Settings Component', () => {
 
       const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
       const newPath = '/new/path/to/model.safetensors';
-      
+
       // Mock a delay in the update
       vi.spyOn(mockAppContext.jtp2, 'setModelPath').mockImplementation(() => new Promise(resolve => {
         setTimeout(resolve, 1000);
@@ -811,7 +811,7 @@ describe('Settings Component', () => {
 
       fireEvent.change(modelPathInput, { target: { value: newPath } });
       expect(modelPathInput).toBeDisabled();
-      
+
       // Wait for the update to complete
       await vi.advanceTimersByTimeAsync(1000);
       expect(modelPathInput).not.toBeDisabled();
@@ -831,7 +831,7 @@ describe('Settings Component', () => {
       vi.advanceTimersByTime(300);
 
       const modelSelect = screen.getByRole('combobox', { name: 'WDv3 Model' });
-      
+
       // Mock a delay in the update
       vi.spyOn(mockAppContext.wdv3, 'setModelName').mockImplementation(() => new Promise(resolve => {
         setTimeout(resolve, 1000);
@@ -839,7 +839,7 @@ describe('Settings Component', () => {
 
       fireEvent.change(modelSelect, { target: { value: 'swinv2' } });
       expect(modelSelect).toBeDisabled();
-      
+
       // Wait for the update to complete
       await vi.advanceTimersByTimeAsync(1000);
       expect(modelSelect).not.toBeDisabled();
@@ -856,33 +856,33 @@ describe('Settings Component', () => {
      */
     it('supports keyboard navigation between sections', () => {
       renderSettings();
-      
+
       // Get all header buttons in their DOM order
       const headerButtons = screen.getAllByRole('button')
         .filter(button => button.closest('.settings-header-buttons'));
-      
+
       // Test natural tab order
       headerButtons[0].focus();
       expect(document.activeElement).toBe(headerButtons[0]);
-      
+
       // Tab to next button - simulate natural tab behavior
       headerButtons[1].focus();
       expect(document.activeElement).toBe(headerButtons[1]);
-      
+
       // Test arrow navigation
       fireEvent.keyDown(document.activeElement!, { key: 'ArrowRight' });
       headerButtons[2].focus();
       expect(document.activeElement).toBe(headerButtons[2]);
-      
+
       fireEvent.keyDown(document.activeElement!, { key: 'ArrowLeft' });
       headerButtons[1].focus();
       expect(document.activeElement).toBe(headerButtons[1]);
-      
+
       // Verify all header buttons are focusable in sequence
       headerButtons.forEach((button, index) => {
         button.focus();
         expect(document.activeElement).toBe(button);
-        
+
         if (index < headerButtons.length - 1) {
           // Move focus to next button - simulate natural tab behavior
           headerButtons[index + 1].focus();
@@ -924,12 +924,12 @@ describe('Settings Component', () => {
      */
     it('cycles through available themes', () => {
       renderSettings();
-      const themeButtons = screen.getAllByRole('button').filter(button => 
+      const themeButtons = screen.getAllByRole('button').filter(button =>
         button.getAttribute('title')?.toLowerCase().includes('theme')
       );
 
       for (const theme of ['dark', 'light', 'gray']) {
-        const themeButton = themeButtons.find(button => 
+        const themeButton = themeButtons.find(button =>
           button.getAttribute('title')?.toLowerCase().includes(theme)
         );
         fireEvent.click(themeButton!);
@@ -953,27 +953,27 @@ describe('Settings Component', () => {
       vi.advanceTimersByTime(300);
 
       const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
-      
+
       // Mock an error in the update
       const error = new Error('Update failed');
       vi.spyOn(mockAppContext.jtp2, 'setModelPath').mockRejectedValueOnce(error);
 
       // Reset notification mock before test
       mockAppContext.createNotification.mockClear();
-      
+
       // Trigger the error
       fireEvent.change(modelPathInput, { target: { value: 'invalid/path' } });
-      
+
       // Wait for all promises to resolve
       await vi.runAllTimersAsync();
       await Promise.resolve();
-      
+
       // Verify error notification was created
       expect(mockAppContext.createNotification).toHaveBeenCalledWith({
         type: 'error',
         message: 'Update failed'
       });
-      
+
       // Verify input is not disabled after error
       expect(modelPathInput).not.toBeDisabled();
     });
@@ -989,22 +989,22 @@ describe('Settings Component', () => {
      */
     it('has proper ARIA labels and roles', () => {
       renderSettings();
-      
+
       // Check main panel
       const settingsPanel = screen.getByRole('dialog');
       expect(settingsPanel).toHaveAttribute('aria-labelledby', 'settings-title');
       expect(settingsPanel).toHaveAttribute('aria-modal', 'true');
-      
+
       // Check heading matches labelledby reference
       const heading = screen.getByText('Settings');
       expect(heading).toHaveAttribute('id', 'settings-title');
-      
+
       // Check buttons
       const buttons = screen.getAllByRole('button');
       buttons.forEach(button => {
         expect(button).toHaveAttribute('aria-label');
       });
-      
+
       // Check select elements
       const selects = screen.getAllByRole('combobox');
       selects.forEach(select => {
@@ -1035,20 +1035,20 @@ describe('Settings Component', () => {
      */
     it('traps focus within the modal', () => {
       renderSettings();
-      
+
       // Get all focusable elements
       const focusableElements = screen.getAllByRole('button');
       const firstButton = screen.getByRole('button', { name: 'Model Settings' });
       const lastButton = screen.getByRole('button', { name: 'settings.theme.peanut' });
-      
+
       // Test forward tab from last element
       lastButton.focus();
       expect(lastButton).toHaveFocus();
-      
+
       // Test backward tab from first element
       firstButton.focus();
       expect(firstButton).toHaveFocus();
-      
+
       // Verify all buttons are focusable
       focusableElements.forEach(button => {
         button.focus();
@@ -1068,11 +1068,11 @@ describe('Settings Component', () => {
     it('translates content when language changes', () => {
       renderSettings();
       const languageSelect = screen.getByRole('combobox');
-      
+
       // Change to a different language
       fireEvent.change(languageSelect, { target: { value: 'ja' } });
       expect(mockAppContext.setLocale).toHaveBeenCalledWith('ja');
-      
+
       // Verify translations are updated
       expect(screen.getByText(mockTranslations['settings.title'])).toBeInTheDocument();
     });
@@ -1086,7 +1086,7 @@ describe('Settings Component', () => {
      */
     it('supports RTL languages', async () => {
       const [locale, setLocale] = createSignal('en' as Locale);
-      
+
       const contextValue = {
         ...mockAppContext,
         get locale() { return locale() },
@@ -1094,44 +1094,44 @@ describe('Settings Component', () => {
           setLocale(newLocale);
         })
       };
-      
+
       render(() => (
         <Router>
           <AppContext.Provider value={contextValue}>
             <GalleryProvider>
-              <Settings onClose={() => {}} />
+              <Settings onClose={() => { }} />
             </GalleryProvider>
           </AppContext.Provider>
         </Router>
       ));
-      
+
       const languageSelect = screen.getByRole('combobox');
       const settingsPanel = screen.getByRole('dialog');
-      
+
       // Initially should not have RTL class
       expect(settingsPanel).not.toHaveClass('rtl');
-      
+
       // Change to an RTL language
       fireEvent.change(languageSelect, { target: { value: 'he' } });
       expect(contextValue.setLocale).toHaveBeenCalledWith('he');
       await vi.runAllTimersAsync();
-      
+
       // Verify RTL class is added
       expect(settingsPanel).toHaveClass('rtl');
-      
+
       // Change to a non-RTL language
       fireEvent.change(languageSelect, { target: { value: 'en' } });
       expect(contextValue.setLocale).toHaveBeenCalledWith('en');
       await vi.runAllTimersAsync();
-      
+
       // Verify RTL class is removed
       expect(settingsPanel).not.toHaveClass('rtl');
-      
+
       // Test another RTL language
       fireEvent.change(languageSelect, { target: { value: 'ar' } });
       expect(contextValue.setLocale).toHaveBeenCalledWith('ar');
       await vi.runAllTimersAsync();
-      
+
       // Verify RTL class is added again
       expect(settingsPanel).toHaveClass('rtl');
     });
@@ -1149,31 +1149,31 @@ describe('Settings Component', () => {
     it('animates view transitions smoothly', async () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
-      
+
       // Initial transition
       fireEvent.click(modelSettingsButton);
       // Wait a small tick for the transition state to update
       await vi.advanceTimersByTimeAsync(10);
-      
+
       // The transitioning class is on the wrapper div
       let transitioningWrapper = screen.getByTestId('settings-content-wrapper');
       let transitioningContent = transitioningWrapper.querySelector('.transitioning');
       expect(transitioningContent).toBeTruthy();
-      
+
       // Wait for transition to complete
       await vi.advanceTimersByTimeAsync(300);
       transitioningWrapper = screen.getByTestId('settings-content-wrapper');
       transitioningContent = transitioningWrapper.querySelector('.transitioning');
       expect(transitioningContent).toBeFalsy();
-      
+
       // Transition back
       fireEvent.click(modelSettingsButton);
       await vi.advanceTimersByTimeAsync(10);
-      
+
       transitioningWrapper = screen.getByTestId('settings-content-wrapper');
       transitioningContent = transitioningWrapper.querySelector('.transitioning');
       expect(transitioningContent).toBeTruthy();
-      
+
       // Wait for transition to complete
       await vi.advanceTimersByTimeAsync(300);
       transitioningWrapper = screen.getByTestId('settings-content-wrapper');
@@ -1192,28 +1192,28 @@ describe('Settings Component', () => {
       renderSettings();
       const modelSettingsButton = screen.getByRole('button', { name: 'Model Settings' });
       const experimentalButton = screen.getByRole('button', { name: 'Experimental Features' });
-      
+
       // Set some values in model settings
       fireEvent.click(modelSettingsButton);
       await vi.advanceTimersByTimeAsync(300);
-      
+
       const modelPathInput = screen.getByPlaceholderText('/path/to/jtp2/model.safetensors');
       fireEvent.change(modelPathInput, { target: { value: 'test/path' } });
-      
+
       // Wait for input change to be processed
       await vi.runAllTimersAsync();
-      
+
       // Switch to experimental
       fireEvent.click(experimentalButton);
       await vi.advanceTimersByTimeAsync(300);
-      
+
       // Switch back to model settings
       fireEvent.click(modelSettingsButton);
       await vi.advanceTimersByTimeAsync(300);
-      
+
       // Wait for all pending timers
       await vi.runAllTimersAsync();
-      
+
       // Verify value is preserved in the app context
       expect(mockAppContext.jtp2.setModelPath).toHaveBeenCalledWith('test/path');
     });
@@ -1307,11 +1307,11 @@ describe('Settings Component', () => {
 
       // Get the format input and test pattern validation
       const formatInput = screen.getByLabelText('Number Format');
-      
+
       // Test invalid format
       fireEvent.change(formatInput, { target: { value: 'invalid' } });
       expect(formatInput).toHaveValue('invalid');
-      
+
       // Test valid format
       fireEvent.change(formatInput, { target: { value: '#,###.##' } });
       expect(formatInput).toHaveValue('#,###.##');
@@ -1338,7 +1338,7 @@ describe('Settings Component', () => {
      */
     it('persists settings between view changes', async () => {
       renderSettings();
-      
+
       // Change multiple settings
       const animationsToggle = screen.getByRole('checkbox', { name: mockTranslations['settings.disableAnimations'] });
       fireEvent.click(animationsToggle);
@@ -1378,7 +1378,7 @@ describe('Settings Component', () => {
      */
     it('persists multiple setting changes', async () => {
       renderSettings();
-      
+
       const experimentalButton = screen.getByRole('button', { name: mockTranslations['settings.experimentalFeatures'] });
       fireEvent.click(experimentalButton);
       await vi.advanceTimersByTimeAsync(300);

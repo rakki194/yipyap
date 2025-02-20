@@ -59,8 +59,8 @@ export const translations: Record<string, () => Promise<Translations>> = Object.
 
 // Helper function to get nested translation values with type safety
 export function getTranslationValue(
-  obj: any, 
-  path: string, 
+  obj: any,
+  path: string,
   params?: { [key: string]: any }
 ): string {
   const value = path.split('.').reduce((acc, part) => acc?.[part], obj);

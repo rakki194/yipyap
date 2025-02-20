@@ -57,9 +57,9 @@ export const ImageGrid = (props: {
       const lastSelected = ref.getAttribute('data-last-selected') === 'true';
       if (!lastSelected) {
         ref.setAttribute('data-last-selected', 'true');
-        ref.scrollIntoView({ 
-          behavior: "smooth", 
-          block: "center", 
+        ref.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
           inline: "nearest"
         });
       }
@@ -74,9 +74,9 @@ export const ImageGrid = (props: {
   }));
 
   return (
-    <div 
-      class="responsive-grid" 
-      style={gridStyle()} 
+    <div
+      class="responsive-grid"
+      style={gridStyle()}
       use:measure_columns={setColumns}
       role="grid"
       aria-label="Image gallery grid"
@@ -85,9 +85,9 @@ export const ImageGrid = (props: {
       <div id="gallery-description" class="sr-only">
         Grid of images and folders. Use arrow keys to navigate, space to select, and enter to open.
       </div>
-      <div 
-        role="status" 
-        aria-live="polite" 
+      <div
+        role="status"
+        aria-live="polite"
         class="sr-only"
       >
         {props.items.length} items loaded
@@ -154,7 +154,7 @@ function makeIntersectionObserver<T>(
   }
 ): (el: Element, assoc_value: T) => void {
   const [currentPage, setCurrentPage] = createSignal(1);
-  
+
   // Dynamic root margin based on page
   const getRootMargin = (page: number) => {
     if (page === 1) return "100px"; // Small margin for initial fast load
@@ -204,7 +204,7 @@ function makeIntersectionObserver<T>(
     observed.set(el, assoc_value);
     pending.add(el);
     tryLoadPending();
-    
+
     // Update page number when loading more
     setCurrentPage(p => p + 1);
   };
@@ -246,7 +246,7 @@ export const ImageItem = (props: {
   const { getThumbnailSize } = gallery;
   const [isLoading, setIsLoading] = createSignal(true);
   const isMultiSelected = () => gallery.selection.multiSelected.has(props.idx);
-  
+
   // Calculate aspect ratio based on image dimensions
   const aspectRatio = createMemo(() => 1);
 
@@ -311,7 +311,7 @@ export const ImageItem = (props: {
       document.querySelectorAll('.item').forEach(el => {
         const idx = parseInt(el.getAttribute('data-idx') || '');
         if (!isNaN(idx) && (
-          gallery.selection.multiSelected.has(idx) || 
+          gallery.selection.multiSelected.has(idx) ||
           gallery.selection.multiFolderSelected.has(idx)
         )) {
           el.classList.add('being-dragged');
@@ -480,7 +480,7 @@ export const DirectoryItem = (props: {
       document.querySelectorAll('.item').forEach(el => {
         const idx = parseInt(el.getAttribute('data-idx') || '');
         if (!isNaN(idx) && (
-          gallery.selection.multiSelected.has(idx) || 
+          gallery.selection.multiSelected.has(idx) ||
           gallery.selection.multiFolderSelected.has(idx)
         )) {
           el.classList.add('being-dragged');
@@ -511,7 +511,7 @@ export const DirectoryItem = (props: {
     if (!e.dataTransfer) return;
 
     if (e.dataTransfer.types.includes('application/x-yipyap-item') ||
-        e.dataTransfer.types.includes('application/x-yipyap-items')) {
+      e.dataTransfer.types.includes('application/x-yipyap-items')) {
       e.dataTransfer.dropEffect = 'move';
       const target = e.currentTarget as HTMLElement;
       target.classList.add('drag-target');
@@ -534,7 +534,7 @@ export const DirectoryItem = (props: {
       ref={props.ref}
       href={props.name === ".." ? `/${props.path.split("/").slice(0, -1).join("/")}` : `/${fullPath}`}
       class="item directory"
-      classList={{ 
+      classList={{
         selected: props.selected,
         "multi-selected": isMultiSelected()
       }}

@@ -48,6 +48,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -60,6 +61,7 @@
       opacity: 0;
       backdrop-filter: blur(0);
     }
+
     to {
       opacity: 1;
       backdrop-filter: blur(8px);
@@ -72,6 +74,7 @@
     transform: scale(0.95);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -79,10 +82,13 @@
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
-} 
+}

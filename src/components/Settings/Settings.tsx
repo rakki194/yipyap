@@ -38,7 +38,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
 
   const switchView = (view: 'main' | 'help' | 'transformations' | 'experimental' | 'tagger') => {
     if (isTransitioning()) return;
-    
+
     if (activeView() === view) {
       if (view !== 'main') {
         setIsTransitioning(true);
@@ -58,8 +58,8 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
   };
 
   return (
-    <div 
-      class="settings-panel card" 
+    <div
+      class="settings-panel card"
       classList={{ rtl: isRtl() }}
       role="dialog"
       aria-modal="true"
@@ -129,8 +129,8 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
           </button>
         </div>
       </div>
-      
-      <div 
+
+      <div
         class="settings-content-wrapper"
         data-testid="settings-content-wrapper"
         onKeyDown={(e) => {
@@ -385,7 +385,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
               <Show when={!app.disableNonsense}>
                 <p class="warning-text">
                   <span>
-                    {app.locale === 'pl' 
+                    {app.locale === 'pl'
                       ? "⚠️UWAGA! To zamieni cię w bobra!"
                       : "⚠️警告！これはあなたをビーバーに変えてしまいます！"}
                   </span>
@@ -401,7 +401,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                   {t('settings.instantDelete')}
                 </label>
               </Tooltip>
-              
+
               <div class="setting-item">
                 <Tooltip content={t('settings.preserveLatentsTooltip')} position="top">
                   <label>

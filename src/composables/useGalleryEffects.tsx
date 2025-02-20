@@ -38,10 +38,10 @@ interface UseGalleryEffectsProps {
   startPositionChecking: () => void;
 }
 
-export function useGalleryEffects({ 
-  scrollToSelected, 
+export function useGalleryEffects({
+  scrollToSelected,
   autoScrolling,
-  startPositionChecking 
+  startPositionChecking
 }: UseGalleryEffectsProps) {
   const gallery = useGallery();
 
@@ -72,8 +72,8 @@ export function useGalleryEffects({
     const currentData = gallery.data();
     if (currentData) {
       const path = currentData.path.split("/").filter(Boolean);
-      const title = path.length > 0 
-        ? `${path.join(" / ")} - ~yipyap` 
+      const title = path.length > 0
+        ? `${path.join(" / ")} - ~yipyap`
         : "Gallery - ~yipyap";
       document.title = title;
     }
@@ -84,7 +84,7 @@ export function useGalleryEffects({
     const handleThumbnailSizeChange = () => {
       gallery.refetchGallery();
     };
-    
+
     window.addEventListener('thumbnailSizeChanged', handleThumbnailSizeChange);
     onCleanup(() => {
       window.removeEventListener('thumbnailSizeChanged', handleThumbnailSizeChange);

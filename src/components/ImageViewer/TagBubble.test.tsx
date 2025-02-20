@@ -139,7 +139,7 @@ describe("TagBubble Component", () => {
 
     it("handles double-tap navigation", () => {
       vi.useFakeTimers();
-      
+
       render(() => (
         <TestWrapper context={mockAppContext}>
           <TagBubble {...defaultProps} />

@@ -60,13 +60,13 @@ type OKLCHColor = {
  */
 function createTagColorGenerator() {
   const colorCache = new Map<string, OKLCHColor>();
-  
+
   return {
     getTagColor(theme: string, tag: string): OKLCHColor {
       // Normalize the tag by replacing spaces with underscores for consistent hashing
       const normalizedTag = tag.replace(/\s+/g, '_');
       const cacheKey = `${theme}:${normalizedTag}`;
-      
+
       // Return cached color if available
       const cachedColor = colorCache.get(cacheKey);
       if (cachedColor) {
@@ -115,15 +115,15 @@ function createTagColorGenerator() {
 
             return isGreen
               ? {
-                  l: 35 + (hash % 10),  // Dark background for green (white text)
-                  c: 0.25 + (hash % 10) / 100,  // Saturated green
-                  h: selectedStrawberryHue,
-                }
+                l: 35 + (hash % 10),  // Dark background for green (white text)
+                c: 0.25 + (hash % 10) / 100,  // Saturated green
+                h: selectedStrawberryHue,
+              }
               : {
-                  l: 75 + (hash % 15),  // Light background for pink/red (black text)
-                  c: 0.2 + (hash % 15) / 100,  // Variable saturation for pink/red
-                  h: selectedStrawberryHue,
-                };
+                l: 75 + (hash % 15),  // Light background for pink/red (black text)
+                c: 0.2 + (hash % 15) / 100,  // Variable saturation for pink/red
+                h: selectedStrawberryHue,
+              };
           }
 
           case "peanut":
@@ -144,7 +144,7 @@ function createTagColorGenerator() {
       colorCache.set(cacheKey, color);
       return color;
     },
-    
+
     // Add method to clear the cache
     clearCache() {
       colorCache.clear();
@@ -207,7 +207,7 @@ export const TagBubble: Component<{
    * 
    * @returns OKLCHColor object with lightness, chroma, and hue values
    */
-  const getTagLCH = createMemo(() => 
+  const getTagLCH = createMemo(() =>
     tagColorGenerator.getTagColor(app.theme, props.tag)
   );
 

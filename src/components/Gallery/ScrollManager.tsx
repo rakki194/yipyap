@@ -4,8 +4,8 @@ export class ScrollManager {
   private element: HTMLElement | null = null;
   private animationFrame: number | null = null;
   private isAnimating = false;
-  
-  constructor(private readonly scrollTimeout: number) {}
+
+  constructor(private readonly scrollTimeout: number) { }
 
   init(element: HTMLElement) {
     this.element = element;
@@ -35,14 +35,14 @@ export class ScrollManager {
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / this.scrollTimeout, 1);
-      
+
       // Use easeInOutQuad easing
       const easeProgress = progress < 0.5
         ? 2 * progress * progress
         : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-      
+
       this.element!.scrollTop = startY + ((targetY - startY) * easeProgress);
-      
+
       if (progress < 1 && this.isAnimating) {
         this.animationFrame = requestAnimationFrame(animate);
       } else {

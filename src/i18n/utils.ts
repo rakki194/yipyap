@@ -89,9 +89,8 @@ function convertNumberToHungarianWord(num: number): string {
   for (const value of [1000000000, 1000000, 1000]) {
     if (n >= value) {
       const count = Math.floor(n / value);
-      result += `${count > 1 ? convertNumberToHungarianWord(count) + " " : ""}${
-        HUNGARIAN_NUMBERS[value]
-      } `;
+      result += `${count > 1 ? convertNumberToHungarianWord(count) + " " : ""}${HUNGARIAN_NUMBERS[value]
+        } `;
       n %= value;
     }
   }
@@ -99,9 +98,8 @@ function convertNumberToHungarianWord(num: number): string {
   // Handle hundreds
   if (n >= 100) {
     const hundreds = Math.floor(n / 100);
-    result += `${hundreds > 1 ? HUNGARIAN_NUMBERS[hundreds] + " " : ""}${
-      HUNGARIAN_NUMBERS[100]
-    } `;
+    result += `${hundreds > 1 ? HUNGARIAN_NUMBERS[hundreds] + " " : ""}${HUNGARIAN_NUMBERS[100]
+      } `;
     n %= 100;
   }
 
@@ -218,7 +216,7 @@ export function getArabicPlural(
   }
 ): string {
   const absCount = Math.trunc(Math.abs(count));
-  
+
   if (absCount === 0) return forms.plural;
   if (absCount === 1) return forms.singular;
   if (absCount === 2) return forms.dual;
@@ -255,10 +253,10 @@ export function getHungarianSuffix(
   // Define vowel groups
   const backVowels = ['a', 'á', 'o', 'ó', 'u', 'ú'];
   const frontVowels = ['e', 'é', 'i', 'í', 'ö', 'ő', 'ü', 'ű'];
-  
+
   // Convert to lowercase for comparison
   const lowerWord = word.toLowerCase();
-  
+
   // Find the last vowel in the word
   let lastVowel = '';
   for (let i = lowerWord.length - 1; i >= 0; i--) {
@@ -268,7 +266,7 @@ export function getHungarianSuffix(
       return frontSuffix;
     }
   }
-  
+
   // If no vowels found, default to front vowel form
   return frontSuffix;
 }
@@ -304,16 +302,16 @@ export function getPortuguesePlural(
 ): string {
   // Handle zero case
   if (num === 0) return forms.plural;
-  
+
   // Handle singular case
   if (Math.abs(num) === 1) return forms.singular;
-  
+
   // Handle special plural cases if alternative form exists
   if (forms.pluralAlt && /ão$/.test(forms.singular)) {
     // For numbers above 10, use alternative plural form if available
     if (Math.abs(num) > 10) return forms.pluralAlt;
   }
-  
+
   // Default plural form
   return forms.plural;
 }
@@ -378,7 +376,7 @@ export function getSpanishPlural(
 ): string {
   // Handle negative numbers and decimals by using absolute value and truncating
   const n = Math.abs(Math.trunc(count));
-  
+
   // Spanish uses singular form only for exactly 1
   return n === 1 ? forms.singular : forms.plural;
 }
@@ -407,7 +405,7 @@ export function getTurkishPlural(
   const backVowels = ['a', 'ı', 'o', 'u'];
   // Front vowels: e, i, ö, ü
   const frontVowels = ['e', 'i', 'ö', 'ü'];
-  
+
   // Find the last vowel in the word
   const letters = word.toLowerCase().split('');
   for (let i = letters.length - 1; i >= 0; i--) {
@@ -418,7 +416,7 @@ export function getTurkishPlural(
       return forms.pluralLer;
     }
   }
-  
+
   // Default to -ler if no vowels found
   return forms.pluralLer;
 }
@@ -487,22 +485,22 @@ export function getRomanianPlural(
   forms: { one: string; few: string; many: string }
 ): string {
   const absCount = Math.abs(count);
-  
+
   // Handle zero
   if (count === 0) {
     return forms.few;
   }
-  
+
   // Handle exact 1
   if (absCount === 1 && Number.isInteger(count)) {
     return forms.one;
   }
-  
+
   // Handle numbers >= 20 (including decimals)
   if (absCount >= 20) {
     return forms.many;
   }
-  
+
   // All other cases (2-19 and decimals < 20)
   return forms.few;
 }

@@ -90,7 +90,7 @@ describe("Gallery State Management", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock fetch globally
     global.fetch = vi.fn().mockImplementation((url) => {
       return Promise.resolve({
@@ -108,7 +108,7 @@ describe("Gallery State Management", () => {
       mockResource.error = undefined;
       mockResource.latest = mockBrowseData;
       gallery.data = mockResource as Resource<BrowsePagesCached>;
-      
+
       // Mock selection with editedImage
       gallery.selection = {
         editedImage: mockBrowseData.items[0]() as ImageData,
@@ -124,18 +124,18 @@ describe("Gallery State Management", () => {
         setMode: () => true,
         toggleEdit: () => true,
         edit: () => true,
-        setColumns: () => {},
+        setColumns: () => { },
         toggleMultiSelect: () => true,
         selectAll: () => true,
-        clearMultiSelect: () => {},
+        clearMultiSelect: () => { },
         multiFolderSelected: new Set<number>(),
         toggleFolderMultiSelect: () => true,
         selectAllFolders: () => true,
-        clearFolderMultiSelect: () => {},
+        clearFolderMultiSelect: () => { },
         multiSelected: new Set<number>(),
         mode: 'view' as const
       };
-      
+
       // Update the gallery methods to use actual fetch calls
       gallery.saveCaption = action(async (caption: SaveCaption) => {
         const response = await fetch(`/caption/test/path/test.jpg`, {
@@ -160,7 +160,7 @@ describe("Gallery State Management", () => {
         }
         return undefined;
       });
-      
+
       dispose();
     });
   });
@@ -313,7 +313,7 @@ describe("Gallery State Management", () => {
     it("fetches and caches folders on first call", async () => {
       const folders = await gallery.getAllKnownFolders();
       expect(folders).toEqual(mockFolders);
-      
+
       // Should be cached in localStorage
       const cached = JSON.parse(localStorage.getItem('yipyap_folder_cache')!);
       expect(cached.folders).toEqual(mockFolders);
@@ -323,11 +323,11 @@ describe("Gallery State Management", () => {
     it("uses cached data on subsequent calls", async () => {
       // First call to cache the data
       await gallery.getAllKnownFolders();
-      
+
       // Second call should use cache
       global.fetch = vi.fn(); // Reset fetch mock
       const folders = await gallery.getAllKnownFolders();
-      
+
       expect(folders).toEqual(mockFolders);
       expect(global.fetch).not.toHaveBeenCalled();
     });
@@ -336,13 +336,13 @@ describe("Gallery State Management", () => {
       // First cache the data
       await gallery.getAllKnownFolders();
       expect(localStorage.getItem('yipyap_folder_cache')).not.toBeNull();
-      
+
       // Invalidate cache
       gallery.invalidateFolderCache();
-      
+
       // Cache should be cleared
       expect(localStorage.getItem('yipyap_folder_cache')).toBeNull();
-      
+
       // Next call should fetch fresh data
       const folders = await gallery.getAllKnownFolders();
       expect(folders).toEqual(mockFolders);
@@ -357,7 +357,7 @@ describe("Gallery State Management", () => {
         timestamp: Date.now() - 3600001 // Just over 1 hour old
       };
       localStorage.setItem('yipyap_folder_cache', JSON.stringify(oldCache));
-      
+
       // Should ignore expired cache and fetch fresh data
       const folders = await gallery.getAllKnownFolders();
       expect(folders).toEqual(mockFolders);
@@ -372,7 +372,7 @@ describe("Gallery State Management", () => {
         timestamp: Date.now()
       };
       localStorage.setItem('yipyap_folder_cache', JSON.stringify(invalidCache));
-      
+
       // Should ignore invalid cache and fetch fresh data
       const folders = await gallery.getAllKnownFolders();
       expect(folders).toEqual(mockFolders);
@@ -384,11 +384,11 @@ describe("Gallery State Management", () => {
       const mockError = new Error("Storage error");
       const originalGetItem = localStorage.getItem;
       localStorage.getItem = vi.fn().mockImplementation(() => { throw mockError; });
-      
+
       // Should still work by fetching from API
       const folders = await gallery.getAllKnownFolders();
       expect(folders).toEqual(mockFolders);
-      
+
       // Restore original localStorage
       localStorage.getItem = originalGetItem;
     });

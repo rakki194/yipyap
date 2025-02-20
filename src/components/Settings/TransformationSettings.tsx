@@ -41,7 +41,7 @@ const availableIcons: IconOption[] = [
   { id: "addCircle", label: "Add Circle Filled" },
   { id: "addCircleRegular", label: "Add Circle Regular" },
   { id: "addRegular", label: "Add Regular" },
-  
+
   //{ id: "notepad", label: "Notepad" },
   //{ id: "subtitles", label: "Subtitles" },
   { id: "textSortAscending", label: "Text Sort" },
@@ -130,7 +130,7 @@ const TransformationExamples: Component<{
       case "searchReplace":
         if (!props.config.pattern) return sampleText();
         return sampleText().replace(new RegExp(props.config.pattern, 'g'), props.config.replacement || '');
-      
+
       case "case":
         switch (props.config.caseType) {
           case "upper":
@@ -147,7 +147,7 @@ const TransformationExamples: Component<{
           default:
             return sampleText();
         }
-      
+
       case "trim":
         switch (props.config.trimType) {
           case "all":
@@ -161,10 +161,10 @@ const TransformationExamples: Component<{
           default:
             return sampleText();
         }
-      
+
       case "wrap":
         return `${props.config.prefix || ''}${sampleText()}${props.config.suffix || ''}`;
-      
+
       case "number":
         switch (props.config.numberAction) {
           case "remove":
@@ -186,7 +186,7 @@ const TransformationExamples: Component<{
           default:
             return sampleText();
         }
-      
+
       default:
         return sampleText();
     }
@@ -292,7 +292,7 @@ export const TransformationSettings: Component<{
    */
   const handleSubmit = (e: Event) => {
     e.preventDefault();
-    
+
     if (!newName()) return;
 
     const baseTransformation = {
@@ -358,7 +358,7 @@ export const TransformationSettings: Component<{
     } else {
       addTransformation(transformation);
     }
-    
+
     setShowForm(false);
     resetForm();
   };
@@ -412,16 +412,16 @@ export const TransformationSettings: Component<{
           </button>
         </div>
       </div>
-      
+
       <div class="add-transformation-form-container" classList={{ expanded: showForm() }}>
         <Show when={showForm()}>
-          <form 
-            class="add-transformation-form" 
+          <form
+            class="add-transformation-form"
             classList={{ visible: formVisible() }}
             onSubmit={handleSubmit}
           >
             <h4>{editingId() ? t("tools.editTransformation") : t("tools.addTransformation")}</h4>
-            
+
             <div class="form-group">
               <label for="name">{t("common.name")}</label>
               <input
@@ -447,8 +447,8 @@ export const TransformationSettings: Component<{
 
             <div class="form-group">
               <label>{t("tools.transformationType")}</label>
-              <select 
-                value={selectedType()} 
+              <select
+                value={selectedType()}
                 onChange={(e) => setSelectedType(e.currentTarget.value as TransformationType)}
               >
                 <For each={transformationTypes}>
@@ -487,8 +487,8 @@ export const TransformationSettings: Component<{
             <Show when={selectedType() === "case"}>
               <div class="form-group">
                 <label>{t("tools.caseType")}</label>
-                <select 
-                  value={caseType()} 
+                <select
+                  value={caseType()}
                   onChange={(e) => setCaseType(e.currentTarget.value as any)}
                 >
                   <For each={caseTypes}>
@@ -503,8 +503,8 @@ export const TransformationSettings: Component<{
             <Show when={selectedType() === "trim"}>
               <div class="form-group">
                 <label>{t("tools.trimType")}</label>
-                <select 
-                  value={trimType()} 
+                <select
+                  value={trimType()}
                   onChange={(e) => setTrimType(e.currentTarget.value as any)}
                 >
                   <For each={trimTypes}>
@@ -543,8 +543,8 @@ export const TransformationSettings: Component<{
             <Show when={selectedType() === "number"}>
               <div class="form-group">
                 <label>{t("tools.numberAction")}</label>
-                <select 
-                  value={numberAction()} 
+                <select
+                  value={numberAction()}
                   onChange={(e) => setNumberAction(e.currentTarget.value as any)}
                 >
                   <For each={numberActions}>
@@ -615,7 +615,7 @@ export const TransformationSettings: Component<{
           </form>
         </Show>
       </div>
-      
+
       <div class="transformations-list">
         <For each={state.transformations}>
           {(transformation) => (

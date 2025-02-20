@@ -18,7 +18,7 @@ type PluralRule = (n: number, forms: PluralForms) => string;
 // Plural rules for different language families
 export const pluralRules: Record<string, PluralRule> = {
   // English and similar (singular and plural only)
-  default: (n: number, forms: PluralForms) => 
+  default: (n: number, forms: PluralForms) =>
     n === 1 ? forms.one : forms.other,
 
   // Arabic (has singular, dual, and plural forms)
@@ -53,7 +53,7 @@ export const pluralRules: Record<string, PluralRule> = {
   },
 
   // Spanish (similar to default but using specific function)
-  es: (n: number, forms: PluralForms) => 
+  es: (n: number, forms: PluralForms) =>
     getSpanishPlural(n, { singular: forms.one, plural: forms.other }),
 
   // Japanese, Chinese, Korean, Vietnamese (no plurals)

@@ -29,7 +29,7 @@
   background-color: #ff000038 !important;
 }
 
-.tag-bubble > button.remove-tag {
+.tag-bubble>button.remove-tag {
   color: inherit;
   border-style: none;
   background: none;
@@ -224,7 +224,7 @@
   color: var(--json-key);
   font-weight: 500;
   position: relative;
-  
+
   &::after {
     content: "";
     position: absolute;
@@ -348,7 +348,7 @@
   color: var(--json-key);
   font-weight: 500;
   position: relative;
-  
+
   &::after {
     content: "";
     position: absolute;

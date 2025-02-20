@@ -26,7 +26,7 @@ export const Tooltip: Component<TooltipProps> = (props) => {
   // Effect to handle visibility state
   createEffect(() => {
     clearTooltipTimeout();
-    
+
     if (shouldShow()) {
       // Set timeout to show tooltip
       timeoutId = window.setTimeout(() => {

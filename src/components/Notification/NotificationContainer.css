@@ -11,7 +11,7 @@
   pointer-events: none;
 }
 
-.notification-container > * {
+.notification-container>* {
   pointer-events: auto;
   transform-origin: right;
   animation: notification-enter 0.3s ease-out;
@@ -22,6 +22,7 @@
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -29,10 +30,10 @@
 }
 
 /* Ensure notifications from the same group stack on top of each other */
-.notification-container > *[data-group] {
+.notification-container>*[data-group] {
   position: relative;
 }
 
-.notification-container > *[data-group] + *[data-group]:not([data-group=""]) {
+.notification-container>*[data-group]+*[data-group]:not([data-group=""]) {
   margin-top: 0.5rem;
-} 
+}

@@ -55,12 +55,12 @@ export const ImageModal = (props: ImageModalProps) => {
   const handleKeyDown = (e: KeyboardEvent) => {
     // Only prevent default if we're in a text input or textarea
     const isInInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
-    
+
     if (isInInput) {
       // Prevent default scrolling behavior only when in input fields
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || 
-          e.key === 'PageDown' || e.key === 'PageUp' ||
-          e.key === 'Home' || e.key === 'End') {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' ||
+        e.key === 'PageDown' || e.key === 'PageUp' ||
+        e.key === 'Home' || e.key === 'End') {
         e.preventDefault();
       }
     } else {
@@ -79,10 +79,10 @@ export const ImageModal = (props: ImageModalProps) => {
     // Register escape handler
     escape.setOverlayState("modal", true);
     const unregister = escape.registerHandler("modal", props.onClose);
-    
+
     // Add keyboard event listener
     window.addEventListener('keydown', handleKeyDown, { capture: true });
-    
+
     // Add modal-open class to body
     document.body.classList.add('modal-open');
 
@@ -96,16 +96,16 @@ export const ImageModal = (props: ImageModalProps) => {
   });
 
   return (
-    <div 
+    <div
       class="modal-overlay"
       onClick={props.onClose}
     >
-      <div 
+      <div
         class="modal-content"
         onClick={(e) => e.stopPropagation()}
       >
-        <ModalHeader 
-          imageInfo={props.imageInfo} 
+        <ModalHeader
+          imageInfo={props.imageInfo}
           onClose={props.onClose}
           showMetadata={showMetadata()}
           setShowMetadata={setShowMetadata}
@@ -281,8 +281,8 @@ const ModelBody = (props: {
                       focusedType() === null || !focused()
                         ? null
                         : focusedType() === caption()[0]
-                        ? "expanded"
-                        : "collapsed"
+                          ? "expanded"
+                          : "collapsed"
                     }
                   />
                 )}
@@ -405,8 +405,8 @@ const FavoriteButton = (props: {
   const getNextState = (currentState: number | undefined) => {
     const current = currentState ?? 0;
     const nextState = Math.floor((current + 1) % 7);
-    console.debug('getNextState:', { 
-      currentState: current, 
+    console.debug('getNextState:', {
+      currentState: current,
       currentStateType: typeof current,
       nextState,
       nextStateType: typeof nextState
@@ -492,14 +492,14 @@ const DeleteButton = (props: {
               selectedFolders.map(async (idx) => {
                 const item = data.items[idx];
                 if (item?.type !== 'directory') return;
-                
+
                 const folderPath = data.path
                   ? `${data.path}/${item.file_name}`
                   : item.file_name;
-                
+
                 const params = new URLSearchParams();
                 params.append("confirm", "true");
-                
+
                 return await fetch(`/api/browse/${folderPath}?${params.toString()}`, {
                   method: 'DELETE',
                 });
@@ -521,14 +521,14 @@ const DeleteButton = (props: {
               try {
                 const item = data.items[idx];
                 if (item?.type !== 'image') return;
-                
+
                 const imagePath = data.path
                   ? `${data.path}/${item.file_name}`
                   : item.file_name;
-                
+
                 const params = new URLSearchParams();
                 params.append("confirm", "true");
-                
+
                 if (app.preserveLatents) {
                   params.append("preserve_latents", "true");
                 }
@@ -539,7 +539,7 @@ const DeleteButton = (props: {
                 const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
                   method: "DELETE",
                 });
-                
+
                 if (response.ok) {
                   app.notify(app.t('notifications.deleteSuccess'), 'success');
                   props.onClose();
@@ -565,7 +565,7 @@ const DeleteButton = (props: {
         // Clear selection after all operations
         gallery.selection.clearMultiSelect();
         gallery.selection.clearFolderMultiSelect();
-        
+
         // Force a refetch
         gallery.invalidate();
         await gallery.refetch();
@@ -614,7 +614,7 @@ const DeleteButton = (props: {
       onTouchStart={startDelete}
       onTouchEnd={cancelDelete}
       onTouchCancel={cancelDelete}
-      aria-label={hasMultiSelection() 
+      aria-label={hasMultiSelection()
         ? app.t('gallery.deleteSelected', { count: getSelectedCount() })
         : "Hold to delete image"
       }
@@ -676,7 +676,7 @@ const EmptyCaptionState = (props: {
   onCreateCaption: (type: string) => void;
 }) => {
   const { t } = useAppContext();
-  
+
   // Create a memo for the randomly selected image
   const randomImage = createMemo(() => {
     const randomIndex = Math.floor(Math.random() * NO_CAPTION_IMAGES.length);
@@ -685,7 +685,7 @@ const EmptyCaptionState = (props: {
 
   return (
     <div class="empty-captions-state">
-      <div 
+      <div
         class="empty-state-image"
         role="img"
         aria-label="No captions"

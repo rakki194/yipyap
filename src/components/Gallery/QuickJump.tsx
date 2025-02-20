@@ -51,7 +51,7 @@ export const QuickJump: Component<{
     inputRef?.focus();
     escape.setOverlayState("quickJump", true);
     const unregister = escape.registerHandler("quickJump", props.onClose);
-    
+
     onCleanup(() => {
       escape.setOverlayState("quickJump", false);
       unregister();
@@ -237,15 +237,15 @@ export const QuickJump: Component<{
   };
 
   return (
-    <div 
-      class="quick-jump-overlay" 
+    <div
+      class="quick-jump-overlay"
       data-testid="quick-jump-overlay"
       onClick={(e) => {
         if (e.target === e.currentTarget) props.onClose();
       }}
     >
-      <div 
-        class="quick-jump-modal" 
+      <div
+        class="quick-jump-modal"
         data-testid="quick-jump-modal"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => {

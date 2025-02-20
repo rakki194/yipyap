@@ -10,7 +10,7 @@ export const CaptionTools: Component<{
 }> = (props) => {
   const { t } = useAppContext();
   const { state, applyTransformation } = useTransformations();
-  
+
   return (
     <>
       <For each={state.transformations}>

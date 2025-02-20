@@ -132,7 +132,7 @@ export interface ToolsTranslations {
   caseType: string;
   trimType: string;
   numberAction: string;
-  
+
   removeCommas: string;
   replaceNewlinesWithCommas: string;
   replaceUnderscoresWithSpaces: string;

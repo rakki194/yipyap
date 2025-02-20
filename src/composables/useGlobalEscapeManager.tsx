@@ -145,9 +145,9 @@ const createGlobalState = () => {
     if (event.key === "Escape") {
       event.preventDefault();
       event.stopPropagation();
-      
+
       const currentState = state();
-      
+
       // Handle in order of priority
       if (currentState.settingsOpen && handlers.settings) {
         handlers.settings();

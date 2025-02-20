@@ -66,7 +66,7 @@ export type ImageInfo = {
 };
 
 export type FavoriteState = {
-    favorite_state: number;
+  favorite_state: number;
 };
 
 const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
@@ -141,13 +141,13 @@ export function makeGalleryState() {
     try {
       const cached = localStorage.getItem(FOLDER_CACHE_KEY);
       if (!cached) return null;
-      
+
       const data = JSON.parse(cached) as FolderCache;
       if (data.version !== FOLDER_CACHE_VERSION) return null;
-      
+
       // Cache expires after 1 hour
       if (Date.now() - data.timestamp > 3600000) return null;
-      
+
       return data;
     } catch (error) {
       console.error('Error loading folder cache:', error);
@@ -340,104 +340,104 @@ export function makeGalleryState() {
     if (!database) return new Error("No page fetched yet!");
 
     try {
-        if (typeof state !== 'number' || isNaN(state)) {
-            throw new Error('Invalid state value: must be a number');
-        }
+      if (typeof state !== 'number' || isNaN(state)) {
+        throw new Error('Invalid state value: must be a number');
+      }
 
-        console.debug('setFavoriteState input:', {
-            image: image.name,
-            state,
-            stateType: typeof state
+      console.debug('setFavoriteState input:', {
+        image: image.name,
+        state,
+        stateType: typeof state
+      });
+
+      // Find the original image data
+      const imageItem = database.items.find(item =>
+        item?.type === 'image' &&
+        item()?.name === image.name
+      );
+
+      if (!imageItem || imageItem.type !== 'image') {
+        throw new Error('Image not found in database');
+      }
+
+      const currentImageData = imageItem();
+      if (!currentImageData) {
+        throw new Error('Image data not found');
+      }
+
+      // Ensure state is an integer
+      const intState = Math.floor(state);
+      if (intState < 0 || intState > 6) {
+        throw new Error('Invalid state value: must be between 0 and 6');
+      }
+
+      console.debug('Processed state:', {
+        original: state,
+        intState,
+        intStateType: typeof intState
+      });
+
+      // Handle paths that start with _/ by removing it
+      const basePath = database.path.startsWith('_/') ? database.path.slice(2) : database.path;
+      const imagePath = basePath ? `${basePath}/${image.name}` : image.name;
+
+      const payload = { favorite_state: intState };
+      console.debug('API request:', {
+        url: `/api/favorite/${imagePath}`,
+        payload,
+        payloadStringified: JSON.stringify(payload)
+      });
+
+      const response = await fetch(`/api/favorite/${imagePath}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API error response:', {
+          status: response.status,
+          errorData,
+          requestPayload: payload
         });
+        throw new Error(`Failed to update favorite state: ${JSON.stringify(errorData)}`);
+      }
 
-        // Find the original image data
-        const imageItem = database.items.find(item => 
-            item?.type === 'image' && 
-            item()?.name === image.name
-        );
-        
-        if (!imageItem || imageItem.type !== 'image') {
-            throw new Error('Image not found in database');
-        }
+      // Update both the ImageData and ImageInfo states
+      const updatedImageData = {
+        ...currentImageData,
+        favorite_state: intState,
+        type: 'image' as const
+      };
 
-        const currentImageData = imageItem();
-        if (!currentImageData) {
-            throw new Error('Image data not found');
-        }
-
-        // Ensure state is an integer
-        const intState = Math.floor(state);
-        if (intState < 0 || intState > 6) {
-            throw new Error('Invalid state value: must be between 0 and 6');
-        }
-
-        console.debug('Processed state:', {
-            original: state,
-            intState,
-            intStateType: typeof intState
+      // Update the ImageData state
+      const setter = database.setters[image.name];
+      if (setter) {
+        console.debug('Updating ImageData state:', {
+          name: image.name,
+          newState: intState,
+          updatedImageData
         });
+        setter(updatedImageData);
+      } else {
+        console.warn('No setter found for image:', image.name);
+      }
 
-        // Handle paths that start with _/ by removing it
-        const basePath = database.path.startsWith('_/') ? database.path.slice(2) : database.path;
-        const imagePath = basePath ? `${basePath}/${image.name}` : image.name;
-        
-        const payload = { favorite_state: intState };
-        console.debug('API request:', {
-            url: `/api/favorite/${imagePath}`,
-            payload,
-            payloadStringified: JSON.stringify(payload)
-        });
+      // Update the ImageInfo state directly
+      image.favorite_state = intState;
+      console.debug('Updated ImageInfo state:', {
+        name: image.name,
+        newState: intState,
+        currentState: image.favorite_state
+      });
 
-        const response = await fetch(`/api/favorite/${imagePath}`, {
-            method: "PUT",
-            headers: { 
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('API error response:', {
-                status: response.status,
-                errorData,
-                requestPayload: payload
-            });
-            throw new Error(`Failed to update favorite state: ${JSON.stringify(errorData)}`);
-        }
-
-        // Update both the ImageData and ImageInfo states
-        const updatedImageData = {
-            ...currentImageData,
-            favorite_state: intState,
-            type: 'image' as const
-        };
-
-        // Update the ImageData state
-        const setter = database.setters[image.name];
-        if (setter) {
-            console.debug('Updating ImageData state:', {
-                name: image.name,
-                newState: intState,
-                updatedImageData
-            });
-            setter(updatedImageData);
-        } else {
-            console.warn('No setter found for image:', image.name);
-        }
-
-        // Update the ImageInfo state directly
-        image.favorite_state = intState;
-        console.debug('Updated ImageInfo state:', {
-            name: image.name,
-            newState: intState,
-            currentState: image.favorite_state
-        });
-
-        return response;
+      return response;
     } catch (error) {
-        console.error("Failed to update favorite state:", error);
-        throw error; // Re-throw to allow proper error handling upstream
+      console.error("Failed to update favorite state:", error);
+      throw error; // Re-throw to allow proper error handling upstream
     }
   });
 
@@ -501,7 +501,7 @@ export function makeGalleryState() {
   const deleteImage = action(async (idx: number) => {
     const database = untrack(backendData);
     if (!database) return new Error("No page fetched yet!");
-    
+
     const item = database.items[idx];
     if (!item || item.type !== "image") {
       return new Error("No image to delete");
@@ -531,12 +531,12 @@ export function makeGalleryState() {
         total_folders: database.total_folders,
         total_images: database.total_images - 1,
       };
-      
+
       batch(() => {
         setData(data);
         clearImageCache();
       });
-      
+
       return items;
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to delete image", error);
@@ -558,19 +558,19 @@ export function makeGalleryState() {
 
       // Make the API call
       await deleteCaptionFromBackend(database.path, image.name, type);
-      
+
       // Only clear the image cache, don't force a full refetch
       clearImageCache();
-      
+
       return { success: true };
     } catch (error) {
       if (import.meta.env.DEV) console.error("Failed to delete caption", error);
-      
+
       // Revert local state on error
       const originalCaptions = image.captions;
       const originalCaption = originalCaptions.find(([t]) => t === type)?.[1];
       updateLocalCaptions(image, { type, caption: originalCaption }, database);
-      
+
       return new Error("Failed to delete caption");
     }
   });
@@ -592,14 +592,14 @@ export function makeGalleryState() {
       console.debug('Clearing existing data');
       setData(undefined);
       clearImageCache();
-      
+
       // Reset page and selection state
       console.debug('Resetting page and selection state');
       setState({ page: 1 });
       selection.select(null);
       selection.clearMultiSelect();
       selection.clearFolderMultiSelect();
-      
+
       // Then trigger a refetch
       console.debug('Triggering refetch');
       invalidate();
@@ -633,10 +633,10 @@ export function makeGalleryState() {
         }
         const data = await response.json();
         folderCache = data.folders as FolderInfo[];
-        
+
         // Save to localStorage
         saveFolderCache(folderCache);
-        
+
         return folderCache;
       } catch (error) {
         console.error("Error fetching folders:", error);

@@ -108,19 +108,19 @@ const GalleryProvider: Component<{ children: JSX.Element }> = (props) => {
       multiFolderSelected: new Set<number>(),
       toggleMultiSelect: () => false,
       selectAll: () => false,
-      clearMultiSelect: () => {},
+      clearMultiSelect: () => { },
       toggleFolderMultiSelect: () => false,
       selectAllFolders: () => false,
-      clearFolderMultiSelect: () => {},
+      clearFolderMultiSelect: () => { },
       setMode: () => true,
       selected: null,
-      setColumns: () => {},
+      setColumns: () => { },
     },
     data: createMockResource(mockBrowseData),
-    setViewMode: () => {},
-    setSort: () => {},
-    setSearch: () => {},
-    setPage: async () => {},
+    setViewMode: () => { },
+    setSort: () => { },
+    setSearch: () => { },
+    setPage: async () => { },
     state: {
       viewMode: "grid" as const,
       sort: "name" as const,
@@ -139,16 +139,16 @@ const GalleryProvider: Component<{ children: JSX.Element }> = (props) => {
     getImagePreviewUrl: () => "",
     getThumbnailComputedSize: () => ({ width: 0, height: 0 }),
     refetch: () => null,
-    invalidate: () => {},
-    clearImageCache: () => {},
+    invalidate: () => { },
+    clearImageCache: () => { },
     getAllKnownFolders: async () => [],
     generateTags: mockAction(async () => undefined),
     deleteImage: mockAction(async () => new Error("Mock error")),
     captionHistory: () => [],
     getEditedImage: () => undefined,
-    refetchGallery: () => {},
+    refetchGallery: () => { },
     setData: () => undefined,
-    invalidateFolderCache: () => {},
+    invalidateFolderCache: () => { },
     select: () => false,
     selectedImage: null,
     selectPrev: () => false,
@@ -164,13 +164,13 @@ const GalleryProvider: Component<{ children: JSX.Element }> = (props) => {
     multiFolderSelected: new Set<number>(),
     toggleMultiSelect: () => false,
     selectAll: () => false,
-    clearMultiSelect: () => {},
+    clearMultiSelect: () => { },
     toggleFolderMultiSelect: () => false,
     selectAllFolders: () => false,
-    clearFolderMultiSelect: () => {},
+    clearFolderMultiSelect: () => { },
     setMode: () => true,
     selected: null,
-    setColumns: () => {},
+    setColumns: () => { },
   };
 
   return (
@@ -280,7 +280,7 @@ describe("CaptionInput Component", () => {
 
       // Navigate right
       fireEvent.keyDown(input, { key: "ArrowRight", shiftKey: true });
-      
+
       await Promise.resolve();
       expect(screen.getByDisplayValue("tag2")).toHaveFocus();
     });

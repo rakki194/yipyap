@@ -131,7 +131,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
 
     // Check if this is a gallery item drag
     if (e.dataTransfer.types.includes('application/x-yipyap-item') ||
-        e.dataTransfer.types.includes('application/x-yipyap-items')) {
+      e.dataTransfer.types.includes('application/x-yipyap-items')) {
       e.dataTransfer.dropEffect = 'move';
       // Add drag-target class only if target is a directory
       const target = e.target as HTMLElement;
@@ -156,14 +156,14 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
 
     // Handle gallery item drops
     if (e.dataTransfer.types.includes('application/x-yipyap-item') ||
-        e.dataTransfer.types.includes('application/x-yipyap-items')) {
+      e.dataTransfer.types.includes('application/x-yipyap-items')) {
       const itemData = e.dataTransfer.getData('application/x-yipyap-item');
       const itemsData = e.dataTransfer.getData('application/x-yipyap-items');
-      
+
       try {
         const item = JSON.parse(itemData);
         const items = itemsData ? JSON.parse(itemsData) : [item];
-        
+
         console.log('Drag and drop items:', {
           singleItem: item,
           multiItems: items,
@@ -173,7 +173,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
             multiFolderSelected: Array.from(gallery.selection.multiFolderSelected)
           }
         });
-        
+
         // Get the target directory path
         let targetPath = gallery.data()?.path ?? "";
         const targetElement = e.target as HTMLElement;
@@ -305,7 +305,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         }, { moved: [], failed: [], failed_reasons: {} });
 
         console.log('Combined move results:', result);
-        
+
         // Show success/failure notifications
         if (result.moved.length > 0) {
           appContext.notify(
@@ -313,7 +313,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
             "success"
           );
         }
-        
+
         if (result.failed.length > 0) {
           const existingFiles = result.failed.filter((file: string) => result.failed_reasons[file] === "target_exists");
           const missingFiles = result.failed.filter((file: string) => result.failed_reasons[file] === "source_missing");
@@ -330,17 +330,17 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
               // Try both directory and image items
               const selector = `#gallery .responsive-grid .item[data-name="${CSS.escape(file)}"]`;
               const item = document.querySelector(selector);
-              
+
               if (item) {
                 // Remove any drag-related classes that might interfere
                 item.classList.remove('being-dragged', 'drag-target');
-                
+
                 // Force a reflow before adding the animation class
                 void (item as HTMLElement).offsetWidth;
-                
+
                 // Add animation class
                 item.classList.add('move-failed');
-                
+
                 // Remove the class after animation completes
                 setTimeout(() => {
                   item.classList.remove('move-failed');
@@ -383,7 +383,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           // Refresh both source and target directories
           gallery.refetchGallery();
         }
-        
+
         return;
       } catch (err) {
         console.error('Failed to move items:', err);
@@ -404,7 +404,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         .map(item => item.webkitGetAsEntry());
 
       const files: FileWithPath[] = [];
-      
+
       const processEntry = async (entry: any, path: string = '') => {
         if (!entry) return;
 
@@ -424,7 +424,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           // Get folder contents with path updated
           const dirReader = entry.createReader();
           const dirPath = path ? `${path}/${entry.name}` : entry.name;
-          
+
           return new Promise<void>((resolve) => {
             const readEntries = () => {
               dirReader.readEntries(async (entries: any[]) => {
@@ -432,10 +432,10 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
                   resolve();
                   return;
                 }
-                
+
                 // Process all entries with updated path
                 await Promise.all(entries.map(e => processEntry(e, dirPath)));
-                
+
                 // Continue reading if there might be more entries
                 readEntries();
               });
@@ -448,7 +448,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
       try {
         // Process all root entries
         await Promise.all(entries.map(entry => processEntry(entry)));
-        
+
         // Create a new FileList-like object
         const dt = new DataTransfer();
         files.forEach(file => {
@@ -459,7 +459,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           });
           dt.items.add(newFile);
         });
-        
+
         // Upload the files
         if (dt.files.length > 0) {
           await uploadFiles(dt.files);
@@ -498,7 +498,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
     if (!e.dataTransfer) return;
 
     e.dataTransfer.effectAllowed = 'move';
-    
+
     // Get the gallery data once to avoid multiple calls
     const data = gallery.data();
     if (!data) return;
@@ -546,7 +546,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
 
       // Combine both selections
       const selectedItems = [...selectedImages, ...selectedFolders];
-      
+
       // If the dragged item isn't in the selection, add it
       if (!selectedItems.some(item => item.idx === idx)) {
         selectedItems.push(itemData);

@@ -11,7 +11,7 @@
  * @module resources/browse
  */
 
-import type {} from "../models";
+import type { } from "../models";
 import { fetchStreamingJson } from "../utils/streaming_json";
 import { retryFetch } from "../utils/retry";
 import {
@@ -178,7 +178,7 @@ export type BrowsePageResult = {
  * 
  * @interface NavState
  */
-type NavState = { 
+type NavState = {
   path: string;  // Current directory path
   page: number;  // Current page number 
 };
@@ -447,12 +447,12 @@ export async function deleteCaption(
         maxAttempts: 5
       }
     );
-    
+
     // Consider both 404 and 200 as success
     if (response.status === 404 || response.ok) {
       return new Response(null, { status: 200 });
     }
-    
+
     const errorText = await response.text();
     throw new Error(`Failed to delete caption: ${errorText}`);
   } catch (error) {
@@ -484,7 +484,7 @@ export async function generateCaption(
   const cleanPath = path.replace(/^\/+|\/+$/g, '');
   // For root directory, use "_" as path to match API expectation
   const imagePath = cleanPath ? `${cleanPath}/${name}` : `_/${name}`;
-  
+
   return retryFetch(
     `/api/generate-caption/${imagePath}?generator=${generator}&force=${force}`,
     {

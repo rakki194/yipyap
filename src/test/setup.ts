@@ -56,7 +56,7 @@ function setupGlobalMocks() {
   global.setTimeout = mockSetTimeout;
 
   // Mock fetch
-  global.fetch = vi.fn(() => 
+  global.fetch = vi.fn(() =>
     Promise.resolve({
       ok: true,
       json: () => Promise.resolve({}),

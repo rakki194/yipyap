@@ -15,9 +15,9 @@ import { Toggle } from "~/components/Toggle/Toggle";
 
 const BatchTransformDialog: Component<{
   onClose: () => void;
-  onConfirm: (options: { 
+  onConfirm: (options: {
     transformations: string[],
-    captionTypes: string[] 
+    captionTypes: string[]
   }) => void;
 }> = (props) => {
   const app = useAppContext();
@@ -26,7 +26,7 @@ const BatchTransformDialog: Component<{
   const t = app.t;
 
   const selectedCount = () => gallery.multiSelected.size;
-  
+
   // Track which transformations and caption types are selected
   const [selectedTransforms, setSelectedTransforms] = createSignal<Set<string>>(
     new Set(state.transformations.filter(t => t.enabled).map(t => t.id))
@@ -63,14 +63,14 @@ const BatchTransformDialog: Component<{
     <div class="settings-overlay" onClick={props.onClose}>
       <div class="dialog-content" onClick={(e) => e.stopPropagation()}>
         <h2>{t('gallery.batchTransformTitle')}</h2>
-        
+
         <div class="dialog-body">
           <p>{t('gallery.batchTransformDescription')}</p>
-          
+
           <div class="transform-info">
             <h3>{t('gallery.selectedFiles')}</h3>
             <p>{t('gallery.selectedFilesCount', { count: selectedCount() })}</p>
-            
+
             <h3>{t('gallery.enabledTransformations')}</h3>
             <div class="transform-list">
               {state.transformations.filter(t => t.enabled).map(transform => (
@@ -110,8 +110,8 @@ const BatchTransformDialog: Component<{
           <button type="button" onClick={props.onClose}>
             {t('common.cancel')}
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             class="primary"
             disabled={!hasSelections()}
             onClick={() => {
@@ -140,9 +140,9 @@ const BatchTransformButton: Component = () => {
   const hasEnabledTransformations = () => state.transformations.some(t => t.enabled);
   const hasSelection = () => gallery.multiSelected.size > 0;
 
-  const handleBatchTransform = async (options: { 
+  const handleBatchTransform = async (options: {
     transformations: string[],
-    captionTypes: string[] 
+    captionTypes: string[]
   }) => {
     if (!hasSelection() || !hasEnabledTransformations()) return;
 
@@ -151,12 +151,12 @@ const BatchTransformButton: Component = () => {
       const selectedFiles = Array.from(gallery.multiSelected);
       const data = gallery.data();
       if (!data) return;
-      
+
       // Apply transformations to each file's captions and tags
       for (const idx of selectedFiles) {
         const item = data.items[idx];
         if (!item || item.type !== "image") continue;
-        
+
         const image = item();
         if (!image) continue;
 
@@ -185,7 +185,7 @@ const BatchTransformButton: Component = () => {
 
       // Refresh gallery data
       gallery.refetchGallery();
-      
+
       app.notify(t('notifications.batchTransformSuccess'), 'success');
     } catch (error) {
       console.error('Error applying batch transformations:', error);
@@ -240,7 +240,7 @@ export const BreadcrumbActions: Component = () => {
     try {
       const params = new URLSearchParams();
       params.append("confirm", "true");
-      
+
       const response = await fetch(`/api/browse/${currentPath}?${params.toString()}`, {
         method: "DELETE",
       });

@@ -42,7 +42,7 @@ describe("UploadOverlay", () => {
     const { getByTestId } = render(() => <UploadOverlay isVisible={true} />);
     const overlay = getByTestId("upload-overlay");
     const icon = overlay.querySelector('svg');
-    
+
     expect(overlay).toHaveAttribute('role', 'dialog');
     expect(overlay).toHaveAttribute('aria-label', 'Drop files to upload');
     expect(icon).toHaveAttribute('aria-hidden', 'true');
@@ -52,14 +52,14 @@ describe("UploadOverlay", () => {
     it("should handle visibility changes correctly", () => {
       const [isVisible, setIsVisible] = createSignal(false);
       const TestWrapper = () => <UploadOverlay isVisible={isVisible()} />;
-      
+
       const { container, queryByTestId } = render(TestWrapper);
       expect(container.innerHTML).toBe("");
       expect(queryByTestId("upload-overlay")).not.toBeInTheDocument();
-      
+
       setIsVisible(true);
       expect(queryByTestId("upload-overlay")).toBeInTheDocument();
-      
+
       setIsVisible(false);
       expect(queryByTestId("upload-overlay")).not.toBeInTheDocument();
     });

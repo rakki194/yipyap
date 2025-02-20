@@ -35,7 +35,7 @@ export const ThemeProvider: ParentComponent = (props) => {
       hoverStyles: computeHoverStyles(state.theme),
       animation: computeAnimation(state.theme)
     };
-    
+
     return styles;
   };
 

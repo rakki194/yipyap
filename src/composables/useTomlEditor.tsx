@@ -24,7 +24,7 @@ export const useTomlEditor = (
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      
+
       // Handle comments
       if (line.trim().startsWith("#")) {
         highlighted += `<span class="toml-comment">${line}</span>`;
@@ -39,10 +39,10 @@ export const useTomlEditor = (
         if (parts.length === 2) {
           const key = parts[0].trim();
           const value = parts[1].trim();
-          
+
           highlighted += `<span class="toml-key">${key}</span>`;
           highlighted += `<span class="toml-equals">=</span>`;
-          
+
           // Handle different value types
           if (value.match(/^".*"$/)) {
             highlighted += `<span class="toml-string">${value}</span>`;
@@ -61,7 +61,7 @@ export const useTomlEditor = (
           highlighted += line;
         }
       }
-      
+
       if (i < lines.length - 1) {
         highlighted += "\n";
       }
@@ -74,14 +74,14 @@ export const useTomlEditor = (
     const content = node.innerText;
     const isValid = validateToml(content);
     setIsValidTOML(isValid);
-    
+
     if (isValid) {
       onSave(content);
     }
 
     // Update line count
     setLineCount(content.split("\n").length);
-    
+
     // Update syntax highlighting
     node.innerHTML = highlightToml(content);
   };

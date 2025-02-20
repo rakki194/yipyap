@@ -39,9 +39,9 @@ export const FileUpload: Component = () => {
         {getIcon("upload")}
       </button>
 
-      <div 
-        class="upload-menu" 
-        style={{ 
+      <div
+        class="upload-menu"
+        style={{
           display: showMenu() ? 'block' : 'none',
           position: 'absolute',
           top: '100%',

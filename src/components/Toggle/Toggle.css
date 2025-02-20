@@ -48,4 +48,4 @@
 .toggle.no-animation,
 .toggle.no-animation::before {
   transition: none;
-} 
+}

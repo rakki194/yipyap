@@ -104,7 +104,7 @@ describe("ImageView Component", () => {
       ));
 
       const imageContainer = container.querySelector(".image-container")!;
-      
+
       // First zoom in
       fireEvent.wheel(imageContainer, { deltaY: -100 });
       // Then double click to reset
@@ -137,10 +137,10 @@ describe("ImageView Component", () => {
       ));
 
       const imageContainer = container.querySelector(".image-container")!;
-      
+
       // Zoom in first
       fireEvent.wheel(imageContainer, { deltaY: -100 });
-      
+
       // Start panning
       fireEvent.mouseDown(imageContainer, { clientX: 0, clientY: 0 });
       fireEvent.mouseMove(imageContainer, { clientX: 50, clientY: 50 });
@@ -156,17 +156,17 @@ describe("ImageView Component", () => {
       ));
 
       const imageContainer = container.querySelector(".image-container")!;
-      
+
       // Zoom in
       fireEvent.wheel(imageContainer, { deltaY: -100 });
-      
+
       // Check initial cursor
       expect(imageContainer).toHaveStyle({ cursor: "grab" });
-      
+
       // Start dragging
       fireEvent.mouseDown(imageContainer);
       expect(imageContainer).toHaveStyle({ cursor: "grabbing" });
-      
+
       // End dragging
       fireEvent.mouseUp(imageContainer);
       expect(imageContainer).toHaveStyle({ cursor: "grab" });

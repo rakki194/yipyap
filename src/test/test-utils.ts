@@ -4,7 +4,7 @@ import { AppContext } from "~/contexts/contexts";
 import { GalleryContext } from "~/contexts/contexts";
 import type { Resource } from "solid-js";
 import { vi } from "vitest";
-import type { SaveCaption } from "~/contexts/gallery";
+import type { ImageInfo, SaveCaption } from "~/contexts/gallery";
 import { action } from "@solidjs/router";
 
 // Define Mode type locally
@@ -44,12 +44,12 @@ export const TestWrapper: Component<{ context: any; children: JSX.Element }> = (
       selectPageDown: () => false,
       toggleEdit: () => false,
       edit: () => false,
-      setColumns: () => {},
+      setColumns: () => { },
       toggleMultiSelect: () => false,
       selectAll: () => false,
-      clearMultiSelect: () => {},
+      clearMultiSelect: () => { },
       toggleFolderMultiSelect: () => false,
-      clearFolderMultiSelect: () => {},
+      clearFolderMultiSelect: () => { },
       selectAllFolders: () => false,
       setMode: () => true,
       selected: null,
@@ -62,14 +62,14 @@ export const TestWrapper: Component<{ context: any; children: JSX.Element }> = (
       page: 1,
       path: "",
     },
-    setViewMode: (mode: "grid" | "list") => {},
-    setSort: (sort: "name" | "date" | "size") => {},
-    setSearch: (search: string) => {},
-    setPage: async (page: number) => {},
+    setViewMode: (mode: "grid" | "list") => { },
+    setSort: (sort: "name" | "date" | "size") => { },
+    setSearch: (search: string) => { },
+    setPage: async (page: number) => { },
     refetch: () => null,
-    invalidate: () => {},
+    invalidate: () => { },
     getEditedImage: () => undefined,
-    clearImageCache: () => {},
+    clearImageCache: () => { },
     getAllKnownFolders: async () => [],
     generateTags: action(async (generator: string) => undefined),
     windowSize: { width: 1920, height: 1080 },
@@ -89,12 +89,12 @@ export const TestWrapper: Component<{ context: any; children: JSX.Element }> = (
     setMode: () => true,
     toggleEdit: () => false,
     edit: () => false,
-    setColumns: () => {},
+    setColumns: () => { },
     toggleMultiSelect: () => false,
     selectAll: () => false,
-    clearMultiSelect: () => {},
+    clearMultiSelect: () => { },
     toggleFolderMultiSelect: () => false,
-    clearFolderMultiSelect: () => {},
+    clearFolderMultiSelect: () => { },
     selectAllFolders: () => false,
     editedImage: mockBrowseData.items[0](),
     mode: 'view' as Mode,
@@ -107,6 +107,10 @@ export const TestWrapper: Component<{ context: any; children: JSX.Element }> = (
     selectUp: () => false,
     selectPageUp: () => false,
     selectPageDown: () => false,
+    refetchGallery: vi.fn(),
+    setData: vi.fn(),
+    invalidateFolderCache: vi.fn(),
+    setFavoriteState: action(async (image: ImageInfo, state: number) => new Error("Mock error")),
   };
 
   return createComponent(AppContext.Provider, {
@@ -146,7 +150,7 @@ export const mockAppContext = {
     const translations: Record<string, string> = {
       "tools.undo": "Undo",
       "tools.removeCommas": "Remove commas",
-      "tools.replaceNewlinesWithCommas": "Replace newlines with commas", 
+      "tools.replaceNewlinesWithCommas": "Replace newlines with commas",
       "tools.replaceUnderscoresWithSpaces": "Replace underscores with spaces",
       "Add a tag...": "Add a tag...",
       "Remove tag": "Remove tag",
@@ -158,13 +162,13 @@ export const mockAppContext = {
     return translations[key] || key;
   },
   theme: "light",
-  setTheme: () => {},
+  setTheme: () => { },
   preserveLatents: false,
   preserveTxt: false,
   enableZoom: true,
   enableMinimap: true,
   thumbnailSize: 250,
-  createNotification: () => {},
+  createNotification: () => { },
 };
 
 // Common mock functions

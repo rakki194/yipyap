@@ -57,7 +57,7 @@ export const TaggerSettings: Component = () => {
           disabled={isUpdating()}
         />
         <div class="setting-info">
-          <a 
+          <a
             href="https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors"
             target="_blank"
             rel="noopener noreferrer"
@@ -81,7 +81,7 @@ export const TaggerSettings: Component = () => {
           disabled={isUpdating()}
         />
         <div class="setting-info">
-          <a 
+          <a
             href="https://huggingface.co/RedRocket/JointTaggerProject/resolve/main/JTP_PILOT2/tags.json"
             target="_blank"
             rel="noopener noreferrer"

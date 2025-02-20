@@ -87,11 +87,11 @@ import { useAppContext } from "./app";
  * Defines the available types of transformations supported by the system.
  * Each type corresponds to a specific kind of text transformation operation.
  */
-export type TransformationType = 
-  | "searchReplace" 
-  | "case" 
-  | "trim" 
-  | "wrap" 
+export type TransformationType =
+  | "searchReplace"
+  | "case"
+  | "trim"
+  | "wrap"
   | "number";
 
 /**
@@ -188,11 +188,11 @@ export interface NumberTransformation extends BaseTransformation {
  * Union type of all possible transformation types.
  * Used for type-safe handling of transformations throughout the system.
  */
-export type Transformation = 
-  | SearchReplaceTransformation 
-  | CaseTransformation 
-  | TrimTransformation 
-  | WrapTransformation 
+export type Transformation =
+  | SearchReplaceTransformation
+  | CaseTransformation
+  | TrimTransformation
+  | WrapTransformation
   | NumberTransformation;
 
 /**
@@ -275,7 +275,7 @@ const applyTransformationToText = (transformation: Transformation, text: string)
   switch (transformation.type) {
     case "searchReplace":
       return text.replace(new RegExp(transformation.pattern, "g"), transformation.replacement);
-    
+
     case "case":
       switch (transformation.caseType) {
         case "upper":
@@ -348,7 +348,7 @@ const loadTransformations = (): Transformation[] => {
     if (!stored) return defaultTransformations;
 
     const storedTransformations = JSON.parse(stored) as Transformation[];
-    
+
     // Merge stored transformations with defaults, preserving enabled states
     return defaultTransformations.map(defaultTransform => {
       const storedTransform = storedTransformations.find(t => t.id === defaultTransform.id);
@@ -369,9 +369,9 @@ const saveTransformations = (transformations: Transformation[]) => {
   // Save both custom transformations and enabled states of default transformations
   const toStore = [
     ...transformations.filter(t => t.isCustom),
-    ...transformations.filter(t => !t.isCustom).map(t => ({ 
-      id: t.id, 
-      enabled: t.enabled 
+    ...transformations.filter(t => !t.isCustom).map(t => ({
+      id: t.id,
+      enabled: t.enabled
     }))
   ];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
@@ -397,11 +397,11 @@ export const TransformationsProvider: ParentComponent = (props) => {
   const addTransformation = (transformation: Omit<Transformation, "id" | "enabled" | "isCustom">) => {
     const id = `custom_${Math.random().toString(36).substring(7)}`;
     setState("transformations", (prev) => {
-      const newTransformation = { 
-        ...transformation, 
-        id, 
-        enabled: false, 
-        isCustom: true 
+      const newTransformation = {
+        ...transformation,
+        id,
+        enabled: false,
+        isCustom: true
       } as Transformation;
       const newTransformations = [...prev, newTransformation];
       saveTransformations(newTransformations);
@@ -419,7 +419,7 @@ export const TransformationsProvider: ParentComponent = (props) => {
 
   const toggleTransformation = (id: string) => {
     setState("transformations", (prev) => {
-      const newTransformations = prev.map((t) => 
+      const newTransformations = prev.map((t) =>
         t.id === id ? { ...t, enabled: !t.enabled } : t
       );
       saveTransformations(newTransformations);
@@ -447,12 +447,12 @@ export const TransformationsProvider: ParentComponent = (props) => {
       const existingTransform = prev.find((t) => t.id === id);
       if (!existingTransform || !existingTransform.isCustom) return prev;
 
-      const newTransformations = prev.map((t) => 
-        t.id === id ? { 
-          ...transformation, 
-          id, 
-          enabled: existingTransform.enabled, 
-          isCustom: true 
+      const newTransformations = prev.map((t) =>
+        t.id === id ? {
+          ...transformation,
+          id,
+          enabled: existingTransform.enabled,
+          isCustom: true
         } as Transformation : t
       );
       saveTransformations(newTransformations);

@@ -52,7 +52,7 @@ export const ProgressOverlay: Component<ProgressOverlayProps> = (props) => {
           {props.progress.message}
         </div>
         <div class="upload-progress-bar">
-          <div 
+          <div
             class="upload-progress-fill"
             classList={{
               'delete': props.progress.type === 'delete'

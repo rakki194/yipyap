@@ -27,13 +27,16 @@ body {
 
 .image-stack img.top {
   grid-column: 1 / span 3;
-  grid-row: 1; /* must be on the same row as the other image */
-  z-index: 1; /* make this image render on top of the bottom */
+  grid-row: 1;
+  /* must be on the same row as the other image */
+  z-index: 1;
+  /* make this image render on top of the bottom */
 }
 
 .image-stack img.bottom {
   grid-column: 4 / -1;
-  grid-row: 1; /* make this image be on the same row */
+  grid-row: 1;
+  /* make this image be on the same row */
 }
 
 .ui {

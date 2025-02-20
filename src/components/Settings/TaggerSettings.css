@@ -32,7 +32,7 @@
 }
 
 /* Regular labels (for inputs/selects) */
-.setting-group > label,
+.setting-group>label,
 .setting-group .tooltip-wrapper label {
   display: flex;
   align-items: center;
@@ -42,13 +42,13 @@
   width: 100%;
 }
 
-.setting-group > label select,
+.setting-group>label select,
 .setting-group .tooltip-wrapper label .toggle {
   order: 2;
   margin-left: auto;
 }
 
-.setting-group > label span,
+.setting-group>label span,
 .setting-group .tooltip-wrapper label span {
   order: 0;
 }
@@ -147,7 +147,8 @@ select:disabled {
 
   input[type="text"],
   select {
-    font-size: 16px; /* Better for mobile touch */
+    font-size: 16px;
+    /* Better for mobile touch */
     padding: var(--spacing);
   }
-} 
+}

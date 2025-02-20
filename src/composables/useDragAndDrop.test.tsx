@@ -30,7 +30,7 @@ class MockDataTransfer implements DataTransfer {
             0: data,
             length: 1,
             item: (index: number) => fileList[0],
-            [Symbol.iterator]: function*() {
+            [Symbol.iterator]: function* () {
               yield this[0];
             },
           };
@@ -38,14 +38,14 @@ class MockDataTransfer implements DataTransfer {
         }
         return null;
       },
-      clear: () => {},
+      clear: () => { },
       length: 0,
     };
     this.items = items as DataTransferItemList;
     const emptyFileList = {
       length: 0,
       item: () => null,
-      [Symbol.iterator]: function*() {},
+      [Symbol.iterator]: function* () { },
     };
     this.files = emptyFileList as unknown as FileList;
   }
@@ -78,7 +78,7 @@ class MockDataTransfer implements DataTransfer {
 function createDragEvent(type: string, data?: { dataTransfer?: DataTransfer }) {
   const event = new Event(type, { bubbles: true });
   const dragEvent = event as unknown as DragEvent;
-  
+
   // Create getters/setters for event properties
   Object.defineProperties(dragEvent, {
     dataTransfer: {

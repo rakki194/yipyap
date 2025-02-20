@@ -49,7 +49,7 @@ export const Notification: Component<NotificationProps> = (props) => {
     if (timeout) {
       clearTimeout(timeout);
     }
-    
+
     // Auto-dismiss after 3 seconds for non-error notifications that don't have a spinner icon
     if (props.type !== "error" && props.icon !== "spinner") {
       timeout = setTimeout(handleClose, 3000);
@@ -87,10 +87,10 @@ export const Notification: Component<NotificationProps> = (props) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <span 
-          class="icon" 
-          classList={{ 
-            "spin-icon": props.icon === "spinner" 
+        <span
+          class="icon"
+          classList={{
+            "spin-icon": props.icon === "spinner"
           }}
         >
           {getIcon(getIconName())}
@@ -108,8 +108,8 @@ export const Notification: Component<NotificationProps> = (props) => {
         </Show>
         <Show when={typeof props.progress === "number"}>
           <div class="progress-bar">
-            <div 
-              class="progress-bar-fill" 
+            <div
+              class="progress-bar-fill"
               style={{ width: `${props.progress}%` }}
             />
           </div>

@@ -16,11 +16,12 @@ import { useGalleryUI } from '../../composables/useGalleryUI';
 import { useGalleryEffects } from '../../composables/useGalleryEffects';
 import getIcon from "~/icons";
 import "./Gallery.css";
+import { NewFolderDialog } from "./NewFolderDialog";
 
 export const Gallery: Component = () => {
   const gallery = useGallery();
   const appContext = useAppContext();
-  
+
   // Initialize hooks
   const {
     scrollToSelected,
@@ -46,12 +47,49 @@ export const Gallery: Component = () => {
     openNewFolder
   } = useGalleryUI();
 
-  // Initialize keyboard manager
+  const handleDeleteConfirm = async () => {
+    const data = gallery.data();
+    if (!data) return;
+
+    const t = appContext.t;
+
+    // Handle image deletions
+    const selectedImages = Array.from(gallery.selection.multiSelected);
+    let failedImages = 0;
+    if (selectedImages.length > 0) {
+      for (const imageIdx of selectedImages) {
+        try {
+          await gallery.deleteImage(imageIdx);
+        } catch (error) {
+          failedImages++;
+          console.error('Failed to delete image at index:', imageIdx, error);
+        }
+      }
+      if (failedImages > 0) {
+        appContext.notify(
+          t('gallery.deleteImagesFailed', { count: failedImages }),
+          'error'
+        );
+      }
+    }
+
+    // Clear selection after all operations
+    gallery.selection.clearMultiSelect();
+    gallery.selection.clearFolderMultiSelect();
+
+    // Force a refetch
+    gallery.refetchGallery();
+
+    setShowDeleteConfirm(false);
+  };
+
+  // Initialize keyboard manager with handleDeleteConfirm
   useKeyboardManager({
     onShowQuickJump: () => setShowQuickJump(true),
     onShowSettings: () => setShowSettings(true),
     onShowDeleteConfirm: () => setShowDeleteConfirm(true),
     onShowNewFolderDialog: () => setShowNewFolderDialog(true),
+    onDeleteConfirm: handleDeleteConfirm,
     scrollToSelected,
     smoothScroll,
     isSettingsOpen: showSettings(),
@@ -86,35 +124,6 @@ export const Gallery: Component = () => {
       input.files = dataTransfer.files;
       input.dispatchEvent(new Event('change', { bubbles: true }));
     }
-  };
-
-  const handleDeleteConfirm = async () => {
-    const data = gallery.data();
-    if (!data) return;
-    
-    const t = appContext.t;
-    
-    // Handle folder deletions first
-    const selectedFolders = Array.from(gallery.selection.multiFolderSelected);
-    let failedFolders = 0;
-    if (selectedFolders.length > 0) {
-      // ... rest of the folder deletion logic ...
-    }
-
-    // Handle image deletions
-    const selectedImages = Array.from(gallery.selection.multiSelected);
-    if (selectedImages.length > 0) {
-      // ... rest of the image deletion logic ...
-    }
-
-    // Clear selection after all operations
-    gallery.selection.clearMultiSelect();
-    gallery.selection.clearFolderMultiSelect();
-    
-    // Force a refetch
-    gallery.refetchGallery();
-    
-    setShowDeleteConfirm(false);
   };
 
   // Store scroll position
@@ -168,8 +177,8 @@ export const Gallery: Component = () => {
           <div class="gallery-error">
             <span class="icon error-icon">{getIcon("error")}</span>
             <span class="error-message">
-              {gallery.data.error instanceof Error 
-                ? gallery.data.error.message 
+              {gallery.data.error instanceof Error
+                ? gallery.data.error.message
                 : appContext.t("gallery.pathNotFound")}
             </span>
           </div>
@@ -195,8 +204,8 @@ export const Gallery: Component = () => {
       </Show>
 
       <Show when={showQuickJump()}>
-        <QuickJump 
-          onClose={() => setShowQuickJump(false)} 
+        <QuickJump
+          onClose={() => setShowQuickJump(false)}
           onShowSettings={openSettings}
           onShowNewFolder={openNewFolder}
           onUploadFiles={handleFileUpload}
@@ -219,6 +228,12 @@ export const Gallery: Component = () => {
       <Show when={showSettings()}>
         <SettingsOverlay
           onClose={() => setShowSettings(false)}
+        />
+      </Show>
+
+      <Show when={showNewFolderDialog()}>
+        <NewFolderDialog
+          onClose={() => setShowNewFolderDialog(false)}
         />
       </Show>
     </>

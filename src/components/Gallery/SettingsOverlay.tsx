@@ -50,13 +50,13 @@ export const SettingsOverlay: Component<SettingsOverlayProps> = (props) => {
   });
 
   return (
-    <div 
-      class="settings-overlay" 
+    <div
+      class="settings-overlay"
       onClick={props.onClose}
       ref={settingsRef}
       tabIndex={-1}
     >
-      <div 
+      <div
         class="settings-content"
         onClick={(e) => e.stopPropagation()}
       >

@@ -23,7 +23,7 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
   onMount(() => {
     escape.setOverlayState("modal", true);
     const unregister = escape.registerHandler("modal", props.onClose);
-    
+
     // Use a small timeout to ensure modal is mounted and other focus is cleared
     setTimeout(() => {
       inputRef?.focus();
@@ -78,7 +78,7 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
         items,
         total_folders: database.total_folders + 1,
       };
-      
+
       batch(() => {
         gallery.setData(data);
         gallery.clearImageCache();

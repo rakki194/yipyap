@@ -1,15 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="24" height="24">
   <!-- Strawberry Body -->
-  <path fill="#FF4D4D" d="M32 2C19.64 2 10 11.64 10 24c0 13.93 22 34 22 34s22-20.07 22-34c0-12.36-9.64-22-22-22z"/>
-  
+  <path fill="#FF4D4D"
+    d="M32 2C19.64 2 10 11.64 10 24c0 13.93 22 34 22 34s22-20.07 22-34c0-12.36-9.64-22-22-22z" />
+
   <!-- Strawberry Leaves -->
-  <path fill="#4CAF50" d="M32 2c5 5 15 5 20 0 0 0-5 12-20 12S12 7 32 2z"/>
-  
+  <path fill="#4CAF50" d="M32 2c5 5 15 5 20 0 0 0-5 12-20 12S12 7 32 2z" />
+
   <!-- Seeds -->
-  <circle cx="22" cy="20" r="1.5" fill="#FFFFFF"/>
-  <circle cx="28" cy="28" r="1.5" fill="#FFFFFF"/>
-  <circle cx="36" cy="20" r="1.5" fill="#FFFFFF"/>
-  <circle cx="32" cy="22" r="1.5" fill="#FFFFFF"/>
-  <circle cx="26" cy="26" r="1.5" fill="#FFFFFF"/>
-  <circle cx="38" cy="24" r="1.5" fill="#FFFFFF"/>
+  <circle cx="22" cy="20" r="1.5" fill="#FFFFFF" />
+  <circle cx="28" cy="28" r="1.5" fill="#FFFFFF" />
+  <circle cx="36" cy="20" r="1.5" fill="#FFFFFF" />
+  <circle cx="32" cy="22" r="1.5" fill="#FFFFFF" />
+  <circle cx="26" cy="26" r="1.5" fill="#FFFFFF" />
+  <circle cx="38" cy="24" r="1.5" fill="#FFFFFF" />
 </svg>

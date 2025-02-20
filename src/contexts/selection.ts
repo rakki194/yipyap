@@ -47,7 +47,7 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
   const saveState = () => {
     const currentData = backendData();
     if (!currentData) return;
-    
+
     const stateToSave = {
       selected: state.selected,
       multiSelected: Array.from(state.multiSelected),
@@ -65,7 +65,7 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
       () => backendData(),
       (currentData) => {
         if (!currentData) return;
-        
+
         const savedState = localStorage.getItem('gallerySelection');
         if (!savedState) return;
 
@@ -117,20 +117,20 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
   const selectPage = (direction: "up" | "down") => {
     const data = backendData();
     if (!data) return false;
-    
+
     const viewportHeight = window.innerHeight;
     const itemHeight = 250; // Approximate height of each grid item
     const itemsPerPage = Math.floor(viewportHeight / itemHeight) * (state.columns || 1);
-    
+
     const currentIdx = selection.selected ?? 0;
     let newIdx: number;
-    
+
     if (direction === "up") {
       newIdx = Math.max(0, currentIdx - itemsPerPage);
     } else {
       newIdx = Math.min(data.items.length - 1, currentIdx + itemsPerPage);
     }
-    
+
     const success = selection.select(newIdx);
     if (success) {
       scrollToSelected(newIdx);
@@ -305,7 +305,7 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
     toggleMultiSelect: (idx: number) => {
       const data = backendData();
       if (!data?.items[idx]) return;
-      
+
       const item = data.items[idx];
       if (item.type === "image") {
         setState((prev) => {
@@ -337,11 +337,11 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
     selectAll: () => {
       const data = backendData();
       if (!data?.items.length) return;
-      
+
       setState(prev => {
         const newMultiSelected = new Set<number>();
         const newMultiFolderSelected = new Set<number>();
-        
+
         data.items.forEach((item, idx) => {
           if (item.type === "image") {
             newMultiSelected.add(idx);
@@ -349,7 +349,7 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
             newMultiFolderSelected.add(idx);
           }
         });
-        
+
         return {
           ...prev,
           multiSelected: newMultiSelected,
@@ -396,7 +396,7 @@ export function useSelection(backendData: Resource<BrowsePagesCached>) {
     selectAllFolders: () => {
       const data = backendData();
       if (!data?.items.length) return;
-      
+
       setState(prev => {
         const newSet = new Set<number>();
         data.items.forEach((item, idx) => {

@@ -59,7 +59,7 @@ export function useGalleryScroll() {
   let wheelHandler: ((e: WheelEvent) => void) | null = null;
   let rafHandle: number | null = null;
   let touchpadDelta = 0;
-  
+
   const scrollManager = useScrollManager(200);
 
   // Debounced RAF to prevent multiple calls
@@ -103,29 +103,29 @@ export function useGalleryScroll() {
     const visibleBottom = galleryRect.bottom - (galleryRect.height * 0.15);
 
     // Check if the element is already mostly visible
-    const elementMostlyVisible = 
-      selectedRect.top >= visibleTop - selectedRect.height * 0.5 && 
+    const elementMostlyVisible =
+      selectedRect.top >= visibleTop - selectedRect.height * 0.5 &&
       selectedRect.bottom <= visibleBottom + selectedRect.height * 0.5;
 
     if (elementMostlyVisible && !forceScroll) {
       return;
     }
 
-    const needsScroll = forceScroll || 
-      selectedRect.top < visibleTop || 
+    const needsScroll = forceScroll ||
+      selectedRect.top < visibleTop ||
       selectedRect.bottom > visibleBottom ||
-      selectedRect.top > visibleBottom || 
+      selectedRect.top > visibleBottom ||
       selectedRect.bottom < visibleTop;
 
     if (needsScroll) {
-      const targetY = galleryElement.scrollTop + 
-        (selectedRect.top - galleryRect.top) - 
-        (galleryRect.height / 2) + 
+      const targetY = galleryElement.scrollTop +
+        (selectedRect.top - galleryRect.top) -
+        (galleryRect.height / 2) +
         (selectedRect.height / 2);
 
       setAutoScrolling(true);
       const initialSelectedIdx = selectedIdx;
-      
+
       smoothScroll(targetY, forceScroll);
 
       // Cleanup and position verification
@@ -142,9 +142,9 @@ export function useGalleryScroll() {
           if (newSelectedElement) {
             const newRect = newSelectedElement.getBoundingClientRect();
             const newGalleryRect = galleryElement.getBoundingClientRect();
-            
-            if (newRect.top < newGalleryRect.top || 
-                newRect.bottom > newGalleryRect.bottom) {
+
+            if (newRect.top < newGalleryRect.top ||
+              newRect.bottom > newGalleryRect.bottom) {
               debouncedRAF(() => scrollToSelected(true));
             }
           }
@@ -156,7 +156,7 @@ export function useGalleryScroll() {
 
   const startPositionChecking = () => {
     if (positionCheckInterval) return;
-    
+
     // Debounced resize observer for continuous layout monitoring
     let resizeTimeout: number;
     const galleryElement = document.getElementById('gallery');
@@ -177,7 +177,7 @@ export function useGalleryScroll() {
         clearTimeout(resizeTimeout);
       });
     }
-    
+
     // Reduced check frequency
     positionCheckInterval = window.setInterval(() => {
       const selectedIdx = gallery.selected;
@@ -191,8 +191,8 @@ export function useGalleryScroll() {
       const selectedRect = selectedElement.getBoundingClientRect();
 
       // Check if element is fully out of view or partially visible
-      const isOutOfView = 
-        selectedRect.bottom < galleryRect.top || 
+      const isOutOfView =
+        selectedRect.bottom < galleryRect.top ||
         selectedRect.top > galleryRect.bottom ||
         selectedRect.top < galleryRect.top ||
         selectedRect.bottom > galleryRect.bottom;
@@ -215,10 +215,10 @@ export function useGalleryScroll() {
       if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) return;
 
       e.preventDefault();
-      
+
       // Detect if the event is from a touchpad
       const isTouchpad = Math.abs(e.deltaY) < 50 && e.deltaMode === 0;
-      
+
       //console.debug('Wheel event:', {
       //  deltaY: e.deltaY,
       //  deltaMode: e.deltaMode,
@@ -227,7 +227,7 @@ export function useGalleryScroll() {
       //});
 
       // Dynamic scaling for touchpad - less dampening for fast scrolls
-      const scaleFactor = isTouchpad 
+      const scaleFactor = isTouchpad
         ? Math.abs(e.deltaY) > 30 ? 0.75 : 0.5
         : 1;
       const delta = e.deltaY * scaleFactor;
@@ -250,7 +250,7 @@ export function useGalleryScroll() {
         // Adjust threshold based on scroll speed
         const threshold = Math.abs(e.deltaY) > 30 ? 25 : 35;
         if (Math.abs(touchpadDelta) < threshold) return;
-        
+
         if (touchpadDelta > 0 && currentIdx < totalItems - 1) {
           // Scroll down - move to next image
           gallery.select(currentIdx + 1);

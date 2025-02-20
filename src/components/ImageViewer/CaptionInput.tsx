@@ -281,9 +281,9 @@ export const CaptionInput: Component<
           </div>
         </div>
       ) : isE621Input() || isTomlInput() ? (
-        <div 
+        <div
           class={isE621Input() ? "e621-editor" : "toml-editor"}
-          classList={{ 
+          classList={{
             "invalid-json": isE621Input() && !isValidJSON(caption() || ""),
             "invalid-toml": isTomlInput() && !isValidTOML()
           }}

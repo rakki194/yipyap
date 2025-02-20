@@ -1,5 +1,6 @@
 /* Modal Layout */
 @layer modal {
+
   /* Base Modal Structure */
   .modal-content {
     position: fixed;
@@ -93,11 +94,13 @@
   align-items: center;
   justify-content: center;
   z-index: 1100;
-  pointer-events: none;  /* Allow events to pass through by default */
+  pointer-events: none;
+  /* Allow events to pass through by default */
 }
 
-.modal-overlay > * {
-  pointer-events: auto;  /* Re-enable events for modal content */
+.modal-overlay>* {
+  pointer-events: auto;
+  /* Re-enable events for modal content */
 }
 
 /* Prevent scrolling of underlying content when modal is open */
@@ -123,7 +126,7 @@ body.modal-open {
   pointer-events: auto;
 
   /* Image Container Styles */
-  & > .image-container {
+  &>.image-container {
     position: relative;
     flex-shrink: 0;
     overflow: hidden;
@@ -134,7 +137,7 @@ body.modal-open {
     height: 100%;
 
     /* Base Image Styles */
-    & > div {
+    &>div {
       position: relative;
       width: 100%;
       height: 100%;
@@ -197,12 +200,12 @@ body.modal-open {
   }
 
   /* Metadata Table Styles */
-  & > .metadata-table {
+  &>.metadata-table {
     border-radius: 1px;
     border-collapse: collapse;
     overflow: hidden;
 
-    & > tbody > tr > td:first-child {
+    &>tbody>tr>td:first-child {
       display: flex;
       align-items: center;
       gap: var(--half-spacing);
@@ -211,7 +214,7 @@ body.modal-open {
   }
 
   /* Caption Editor Styles */
-  & > .caption-editor {
+  &>.caption-editor {
     display: flex;
     flex-direction: column;
     gap: var(--spacing);
@@ -220,7 +223,7 @@ body.modal-open {
     padding-top: var(--quad-spacing);
 
     /* Caption Input Wrapper */
-    & > .caption-input-wrapper {
+    &>.caption-input-wrapper {
       position: relative;
       display: flex;
       flex-direction: row;
@@ -239,11 +242,11 @@ body.modal-open {
         flex-shrink: 0;
       }
 
-      & > * {
+      &>* {
         max-height: 100%;
       }
 
-      & > textarea {
+      &>textarea {
         flex: 1;
         resize: none;
         height: 100%;
@@ -251,7 +254,7 @@ body.modal-open {
         max-height: unset;
       }
 
-      & > .caption-icons {
+      &>.caption-icons {
         display: flex;
         align-items: center;
         flex-direction: column;
@@ -430,6 +433,7 @@ body.modal-open {
     opacity: 0;
     transform: translate3d(0, -8px, 0) scale3d(0.95, 0.95, 1);
   }
+
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
@@ -514,19 +518,18 @@ body.modal-open {
   z-index: 1;
   /* Fix the clip-path to ensure a properly closed shape */
   clip-path: polygon(
-    /* Outer shape */
-    0 0,
-    100% 0,
-    100% 100%,
-    0 100%,
-    0 0,
-    /* Inner cutout - make sure to close the shape */
-    var(--viewport-left) var(--viewport-top),
-    var(--viewport-left) var(--viewport-bottom),
-    var(--viewport-right) var(--viewport-bottom),
-    var(--viewport-right) var(--viewport-top),
-    var(--viewport-left) var(--viewport-top)
-  );
+      /* Outer shape */
+      0 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 0,
+      /* Inner cutout - make sure to close the shape */
+      var(--viewport-left) var(--viewport-top),
+      var(--viewport-left) var(--viewport-bottom),
+      var(--viewport-right) var(--viewport-bottom),
+      var(--viewport-right) var(--viewport-top),
+      var(--viewport-left) var(--viewport-top));
 }
 
 /* Show minimap when zoomed and hovered */
@@ -577,7 +580,7 @@ body.modal-open {
   opacity: 0.7;
   filter: invert(1);
   margin-bottom: var(--spacing);
-  
+
   [data-theme="light"] &,
   [data-theme="strawberry"] & {
     filter: invert(0);
@@ -693,7 +696,7 @@ body.modal-open {
 }
 
 /* Make the textarea take full height and remove scroll bars on focus */
-.image-info .caption-editor .caption-input-wrapper > textarea:focus {
+.image-info .caption-editor .caption-input-wrapper>textarea:focus {
   height: 100%;
   flex-grow: 1;
 }
@@ -751,6 +754,7 @@ body.modal-open {
     opacity: 0;
     transform: translate3d(-20px, 0, 0);
   }
+
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);

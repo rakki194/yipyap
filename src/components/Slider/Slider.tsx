@@ -86,7 +86,7 @@ export const Slider: Component<SliderProps> = (props) => {
   // Keyboard support
   const onKeyDown = (e: KeyboardEvent) => {
     if (props.disabled) return;
-    
+
     const currentValue = value();
     let newValue = currentValue;
 
@@ -128,7 +128,7 @@ export const Slider: Component<SliderProps> = (props) => {
   });
 
   return (
-    <div 
+    <div
       class={`slider ${props.class || ""} ${props.disabled ? "disabled" : ""}`}
       role="slider"
       aria-valuemin={min()}
@@ -143,16 +143,16 @@ export const Slider: Component<SliderProps> = (props) => {
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <div 
-        class="slider-track" 
+      <div
+        class="slider-track"
         ref={setTrackRef}
       >
-        <div 
-          class="slider-track-fill" 
-          style={{ width: `${percentage()}%` }} 
+        <div
+          class="slider-track-fill"
+          style={{ width: `${percentage()}%` }}
         />
       </div>
-      <div 
+      <div
         class="slider-thumb"
         style={{ left: `${percentage()}%` }}
       />

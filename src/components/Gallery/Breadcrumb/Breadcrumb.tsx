@@ -36,7 +36,7 @@ import "./Breadcrumb.css";
  */
 export const Breadcrumb: Component = () => {
   const gallery = useGallery();
-  
+
   return (
     <>
       <nav class="breadcrumb">

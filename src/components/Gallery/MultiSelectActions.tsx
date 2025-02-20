@@ -12,18 +12,18 @@ export const MultiSelectActions: Component = () => {
   const [deleteProgress, setDeleteProgress] = createSignal<{ current: number, total: number } | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   const [isDeleting, setIsDeleting] = createSignal(false);
-  
+
   type DeleteResult = Response | { error: true };
-  
+
   const selectedCount = () => {
     const imageCount = selection.multiSelected.size;
     const folderCount = selection.multiFolderSelected.size;
     return imageCount + folderCount;
   };
-  
+
   const hasSelection = () => selectedCount() > 0;
   const hasFolderSelection = () => selection.multiFolderSelected.size > 0;
-  
+
   const handleDelete = async () => {
     if (!hasSelection()) return;
     setShowDeleteConfirm(true);
@@ -35,8 +35,8 @@ export const MultiSelectActions: Component = () => {
         <div class="multi-select-actions">
           <Show when={hasSelection()}>
             <div class="delete-button-container">
-              <Show 
-                when={!isDeleting()} 
+              <Show
+                when={!isDeleting()}
                 fallback={
                   <div class="spinner-container">
                     {getIcon("spinner")}
@@ -53,15 +53,15 @@ export const MultiSelectActions: Component = () => {
                 </button>
               </Show>
               <Show when={deleteProgress()}>
-                <div 
+                <div
                   class="delete-progress-bar"
                   data-testid="delete-progress-bar"
                 >
-                  <div 
-                    class="delete-progress-fill" 
+                  <div
+                    class="delete-progress-fill"
                     data-testid="delete-progress-fill"
-                    style={{ 
-                      width: `${(deleteProgress()!.current / deleteProgress()!.total) * 100}%` 
+                    style={{
+                      width: `${(deleteProgress()!.current / deleteProgress()!.total) * 100}%`
                     }}
                   />
                 </div>
@@ -94,7 +94,7 @@ export const MultiSelectActions: Component = () => {
           onConfirm={async () => {
             const data = gallery.data();
             if (!data) return;
-            
+
             try {
               setIsDeleting(true);
               // Show initial deletion notification
@@ -109,18 +109,18 @@ export const MultiSelectActions: Component = () => {
                 setDeleteProgress({ current: 0, total: selectedImages.length });
                 let completed = 0;
                 let hasError = false;
-                
+
                 for (const idx of selectedImages) {
                   const item = data.items[idx];
                   if (item?.type !== 'image') continue;
-                  
+
                   const imagePath = data.path
                     ? `${data.path}/${item.file_name}`
                     : item.file_name;
-                    
+
                   const params = new URLSearchParams();
                   params.append("confirm", "true");
-                  
+
                   if (app.preserveLatents) {
                     params.append("preserve_latents", "true");
                   }
@@ -132,15 +132,15 @@ export const MultiSelectActions: Component = () => {
                     const response = await fetch(`/api/browse/${imagePath}?${params.toString()}`, {
                       method: "DELETE",
                     });
-                    
+
                     if (!response.ok) {
                       hasError = true;
                       break;
                     }
 
                     completed++;
-                    setDeleteProgress(prev => prev ? { 
-                      ...prev, 
+                    setDeleteProgress(prev => prev ? {
+                      ...prev,
                       current: completed
                     } : null);
                   } catch (error) {
@@ -162,11 +162,11 @@ export const MultiSelectActions: Component = () => {
                   app.t('gallery.deleteSuccess'),
                   "success"
                 );
-                
+
                 // Clear selection after all operations
                 gallery.selection.clearMultiSelect();
                 gallery.selection.clearFolderMultiSelect();
-                
+
                 // Force a refetch
                 gallery.refetchGallery();
               }
