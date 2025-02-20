@@ -239,15 +239,15 @@
       flex-shrink: 0;
     }
 
-    &:hover {
+    &:hover,
+    &.selected {
       border-color: var(--border-secondary);
       background-color: var(--accent);
       transform: var(--hover-transform);
-      color: var(--text-tertiary);
+      color: var(--text-on-accent);
 
       svg {
-        fill: var(--bg-color);
-        /* FIXME: should not need this */
+        fill: var(--text-on-accent);
       }
     }
   }

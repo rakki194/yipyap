@@ -29,7 +29,13 @@ export const MultiSelectActions: Component = () => {
 
   const handleDelete = async () => {
     if (!hasSelection()) return;
+    setShowMoveDialog(false);
     setShowDeleteConfirm(true);
+  };
+
+  const handleMoveClick = () => {
+    setShowDeleteConfirm(false);
+    setShowMoveDialog(true);
   };
 
   const handleMove = async (targetPath: string) => {
@@ -120,7 +126,7 @@ export const MultiSelectActions: Component = () => {
             <button
               type="button"
               class="icon"
-              onClick={() => setShowMoveDialog(true)}
+              onClick={handleMoveClick}
               title={app.t('gallery.moveSelected', { count: selectedCount() })}
               disabled={isMoving()}
             >

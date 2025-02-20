@@ -16,6 +16,7 @@
   --text-primary: #1a1b24;
   --text-secondary: #5c5f77;
   --text-tertiary: #eff1f5;
+  --text-on-accent: #eff1f5;
   --placeholder-color: var(--text-secondary);
   --preview-bg: #68686885;
   --border-color: var(--card-bg);
@@ -67,11 +68,12 @@
 
   /* Focus effect filters */
   --focus-dramatic: contrast(120%) brightness(105%) saturate(110%);
-  --focus-sharp: contrast(110%) brightness(102%) saturate(105%) drop-shadow(0 0 8px rgba(0,0,0,0.3));
+  --focus-sharp: contrast(110%) brightness(102%) saturate(105%) drop-shadow(0 0 8px rgba(0, 0, 0, 0.3));
   --focus-pop: brightness(105%) saturate(110%) drop-shadow(0 0 12px var(--shadow-accent));
   --focus-glow: brightness(102%) saturate(105%) drop-shadow(0 0 15px color-mix(in srgb, var(--accent) 70%, transparent));
   --focus-subtle: contrast(105%) brightness(102%) saturate(102%);
-  --focus-blur-others: none; /* Applied to non-selected items: blur(2px) brightness(0.7) saturate(0.8) */
+  --focus-blur-others: none;
+  /* Applied to non-selected items: blur(2px) brightness(0.7) saturate(0.8) */
 }
 
 .no-animations {
@@ -232,7 +234,7 @@ td {
   align-items: center;
   justify-content: center;
 
-  & > svg {
+  &>svg {
     width: var(--icon-size);
     height: var(--icon-size);
     fill: currentColor;
@@ -241,7 +243,7 @@ td {
 }
 
 .spin-icon {
-  & > svg {
+  &>svg {
     animation: spin-animation 1s infinite linear;
     transform-origin: center;
   }
@@ -251,6 +253,7 @@ td {
   from {
     transform: rotate(0deg) translateZ(0);
   }
+
   to {
     transform: rotate(360deg) translateZ(0);
   }
@@ -441,7 +444,7 @@ body.on-front-page {
 :root[dir="rtl"] {
   --start: right;
   --end: left;
-  --font-family-base: "Noto Sans Arabic", -apple-system, BlinkMacSystemFont, 
+  --font-family-base: "Noto Sans Arabic", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, sans-serif;
 }
 
@@ -468,7 +471,7 @@ body:lang(fa) {
 body:lang(ja) {
   font-family: "Meiryo", "Arial Unicode MS", "Noto Sans JP", var(--font-family-base);
   line-height: 1.7;
-} 
+}
 
 body:lang(ko) {
   font-family: "Noto Sans KR", var(--font-family-base);

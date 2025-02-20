@@ -1,4 +1,4 @@
-import { Component, For, createSignal, createMemo, Show, createResource, onMount } from "solid-js";
+import { Component, For, createSignal, createMemo, Show, createResource, onMount, onCleanup } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useDoubleTap } from "~/composables/useDoubleTap";
@@ -48,16 +48,74 @@ export const MoveDialog: Component<{
         props.onClose();
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+        // Handle Escape key regardless of focus state
+        if (e.key === "Escape") {
+            e.preventDefault();
+            e.stopPropagation();
+            props.onClose();
+            return;
+        }
+
+        // Only handle keyboard navigation when focused on list or when using arrow keys to enter list
+        if (focusedElement() === "search" && e.key !== "ArrowDown") {
+            return;
+        }
+
+        const currentFolders = filteredFolders();
+        const currentIndex = currentFolders.findIndex(folder => folder.path === selectedPath());
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setFocusedElement("list");
+            if (currentIndex === -1) {
+                // No selection yet, select first item
+                if (currentFolders.length > 0) {
+                    const firstFolder = currentFolders[0];
+                    setSelectedPath(firstFolder.path);
+                    const element = folderListRef?.querySelector(`[data-path="${firstFolder.path}"]`);
+                    element?.scrollIntoView({ block: 'nearest' });
+                }
+            } else if (currentIndex < currentFolders.length - 1) {
+                const nextFolder = currentFolders[currentIndex + 1];
+                setSelectedPath(nextFolder.path);
+                const element = folderListRef?.querySelector(`[data-path="${nextFolder.path}"]`);
+                element?.scrollIntoView({ block: 'nearest' });
+            }
+        } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setFocusedElement("list");
+            if (currentIndex === -1) {
+                // No selection yet, select last item
+                if (currentFolders.length > 0) {
+                    const lastFolder = currentFolders[currentFolders.length - 1];
+                    setSelectedPath(lastFolder.path);
+                    const element = folderListRef?.querySelector(`[data-path="${lastFolder.path}"]`);
+                    element?.scrollIntoView({ block: 'nearest' });
+                }
+            } else if (currentIndex > 0) {
+                const prevFolder = currentFolders[currentIndex - 1];
+                setSelectedPath(prevFolder.path);
+                const element = folderListRef?.querySelector(`[data-path="${prevFolder.path}"]`);
+                element?.scrollIntoView({ block: 'nearest' });
+            }
+        } else if (e.key === "Enter") {
+            e.preventDefault();
+            if (selectedPath()) {
+                handleMove();
+            }
+        }
+    };
+
     const handleDoubleTap = () => {
         if (focusedElement() === "search") {
             setFocusedElement("list");
-            const firstFolder = filteredFolders()[0];
-            if (firstFolder) {
-                setSelectedPath(firstFolder.path);
-                const firstRadio = folderListRef?.querySelector('input[type="radio"]') as HTMLInputElement;
-                if (firstRadio) {
-                    firstRadio.checked = true;
-                    firstRadio.focus();
+            const currentFolders = filteredFolders();
+            if (currentFolders.length > 0) {
+                // If no selection, select first item
+                if (!selectedPath()) {
+                    const firstFolder = currentFolders[0];
+                    setSelectedPath(firstFolder.path);
                 }
             }
         } else {
@@ -73,84 +131,91 @@ export const MoveDialog: Component<{
 
     onMount(() => {
         searchInputRef?.focus();
+        // Add keyboard event listener
+        window.addEventListener('keydown', handleKeyDown);
+        onCleanup(() => {
+            window.removeEventListener('keydown', handleKeyDown);
+        });
     });
 
     return (
-        <div class="settings-overlay" onClick={props.onClose}>
-            <div class="dialog-content" onClick={(e) => e.stopPropagation()}>
+        <div class="modal-overlay" onClick={props.onClose}>
+            <div class="modal-dialog" onClick={(e) => e.stopPropagation()}>
                 <h2>{t('gallery.moveItems')}</h2>
-                <div class="dialog-body">
-                    <p>
-                        {t('gallery.moveItemsDescription', {
-                            imageCount: props.imageCount,
-                            folderCount: props.folderCount,
-                            total: props.imageCount + props.folderCount
-                        })}
-                    </p>
+                <p>
+                    {t('gallery.moveItemsDescription', {
+                        imageCount: props.imageCount,
+                        folderCount: props.folderCount,
+                        total: props.imageCount + props.folderCount
+                    })}
+                </p>
 
-                    <div class="folder-list">
-                        <h3>{t('gallery.selectTargetFolder')}</h3>
+                <div class="folder-list">
+                    <h3>{t('gallery.selectTargetFolder')}</h3>
 
-                        <div class="folder-search">
-                            <span class="search-icon">{getIcon("search")}</span>
-                            <input
-                                ref={searchInputRef}
-                                type="text"
-                                placeholder={t('gallery.searchFolders')}
-                                value={searchQuery()}
-                                onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === '_' && !e.getModifierState("Shift")) {
-                                        // Allow the underscore to be typed but prevent focus switching
-                                        e.stopPropagation();
-                                    }
-                                }}
-                            />
-                            <Show when={searchQuery()}>
-                                <button
-                                    type="button"
-                                    class="clear-search"
-                                    onClick={() => setSearchQuery("")}
-                                    title={t('common.clear')}
-                                >
-                                    {getIcon("dismiss")}
-                                </button>
-                            </Show>
-                        </div>
-
-                        <div class="folder-options" ref={folderListRef}>
-                            <Show
-                                when={filteredFolders().length > 0}
-                                fallback={
-                                    <div class="no-folders">
-                                        {searchQuery()
-                                            ? t('gallery.noFoldersFound')
-                                            : t('gallery.noFoldersAvailable')}
-                                    </div>
+                    <div class="folder-search">
+                        <span class="search-icon">{getIcon("search")}</span>
+                        <input
+                            ref={searchInputRef}
+                            type="text"
+                            placeholder={t('gallery.searchFolders')}
+                            value={searchQuery()}
+                            onInput={(e) => setSearchQuery(e.currentTarget.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === '_' && !e.getModifierState("Shift")) {
+                                    // Allow the underscore to be typed but prevent focus switching
+                                    e.stopPropagation();
                                 }
+                            }}
+                            onFocus={() => setFocusedElement("search")}
+                        />
+                        <Show when={searchQuery()}>
+                            <button
+                                type="button"
+                                class="clear-search"
+                                onClick={() => setSearchQuery("")}
+                                title={t('common.clear')}
                             >
-                                <For each={filteredFolders()}>
-                                    {(folder) => (
-                                        <label class="folder-option">
-                                            <input
-                                                type="radio"
-                                                name="target-folder"
-                                                value={folder.path}
-                                                checked={selectedPath() === folder.path}
-                                                onChange={(e) => setSelectedPath(e.currentTarget.value)}
-                                            />
-                                            <span class="folder-icon">{getIcon("folder")}</span>
-                                            <span class="folder-name">{folder.name}</span>
-                                        </label>
-                                    )}
-                                </For>
-                            </Show>
-                        </div>
+                                {getIcon("dismiss")}
+                            </button>
+                        </Show>
+                    </div>
+
+                    <div
+                        class="folder-options"
+                        ref={folderListRef}
+                        onFocus={() => setFocusedElement("list")}
+                        tabIndex={-1}
+                    >
+                        <Show
+                            when={filteredFolders().length > 0}
+                            fallback={
+                                <div class="no-folders">
+                                    {searchQuery()
+                                        ? t('gallery.noFoldersFound')
+                                        : t('gallery.noFoldersAvailable')}
+                                </div>
+                            }
+                        >
+                            <For each={filteredFolders()}>
+                                {(folder) => (
+                                    <div
+                                        class="folder-option"
+                                        classList={{ selected: selectedPath() === folder.path }}
+                                        onClick={() => setSelectedPath(folder.path)}
+                                        data-path={folder.path}
+                                    >
+                                        <span class="folder-icon">{getIcon("folder")}</span>
+                                        <span class="folder-name">{folder.name}</span>
+                                    </div>
+                                )}
+                            </For>
+                        </Show>
                     </div>
                 </div>
 
-                <div class="dialog-actions">
-                    <button type="button" class="secondary" onClick={props.onClose}>
+                <div class="modal-actions">
+                    <button type="button" onClick={props.onClose}>
                         {t('common.cancel')}
                     </button>
                     <button
