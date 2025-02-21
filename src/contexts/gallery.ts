@@ -121,53 +121,50 @@ export interface FolderInfo {
   fullPath: string;
 }
 
-const FOLDER_CACHE_KEY = 'yipyap_folder_cache';
-const FOLDER_CACHE_VERSION = 1;
-
 interface FolderCache {
-  version: number;
   folders: FolderInfo[];
   timestamp: number;
 }
 
+const FOLDER_CACHE_KEY = 'yipyap_folder_cache';
+const FOLDER_CACHE_TTL = 1000 * 60 * 60; // 1 hour
+
+let folderCache: FolderInfo[] | null = null;
+let folderCachePromise: Promise<FolderInfo[]> | null = null;
+
+const loadFolderCache = (): FolderCache | null => {
+  try {
+    const cached = localStorage.getItem(FOLDER_CACHE_KEY);
+    if (!cached) return null;
+
+    const data = JSON.parse(cached) as FolderCache;
+    if (Date.now() - data.timestamp > FOLDER_CACHE_TTL) {
+      localStorage.removeItem(FOLDER_CACHE_KEY);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error loading folder cache:', error);
+    return null;
+  }
+};
+
+const saveFolderCache = (folders: FolderInfo[]) => {
+  try {
+    const cache: FolderCache = {
+      folders,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(FOLDER_CACHE_KEY, JSON.stringify(cache));
+  } catch (error) {
+    console.error('Error saving folder cache:', error);
+  }
+};
+
 // Call in reactive contexts only
 export function makeGalleryState() {
   const app = useAppContext();
-  let folderCache: FolderInfo[] | null = null;
-  let folderCachePromise: Promise<FolderInfo[]> | null = null;
-
-  // Load cache from localStorage
-  const loadFolderCache = (): FolderCache | null => {
-    try {
-      const cached = localStorage.getItem(FOLDER_CACHE_KEY);
-      if (!cached) return null;
-
-      const data = JSON.parse(cached) as FolderCache;
-      if (data.version !== FOLDER_CACHE_VERSION) return null;
-
-      // Cache expires after 1 hour
-      if (Date.now() - data.timestamp > 3600000) return null;
-
-      return data;
-    } catch (error) {
-      console.error('Error loading folder cache:', error);
-      return null;
-    }
-  };
-
-  // Save cache to localStorage
-  const saveFolderCache = (folders: FolderInfo[]) => {
-    try {
-      const cache: FolderCache = {
-        version: FOLDER_CACHE_VERSION,
-        folders,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(FOLDER_CACHE_KEY, JSON.stringify(cache));
-    } catch (error) {
-      console.error('Error saving folder cache:', error);
-    }
-  };
 
   // State part of the URL
   // FIXME: Most of these are unused, but eventually we want to have some search params in the URL
@@ -606,40 +603,47 @@ export function makeGalleryState() {
     });
   };
 
-  const getAllKnownFolders = async () => {
-    // Return memory cache if available
+  const getAllKnownFolders = async (): Promise<FolderInfo[]> => {
+    // Return cached folders if available
     if (folderCache) {
       return folderCache;
     }
 
-    // Check localStorage cache
-    const cached = loadFolderCache();
-    if (cached) {
-      folderCache = cached.folders;
-      return folderCache;
-    }
-
-    // Return existing promise if one is in flight
+    // Return existing promise if request is in progress
     if (folderCachePromise) {
       return folderCachePromise;
     }
 
-    // Create new promise and cache it
+    // Check localStorage cache first
+    const cached = loadFolderCache();
+    if (cached) {
+      folderCache = cached.folders;
+      return cached.folders;
+    }
+
+    // Create new promise for fetching folders
     folderCachePromise = (async () => {
       try {
-        const response = await fetch("/api/folders");
+        const response = await fetch('/api/folders');
         if (!response.ok) {
-          throw new Error(`Failed to fetch folders: ${response.statusText}`);
+          throw new Error('Failed to fetch folders');
         }
-        const data = await response.json();
-        folderCache = data.folders as FolderInfo[];
+        const folders = await response.json();
 
-        // Save to localStorage
-        saveFolderCache(folderCache);
+        // Process and format folder data
+        const formattedFolders = folders.map((folder: any) => ({
+          name: folder.name,
+          path: folder.path,
+          fullPath: folder.full_path
+        }));
 
-        return folderCache;
+        // Cache the results
+        folderCache = formattedFolders;
+        saveFolderCache(formattedFolders);
+
+        return formattedFolders;
       } catch (error) {
-        console.error("Error fetching folders:", error);
+        console.error('Error fetching folders:', error);
         return [];
       } finally {
         folderCachePromise = null;
@@ -652,11 +656,7 @@ export function makeGalleryState() {
   const invalidateFolderCache = () => {
     folderCache = null;
     folderCachePromise = null;
-    try {
-      localStorage.removeItem(FOLDER_CACHE_KEY);
-    } catch (error) {
-      console.error('Error clearing folder cache:', error);
-    }
+    localStorage.removeItem(FOLDER_CACHE_KEY);
   };
 
   // Gallery actions and getters

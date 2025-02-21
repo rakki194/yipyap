@@ -283,49 +283,59 @@ export const ImageItem = (props: {
     const target = e.currentTarget as HTMLElement;
     target.classList.add('being-dragged');
 
+    const itemData = props.item();
+    if (!itemData) {
+      console.error('handleDragStart: Item data is undefined', {
+        idx: props.idx,
+        path: props.path
+      });
+      return;
+    }
+
+    console.debug('handleDragStart:', {
+      idx: props.idx,
+      path: props.path,
+      name: itemData.name,
+      isMultiSelected: isMultiSelected(),
+      multiSelectedItems: gallery.selection.multiSelected
+    });
+
     // If this item is part of a multi-selection, include all selected items
     if (isMultiSelected()) {
       const selectedItems = Array.from(gallery.selection.multiSelected)
         .map(idx => {
           const data = gallery.data();
-          if (!data) return null;
-          const item = data.items[idx as number];
-          if (item?.type !== 'image') return null;
+          if (!data) {
+            console.debug('No gallery data available for selected item', { idx });
+            return null;
+          }
+          const item = data.items[idx];
+          if (!item || item.type !== 'image') {
+            console.debug('Invalid item in selection', { idx, item });
+            return null;
+          }
           return {
-            type: 'image',
+            type: 'image' as const,
             path: props.path,
             name: item.file_name,
             idx
           };
         })
         .filter(Boolean);
-      e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
-      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
-        type: 'image',
-        path: props.path,
-        name: props.item.file_name,
-        idx: props.idx
-      }));
 
-      // Add being-dragged class to all selected items (both images and folders)
-      document.querySelectorAll('.item').forEach(el => {
-        const idx = parseInt(el.getAttribute('data-idx') || '');
-        if (!isNaN(idx) && (
-          gallery.selection.multiSelected.has(idx) ||
-          gallery.selection.multiFolderSelected.has(idx)
-        )) {
-          el.classList.add('being-dragged');
-        }
-      });
-    } else {
-      // Single item drag
-      e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify({
-        type: 'image',
-        path: props.path,
-        name: props.item.file_name,
-        idx: props.idx
-      }));
+      console.debug('Setting drag data for multi-selection:', { selectedItems });
+      e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
     }
+
+    // Always set the individual item data
+    const dragItem = {
+      type: 'image' as const,
+      path: props.path,
+      name: itemData.name,
+      idx: props.idx
+    };
+    console.debug('Setting individual drag item:', dragItem);
+    e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify(dragItem));
     e.dataTransfer.effectAllowed = 'move';
   };
 
@@ -346,6 +356,12 @@ export const ImageItem = (props: {
         loading: isLoading()
       }}
       onClick={handleClick}
+      draggable={true}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      data-path={props.path}
+      data-name={props.item()?.name || ''}
+      data-idx={props.idx}
       role="gridcell"
       aria-selected={props.selected || isMultiSelected()}
       tabIndex={0}

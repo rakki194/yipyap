@@ -43,8 +43,10 @@
   --icon-size: 1.5em;
   --loader-size: 30px;
   --loader-border-width: 3px;
-  --transition-duration: 0.3s;
+  --transition-duration: 0.2s;
+  --animation-duration: 0.3s;
   --transition-timing: ease;
+  --animation-timing: ease;
   --image-scale: 1;
   --scroll-track: 0;
   --font-size: 14px;
@@ -76,11 +78,32 @@
   /* Applied to non-selected items: blur(2px) brightness(0.7) saturate(0.8) */
 }
 
-.no-animations {
-  --transition-duration: 0;
-  --transition-timing: none;
+/* Global animation disabling */
+.no-animations * {
+  /* Only disable actual animations and transitions */
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
 
-  transition: none;
+  /* But don't disable the properties themselves */
+  animation-name: none;
+  transition-property: none;
+}
+
+/* Ensure all transitions use the variables */
+*[class*="transition"],
+*[style*="transition"] {
+  transition-duration: var(--transition-duration) !important;
+  transition-timing-function: var(--transition-timing) !important;
+}
+
+/* Ensure all animations use the variables */
+*[class*="animation"],
+*[style*="animation"] {
+  animation-duration: var(--animation-duration) !important;
+  animation-timing-function: var(--animation-timing) !important;
 }
 
 /* Resets and apply theme colors on base styles */

@@ -26,8 +26,10 @@ export const MoveDialog: Component<{
 
         const currentPath = data.path;
         const allFolders = await gallery.getAllKnownFolders();
+        if (!allFolders) return [];
+
         return allFolders
-            .filter(folder => folder.fullPath !== currentPath)
+            .filter(folder => folder && folder.fullPath !== currentPath)
             .map(folder => ({
                 name: folder.name,
                 path: folder.fullPath
@@ -38,7 +40,7 @@ export const MoveDialog: Component<{
         const folderList = folders() || [];
         const query = searchQuery().toLowerCase();
         return folderList.filter(folder =>
-            folder.name.toLowerCase().includes(query)
+            folder && folder.name && folder.name.toLowerCase().includes(query)
         );
     });
 

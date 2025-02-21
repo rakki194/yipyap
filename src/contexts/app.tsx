@@ -168,7 +168,21 @@ const createAppContext = (): AppContext => {
     jtp2ForceCpu: localStorage.getItem("jtp2ForceCpu") === "true",
     enableZoom: localStorage.getItem("enableZoom") === "true",
     enableMinimap: localStorage.getItem("enableMinimap") === "true",
-    locale: (localStorage.getItem("locale") as Locale) || "en",
+    locale: (() => {
+      const storedLocale = localStorage.getItem("locale");
+      if (!storedLocale) return "en";
+      try {
+        // Check if it's a JSON string
+        if (storedLocale.startsWith('{')) {
+          const parsed = JSON.parse(storedLocale);
+          return (parsed.value || "en") as Locale;
+        }
+        // If it's a direct locale string, use it if valid
+        return Object.keys(translations).includes(storedLocale) ? storedLocale as Locale : "en";
+      } catch {
+        return "en";
+      }
+    })(),
     thumbnailSize: parseInt(localStorage.getItem("thumbnailSize") || "250"),
     alwaysShowCaptionEditor: localStorage.getItem("alwaysShowCaptionEditor") === "true",
     wdv3ModelName: localStorage.getItem("wdv3ModelName") || "vit",
@@ -333,29 +347,64 @@ const createAppContext = (): AppContext => {
       localStorage.setItem("jtp2ForceCpu", prevState.force_cpu.toString());
 
       notify(
-        getTranslationValue(translation(), 'settings.jtp2ConfigUpdateError') || 'Failed to update JTP2 settings',
+        getTranslationValue(translationData(), 'settings.jtp2ConfigUpdateError') || 'Failed to update JTP2 settings',
         'error'
       );
       throw error;
     }
   };
 
-  const [translation] = createResource(
-    () => store.locale,
-    async (locale) => {
-      if (import.meta.env.DEV) {
-        console.log("Loading translations for locale:", locale);
+  const [translationData] = createResource(
+    () => {
+      const currentLocale = store.locale;
+      console.debug('Translation resource source function - Initial state:', {
+        currentLocale,
+        type: typeof currentLocale,
+        isValidLocale: Object.keys(translations).includes(currentLocale)
+      });
+
+      // Ensure we have a valid locale string
+      if (typeof currentLocale === 'string' && Object.keys(translations).includes(currentLocale)) {
+        return currentLocale as Locale;
       }
+
+      console.debug('Falling back to default locale:', {
+        reason: 'Invalid locale',
+        fallbackLocale: 'en'
+      });
+      return 'en' as Locale;
+    },
+    async (locale: Locale) => {
+      console.debug('Translation loader starting:', {
+        locale,
+        hasTranslator: !!translations[locale]
+      });
+
       try {
-        const module = await translations[locale]();
-        return module.default;
+        const translationModule = await translations[locale]();
+        return translationModule.default;
       } catch (error) {
-        console.error(`Failed to load translations for locale ${locale}, falling back to English:`, error);
-        const enModule = await translations.en();
-        return enModule.default;
+        console.error('Translation loading error:', error);
+        if (locale !== 'en') {
+          return (await translations['en']()).default;
+        }
+        throw error;
       }
     }
   );
+
+  const t = (key: string, params?: { [key: string]: any }): string => {
+    const translations = translationData();
+    if (!translations) return key;
+
+    try {
+      const value = getTranslationValue(translations, key, params);
+      return value || key;
+    } catch (error) {
+      console.warn(`Translation error for key "${key}":`, error);
+      return key;
+    }
+  };
 
   // New settings: Preserve latents and Preserve .txt
   const [preserveLatents, setPreserveLatents] = createSignal(false);
@@ -379,7 +428,7 @@ const createAppContext = (): AppContext => {
     } catch (error) {
       console.error('Error updating thumbnail size:', error);
       notify(
-        getTranslationValue(translation(), 'settings.thumbnailSizeUpdateError') || 'Failed to update thumbnail size',
+        getTranslationValue(translationData(), 'settings.thumbnailSizeUpdateError') || 'Failed to update thumbnail size',
         'error'
       );
     }
@@ -392,7 +441,7 @@ const createAppContext = (): AppContext => {
     icon?: "spinner" | "success" | "error" | "info" | "warning"
   ) => {
     // If message is a translation key and we have translations loaded, translate it
-    const translatedMessage = getTranslationValue(translation(), message) || message;
+    const translatedMessage = getTranslationValue(translationData(), message) || message;
 
     if (typeof window !== "undefined" && (window as any).__notificationContainer) {
       (window as any).__notificationContainer.addNotification({
@@ -454,7 +503,7 @@ const createAppContext = (): AppContext => {
       localStorage.setItem("wdv3ForceCpu", prevState.force_cpu.toString());
 
       notify(
-        getTranslationValue(translation(), 'settings.wdv3ConfigUpdateError') || 'Failed to update WDv3 settings',
+        getTranslationValue(translationData(), 'settings.wdv3ConfigUpdateError') || 'Failed to update WDv3 settings',
         'error'
       );
       throw error;
@@ -524,7 +573,7 @@ const createAppContext = (): AppContext => {
       setStore("locale", locale);
     },
     t: (key: string, params?: { [key: string]: any }) => {
-      return getTranslationValue(translation(), key, params) || key;
+      return t(key, params);
     },
     preserveLatents: preserveLatents(),
     setPreserveLatents,
