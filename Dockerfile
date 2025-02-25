@@ -1,7 +1,6 @@
 #############################
 # Dockerfile for yipyap
 #############################
-DONTRUNTHIS Make it leaner than 18GB, I beg you
 # Stage 1: Build the frontend using Node.js
 FROM node:18-slim AS builder
 
