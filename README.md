@@ -212,7 +212,6 @@ yipyap/
 │   ├── caption_handler.py   # Caption file management
 │   ├── utils.py             # Utility functions
 ├── src/                     # Frontend application
-│   ├── Components/          # Main components (capitalized)
 │   ├── components/          # Additional components
 │   ├── composables/         # SolidJS composables (not hooks)
 │   ├── contexts/            # SolidJS contexts
@@ -234,9 +233,6 @@ yipyap/
 ├── package.json             # Frontend dependencies and scripts
 ├── tsconfig.json            # TypeScript configuration
 ├── vite.config.ts           # Vite configuration
-├── .vscode/                 # VSCode configuration
-├── .gitignore               # Git ignore rules
-└── LICENSE.md               # License information
 ```
 
 ### Key Components
