@@ -23,6 +23,13 @@ const configureServer = {
   configureServer(server) {
     if (process.env.NODE_ENV === "development") {
       server.middlewares.use((req, res, next) => {
+        // Add debug logging
+        console.debug('Vite middleware request:', {
+          url: req.url,
+          method: req.method,
+          headers: req.headers
+        });
+
         // Set security headers
         res.setHeader("X-Content-Type-Options", "nosniff");
 
@@ -31,7 +38,12 @@ const configureServer = {
           // Extract extension, handling query parameters
           const urlWithoutQuery = req.url.split("?")[0];
           const ext = urlWithoutQuery.split(".").pop()?.toLowerCase();
-          
+
+          console.debug('Processing file:', {
+            url: urlWithoutQuery,
+            extension: ext
+          });
+
           // Set content type based on file extension, regardless of path
           switch (ext) {
             // Scripts
@@ -105,57 +117,64 @@ const viteConfig = (env) => {
 
   const server = IS_SERVE
     ? {
-        proxy: {
-          // Proxy configuration for various API endpoints
-          // More specific routes first
-          "/api/png-download": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/api/jtp2-config": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/api/browse": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/api/caption": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          // General routes
-          "/api": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/config": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/preview": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/thumbnail": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/download": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/caption": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
-          "/assets": {
-            target: BACKEND_HOST,
-            changeOrigin: true,
-          },
+      proxy: {
+        // Proxy configuration for various API endpoints
+        // More specific routes first
+        "/api/png-download": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
         },
-        port: DEV_PORT,
+        "/api/jtp2-config": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        "/api/browse": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        "/api/caption": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        // General routes
+        "/api": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        "/config": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        "/preview": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        "/thumbnail": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        "/download": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        "/caption": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+        },
+        // Only proxy API-related assets, rewrite to remove /api prefix
+        "^/assets/api/(.*)": {
+          target: BACKEND_HOST,
+          changeOrigin: true,
+          rewrite: (path) => `/assets/${path.replace('/assets/api/', '')}`
+        },
+      },
+      port: DEV_PORT,
+      fs: {
+        // Allow serving files from parent directory
+        allow: ['..'],
+        strict: false
       }
+    }
     : {};
 
   const plugins = [
@@ -194,6 +213,10 @@ const viteConfig = (env) => {
         "~": resolve(__dirname, "src"),
       },
     },
+    // Configure public assets directory relative to root
+    // Note: In development, assets are served from the root path (/)
+    // Example: assets/pixelings/image.png is served at /pixelings/image.png
+    publicDir: "../assets",
     // Build configuration for production
     build: {
       // Use latest ECMAScript features
@@ -208,6 +231,18 @@ const viteConfig = (env) => {
         output: {
           // Disable manual chunk splitting
           manualChunks: undefined,
+          // Configure asset file names
+          assetFileNames: (assetInfo) => {
+            if (!assetInfo.name) return 'assets/[name]-[hash][extname]';
+
+            const info = assetInfo.name.split('.');
+            const ext = info[info.length - 1];
+
+            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+              return `assets/images/[name]-[hash][extname]`;
+            }
+            return `assets/[name]-[hash][extname]`;
+          },
         },
       },
       // Use Terser for better JS minification

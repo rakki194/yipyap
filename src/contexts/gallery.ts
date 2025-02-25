@@ -121,16 +121,18 @@ export interface FolderInfo {
   fullPath: string;
 }
 
-interface FolderCache {
-  folders: FolderInfo[];
-  timestamp: number;
-}
-
 const FOLDER_CACHE_KEY = 'yipyap_folder_cache';
 const FOLDER_CACHE_TTL = 1000 * 60 * 60; // 1 hour
+const FOLDER_CACHE_VERSION = 1;
 
 let folderCache: FolderInfo[] | null = null;
 let folderCachePromise: Promise<FolderInfo[]> | null = null;
+
+interface FolderCache {
+  folders: FolderInfo[];
+  timestamp: number;
+  version: number;
+}
 
 const loadFolderCache = (): FolderCache | null => {
   try {
@@ -138,7 +140,9 @@ const loadFolderCache = (): FolderCache | null => {
     if (!cached) return null;
 
     const data = JSON.parse(cached) as FolderCache;
-    if (Date.now() - data.timestamp > FOLDER_CACHE_TTL) {
+
+    // Check version and TTL
+    if (data.version !== FOLDER_CACHE_VERSION || Date.now() - data.timestamp > FOLDER_CACHE_TTL) {
       localStorage.removeItem(FOLDER_CACHE_KEY);
       return null;
     }
@@ -154,7 +158,8 @@ const saveFolderCache = (folders: FolderInfo[]) => {
   try {
     const cache: FolderCache = {
       folders,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      version: FOLDER_CACHE_VERSION
     };
     localStorage.setItem(FOLDER_CACHE_KEY, JSON.stringify(cache));
   } catch (error) {
@@ -604,51 +609,41 @@ export function makeGalleryState() {
   };
 
   const getAllKnownFolders = async (): Promise<FolderInfo[]> => {
-    // Return cached folders if available
-    if (folderCache) {
-      return folderCache;
-    }
-
-    // Return existing promise if request is in progress
+    // Return cached promise if request is in flight
     if (folderCachePromise) {
       return folderCachePromise;
     }
 
-    // Check localStorage cache first
+    // Check memory cache first
+    if (folderCache) {
+      return folderCache;
+    }
+
+    // Then check localStorage cache
     const cached = loadFolderCache();
     if (cached) {
       folderCache = cached.folders;
       return cached.folders;
     }
 
-    // Create new promise for fetching folders
-    folderCachePromise = (async () => {
-      try {
-        const response = await fetch('/api/folders');
+    // If no cache, fetch from API
+    folderCachePromise = fetch('/api/folders')
+      .then(response => {
         if (!response.ok) {
           throw new Error('Failed to fetch folders');
         }
-        const folders = await response.json();
-
-        // Process and format folder data
-        const formattedFolders = folders.map((folder: any) => ({
-          name: folder.name,
-          path: folder.path,
-          fullPath: folder.full_path
-        }));
-
-        // Cache the results
-        folderCache = formattedFolders;
-        saveFolderCache(formattedFolders);
-
-        return formattedFolders;
-      } catch (error) {
-        console.error('Error fetching folders:', error);
-        return [];
-      } finally {
+        return response.json();
+      })
+      .then(data => {
+        // The API returns the folders array directly
+        const folders = Array.isArray(data) ? data : [];
+        folderCache = folders;
+        saveFolderCache(folders);
+        return folders;
+      })
+      .finally(() => {
         folderCachePromise = null;
-      }
-    })();
+      });
 
     return folderCachePromise;
   };

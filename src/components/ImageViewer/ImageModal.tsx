@@ -35,9 +35,9 @@ interface ImageModalProps {
 }
 
 const NO_CAPTION_IMAGES = [
-  '/assets/pixelings/cactus.png',
-  '/assets/pixelings/chimken.png',
-  '/assets/pixelings/fonx.png',
+  '/pixelings/cactus.png',
+  '/pixelings/chimken.png',
+  '/pixelings/fonx.png',
 ] as const;
 
 // Add this helper function near the top of the file
