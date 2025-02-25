@@ -49,7 +49,7 @@ from . import caption_generation
 MODEL_REPO_MAP = {
     "vit": "SmilingWolf/wd-v1-4-vit-tagger-v2",
     "swinv2": "SmilingWolf/wd-v1-4-swinv2-tagger-v2",
-    "convnext": "SmilingWolf/wd-v1-4-convnext-tagger-v2"
+    "convnext": "SmilingWolf/wd-v1-4-convnext-tagger-v2",
 }
 
 logger = logging.getLogger("uvicorn.error")
@@ -91,14 +91,15 @@ data_source = CachedFileSystemDataSource(ROOT_DIR, THUMBNAIL_SIZE, PREVIEW_SIZE)
 CAPTION_TYPE_ORDER = {".e621": 0, ".tags": 1, ".wd": 2, ".caption": 3}
 
 # Add configuration near other constants
-JTP2_MODEL_PATH = Path(os.getenv(
-    "JTP2_MODEL_PATH",
-    "/home/kade/source/repos/JTP2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors"
-))
-JTP2_TAGS_PATH = Path(os.getenv(
-    "JTP2_TAGS_PATH", 
-    "/home/kade/source/repos/JTP2/tags.json"
-))
+JTP2_MODEL_PATH = Path(
+    os.getenv(
+        "JTP2_MODEL_PATH",
+        "/home/kade/source/repos/JTP2/JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors",
+    )
+)
+JTP2_TAGS_PATH = Path(
+    os.getenv("JTP2_TAGS_PATH", "/home/kade/source/repos/JTP2/tags.json")
+)
 
 # Add near other constants
 WDV3_MODEL_NAME = os.getenv("WDV3_MODEL_NAME", "vit")
@@ -116,16 +117,18 @@ if hasattr(caption_generation, "JTP2Generator"):
     try:
         logger.info(f"Initializing JTP2 generator with model path: {JTP2_MODEL_PATH}")
         jtp2_generator = caption_generation.JTP2Generator(
-            model_path=JTP2_MODEL_PATH, 
-            tags_path=JTP2_TAGS_PATH, 
+            model_path=JTP2_MODEL_PATH,
+            tags_path=JTP2_TAGS_PATH,
             threshold=JTP2_THRESHOLD,
-            force_cpu=JTP2_FORCE_CPU
+            force_cpu=JTP2_FORCE_CPU,
         )
         if jtp2_generator.is_available():
             caption_generators["jtp2"] = jtp2_generator
             logger.info("JTP2 caption generator initialized successfully")
         else:
-            logger.warning("JTP2 caption generator is not available - initialization check failed")
+            logger.warning(
+                "JTP2 caption generator is not available - initialization check failed"
+            )
     except Exception as e:
         logger.error(f"Failed to initialize JTP2 caption generator: {e}", exc_info=True)
 
@@ -134,7 +137,7 @@ if hasattr(caption_generation, "WDv3Generator"):
         wdv3_generator = caption_generation.WDv3Generator(
             model_name=WDV3_MODEL_NAME,
             gen_threshold=WDV3_GEN_THRESHOLD,
-            char_threshold=WDV3_CHAR_THRESHOLD
+            char_threshold=WDV3_CHAR_THRESHOLD,
         )
         if wdv3_generator.is_available():
             caption_generators["wdv3"] = wdv3_generator
@@ -222,7 +225,9 @@ async def browse(
             for future in asyncio.as_completed(futures):
                 res = await future
                 if hasattr(res, "captions"):
-                    res.captions.sort(key=lambda x: CAPTION_TYPE_ORDER.get(f".{x[0]}", 999))
+                    res.captions.sort(
+                        key=lambda x: CAPTION_TYPE_ORDER.get(f".{x[0]}", 999)
+                    )
                 yield f"{res.model_dump_json()}\n"
 
         return StreamingResponse(
@@ -239,14 +244,14 @@ async def browse(
 # Used for deleting everything in a directory.
 @app.delete("/api/browse/{path:path}")
 async def delete_image(
-    path: str, 
+    path: str,
     confirm: bool = Query(True),
-    preserve_latents: bool = Query(False), 
-    preserve_txt: bool = Query(False)
+    preserve_latents: bool = Query(False),
+    preserve_txt: bool = Query(False),
 ):
     """
     Delete an image/directory and its associated files.
-    
+
     Args:
         path (str): Path to the image/directory to delete
         confirm (bool): Whether to actually perform the deletion (default: True)
@@ -257,16 +262,16 @@ async def delete_image(
     try:
         logger.info(f"Deleting {target_path} (confirm={confirm})")
         captions, files, preserved = await data_source.delete_image(
-            target_path, 
-            confirm=confirm, 
-            preserve_latents=preserve_latents, 
-            preserve_txt=preserve_txt
+            target_path,
+            confirm=confirm,
+            preserve_latents=preserve_latents,
+            preserve_txt=preserve_txt,
         )
         return {
             "confirm": confirm,
             "deleted_captions": captions,
             "deleted_files": files,
-            "preserved_files": preserved
+            "preserved_files": preserved,
         }
     except Exception as e:
         logger.error(f"Error deleting {target_path}: {e}", exc_info=True)
@@ -277,13 +282,13 @@ async def delete_image(
 async def get_thumbnail(path: str):
     """
     Get a cached thumbnail for an image.
-    
+
     Args:
         path (str): Path to the original image
-        
+
     Returns:
         Response: WebP thumbnail image with caching headers
-        
+
     Notes:
         - Thumbnails are 300x300 max size
         - Uses SQLite cache for storing thumbnails
@@ -303,13 +308,13 @@ async def get_thumbnail(path: str):
 async def get_preview(path: str):
     """
     Get a preview-sized version of an image.
-    
+
     Args:
         path (str): Path to the original image
-        
+
     Returns:
         Response: WebP preview image with caching headers
-        
+
     Notes:
         - Previews are 1024x1024 max size
         - Uses SQLite cache for storing previews
@@ -329,13 +334,13 @@ async def get_preview(path: str):
 async def download_image(path: str):
     """
     Download the original image file.
-    
+
     Args:
         path (str): Path to the image file
-        
+
     Returns:
         FileResponse: Original image file as attachment
-        
+
     Raises:
         HTTPException: If file not found or access denied
     """
@@ -355,19 +360,19 @@ async def download_image(path: str):
 async def update_caption(path: str, caption_data: dict):
     """
     Create or update a caption file for an image.
-    
+
     Args:
         path (str): Path to the image file
         caption_data (dict): Caption information
             - type (str): Caption file type (e.g., "caption", "tags")
             - caption (str): Caption text content
-            
+
     Returns:
         dict: Success status
-        
+
     Raises:
         HTTPException: If image not found or caption update fails
-        
+
     Notes:
         - Creates caption file with same name as image but different extension
         - Updates cache through data_source
@@ -376,29 +381,31 @@ async def update_caption(path: str, caption_data: dict):
     try:
         image_path = utils.resolve_path(path, ROOT_DIR)
         if not image_path.exists():
-            raise HTTPException(status_code=404, detail=f"Image not found: {image_path}")
-            
+            raise HTTPException(
+                status_code=404, detail=f"Image not found: {image_path}"
+            )
+
         caption_type = caption_data.get("type")
         caption_text = caption_data.get("caption", "")
-        
+
         if not caption_type:
             raise HTTPException(status_code=400, detail="Missing caption type")
-            
+
         # Create the caption file
         caption_path = image_path.with_suffix(f".{caption_type}")
-        
+
         # Write the caption text
-        async with aiofiles.open(caption_path, "w", encoding='utf-8') as f:
+        async with aiofiles.open(caption_path, "w", encoding="utf-8") as f:
             await f.write(str(caption_text))
-            
+
         # Touch the parent directory to force cache invalidation
         image_path.touch()
-        
+
         # Update the cache through data_source
         await data_source.save_caption(image_path, str(caption_text), caption_type)
-        
+
         return {"success": True}
-        
+
     except Exception as e:
         logger.error(f"Error saving caption: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -408,7 +415,7 @@ async def update_caption(path: str, caption_data: dict):
 async def get_config():
     """
     Get application configuration settings.
-    
+
     Returns:
         dict: Configuration settings
             - thumbnail_size (tuple): Max width/height for thumbnails
@@ -425,13 +432,13 @@ async def update_thumbnail_size(size: int):
     """Update thumbnail size configuration."""
     if size < 100 or size > 500:
         raise HTTPException(status_code=400, detail="Invalid thumbnail size")
-        
+
     # Update the thumbnail size
     data_source.set_thumbnail_size((size, size))
-    
+
     # Clear thumbnail cache to regenerate with new size
     data_source.clear_thumbnail_cache()
-    
+
     return {"success": True}
 
 
@@ -446,12 +453,12 @@ async def delete_caption(path: str, caption_type: str = Query(...)):
 
         caption_path = image_path.with_suffix(f".{caption_type}")
         logger.info(f"Caption path to delete: {caption_path}")
-        
+
         try:
             caption_path.unlink(missing_ok=True)
             # Touch the parent directory to force cache invalidation
             image_path.touch()
-            
+
             return {
                 "success": True,
                 "message": f"Caption {caption_type} deleted successfully",
@@ -460,7 +467,7 @@ async def delete_caption(path: str, caption_type: str = Query(...)):
         except PermissionError as e:
             logger.error(f"Permission error deleting file: {e}")
             raise HTTPException(status_code=403, detail="Permission denied")
-            
+
     except Exception as e:
         logger.error(f"Error deleting caption: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -550,7 +557,7 @@ async def generate_caption(
     force: bool = Query(False),
 ):
     """Generate caption for an image.
-    
+
     The path parameter can be either:
     - "_/image.png" for root directory images
     - "subdir/image.png" for subdirectory images
@@ -559,51 +566,51 @@ async def generate_caption(
         if generator not in caption_generators:
             raise HTTPException(
                 status_code=400,
-                detail=f"Unknown caption generator: {generator}. Available generators: {list(caption_generators.keys())}"
+                detail=f"Unknown caption generator: {generator}. Available generators: {list(caption_generators.keys())}",
             )
-            
+
         gen = caption_generators[generator]
         if not gen.is_available():
             raise HTTPException(
                 status_code=503,
-                detail=f"Caption generator {generator} is not available. Reason: initialization failed"
+                detail=f"Caption generator {generator} is not available. Reason: initialization failed",
             )
-            
+
         # Handle root directory case
         if path.startswith("_/"):
             path = path[2:]  # Remove "_/" prefix
-            
+
         # Construct full image path
         image_path = utils.resolve_path(path, ROOT_DIR)
         if not image_path.exists():
             raise HTTPException(
-                status_code=404,
-                detail=f"Image not found: {image_path}"
+                status_code=404, detail=f"Image not found: {image_path}"
             )
-        
+
         # Check if caption already exists
         caption_path = image_path.with_suffix(f".{gen.caption_type}")
         if not force and caption_path.exists():
             raise HTTPException(
-                status_code=400,
-                detail=f"Caption already exists: {caption_path}"
+                status_code=400, detail=f"Caption already exists: {caption_path}"
             )
-            
+
         # Generate caption
         try:
             caption = await gen.generate(image_path)
         except Exception as e:
-            logger.error(f"Error generating caption with {generator}: {e}", exc_info=True)
+            logger.error(
+                f"Error generating caption with {generator}: {e}", exc_info=True
+            )
             raise HTTPException(
                 status_code=500,
-                detail=f"Error generating caption with {generator}: {str(e)}"
+                detail=f"Error generating caption with {generator}: {str(e)}",
             )
-        
+
         # Save caption
         await data_source.save_caption(image_path, caption, gen.caption_type)
-        
+
         return {"success": True, "caption": caption}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -616,22 +623,22 @@ async def generate_caption(
 async def update_jtp2_config(config: dict):
     """
     Update JTP2 model configuration.
-    
+
     Args:
         config (dict): New configuration settings
             - model_path (str, optional): Path to model file
             - tags_path (str, optional): Path to tags file
             - threshold (float, optional): Confidence threshold for tags
             - force_cpu (bool, optional): Whether to force CPU usage
-            
+
     Returns:
         dict: Success status
-        
+
     Raises:
         HTTPException: If reinitialization fails
     """
     global JTP2_MODEL_PATH, JTP2_TAGS_PATH, JTP2_THRESHOLD, JTP2_FORCE_CPU
-    
+
     if "model_path" in config:
         JTP2_MODEL_PATH = Path(config["model_path"])
     if "tags_path" in config:
@@ -641,12 +648,12 @@ async def update_jtp2_config(config: dict):
         if not 0 <= threshold <= 1:
             raise HTTPException(
                 status_code=400,
-                detail=f"Invalid threshold: {threshold}. Must be between 0 and 1"
+                detail=f"Invalid threshold: {threshold}. Must be between 0 and 1",
             )
         JTP2_THRESHOLD = threshold
     if "force_cpu" in config:
         JTP2_FORCE_CPU = bool(config["force_cpu"])
-        
+
     # Reinitialize caption generator with new settings
     if "jtp2" in caption_generators:
         try:
@@ -654,34 +661,31 @@ async def update_jtp2_config(config: dict):
                 model_path=JTP2_MODEL_PATH,
                 tags_path=JTP2_TAGS_PATH,
                 threshold=JTP2_THRESHOLD,
-                force_cpu=JTP2_FORCE_CPU
+                force_cpu=JTP2_FORCE_CPU,
             )
             logger.info("JTP2 caption generator reinitialized with new settings")
         except Exception as e:
             logger.error(f"Failed to reinitialize JTP2 generator: {e}")
             raise HTTPException(status_code=500, detail=str(e))
-            
+
     return {"success": True}
 
 
 @app.post("/api/upload/{path:path}")
-async def upload_files(
-    path: str,
-    files: List[UploadFile] = File(...)
-):
+async def upload_files(path: str, files: List[UploadFile] = File(...)):
     """
     Upload files to a specified directory.
-    
+
     Args:
         path (str): Target directory path
         files (List[UploadFile]): List of files to upload
-        
+
     Returns:
         dict: Upload status message
-        
+
     Raises:
         HTTPException: If upload fails
-        
+
     Notes:
         - Creates target directory if it doesn't exist
         - Preserves relative paths in uploaded files
@@ -690,109 +694,111 @@ async def upload_files(
     try:
         # Resolve the target directory path using utils.resolve_path
         target_dir = utils.resolve_path(path, ROOT_DIR) if path else ROOT_DIR
-        
+
         if not target_dir.exists():
             target_dir.mkdir(parents=True, exist_ok=True)
-            
+
         uploaded_files = []
         failed_files = []
-        
+
         for file in files:
             try:
                 # Get the relative path from the file name/path
                 relative_path = file.filename
                 if not relative_path:
                     continue
-                    
+
                 # Skip hidden files and directories
-                if any(part.startswith('.') for part in Path(relative_path).parts):
+                if any(part.startswith(".") for part in Path(relative_path).parts):
                     continue
-                
+
                 # Create full target path
                 full_path = target_dir / relative_path
-                
+
                 # Ensure the parent directory exists
                 full_path.parent.mkdir(parents=True, exist_ok=True)
-                
+
                 # Save the file
                 async with aiofiles.open(full_path, "wb") as buffer:
                     while content := await file.read(8192):  # Read in 8KB chunks
                         await buffer.write(content)
-                
+
                 uploaded_files.append(relative_path)
-                
+
             except Exception as e:
                 logger.error(f"Error uploading file {file.filename}: {e}")
                 failed_files.append(file.filename)
                 continue
-                
+
         # Touch the directory to force cache update
         target_dir.touch()
-        
+
         # Clear directory cache
         if target_dir in data_source.directory_cache:
             del data_source.directory_cache[target_dir]
-            
+
         result = {
             "message": "Upload complete",
             "uploaded": uploaded_files,
-            "failed": failed_files
+            "failed": failed_files,
         }
-        
+
         if failed_files:
             result["error"] = "Some files failed to upload"
-            
+
         return result
-        
+
     except Exception as e:
         logger.error(f"Error uploading files: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 # Add a root upload endpoint as well
 @app.post("/api/upload")
 async def upload_files_root(files: List[UploadFile] = File(...)):
     """
     Upload files to the root directory.
-    
+
     Args:
         files (List[UploadFile]): List of files to upload
-        
+
     Returns:
         dict: Upload status message
-        
+
     Notes:
         - Wrapper around upload_files with empty path
     """
     return await upload_files("", files)
+
 
 @app.post("/api/folder/{path:path}")
 async def create_folder(path: str):
     """Create a new folder at the specified path."""
     try:
         target_path = utils.resolve_path(path, ROOT_DIR)
-        
+
         # Check if folder already exists
         if target_path.exists():
             raise HTTPException(
-                status_code=400, 
-                detail=f"Folder already exists: {path}"
+                status_code=400, detail=f"Folder already exists: {path}"
             )
-            
+
         # Create the folder
         target_path.mkdir(parents=True, exist_ok=False)
-        
+
         # Touch parent directory to force cache invalidation
         target_path.parent.touch()
-        
+
         # Clear directory cache to force rescan
         if target_path.parent in data_source.directory_cache:
             del data_source.directory_cache[target_path.parent]
-            
+
         return {"success": True, "path": str(target_path)}
-        
+
     except Exception as e:
         logger.error(f"Error creating folder: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/move/{path:path}")
 async def move_items(
@@ -800,11 +806,11 @@ async def move_items(
     target: str = Query(..., description="Target directory path"),
     items: List[str] = Body(..., description="List of items to move"),
     preserve_latents: bool = Body(False, description="Whether to preserve .npz files"),
-    preserve_txt: bool = Body(False, description="Whether to preserve .txt files")
+    preserve_txt: bool = Body(False, description="Whether to preserve .txt files"),
 ):
     """
     Move files and folders to a target directory.
-    
+
     Args:
         path (str): Current directory path (empty string for root directory)
         target (str): Target directory path
@@ -816,25 +822,27 @@ async def move_items(
         # Use ROOT_DIR for empty path, otherwise resolve the path
         source_dir = ROOT_DIR if not path else utils.resolve_path(path, ROOT_DIR)
         target_dir = utils.resolve_path(target, ROOT_DIR)
-        
+
         logger.info(f"Moving items from {source_dir} to {target_dir}")
         logger.info(f"Items to move: {items}")
-        logger.info(f"Preserve settings: latents={preserve_latents}, txt={preserve_txt}")
-        
+        logger.info(
+            f"Preserve settings: latents={preserve_latents}, txt={preserve_txt}"
+        )
+
         # Ensure target directory exists
         target_dir.mkdir(parents=True, exist_ok=True)
-        
+
         moved_items = []
         failed_items = []
         failed_reasons = {}
-        
+
         for item in items:
             try:
                 source_path = source_dir / item
                 target_path = target_dir / item
-                
+
                 logger.info(f"Moving {source_path} to {target_path}")
-                
+
                 # Skip if source doesn't exist or target already exists
                 if not source_path.exists():
                     logger.error(f"Source does not exist: {source_path}")
@@ -846,7 +854,7 @@ async def move_items(
                     failed_items.append(item)
                     failed_reasons[item] = "target_exists"
                     continue
-                
+
                 if source_path.is_dir():
                     # Move directory and all contents
                     shutil.move(str(source_path), str(target_path))
@@ -856,37 +864,40 @@ async def move_items(
                     stem = source_path.stem
                     for f in source_path.parent.glob(f"{stem}*"):
                         # Skip latents/txt files if not preserving them
-                        if (not preserve_latents and f.suffix == '.npz') or \
-                           (not preserve_txt and f.suffix == '.txt'):
+                        if (not preserve_latents and f.suffix == ".npz") or (
+                            not preserve_txt and f.suffix == ".txt"
+                        ):
                             continue
-                        logger.info(f"Moving associated file: {f} to {target_dir / f.name}")
+                        logger.info(
+                            f"Moving associated file: {f} to {target_dir / f.name}"
+                        )
                         shutil.move(str(f), str(target_dir / f.name))
                     moved_items.append(item)
-                
+
             except Exception as e:
                 logger.error(f"Failed to move {item}: {e}")
                 failed_items.append(item)
                 failed_reasons[item] = "error"
-        
+
         # Touch directories to force cache update
         source_dir.touch()
         target_dir.touch()
-        
+
         # Clear cache for affected directories
         if source_dir in data_source.directory_cache:
             del data_source.directory_cache[source_dir]
         if target_dir in data_source.directory_cache:
             del data_source.directory_cache[target_dir]
-        
+
         result = {
             "success": True,
             "moved": moved_items,
             "failed": failed_items,
-            "failed_reasons": failed_reasons
+            "failed_reasons": failed_reasons,
         }
         logger.info(f"Move operation result: {result}")
         return result
-        
+
     except Exception as e:
         logger.error(f"Error moving items: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -900,45 +911,47 @@ async def update_wdv3_config(config: dict):
             if config["model_name"] not in MODEL_REPO_MAP:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Invalid model name: {config['model_name']}. Available models: {list(MODEL_REPO_MAP.keys())}"
+                    detail=f"Invalid model name: {config['model_name']}. Available models: {list(MODEL_REPO_MAP.keys())}",
                 )
             os.environ["WDV3_MODEL_NAME"] = config["model_name"]
-            
+
         if "gen_threshold" in config:
             gen_threshold = float(config["gen_threshold"])
             if not 0 <= gen_threshold <= 1:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Invalid general threshold: {gen_threshold}. Must be between 0 and 1"
+                    detail=f"Invalid general threshold: {gen_threshold}. Must be between 0 and 1",
                 )
             os.environ["WDV3_GEN_THRESHOLD"] = str(gen_threshold)
-            
+
         if "char_threshold" in config:
             char_threshold = float(config["char_threshold"])
             if not 0 <= char_threshold <= 1:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Invalid character threshold: {char_threshold}. Must be between 0 and 1"
+                    detail=f"Invalid character threshold: {char_threshold}. Must be between 0 and 1",
                 )
             os.environ["WDV3_CHAR_THRESHOLD"] = str(char_threshold)
-            
+
         # Reinitialize WDv3 generator with new settings
         if "wdv3" in caption_generators:
             try:
                 wdv3_generator = caption_generation.WDv3Generator(
                     model_name=os.getenv("WDV3_MODEL_NAME", "vit"),
                     gen_threshold=float(os.getenv("WDV3_GEN_THRESHOLD", "0.35")),
-                    char_threshold=float(os.getenv("WDV3_CHAR_THRESHOLD", "0.75"))
+                    char_threshold=float(os.getenv("WDV3_CHAR_THRESHOLD", "0.75")),
                 )
                 if wdv3_generator.is_available():
                     caption_generators["wdv3"] = wdv3_generator
                 else:
-                    logger.warning("WDv3 caption generator is not available after config update")
+                    logger.warning(
+                        "WDv3 caption generator is not available after config update"
+                    )
             except Exception as e:
                 logger.warning(f"Failed to reinitialize WDv3 caption generator: {e}")
-                
+
         return {"success": True, "message": "WDv3 configuration updated successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -947,20 +960,21 @@ async def update_wdv3_config(config: dict):
 
 
 @app.put("/api/favorite/{path:path}")
-async def update_favorite_state(
-    path: str,
-    config: dict = Body(...)
-):
+async def update_favorite_state(path: str, config: dict = Body(...)):
     """Update the favorite state of an image."""
     try:
         # Extract and validate favorite state from request body
         if "favorite_state" not in config:
-            raise HTTPException(status_code=400, detail="Missing favorite_state in request body")
-        
+            raise HTTPException(
+                status_code=400, detail="Missing favorite_state in request body"
+            )
+
         try:
             favorite_state = int(config["favorite_state"])
         except (ValueError, TypeError):
-            raise HTTPException(status_code=400, detail="favorite_state must be an integer")
+            raise HTTPException(
+                status_code=400, detail="favorite_state must be an integer"
+            )
 
         # Validate favorite state range
         if not 0 <= favorite_state <= 6:
@@ -979,13 +993,13 @@ async def update_favorite_state(
         # Update both the favorite_state column and the info JSON
         result = conn.execute(
             "SELECT info FROM image_info WHERE directory = ? AND name = ?",
-            (directory, filename)
+            (directory, filename),
         ).fetchone()
 
         if result:
             info = json.loads(result[0])
             info["favorite_state"] = favorite_state
-            
+
             conn.execute(
                 """
                 UPDATE image_info 
@@ -998,7 +1012,7 @@ async def update_favorite_state(
                     int(datetime.now(timezone.utc).timestamp()),
                     directory,
                     filename,
-                )
+                ),
             )
             conn.commit()
 
