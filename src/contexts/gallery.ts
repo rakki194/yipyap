@@ -802,5 +802,6 @@ const CAPTION_TYPE_ORDER: Record<string, number> = {
   '.tags': 1,
   '.wd': 2,
   '.caption': 3,
-  '.txt': 4
+  '.florence': 4,
+  '.txt': 5
 };

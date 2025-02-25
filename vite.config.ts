@@ -24,11 +24,11 @@ const configureServer = {
     if (process.env.NODE_ENV === "development") {
       server.middlewares.use((req, res, next) => {
         // Add debug logging
-        console.debug('Vite middleware request:', {
-          url: req.url,
-          method: req.method,
-          headers: req.headers
-        });
+        // console.debug('Vite middleware request:', {
+        //   url: req.url,
+        //   method: req.method,
+        //   headers: req.headers
+        // });
 
         // Set security headers
         res.setHeader("X-Content-Type-Options", "nosniff");
@@ -39,10 +39,10 @@ const configureServer = {
           const urlWithoutQuery = req.url.split("?")[0];
           const ext = urlWithoutQuery.split(".").pop()?.toLowerCase();
 
-          console.debug('Processing file:', {
-            url: urlWithoutQuery,
-            extension: ext
-          });
+          // console.debug('Processing file:', {
+          //   url: urlWithoutQuery,
+          //   extension: ext
+          // });
 
           // Set content type based on file extension, regardless of path
           switch (ext) {

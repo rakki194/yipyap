@@ -51,6 +51,7 @@ vi.mock("~/icons", () => ({
     e621: "tag",
     caption: "text",
     txt: "text",
+    florence: "textSortAscending",
   },
 }));
 

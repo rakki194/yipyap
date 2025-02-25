@@ -161,7 +161,8 @@ export default {
       txt: "Δημιουργία νέου αρχείου κειμένου",
       tags: "Δημιουργία νέου αρχείου .tags",
       caption: "Δημιουργία νέου αρχείου .caption",
-      wd: "Δημιουργία νέου αρχείου .wd"
+      wd: "Δημιουργία νέου αρχείου .wd",
+      florence: "Δημιουργία νέου αρχείου .florence"
     },
     noCaptionFiles: "Δεν υπάρχουν ακόμη αρχεία λεζάντας!",
     selectAll: "Επιλογή όλων",
@@ -173,7 +174,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτά τα στοιχεία;';
       }
@@ -309,7 +310,7 @@ export default {
       searchReplace: "Αναζήτηση και αντικατάσταση",
       case: "Μετατροπή πεζών/κεφαλαίων",
       trim: "Αφαίρεση κενών",
-      wrap: "Περιτύλιξη κειμένου", 
+      wrap: "Περιτύλιξη κειμένου",
       number: "Αρίθμηση"
     },
     caseTypes: {
@@ -332,7 +333,7 @@ export default {
     numberFormat: "Μορφή αριθμού",
     numberFormatPlaceholder: "Εισάγετε μορφή αριθμού...",
     prefix: "Πρόθεμα",
-    suffix: "Επίθεμα", 
+    suffix: "Επίθεμα",
     prefixPlaceholder: "Εισάγετε πρόθεμα...",
     suffixPlaceholder: "Εισάγετε επίθεμα...",
     transformationNamePlaceholder: "Όνομα μετασχηματισμού...",

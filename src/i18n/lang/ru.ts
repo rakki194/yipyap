@@ -258,6 +258,7 @@ export default {
       tags: "Теги",
       caption: "Подпись",
       wd: "WD",
+      florence: "Florence",
     },
     noCaptionFiles: "Нет файлов подписей",
     uploadError: "Ошибка загрузки",

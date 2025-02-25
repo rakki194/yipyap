@@ -158,7 +158,8 @@ export default {
       txt: "Luo uusi tekstitiedosto",
       tags: "Luo uusi .tags-tiedosto",
       caption: "Luo uusi .caption-tiedosto",
-      wd: "Luo uusi .wd-tiedosto"
+      wd: "Luo uusi .wd-tiedosto",
+      florence: "Luo uusi .florence-tiedosto"
     },
     noCaptionFiles: "Ei vielä kuvatekstitiedostoja!",
     uploadError: "Lataus epäonnistui",

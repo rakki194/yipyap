@@ -82,6 +82,7 @@ export const captionIconsMap = {
   caption: "subtitles",
   wd: "wd",
   e621: "beakerRegular",
+  florence: "rocket",
   json: "type",
   toml: "type",
 };

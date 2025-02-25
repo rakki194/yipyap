@@ -180,7 +180,8 @@ export default {
       txt: "Створити новий текстовий файл",
       tags: "Створити новий файл .tags",
       caption: "Створити новий файл .caption",
-      wd: "Створити новий файл .wd"
+      wd: "Створити новий файл .wd",
+      florence: "Створити новий файл .florence"
     },
     noCaptionFiles: "Поки немає файлів підписів!",
     fileCount: (params?: TranslationParams) => `${params?.count ?? 0} файлів`,

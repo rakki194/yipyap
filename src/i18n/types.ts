@@ -223,6 +223,7 @@ export interface GalleryTranslations {
     tags: string;
     caption: string;
     wd: string;
+    florence: string;
   };
   noCaptionFiles?: string;
   uploadError?: string;
@@ -257,8 +258,6 @@ export interface GalleryTranslations {
   moveFailed?: string;
   moveFailedExists?: string;
   moveFailedMissing?: string;
-  moveError?: string;
-  sameDirectoryMove?: string;
   batchTransformError?: string;
   moveItems: string;
   moveItemsDescription: (params: TranslationParams) => string;
@@ -269,7 +268,7 @@ export interface GalleryTranslations {
   moveSuccess: string;
   moveError: string;
   moveSelected: string;
-  sameDirectoryMove: string;
+  sameDirectoryMove?: string;
 }
 
 export interface ShortcutsTranslations {

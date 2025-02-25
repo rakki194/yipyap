@@ -157,6 +157,7 @@ export default {
       tags: "צור קובץ .tags חדש",
       caption: "צור קובץ .caption חדש",
       wd: "צור קובץ .wd חדש",
+      florence: "צור קובץ .florence חדש"
     },
     noCaptionFiles: "אין עדיין קבצי כיתוב!",
     selectAll: "בחר הכל",
@@ -168,7 +169,7 @@ export default {
       }
       const folders = typeof params.folders === 'number' ? params.folders : 0;
       const images = typeof params.images === 'number' ? params.images : 0;
-      
+
       if (folders === 0 && images === 0) {
         return 'האם אתה בטוח שברצונך למחוק פריטים אלה?';
       }

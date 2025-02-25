@@ -213,7 +213,8 @@ export default {
       txt: "नई टेक्स्ट फ़ाइल बनाएं",
       tags: "नई .tags फ़ाइल बनाएं",
       caption: "नई .caption फ़ाइल बनाएं",
-      wd: "नई .wd फ़ाइल बनाएं"
+      wd: "नई .wd फ़ाइल बनाएं",
+      florence: "नई .florence फ़ाइल बनाएं"
     },
     noCaptionFiles: "अभी तक कोई कैप्शन फ़ाइल नहीं है!",
     deletingFile: "फ़ाइल हटा रहा है...",

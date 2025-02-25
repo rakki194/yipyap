@@ -249,14 +249,11 @@ export default {
     removeTags: "Remove tags",
     createCaption: "Create caption",
     captionTypes: {
-      // Plain text file containing usually the concatenated tags and caption.
-      txt: "Text file",
-      // Comma-separated tags describing the image in the e621 format.
-      tags: "JTP2 generated tags file",
-      // Natural language description of the image
-      caption: "Caption file",
-      // Comma-separated tags describing the image in the danbooru format.
-      wd: "WDv3 generated tags file",
+      txt: "Create new text file",
+      tags: "Create new .tags file",
+      caption: "Create new .caption file",
+      wd: "Create new .wd file",
+      florence: "Create new .florence file"
     },
     noCaptionFiles: "No caption files found",
     uploadError: "Failed to upload file",

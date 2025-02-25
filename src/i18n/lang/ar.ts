@@ -159,7 +159,8 @@ export default {
       txt: "إنشاء ملف نصي جديد",
       tags: "إنشاء ملف .tags جديد",
       caption: "إنشاء ملف .caption جديد",
-      wd: "إنشاء ملف .wd جديد"
+      wd: "إنشاء ملف .wd جديد",
+      florence: "إنشاء ملف .florence جديد"
     },
     noCaptionFiles: "لا توجد ملفات تعليقات حتى الآن!",
     uploadError: "فشل التحميل",
