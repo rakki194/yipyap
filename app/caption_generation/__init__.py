@@ -43,7 +43,7 @@ else:
         logger.warning("JTP2 caption generation disabled: missing safetensors")
     else:
         from .jtp2 import JTP2Generator
-        
+
     if not _has_huggingface:
         logger.warning("WDv3 caption generation disabled: missing huggingface_hub")
     else:

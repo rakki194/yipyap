@@ -23,14 +23,16 @@ from .models import ImageModel, DirectoryModel, BrowseHeader
 logger = logging.getLogger("uvicorn.error")
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".jxl", ".avif"}
-CAPTION_EXTENSIONS = {".caption", ".txt", ".tags"}
+CAPTION_EXTENSIONS = {".caption", ".txt", ".tags", ".florence", ".wd"}
 METADATA_EXTENSIONS = set()
 
 try:
     import pillow_avif
+
     IMAGE_EXTENSIONS.add(".avif")
 except ImportError:
     pass
+
 
 class ImageDataSource:
     """Abstract interface for image data access"""
@@ -50,13 +52,13 @@ class ImageDataSource:
     def is_image_file(self, path: Path) -> bool:
         """
         Check if file has an allowed image extension.
-        
+
         Args:
             path (Path): Path to check
-            
+
         Returns:
             bool: True if file has an allowed extension
-            
+
         Notes:
             - Checks against ALLOWED_EXTENSIONS set
             - Case-insensitive comparison
@@ -66,10 +68,10 @@ class ImageDataSource:
     async def get_basic_info(self, path: Path) -> Dict:
         """
         Get basic file information without loading the image.
-        
+
         Args:
             path (Path): Path to file
-            
+
         Returns:
             Dict: Basic file information
                 - type: "image" or "directory"
@@ -77,7 +79,7 @@ class ImageDataSource:
                 - path: Relative path from root
                 - modified: Modification timestamp
                 - size: File size in bytes
-                
+
         Notes:
             - Fast operation - only uses file system stats
             - Does not read file contents
@@ -185,12 +187,16 @@ class CachedFileSystemDataSource(ImageDataSource):
             conn.execute("SELECT favorite_state FROM image_info LIMIT 1")
         except sqlite3.OperationalError:
             logger.info("Adding favorite_state column to image_info table")
-            conn.execute("ALTER TABLE image_info ADD COLUMN favorite_state INTEGER NOT NULL DEFAULT 0")
+            conn.execute(
+                "ALTER TABLE image_info ADD COLUMN favorite_state INTEGER NOT NULL DEFAULT 0"
+            )
             conn.commit()
 
             # Migrate existing favorite states from files to SQLite
             logger.info("Migrating existing favorite states to SQLite")
-            for directory, name in conn.execute("SELECT directory, name FROM image_info").fetchall():
+            for directory, name in conn.execute(
+                "SELECT directory, name FROM image_info"
+            ).fetchall():
                 try:
                     favorite_path = Path(directory) / f"{Path(name).stem}.favorite"
                     if favorite_path.exists():
@@ -198,20 +204,22 @@ class CachedFileSystemDataSource(ImageDataSource):
                             favorite_state = int(f.read().strip())
                             conn.execute(
                                 "UPDATE image_info SET favorite_state = ? WHERE directory = ? AND name = ?",
-                                (favorite_state, directory, name)
+                                (favorite_state, directory, name),
                             )
                         favorite_path.unlink()  # Delete the file after migration
                 except (ValueError, IOError) as e:
-                    logger.warning(f"Error migrating favorite state for {directory}/{name}: {e}")
+                    logger.warning(
+                        f"Error migrating favorite state for {directory}/{name}: {e}"
+                    )
             conn.commit()
 
     def _get_connection(self):
         """
         Get a thread-local SQLite connection.
-        
+
         Returns:
             sqlite3.Connection: Database connection for current thread
-            
+
         Notes:
             - Creates new connection if none exists for thread
             - Sets busy timeout to handle concurrent access
@@ -227,13 +235,13 @@ class CachedFileSystemDataSource(ImageDataSource):
     def _compute_md5(self, path: Path) -> str:
         """
         Compute MD5 hash of file contents.
-        
+
         Args:
             path (Path): Path to file
-            
+
         Returns:
             str: Hex string of MD5 hash
-            
+
         Notes:
             - Reads file in chunks to handle large files
             - Used for cache invalidation
@@ -250,7 +258,7 @@ class CachedFileSystemDataSource(ImageDataSource):
             conn = self._get_connection()
             directory = str(path.parent)
             filename = path.name
-            
+
             # Get the exact matching thumbnail
             result = conn.execute(
                 """
@@ -262,21 +270,21 @@ class CachedFileSystemDataSource(ImageDataSource):
                 """,
                 (directory, filename),
             ).fetchone()
-            
+
             if result and result[0]:
                 return result[0]
-            
+
             # If not found or null, generate it
             if not path.exists():
                 logger.error(f"Image file not found: {path}")
                 raise FileNotFoundError(f"Image file not found: {path}")
-            
+
             with open_srgb(path) as img:
                 img.thumbnail(self.thumbnail_size)
                 output = BytesIO()
                 img.save(output, format="WebP", quality=80)
                 thumbnail_data = output.getvalue()
-                
+
                 # Cache the thumbnail with the original filename
                 conn.execute(
                     """
@@ -293,7 +301,7 @@ class CachedFileSystemDataSource(ImageDataSource):
                     ),
                 )
                 conn.commit()
-                
+
                 return thumbnail_data
         except Exception as e:
             logger.exception(f"Error generating thumbnail for {path}: {e}")
@@ -340,7 +348,7 @@ class CachedFileSystemDataSource(ImageDataSource):
         favorite_state = 0
         existing_favorite = conn.execute(
             "SELECT favorite_state FROM image_info WHERE directory = ? AND name = ?",
-            (str(directory), item["name"])
+            (str(directory), item["name"]),
         ).fetchone()
         if existing_favorite:
             favorite_state = existing_favorite[0]
@@ -394,13 +402,13 @@ class CachedFileSystemDataSource(ImageDataSource):
     ) -> List[DirectoryModel | Dict]:
         """
         Scan directory for images and subdirectories.
-        
+
         Args:
             directory (Path): Directory to scan
-            
+
         Returns:
             List[DirectoryModel | Dict]: List of directory and image entries
-            
+
         Notes:
             - Skips hidden files
             - Groups related files (image + captions)
@@ -455,8 +463,12 @@ class CachedFileSystemDataSource(ImageDataSource):
 
         for entry in img_entries:
             side_car_files = all_side_car_files.get(entry["stem"], {})
-            entry["captions"] = {k: v for k, v in side_car_files.items() if k in CAPTION_EXTENSIONS}
-            entry["metadata"] = {k: v for k, v in side_car_files.items() if k in METADATA_EXTENSIONS}
+            entry["captions"] = {
+                k: v for k, v in side_car_files.items() if k in CAPTION_EXTENSIONS
+            }
+            entry["metadata"] = {
+                k: v for k, v in side_car_files.items() if k in METADATA_EXTENSIONS
+            }
             entry["mtime"] = datetime.fromtimestamp(
                 mtimes[entry["stem"]], tz=timezone.utc
             )
@@ -486,7 +498,7 @@ class CachedFileSystemDataSource(ImageDataSource):
         """
         Calculate dynamic page size based on page number.
         First page: 20 items
-        Second page: 100 items 
+        Second page: 100 items
         Subsequent pages: Exponential increase (2x) up to max 1000 items
         """
         if page == 1:
@@ -508,7 +520,7 @@ class CachedFileSystemDataSource(ImageDataSource):
         # Calculate dynamic page size if not explicitly provided
         if page_size is None:
             page_size = self._calculate_dynamic_page_size(page)
-        
+
         # Get directory contents
         directory_mtime, dir_items, img_items = self.scan_directory(directory)
         mtime_dt = datetime.fromtimestamp(directory_mtime, tz=timezone.utc)
@@ -544,7 +556,9 @@ class CachedFileSystemDataSource(ImageDataSource):
         img_items = img_items[img_start:img_end]
 
         # Calculate total pages, ensuring page_size is at least 1
-        total_pages = (total_folders + total_images + max(page_size, 1) - 1) // max(page_size, 1)
+        total_pages = (total_folders + total_images + max(page_size, 1) - 1) // max(
+            page_size, 1
+        )
 
         # Extract names and update mtime
         folder_names = [f.name for f in dir_items]
@@ -587,14 +601,14 @@ class CachedFileSystemDataSource(ImageDataSource):
             caption_text = str(caption) if caption is not None else ""
 
             # Save to file
-            async with aiofiles.open(caption_path, "w", encoding='utf-8') as f:
+            async with aiofiles.open(caption_path, "w", encoding="utf-8") as f:
                 await f.write(caption_text)
             logger.info(f"Saved caption to {caption_path}")
 
             # Update cache
             directory = path.parent
             name = path.name  # Original image name with extension
-            
+
             # Clear directory cache to force rescan
             if directory in self.directory_cache:
                 del self.directory_cache[directory]
@@ -641,7 +655,7 @@ class CachedFileSystemDataSource(ImageDataSource):
             if not path.exists():
                 logger.error(f"Image file not found: {path}")
                 raise FileNotFoundError(f"Image file not found: {path}")
-            
+
             with open_srgb(path) as img:
                 img.thumbnail(self.preview_size)
                 output = BytesIO()
@@ -653,22 +667,26 @@ class CachedFileSystemDataSource(ImageDataSource):
             raise
 
     async def delete_image(
-        self, path: Path, confirm: bool, preserve_latents: bool = False, preserve_txt: bool = False
+        self,
+        path: Path,
+        confirm: bool,
+        preserve_latents: bool = False,
+        preserve_txt: bool = False,
     ) -> Tuple[List[str], List[str], List[str]]:
         """Delete an image/directory and associated files based on preservation settings."""
-        
+
         # If it's a directory, recursively delete its contents
         if path.is_dir():
             if not confirm:
                 # Just return empty lists for dry run
                 return [], [], []
-            
+
             try:
                 # Clear cache for this directory and all subdirectories before deletion
                 for cached_dir in list(self.directory_cache.keys()):
                     if str(cached_dir).startswith(str(path)):
                         del self.directory_cache[cached_dir]
-                
+
                 # Clear database entries for all files in this directory and subdirectories
                 conn = self._get_connection()
                 conn.execute(
@@ -676,26 +694,26 @@ class CachedFileSystemDataSource(ImageDataSource):
                     DELETE FROM image_info 
                     WHERE directory LIKE ?
                     """,
-                    (str(path) + "%",)
+                    (str(path) + "%",),
                 )
                 conn.commit()
-                
+
                 # Recursively delete directory and all contents
                 shutil.rmtree(path)
-                
+
                 # Touch parent directory to force cache update
                 path.parent.touch()
-                
+
                 # Clear parent directory cache to force rescan
                 if path.parent in self.directory_cache:
                     del self.directory_cache[path.parent]
-                
+
                 return [], [str(path)], []
-                
+
             except Exception as e:
                 logger.error(f"Error deleting directory {path}: {e}")
                 raise
-        
+
         # Original file deletion logic for single files
         captions = []
         files = []
@@ -776,7 +794,7 @@ class CachedFileSystemDataSource(ImageDataSource):
     def set_thumbnail_size(self, size: tuple[int, int]):
         """Update thumbnail size and invalidate cache."""
         self.thumbnail_size = size
-        
+
     def clear_thumbnail_cache(self):
         """Clear thumbnail cache to force regeneration."""
         conn = self._get_connection()

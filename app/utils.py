@@ -19,13 +19,13 @@ from fastapi import HTTPException
 def get_safe_filename(filename: str) -> str:
     """
     Convert a filename to a safe version.
-    
+
     Args:
         filename (str): Original filename
-        
+
     Returns:
         str: Sanitized filename with unsafe characters removed
-        
+
     Example:
         >>> get_safe_filename("My File (1).jpg")
         'My_File_1.jpg'
@@ -38,13 +38,13 @@ def get_safe_filename(filename: str) -> str:
 def get_human_readable_size(size_in_bytes: int) -> str:
     """
     Convert bytes to human readable string.
-    
+
     Args:
         size_in_bytes (int): Size in bytes
-        
+
     Returns:
         str: Human-readable size with units
-        
+
     Example:
         >>> get_human_readable_size(1234567)
         '1.2 MB'
@@ -59,14 +59,14 @@ def get_human_readable_size(size_in_bytes: int) -> str:
 def is_path_safe(path: Path, root: Path) -> bool:
     """
     Check if path is safe (within root directory).
-    
+
     Args:
         path (Path): Path to check
         root (Path): Root directory path
-        
+
     Returns:
         bool: True if path is within root directory
-        
+
     Notes:
         - Resolves symlinks before checking
         - Prevents directory traversal attacks
@@ -80,17 +80,17 @@ def is_path_safe(path: Path, root: Path) -> bool:
 def resolve_path(path: str, root: Path) -> Path:
     """
     Resolve a relative path against the root directory with security checks.
-    
+
     Args:
         path (str): Relative path to resolve
         root (Path): Root directory path
-        
+
     Returns:
         Path: Resolved absolute path
-        
+
     Raises:
         HTTPException: If path is outside root directory
-        
+
     Notes:
         - Handles empty paths as root directory
         - Prevents directory traversal

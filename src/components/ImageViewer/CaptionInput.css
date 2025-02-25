@@ -3,6 +3,7 @@
   flex-direction: column;
   gap: var(--half-spacing);
   overflow-y: auto;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tags-list {
@@ -50,6 +51,9 @@
   bottom: 0;
   display: flex;
   align-items: center;
+  background: var(--bg-color);
+  padding: var(--half-spacing) 0;
+  z-index: 2;
 }
 
 .new-tag-input input {
@@ -104,6 +108,7 @@
   background: color-mix(in srgb, var(--secondary-bg) 50%, transparent);
   border-radius: var(--half-spacing);
   overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .e621-editor.invalid-json {
@@ -172,6 +177,7 @@
   position: relative;
   caret-color: var(--json-string);
   border-radius: var(--half-spacing);
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .e621-content::selection {
@@ -415,6 +421,7 @@
   background: color-mix(in srgb, var(--secondary-bg) 50%, transparent);
   border-radius: var(--half-spacing);
   overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toml-editor.invalid-toml {
@@ -440,6 +447,7 @@
   position: relative;
   caret-color: var(--json-string);
   border-radius: var(--half-spacing);
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toml-content::selection {

@@ -23,11 +23,12 @@ from pydantic import BaseModel, Field
 class ViewMode(str, Enum):
     """
     Gallery view mode options.
-    
+
     Defines the available display modes for the gallery view:
     - grid: Thumbnail grid layout
     - list: Detailed list layout
     """
+
     grid = "grid"  # Grid layout with thumbnails
     list = "list"  # List layout with details
 
@@ -35,26 +36,28 @@ class ViewMode(str, Enum):
 class CaptionUpdate(BaseModel):
     """
     Model for caption update requests.
-    
+
     Used when updating the caption text for an image.
-    
+
     Attributes:
         caption (str): The new caption text
     """
+
     caption: str
 
 
 class BaseItem(BaseModel):
     """
     Base model for both images and directories.
-    
+
     Provides common attributes shared by both file types.
-    
+
     Attributes:
         type (str): Item type ("image" or "directory")
         name (str): Item name
         mtime (datetime): Last modification time
     """
+
     type: str  # Item type ("image" or "directory")
     name: str  # Item name
     mtime: datetime  # Last modification time
@@ -63,10 +66,10 @@ class BaseItem(BaseModel):
 class BrowseHeader(BaseModel):
     """
     Metadata for directory browse responses.
-    
+
     Contains information about the current directory listing
     and pagination details.
-    
+
     Attributes:
         mtime (datetime): Directory modification time
         page (int): Current page number
@@ -76,6 +79,7 @@ class BrowseHeader(BaseModel):
         total_folders (int): Total folder count
         total_images (int): Total image count
     """
+
     mtime: datetime  # Directory modification time
     page: int  # Current page number
     pages: int  # Total number of pages
@@ -88,9 +92,9 @@ class BrowseHeader(BaseModel):
 class ImageModel(BaseItem):
     """
     Image item with metadata and captions.
-    
+
     Extends BaseItem with image-specific attributes.
-    
+
     Attributes:
         type (Literal["image"]): Always "image"
         size (int): File size in bytes
@@ -108,6 +112,7 @@ class ImageModel(BaseItem):
             5 = emphasis star
             6 = off star
     """
+
     type: Literal["image"] = "image"
     size: int  # File size in bytes
     mime: str = Field(default="application/octet-stream")
@@ -121,24 +126,26 @@ class ImageModel(BaseItem):
 class DirectoryModel(BaseItem):
     """
     Directory item model.
-    
+
     Extends BaseItem for directory entries.
-    
+
     Attributes:
         type (Literal["directory"]): Always "directory"
     """
+
     type: Literal["directory"] = "directory"
 
 
 class BrowseResponse(BaseModel):
     """
     Complete response for directory browse requests.
-    
+
     Contains both the directory contents and pagination info.
-    
+
     Attributes:
         items (List[Union[BrowseHeader, ImageModel, DirectoryModel]]): Directory contents
         totalPages (int): Total number of pages available
     """
+
     items: List[Union[BrowseHeader, ImageModel, DirectoryModel]]
     totalPages: int

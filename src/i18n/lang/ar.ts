@@ -110,6 +110,16 @@ export default {
     addTag: "إضافة وسم...",
     addCaption: "إضافة تعليق...",
     quickJump: "القفز إلى المجلد...",
+    moveItems: "نقل العناصر",
+    moveItemsDescription: (params: TranslationParams) => "نقل العناصر المحددة إلى مجلد آخر",
+    selectTargetFolder: "اختر المجلد الهدف",
+    searchFolders: "البحث في المجلدات...",
+    noFoldersFound: "لم يتم العثور على مجلدات",
+    noFoldersAvailable: "لا توجد مجلدات متاحة",
+    moveSuccess: "تم النقل بنجاح",
+    moveSelected: "نقل المحدد",
+    moveToFolder: "نقل إلى المجلد",
+    moveError: "خطأ في نقل العناصر",
     loadingFolders: "جارٍ تحميل المجلدات...",
     noResults: "لم يتم العثور على نتائج",
     pathNotFound: "لم يتم العثور على المسار",
@@ -248,15 +258,12 @@ export default {
       const name = params.name ?? "";
       return `في ${name}`;
     },
-    moveToFolder: (params: TranslationParams) => {
-      const name = params.name ?? "المجلد";
-      return `نقل إلى ${name}`;
-    },
     workWithFolder: (params: TranslationParams) => `العمل مع المجلد ${params.name}`,
   },
   shortcuts: {
     title: "اختصارات لوحة المفاتيح",
     galleryNavigation: "تنقل المعرض",
+    multiSelect: "تحديد متعدد",
     quickFolderSwitch: "تبديل المجلد السريع",
     aboveImage: "الصورة أعلاه",
     belowImage: "الصورة أدناه",
@@ -303,6 +310,13 @@ export default {
     addTransformation: "إضافة تحويل",
     transformations: "التحويلات",
     transformationType: "نوع التحويل",
+    example: "مثال",
+    original: "الأصلي",
+    transformed: "المحول",
+    caseType: "نوع الحالة",
+    trimType: "نوع القص",
+    numberAction: "إجراء الرقم",
+    editTransformation: "تحرير التحويل",
     transformationTypes: {
       searchReplace: "بحث واستبدال",
       case: "تحويل الحالة",

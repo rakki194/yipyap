@@ -172,6 +172,7 @@ const GalleryProvider: Component<{ children: JSX.Element }> = (props) => {
     setMode: () => true,
     selected: null,
     setColumns: () => { },
+    setFavoriteState: mockAction(async () => new Error("Mock error")),
   };
 
   return (

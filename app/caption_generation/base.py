@@ -22,53 +22,54 @@ This design enables:
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+
 class CaptionGenerator(ABC):
     """
     Abstract base class for caption generators.
-    
+
     All caption generators must inherit from this class and implement its abstract
     methods. This ensures a consistent interface across different generator types
     while allowing for model-specific optimizations.
-    
+
     Required Methods:
         generate: Generate caption for an image
         is_available: Check if the model is available
         name: Get generator name
         caption_type: Get caption file type
-        
+
     Example Implementation:
         class MyGenerator(CaptionGenerator):
             async def generate(self, image_path: Path) -> str:
                 # Implementation here
                 return "Generated caption"
-                
+
             def is_available(self) -> bool:
                 return True  # Check dependencies
-                
+
             @property
             def name(self) -> str:
                 return "MyGenerator"
-                
+
             @property
             def caption_type(self) -> str:
                 return "caption"
     """
-    
+
     @abstractmethod
     async def generate(self, image_path: Path, **kwargs) -> str:
         """
         Generate caption for an image.
-        
+
         Args:
             image_path (Path): Path to the image file
             **kwargs: Additional model-specific parameters
-            
+
         Returns:
             str: Generated caption text
-            
+
         Raises:
             Exception: If caption generation fails
-            
+
         Notes:
             - Should handle image loading errors
             - Should implement timeout handling
@@ -80,10 +81,10 @@ class CaptionGenerator(ABC):
     def is_available(self) -> bool:
         """
         Check if the model and its dependencies are available.
-        
+
         Returns:
             bool: True if the generator is ready to use, False otherwise
-            
+
         Notes:
             - Should check for model files
             - Should verify required libraries
@@ -91,16 +92,16 @@ class CaptionGenerator(ABC):
             - Should handle missing dependencies gracefully
         """
         pass
-    
+
     @property
     @abstractmethod
     def name(self) -> str:
         """
         Get the name of the generator.
-        
+
         Returns:
             str: Unique identifier for this generator type
-            
+
         Notes:
             - Should be a valid Python identifier
             - Should be unique across all generators
@@ -113,13 +114,13 @@ class CaptionGenerator(ABC):
     def caption_type(self) -> str:
         """
         Get the type of caption this generator produces.
-        
+
         Returns:
             str: Caption file extension without dot (e.g., "caption", "tags")
-            
+
         Notes:
             - Used for file extension
             - Should match expected format
             - No leading dot
         """
-        pass 
+        pass

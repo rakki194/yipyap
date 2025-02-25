@@ -6,14 +6,15 @@ import {
   For,
   createEffect,
   Index,
+  onCleanup,
 } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import { createSelection } from "@solid-primitives/selection";
 import getIcon, { captionIconsMap } from "~/icons";
+import { preserveState } from "~/directives";
 import { useGallery } from "~/contexts/GalleryContext";
 import { CaptionTools } from "./CaptionTools";
 import { TagBubble } from "./TagBubble";
-import { preserveState } from "~/directives";
 import "./CaptionInput.css";
 import { useAppContext } from "~/contexts/app";
 import { useCaptionHistory } from "~/composables/useCaptionHistory";

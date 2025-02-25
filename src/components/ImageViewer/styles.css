@@ -229,17 +229,20 @@ body.modal-open {
       flex-direction: row;
       align-items: flex-start;
       gap: var(--spacing);
-      transition-property: flex;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       flex: 1 1 min-content;
       max-height: 20rem;
       min-height: 10rem;
 
       &.collapsed {
         flex-grow: 0;
+        max-height: 4rem;
+        opacity: 0.8;
       }
 
       &.expanded {
         flex-shrink: 0;
+        max-height: 40rem;
       }
 
       &>* {
@@ -252,6 +255,7 @@ body.modal-open {
         height: 100%;
         min-height: 100%;
         max-height: unset;
+        transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       &>.caption-icons {

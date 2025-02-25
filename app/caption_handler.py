@@ -17,13 +17,13 @@ import aiofiles
 async def get_caption(caption_path: Path) -> str:
     """
     Read caption from file if it exists.
-    
+
     Args:
         caption_path (Path): Path to caption file
-        
+
     Returns:
         str: Caption text or empty string if file not found
-        
+
     Notes:
         - Uses aiofiles for async file reading
         - Returns empty string for missing files
@@ -38,11 +38,11 @@ async def get_caption(caption_path: Path) -> str:
 async def save_caption(caption_path: Path, caption: str) -> None:
     """
     Save caption to file.
-    
+
     Args:
         caption_path (Path): Path to caption file
         caption (str): Caption text to save
-        
+
     Notes:
         - Uses aiofiles for async file writing
         - Creates parent directories if needed

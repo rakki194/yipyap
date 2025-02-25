@@ -200,6 +200,7 @@ export default {
       tags: "Етикети",
       caption: "Надпис",
       wd: "WD",
+      florence: "Florence",
     },
     noCaptionFiles: "Няма файлове с надписи",
     uploadError: "Грешка при качване",

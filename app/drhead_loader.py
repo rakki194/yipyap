@@ -78,13 +78,13 @@ _VALID_MODES = [
 def _coalesce_intent(intent: Intent | int) -> Intent:
     """
     Convert integer intent to ImageCms.Intent enum.
-    
+
     Args:
         intent (Intent | int): Intent value to coalesce
-        
+
     Returns:
         Intent: Corresponding Intent enum value
-        
+
     Raises:
         ValueError: If intent value is invalid
     """
@@ -116,7 +116,7 @@ def open_srgb(
 ):
     """
     Open an image and convert it to sRGB color space.
-    
+
     Args:
         file_descriptor_or_path: File path or descriptor to open
         file_descriptor: Alternative file descriptor
@@ -125,10 +125,10 @@ def open_srgb(
         intent_fallback: Whether to try fallback intents
         formats: List of allowed formats
         force_load: Whether to force immediate loading
-        
+
     Returns:
         Image: PIL Image in sRGB color space
-        
+
     Notes:
         - Handles various color spaces and profiles
         - Preserves alpha channels during conversion
@@ -156,17 +156,17 @@ def ensure_srgb(
 ) -> Image.Image:
     """
     Convert an image to sRGB color space if needed.
-    
+
     Args:
         img: PIL Image to convert
         intent: Color rendering intent
         intent_flags: Custom intent flags
         intent_fallback: Whether to try fallback intents
         fp: File path for logging
-        
+
     Returns:
         Image: Converted image in sRGB color space
-        
+
     Notes:
         - Handles alpha channel preservation
         - Supports various input color spaces
@@ -220,7 +220,7 @@ def convert_profile(
 ):
     """
     Convert image using ICC profile.
-    
+
     Args:
         img: PIL Image to convert
         mode: Target color mode
@@ -228,10 +228,10 @@ def convert_profile(
         intent_flags: Custom intent flags
         intent_fallback: Whether to try fallback intents
         fp: File path for logging
-        
+
     Returns:
         Image: Converted image
-        
+
     Notes:
         - Handles ICC profile validation
         - Supports various color spaces
@@ -318,13 +318,13 @@ def convert_profile(
 def run_magick_convert(input_path: Path):
     """
     Fix an image using ImageMagick.
-    
+
     Args:
         input_path (Path): Path to input image
-        
+
     Returns:
         Path: Path to converted temporary file
-        
+
     Notes:
         - Creates temporary file for output
         - Uses ImageMagick's convert command
@@ -339,14 +339,14 @@ def run_magick_convert(input_path: Path):
 def open_image_magick_fallback(input_path: Path, force_load=True):
     """
     Open an image with Pillow, falling back to ImageMagick if needed.
-    
+
     Args:
         input_path (Path): Path to input image
         force_load (bool): Whether to force immediate loading
-        
+
     Returns:
         Image: Opened PIL Image
-        
+
     Notes:
         - Attempts Pillow first
         - Falls back to ImageMagick on failure

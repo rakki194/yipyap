@@ -41,7 +41,7 @@ const NO_CAPTION_IMAGES = [
 ] as const;
 
 // Add this helper function near the top of the file
-const AVAILABLE_CAPTION_TYPES = ['txt', 'tags', 'caption', 'wd'] as const;
+const AVAILABLE_CAPTION_TYPES = ['txt', 'tags', 'caption', 'wd', 'florence'] as const;
 
 export const ImageModal = (props: ImageModalProps) => {
   const { windowSize } = useGallery();
