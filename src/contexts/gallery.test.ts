@@ -304,11 +304,15 @@ describe("Gallery State Management", () => {
 
     beforeEach(() => {
       localStorage.clear();
+      // Reset all mocks
+      vi.clearAllMocks();
+
+      // Mock fetch with proper response format
       global.fetch = vi.fn().mockImplementation((url) => {
         if (url === '/api/folders') {
           return Promise.resolve({
             ok: true,
-            json: () => Promise.resolve(mockFolders)
+            json: () => Promise.resolve({ folders: mockFolders })
           });
         }
         return Promise.resolve({

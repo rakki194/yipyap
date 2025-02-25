@@ -635,11 +635,15 @@ export function makeGalleryState() {
         return response.json();
       })
       .then(data => {
-        // The API returns the folders array directly
-        const folders = Array.isArray(data) ? data : [];
+        // The API returns { folders: FolderInfo[] }
+        const folders = data.folders || [];
         folderCache = folders;
         saveFolderCache(folders);
         return folders;
+      })
+      .catch(error => {
+        console.error('Error fetching folders:', error);
+        return [];
       })
       .finally(() => {
         folderCachePromise = null;
