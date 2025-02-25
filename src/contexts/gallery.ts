@@ -125,9 +125,6 @@ const FOLDER_CACHE_KEY = 'yipyap_folder_cache';
 const FOLDER_CACHE_TTL = 1000 * 60 * 60; // 1 hour
 const FOLDER_CACHE_VERSION = 1;
 
-let folderCache: FolderInfo[] | null = null;
-let folderCachePromise: Promise<FolderInfo[]> | null = null;
-
 interface FolderCache {
   folders: FolderInfo[];
   timestamp: number;
@@ -170,6 +167,10 @@ const saveFolderCache = (folders: FolderInfo[]) => {
 // Call in reactive contexts only
 export function makeGalleryState() {
   const app = useAppContext();
+
+  // Instance-specific folder cache variables
+  let folderCache: FolderInfo[] | null = null;
+  let folderCachePromise: Promise<FolderInfo[]> | null = null;
 
   // State part of the URL
   // FIXME: Most of these are unused, but eventually we want to have some search params in the URL
