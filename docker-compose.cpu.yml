@@ -1,0 +1,26 @@
+x-common-build: &common-build
+  build:
+    context: .
+    dockerfile: Dockerfile.cpu
+    args:
+      UID: ${UID:-1000}
+      GID: ${GID:-1000}
+  image: yipyap:cpu
+  working_dir: /app
+
+services:
+  yipyap:
+    <<: *common-build
+    ports:
+      - "127.0.0.1:7000:7000"
+    environment:
+      ROOT_DIR: /app/images
+      RUN_MODE: both
+      PORT: 7000
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - ./:/app
+      - ${YIPYAP_DATA_DIR:-./data}:/app/images
+    user: "${UID}:${GID}"
+    command: "/entrypoint/entrypoint.sh"
+    restart: unless-stopped 
