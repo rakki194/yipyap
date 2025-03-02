@@ -43,7 +43,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 WORKDIR /app
 
 # Install Python dependencies for the backend
-COPY requirements.txt /app/requirements.txt
+COPY requirements.cpu.txt /app/requirements.txt
 RUN pip install --break-system-packages -r /app/requirements.txt
 
 # Ensure uvicorn is installed

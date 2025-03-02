@@ -1,0 +1,29 @@
+# Core dependencies
+fastapi
+python-magic
+python-multipart
+pillow
+aiofiles
+uvicorn[standard]
+watchfiles
+
+# Image processing
+pillow-avif-plugin
+pillow-jxl-plugin
+natsort
+
+# Machine learning and model dependencies
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch --extra-index-url https://download.pytorch.org/whl/cpu
+torchvision --extra-index-url https://download.pytorch.org/whl/cpu
+timm
+safetensors
+huggingface_hub
+pandas
+numpy
+
+# Data validation
+pydantic
+
+# Type hints
+typing-extensions 
