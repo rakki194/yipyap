@@ -73,20 +73,6 @@ parking_lot = "0.12.3"
 lru = "0.13.0"
 dashmap = "6.1.0"
 
-[profile.release]
-opt-level = 3
-lto = "thin"
-codegen-units = 1
-strip = true
-panic = "abort"
-
-[profile.dev.package."*"]
-opt-level = 2
-
-[profile.dev]
-opt-level = 0
-debug = true
-
 [[bin]]
 name = "yipyap"
 path = "src/main.rs"
