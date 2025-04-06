@@ -76,13 +76,17 @@ import StarThreeQuarterRegular from "@fluentui/svg-icons/icons/star_three_quarte
 import ImageAddRegular from "@fluentui/svg-icons/icons/image_add_24_regular.svg?raw";
 import MoveIcon from "@fluentui/svg-icons/icons/folder_arrow_right_24_regular.svg?raw";
 
+// FIXME: fix confusion between model type and caption type
 export const captionIconsMap = {
   txt: "notepad",
   tags: "tag",
+  jtp2: "tag",
   caption: "subtitles",
   wd: "wd",
+  wdv3: "wd",
   e621: "beakerRegular",
   florence: "rocket",
+  florence2: "rocket",
   json: "type",
   toml: "type",
 };

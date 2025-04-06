@@ -37,6 +37,7 @@ from fastapi import FastAPI, HTTPException, Query, Request, File, UploadFile, Bo
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from email.utils import parsedate_to_datetime, format_datetime
 from typing import List, Dict, Any
 import shutil
@@ -61,25 +62,36 @@ logger.info(f"Starting server in {'development' if is_dev else 'production'} mod
 app = FastAPI()
 
 
-if is_dev:
-    dev_port = int(os.getenv("DEV_PORT", "1984"))
-    logger.info(f"Allowing CORS requests from http://localhost:{dev_port}")
+async def serve_spa(request: Request, call_next):
+    response = await call_next(request)
+    if response.status_code != 404:
+        return response
 
-    # Development-only middleware
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[f"http://localhost:{dev_port}"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    # Vite should handle the static files
-else:
+    # Check if the request is for HTML content, and not for API or static files
+    accept_header = request.headers.get("accept", "")
+    if "text/html" not in accept_header or request.url.path.startswith(
+        (
+            "/api/",
+            "/preview/",
+            "/thumbnail/",
+            "/download/",
+            "/assets/",
+        )
+    ):
+        return response
+
+    logger.debug(f"Serving SPA root for path: {request.url.path}")
+    return FileResponse("dist/index.html")
+
+
+if not is_dev:
     # Production-only: serve the built frontend assets
     logger.info("Mounting production static files from /dist/")
     app.mount("/static", StaticFiles(directory="static"), name="static")
     # mount /assets for Vite's bundled files
     app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
+    # Serve the SPA for production
+    app.add_middleware(BaseHTTPMiddleware, dispatch=serve_spa)
 
 # Initialize data source
 ROOT_DIR = Path(os.getenv("ROOT_DIR", Path.cwd())).resolve()
@@ -324,7 +336,38 @@ async def download_image(path: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.put("/caption/{path:path}")
+@app.get("/api/config")
+async def get_config():
+    """
+    Get application configuration settings.
+
+    Returns:
+        dict: Configuration settings
+            - thumbnail_size (tuple): Max width/height for thumbnails
+            - preview_size (tuple): Max width/height for previews
+    """
+    return {
+        "thumbnail_size": data_source.thumbnail_size,
+        "preview_size": data_source.preview_size,
+    }
+
+
+@app.put("/api/config/thumbnail_size")
+async def update_thumbnail_size(size: int):
+    """Update thumbnail size configuration."""
+    if size < 100 or size > 500:
+        raise HTTPException(status_code=400, detail="Invalid thumbnail size")
+
+    # Update the thumbnail size
+    data_source.set_thumbnail_size((size, size))
+
+    # Clear thumbnail cache to regenerate with new size
+    data_source.clear_thumbnail_cache()
+
+    return {"success": True}
+
+
+@app.put("/api/caption/{path:path}")
 async def update_caption(path: str, caption_data: dict):
     """
     Create or update a caption file for an image.
@@ -379,38 +422,6 @@ async def update_caption(path: str, caption_data: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/config")
-async def get_config():
-    """
-    Get application configuration settings.
-
-    Returns:
-        dict: Configuration settings
-            - thumbnail_size (tuple): Max width/height for thumbnails
-            - preview_size (tuple): Max width/height for previews
-    """
-    return {
-        "thumbnail_size": data_source.thumbnail_size,
-        "preview_size": data_source.preview_size,
-    }
-
-
-@app.put("/config/thumbnail_size")
-async def update_thumbnail_size(size: int):
-    """Update thumbnail size configuration."""
-    if size < 100 or size > 500:
-        raise HTTPException(status_code=400, detail="Invalid thumbnail size")
-
-    # Update the thumbnail size
-    data_source.set_thumbnail_size((size, size))
-
-    # Clear thumbnail cache to regenerate with new size
-    data_source.clear_thumbnail_cache()
-
-    return {"success": True}
-
-
-# Used for deleting a single caption file.
 @app.delete("/api/caption/{path:path}")
 async def delete_caption(path: str, caption_type: str = Query(...)):
     """Delete a caption file for an image"""
@@ -482,40 +493,6 @@ async def get_all_folders():
     except Exception as e:
         logger.error(f"Error scanning folders: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-
-if not is_dev:
-
-    @app.middleware("http")
-    async def serve_spa(request: Request, call_next):
-        response = await call_next(request)
-        if response.status_code != 404:
-            print("Not 404")
-            return response
-
-        # Check if the request is for HTML content
-        accept_header = request.headers.get("accept", "")
-        if "text/html" not in accept_header:
-            print("Not HTML")
-            return response
-
-        if request.url.path.startswith(
-            (
-                "/api/",
-                "/assets/",
-                "/static/",
-                "/config",
-                "/preview/",
-                "/thumbnail/",
-                "/download/",
-                "/caption/",
-            )
-        ):
-            print("API or static", request.url.path)
-            return response
-
-        logger.debug(f"Serving SPA for path: {request.url.path}")
-        return FileResponse("dist/index.html")
 
 
 @app.get("/api/captioners")
@@ -630,7 +607,6 @@ async def generate_caption(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Add new endpoint to update model path
 @app.put("/api/jtp2-config")
 async def update_jtp2_config(config: dict):
     """
@@ -767,7 +743,6 @@ async def upload_files(path: str, files: List[UploadFile] = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Add a root upload endpoint as well
 @app.post("/api/upload")
 async def upload_files_root(files: List[UploadFile] = File(...)):
     """
@@ -1199,7 +1174,6 @@ async def get_captioner_config(name: str):
     return config
 
 
-# Add this after other routes but before the middleware
 @app.get("/api/debug/routes")
 async def list_routes():
     """List all mounted routes for debugging"""
@@ -1229,19 +1203,19 @@ async def list_routes():
     return routes
 
 
-# Add a direct route to handle pixelings assets
-@app.get("/pixelings/{filename:path}")
-@app.head("/pixelings/{filename:path}")
-async def serve_pixelings(filename: str):
-    """Serve pixelings assets directly from dist/assets/pixelings"""
-    asset_path = Path(f"dist/assets/pixelings/{filename}").resolve()
+# # Add a direct route to handle pixelings assets
+# @app.get("/pixelings/{filename:path}")
+# @app.head("/pixelings/{filename:path}")
+# async def serve_pixelings(filename: str):
+#     """Serve pixelings assets directly from dist/assets/pixelings"""
+#     asset_path = Path(f"dist/assets/pixelings/{filename}").resolve()
 
-    # Basic security check to prevent directory traversal
-    if not str(asset_path).startswith(str(Path("dist/assets/pixelings").resolve())):
-        raise HTTPException(status_code=403, detail="Access denied")
+#     # Basic security check to prevent directory traversal
+#     if not str(asset_path).startswith(str(Path("dist/assets/pixelings").resolve())):
+#         raise HTTPException(status_code=403, detail="Access denied")
 
-    if not asset_path.exists():
-        logger.error(f"Pixeling asset not found: {filename}")
-        raise HTTPException(status_code=404, detail="Asset not found")
+#     if not asset_path.exists():
+#         logger.error(f"Pixeling asset not found: {filename}")
+#         raise HTTPException(status_code=404, detail="Asset not found")
 
-    return FileResponse(asset_path)
+#     return FileResponse(asset_path)

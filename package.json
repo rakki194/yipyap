@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && mkdir -p dist/assets/pixelings && cp -r dist/pixelings/* dist/assets/pixelings/",
+    "build": "vite build",
     "serve": "vite preview",
     "check": "tsc --noEmit",
     "types": "tsc --emitDeclarationOnly",

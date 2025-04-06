@@ -12,7 +12,7 @@
  */
 
 import type { } from "../models";
-import { fetchStreamingJson } from "../utils/streaming_json";
+import { retryStreamingJson } from "../utils/retry";
 import { retryFetch } from "../utils/retry";
 import {
   Accessor,
@@ -113,10 +113,6 @@ export interface ImageItem extends BaseItem {
 
 export type AnyItem = DirectoryItem | ImageItem;
 
-// type LoadingItem<T extends BaseItem = AnyItem> = T extends BaseItem
-//     ? BaseItem & { loaded: false, (): ReturnType<T> }
-//     : never;
-
 /**
  * Fetches a page of items from the server and processes them through callbacks.
  * 
@@ -137,7 +133,7 @@ function fetchPage(
   onError: (error: Error) => void
 ): Promise<void> {
   //console.debug('Fetching page from server:', { path, page });
-  return fetchStreamingJson(
+  return retryStreamingJson(
     `/api/browse?path=${path}&page=${page}&page_size=100`,
     (item, idx) => {
       //console.debug('Received item from stream:', { idx, item });
@@ -363,7 +359,7 @@ export function saveCaption(
   imageName: string,
   data: SaveCaption
 ): Promise<Response> {
-  return retryFetch(`/caption/${path}/${imageName}`, {
+  return retryFetch(`/api/caption/${path}/${imageName}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
