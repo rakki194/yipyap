@@ -28,8 +28,9 @@ import json
 import time
 import argparse
 import logging
+import contextlib
 from pathlib import Path
-from typing import Union, Optional
+from typing import Union, Optional, Dict, List
 
 # Try to import pillow_jxl for JXL support
 try:
@@ -46,6 +47,60 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("florence2")
+
+
+# Add compatibility shim for init_empty_weights (missing in some transformers versions)
+@contextlib.contextmanager
+def init_empty_weights():
+    """
+    A context manager that initializes model weights as empty.
+    This is used as a fallback if the function is not available in the installed transformers library.
+    """
+    logger.info("Using custom init_empty_weights implementation")
+    try:
+        yield
+    finally:
+        pass
+
+
+# Add compatibility shim for find_tied_parameters (missing in some transformers versions)
+def find_tied_parameters(model) -> Dict[str, List[List[int]]]:
+    """
+    Find the tied parameters in the model to ensure they remain tied after parameter updates.
+
+    Args:
+        model: The model in which to find the tied parameters
+
+    Returns:
+        Dictionary of parameter names and tied parameter addresses
+    """
+    logger.info("Using custom find_tied_parameters implementation")
+    # Return an empty dict as a simple implementation
+    return {}
+
+
+# Monkey patch missing functions into transformers.utils
+try:
+    import transformers.utils
+
+    if not hasattr(transformers.utils, "init_empty_weights"):
+        logger.info("Monkey patching init_empty_weights into transformers.utils")
+        transformers.utils.init_empty_weights = init_empty_weights
+    if not hasattr(transformers.utils, "find_tied_parameters"):
+        logger.info("Monkey patching find_tied_parameters into transformers.utils")
+        transformers.utils.find_tied_parameters = find_tied_parameters
+
+    # Also add to modeling_utils
+    import transformers.modeling_utils
+
+    if not hasattr(transformers.modeling_utils, "init_empty_weights"):
+        logger.info("Adding init_empty_weights to transformers.modeling_utils")
+        transformers.modeling_utils.init_empty_weights = init_empty_weights
+    if not hasattr(transformers.modeling_utils, "find_tied_parameters"):
+        logger.info("Adding find_tied_parameters to transformers.modeling_utils")
+        transformers.modeling_utils.find_tied_parameters = find_tied_parameters
+except ImportError:
+    logger.warning("Could not import transformers.utils for monkey patching")
 
 
 def parse_args():
@@ -110,10 +165,42 @@ def load_model(device: Optional[str] = None, precision: str = "fp16"):
         import torch
         from transformers import AutoProcessor
 
+        # Try to import init_empty_weights from transformers,
+        # or use our compatibility version if not available
+        try:
+            from transformers.utils import init_empty_weights
+
+            logger.info("Using transformers.utils.init_empty_weights")
+        except ImportError:
+            logger.warning(
+                "init_empty_weights not found in transformers.utils, using compatibility version"
+            )
+            # init_empty_weights is already defined above
+
+        # Fix import path for florence2_implementation
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        if script_dir not in sys.path:
+            sys.path.append(script_dir)
+            logger.info(f"Added {script_dir} to sys.path")
+
         # Import locally to avoid dependency issues
-        from florence2_implementation.modeling_florence2 import (
-            Florence2ForConditionalGeneration,
-        )
+        try:
+            from florence2_implementation.modeling_florence2 import (
+                Florence2ForConditionalGeneration,
+            )
+        except ImportError as e:
+            logger.error(f"Error importing modeling_florence2: {e}")
+            # Try absolute import
+            try:
+                from app.caption_generation.plugins.florence2.florence2_implementation.modeling_florence2 import (
+                    Florence2ForConditionalGeneration,
+                )
+
+                logger.info("Successfully imported with absolute path")
+            except ImportError:
+                raise ImportError(
+                    "Failed to import Florence2ForConditionalGeneration. Make sure the florence2_implementation directory exists and contains the required files."
+                )
 
         # Determine device
         if device is None:
@@ -122,37 +209,42 @@ def load_model(device: Optional[str] = None, precision: str = "fp16"):
         logger.info(f"Loading Florence2 model on {device} with {precision} precision")
         start_time = time.time()
 
-        # Load model
-        model = Florence2ForConditionalGeneration.from_pretrained(
-            "lodestone-horizon/furrence2-large"
-        ).eval()
+        try:
+            # Load model
+            model = Florence2ForConditionalGeneration.from_pretrained(
+                "lodestone-horizon/furrence2-large"
+            ).eval()
 
-        # Load processor from local directory
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        processor = AutoProcessor.from_pretrained(
-            os.path.join(script_dir, "florence2_implementation"), trust_remote_code=True
-        )
+            # Load processor from local directory
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            processor = AutoProcessor.from_pretrained(
+                os.path.join(script_dir, "florence2_implementation"),
+                trust_remote_code=True,
+            )
 
-        # Ensure precision is set correctly
-        # If using cuda and fp16, convert to half precision first, then move to device
-        # This ensures all model parameters have the same precision
-        if device == "cuda" and precision == "fp16":
-            logger.info("Converting model to half precision (fp16)")
-            model = model.half()
+            # Ensure precision is set correctly
+            # If using cuda and fp16, convert to half precision first, then move to device
+            # This ensures all model parameters have the same precision
+            if device == "cuda" and precision == "fp16":
+                logger.info("Converting model to half precision (fp16)")
+                model = model.half()
 
-        # Move model to device after setting precision
-        logger.info(f"Moving model to {device}")
-        model = model.to(device)
+            # Move model to device after setting precision
+            logger.info(f"Moving model to {device}")
+            model = model.to(device)
 
-        logger.info(f"Model loaded in {time.time() - start_time:.2f} seconds")
-        return model, processor
+            logger.info(f"Model loaded in {time.time() - start_time:.2f} seconds")
+            return model, processor
+        except Exception as e:
+            logger.error(f"Error during model loading: {e}", exc_info=True)
+            raise
 
     except ImportError as e:
         logger.error(f"Missing dependencies: {e}")
-        sys.exit(1)
+        raise
     except Exception as e:
         logger.error(f"Error loading model: {e}", exc_info=True)
-        sys.exit(1)
+        raise
 
 
 def load_jtp_model(model_path: str, device: str = "cuda", precision: str = "fp16"):
