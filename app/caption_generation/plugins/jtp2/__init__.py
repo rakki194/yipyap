@@ -12,28 +12,29 @@ Joint Tagger Project PILOT2 model.
 """
 
 from pathlib import Path
+import os
 
 
 def register_plugin():
     """
     Register the JTP2 plugin with the system.
-    
+
     Returns:
         dict: Plugin registration information
     """
-    # Get the path to this plugin directory
-    plugin_dir = Path(__file__).parent
-    
-    # Default paths relative to the plugin directory
-    model_dir = plugin_dir / "models"
-    
+    # Use the local JTP2 repository
+    local_jtp2_dir = Path("/home/kade/source/repos/JTP2")
+
     return {
         "name": "jtp2",
         "module_path": "app.caption_generation.plugins.jtp2.generator",
         "default_config": {
-            "model_path": str(model_dir / "JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors"),
-            "tags_path": str(model_dir / "tags.json"),
+            "model_path": str(
+                local_jtp2_dir
+                / "JTP_PILOT2-e3-vit_so400m_patch14_siglip_384.safetensors"
+            ),
+            "tags_path": str(local_jtp2_dir / "tags.json"),
             "threshold": 0.2,
-            "force_cpu": False
-        }
-    } 
+            "force_cpu": False,
+        },
+    }

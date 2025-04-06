@@ -228,6 +228,14 @@ const ModelBody = (props: {
     return AVAILABLE_CAPTION_TYPES.some(type => !existingTypes.has(type));
   };
 
+  // Force re-rendering of captions when they change
+  createEffect(() => {
+    // This creates a dependency on the captions array
+    // and will cause a re-render when it changes
+    const captions = props.captions;
+    console.debug("Captions updated:", captions.map(c => c[0]).join(", "));
+  });
+
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
       <ImageView
@@ -620,6 +628,7 @@ const ExpandableMenu = (props: {
   generateTags: (type: string) => void;
 }) => {
   const [isExpanded, setIsExpanded] = createSignal(false);
+  const { t } = useAppContext();
 
   return (
     <>
@@ -627,8 +636,8 @@ const ExpandableMenu = (props: {
         type="button"
         class="icon"
         onClick={() => setIsExpanded(x => !x)}
-        title="Generate Tags"
-        aria-label="Generate Tags"
+        title={t('gallery.generateTags')}
+        aria-label={t('gallery.generateTags')}
       >
         {getIcon("sparkle")}
       </button>
@@ -651,6 +660,15 @@ const ExpandableMenu = (props: {
             }}
           >
             Generate with WDv3
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              props.generateTags("florence2");
+              setIsExpanded(false);
+            }}
+          >
+            Generate with Florence2
           </button>
         </div>
       </Show>

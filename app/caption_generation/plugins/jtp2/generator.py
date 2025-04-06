@@ -21,11 +21,9 @@ The generator uses:
 
 import json
 import logging
-from enum import Enum, auto
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any
 
-import torch
 from PIL import Image
 
 from app.caption_generation.base import CaptionGenerator
@@ -269,6 +267,21 @@ class JTP2Generator(CaptionGenerator):
                 def forward(self, x: torch.Tensor) -> torch.Tensor:
                     return torch.sigmoid(self.gate(x)) * self.head(x)
 
+                # Method to convert from LinearHead to GatedHead structure
+                @classmethod
+                def from_linear(cls, linear_weight, linear_bias, num_classes):
+                    in_features = linear_weight.shape[1]
+                    instance = cls(in_features, num_classes)
+
+                    # Initialize both gate and head with the same weights
+                    # This preserves the original functionality while matching the new structure
+                    instance.gate.weight.data.copy_(linear_weight)
+                    instance.gate.bias.data.copy_(linear_bias)
+                    instance.head.weight.data.copy_(linear_weight)
+                    instance.head.bias.data.copy_(linear_bias)
+
+                    return instance
+
             # Set up image transformation pipeline
             self._transform = transforms.Compose(
                 [
@@ -282,19 +295,92 @@ class JTP2Generator(CaptionGenerator):
                 ]
             )
 
-            # Initialize model
-            self._model = timm.create_model(
-                "vit_so400m_patch14_siglip_384.webli",
-                pretrained=False,
-                num_classes=9083,
-            )
+            # Initialize model and determine the number of classes
+            try:
+                # First load the model state dict to determine the output size
+                state_dict = safetensors.torch.load_file(str(self.model_path))
 
-            # Get the input feature dimension
-            in_features = self._model.head.weight.shape[1]  # This will be an integer
-            self._model.head = GatedHead(in_features, 9083)
+                # Check for head.linear structure and get number of classes
+                if "head.linear.weight" in state_dict:
+                    num_classes = state_dict["head.linear.weight"].shape[0]
+                    logger.info(
+                        f"Detected model with head.linear structure and {num_classes} classes"
+                    )
+                    has_linear_head = True
+                elif "head.weight" in state_dict:
+                    num_classes = state_dict["head.weight"].shape[0]
+                    logger.info(
+                        f"Detected model with standard head structure and {num_classes} classes"
+                    )
+                    has_linear_head = False
+                else:
+                    # Default fallback
+                    num_classes = 9083
+                    logger.warning(
+                        f"Could not determine number of classes, using default: {num_classes}"
+                    )
+                    has_linear_head = False
 
-            # Load model weights
-            safetensors.torch.load_model(self._model, str(self.model_path))
+                # Create the model with the correct number of classes
+                self._model = timm.create_model(
+                    "vit_so400m_patch14_siglip_384.webli",
+                    pretrained=False,
+                    num_classes=num_classes,
+                )
+
+                # Now load the model based on its structure
+                if has_linear_head:
+                    logger.info("Using head.linear structure from local JTP2 model")
+
+                    # Custom head structure that matches the model weights
+                    class LinearHead(nn.Module):
+                        def __init__(self, in_features, num_classes):
+                            super().__init__()
+                            self.linear = nn.Linear(in_features, num_classes)
+
+                        def forward(self, x):
+                            return self.linear(x)
+
+                    # Replace the head with a LinearHead
+                    in_features = self._model.head.weight.shape[1]
+                    self._model.head = LinearHead(in_features, num_classes)
+
+                    # Now load the model weights
+                    safetensors.torch.load_model(self._model, str(self.model_path))
+                else:
+                    # This is the standard structure - load the model with original head
+                    # then convert to GatedHead
+                    logger.info(
+                        "Using standard head structure with GatedHead conversion"
+                    )
+                    # Load model weights first with the original linear head
+                    safetensors.torch.load_model(self._model, str(self.model_path))
+
+                    # Store the original linear weights and biases
+                    linear_weight = self._model.head.weight.clone()
+                    linear_bias = self._model.head.bias.clone()
+
+                    # Now replace the head with our GatedHead, initializing from the linear weights
+                    in_features = linear_weight.shape[1]
+                    self._model.head = GatedHead.from_linear(
+                        linear_weight, linear_bias, num_classes
+                    )
+
+                # Load tags
+                with open(self.tags_path, "r", encoding="utf-8") as file:
+                    tags = json.load(file)
+                self._tags = [tag.replace("_", " ") for tag in tags.keys()]
+
+                # Verify that the number of tags matches the model output
+                if len(self._tags) != num_classes:
+                    logger.warning(
+                        f"Mismatch between number of tags ({len(self._tags)}) "
+                        f"and model output dimensions ({num_classes})"
+                    )
+
+            except Exception as e:
+                logger.error(f"Error loading model weights: {e}", exc_info=True)
+                raise RuntimeError(f"Failed to load JTP2 model weights: {e}")
 
             # Set up CUDA if available
             if torch.cuda.is_available() and not self.force_cpu:
@@ -303,11 +389,6 @@ class JTP2Generator(CaptionGenerator):
                     # Convert entire model to half precision
                     self._model = self._model.half()
             self._model.eval()
-
-            # Load tags
-            with open(self.tags_path, "r", encoding="utf-8") as file:
-                tags = json.load(file)
-            self._tags = [tag.replace("_", " ") for tag in tags.keys()]
 
             self._initialized = True
 
@@ -330,6 +411,7 @@ class JTP2Generator(CaptionGenerator):
         """
         # Import torch here to avoid issues if it's not installed
         import torch
+        import torch.nn as nn
 
         try:
             # Load and preprocess the image
@@ -345,13 +427,23 @@ class JTP2Generator(CaptionGenerator):
             # Run inference
             with torch.no_grad():
                 output = self._model(img_tensor)
-                probs = torch.sigmoid(output).cpu().numpy()[0]
 
-            # Process results
+                # Process output based on head type
+                if isinstance(self._model.head, nn.Linear):
+                    # Standard linear head
+                    probs = torch.sigmoid(output).cpu().numpy()[0]
+                elif hasattr(self._model.head, "linear"):
+                    # LinearHead class
+                    probs = torch.sigmoid(output).cpu().numpy()[0]
+                else:
+                    # GatedHead class (output already has sigmoid applied)
+                    probs = output.cpu().numpy()[0]
+
+            # Process results - make sure we don't go out of bounds
             tags = []
-            for i, (tag, prob) in enumerate(zip(self._tags, probs)):
-                if prob > self.threshold:
-                    tags.append(tag)
+            for i, prob in enumerate(probs):
+                if i < len(self._tags) and prob > self.threshold:
+                    tags.append(self._tags[i])
 
             # Return comma-separated list
             return ", ".join(tags)

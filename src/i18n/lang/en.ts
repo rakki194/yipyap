@@ -253,7 +253,7 @@ export default {
       tags: "Create new .tags file",
       caption: "Create new .caption file",
       wd: "Create new .wd file",
-      florence: "Create new .florence file"
+      florence: "Generate with Florence2"
     },
     noCaptionFiles: "No caption files found",
     uploadError: "Failed to upload file",

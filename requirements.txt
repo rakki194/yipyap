@@ -4,9 +4,6 @@ python-magic
 python-multipart
 pillow
 aiofiles
-# I do not know if and why we would need both but the venv
-# didn't work without `uvicorn` last time I fucked with it
-#uvicorn
 uvicorn[standard]
 watchfiles
 
@@ -24,6 +21,11 @@ huggingface_hub  # Used by WDv3Generator
 pandas  # Used by WDv3Generator
 numpy  # Used by WDv3Generator
 onnxruntime  # Used by WDv3Generator
+
+transformers  # Used by Florence2Generator
+#flash_attn # Used by Florence2Generator
+# Install using:
+# pip install flash-attn --no-build-isolation
 
 # Data validation
 pydantic  # Used in models.py

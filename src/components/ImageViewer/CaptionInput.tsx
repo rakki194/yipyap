@@ -147,7 +147,7 @@ export const CaptionInput: Component<
     }
   });
 
-  const isTagInput = () => ["wd", "tags"].includes(type());
+  const isTagInput = () => type() === "wd" || type() === "tags";
   const isE621Input = () => type() === "e621";
   const isTomlInput = () => type() === "toml";
 
@@ -205,6 +205,14 @@ export const CaptionInput: Component<
       handleTomlScroll(e);
     }
   };
+
+  // Force re-evaluation of captions when component loads
+  createEffect(() => {
+    // This effect creates a dependency on the caption type
+    // and will re-evaluate the UI when it changes
+    const captionType = type();
+    console.debug("Caption type:", captionType, "Is tag input:", isTagInput());
+  });
 
   return (
     <div
