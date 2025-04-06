@@ -522,10 +522,10 @@ if not is_dev:
 async def get_captioners():
     """
     Get information about all available captioners.
-    
+
     Returns:
         dict: Dictionary of captioner information indexed by name
-        
+
     Each captioner entry contains:
     - name: Unique identifier
     - description: Human-readable description
@@ -535,6 +535,7 @@ async def get_captioners():
     - config_schema: JSON Schema for configuration options
     """
     from app.caption_generation import captioner_manager
+
     return captioner_manager.get_available_captioners()
 
 
@@ -542,25 +543,25 @@ async def get_captioners():
 async def update_captioner_config(name: str, config: dict):
     """
     Update a captioner's configuration.
-    
+
     Args:
         name (str): Name of the captioner to update
         config (dict): New configuration values
-        
+
     Returns:
         dict: Success status
-        
+
     Raises:
         HTTPException: If captioner not found or update fails
     """
     from app.caption_generation import captioner_manager
-    
+
     if not captioner_manager.update_captioner_config(name, config):
         raise HTTPException(
             status_code=400,
             detail=f"Unknown caption generator: {name}",
         )
-    
+
     return {"success": True}
 
 
@@ -578,7 +579,7 @@ async def generate_caption(
     """
     try:
         from app.caption_generation import captioner_manager
-        
+
         captioner = captioner_manager.get_captioner(generator)
         if not captioner:
             available = captioner_manager.get_captioner_names()
@@ -647,12 +648,12 @@ async def update_jtp2_config(config: dict):
 
     Raises:
         HTTPException: If reinitialization fails
-        
+
     Deprecated:
         Use /api/captioner-config/jtp2 instead
     """
     global JTP2_MODEL_PATH, JTP2_TAGS_PATH, JTP2_THRESHOLD, JTP2_FORCE_CPU
-    
+
     # Update global variables for backward compatibility
     if "model_path" in config:
         JTP2_MODEL_PATH = Path(config["model_path"])
@@ -672,11 +673,11 @@ async def update_jtp2_config(config: dict):
     # Update the captioner using the new system
     try:
         from app.caption_generation import captioner_manager
-        
+
         success = captioner_manager.update_captioner_config("jtp2", config)
         if not success:
             logger.warning("JTP2 captioner not available in the plugin system")
-            
+
         logger.info("JTP2 configuration updated")
         return {"success": True}
     except Exception as e:
@@ -920,19 +921,19 @@ async def move_items(
 async def update_wdv3_config(config: dict):
     """
     Update WDv3 model configuration.
-    
+
     Args:
         config (dict): Configuration parameters
-            - model_name (str, optional): Model architecture ("vit", "swinv2", "convnext") 
+            - model_name (str, optional): Model architecture ("vit", "swinv2", "convnext")
             - gen_threshold (float, optional): General tag threshold
             - char_threshold (float, optional): Character tag threshold
-            
+
     Returns:
         dict: Success status
-        
+
     Raises:
         HTTPException: If update fails
-        
+
     Deprecated:
         Use /api/captioner-config/wdv3 instead
     """
@@ -967,13 +968,16 @@ async def update_wdv3_config(config: dict):
         # Update the captioner using the new system
         try:
             from app.caption_generation import captioner_manager
-            
+
             success = captioner_manager.update_captioner_config("wdv3", config)
             if not success:
                 logger.warning("WDv3 captioner not available in the plugin system")
-                
+
             logger.info("WDv3 configuration updated")
-            return {"success": True, "message": "WDv3 configuration updated successfully"}
+            return {
+                "success": True,
+                "message": "WDv3 configuration updated successfully",
+            }
         except Exception as e:
             logger.error(f"Failed to update WDv3 configuration: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -1060,22 +1064,22 @@ async def update_favorite_state(path: str, config: dict = Body(...)):
 async def update_florence2_config(config: Dict[str, Any]):
     """
     Update Florence2 model configuration.
-    
+
     This updates the Florence2 captioner configuration with new parameters.
-    
+
     Args:
         config (Dict[str, Any]): Configuration parameters for Florence2.
             - script_path (str, optional): Path to the Florence2 script.
             - use_gpu (bool, optional): Whether to use GPU for inference.
             - precision (str, optional): Precision for model inference (fp16/fp32).
             - max_tokens (int, optional): Maximum number of tokens in generated caption.
-            
+
     Returns:
         Dict[str, Any]: Status indicating success
-        
+
     Raises:
         HTTPException: If the configuration could not be updated
-        
+
     Note:
         This endpoint is deprecated. Please use /api/captioner-config/florence2 instead.
     """
@@ -1083,40 +1087,43 @@ async def update_florence2_config(config: Dict[str, Any]):
         # Update environment variables for backward compatibility
         if "script_path" in config:
             os.environ["FLORENCE2_PATH"] = config["script_path"]
-            
+
         # Validate parameters
         if "max_tokens" in config and config["max_tokens"] < 1:
             raise ValueError("max_tokens must be greater than 0")
-            
+
         if "precision" in config and config["precision"] not in ["fp16", "fp32"]:
             raise ValueError("precision must be one of: fp16, fp32")
-            
+
         if "use_gpu" in config:
             os.environ["FLORENCE2_FORCE_CPU"] = str(not config["use_gpu"]).lower()
-            
+
         if "precision" in config:
             os.environ["FLORENCE2_PRECISION"] = config["precision"]
-            
+
         if "max_tokens" in config:
             os.environ["FLORENCE2_MAX_TOKENS"] = str(config["max_tokens"])
-        
+
         # Update the configuration through the captioner manager
         from app.caption_generation import captioner_manager
+
         await captioner_manager.update_captioner_config("florence2", config)
-        
+
         return {"status": "success"}
     except Exception as e:
         logger.error(f"Failed to update Florence2 configuration: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to update Florence2 configuration: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update Florence2 configuration: {e}"
+        )
 
 
 @app.put("/api/joycaption-config", tags=["generation"], deprecated=True)
 async def update_joycaption_config(config: Dict[str, Any]):
     """
     Update JoyCaptioner model configuration.
-    
+
     This updates the JoyCaptioner configuration with new parameters.
-    
+
     Args:
         config (Dict[str, Any]): Configuration parameters for JoyCaptioner.
             - script_path (str, optional): Path to the JoyCaptioner script.
@@ -1124,13 +1131,13 @@ async def update_joycaption_config(config: Dict[str, Any]):
             - caption_type (str, optional): Type of caption to generate.
             - length (str, optional): Length of caption ('short', 'medium', 'long').
             - force_cpu (bool, optional): Whether to force CPU inference.
-            
+
     Returns:
         Dict[str, Any]: Status indicating success
-        
+
     Raises:
         HTTPException: If the configuration could not be updated
-        
+
     Note:
         This endpoint is deprecated. Please use /api/captioner-config/joycaption instead.
     """
@@ -1138,48 +1145,55 @@ async def update_joycaption_config(config: Dict[str, Any]):
         # Update environment variables for backward compatibility
         if "script_path" in config:
             os.environ["JOYCAPTION_PATH"] = config["script_path"]
-            
+
         if "model_path" in config:
             os.environ["JOYCAPTION_MODEL_PATH"] = config["model_path"]
-            
+
         # Validate parameters
-        if "caption_type" in config and config["caption_type"] not in ["emotional", "detailed", "simple"]:
+        if "caption_type" in config and config["caption_type"] not in [
+            "emotional",
+            "detailed",
+            "simple",
+        ]:
             raise ValueError("caption_type must be one of: emotional, detailed, simple")
-            
+
         if "length" in config and config["length"] not in ["short", "medium", "long"]:
             raise ValueError("length must be one of: short, medium, long")
-        
+
         # Update the configuration through the captioner manager
         from app.caption_generation import captioner_manager
+
         await captioner_manager.update_captioner_config("joycaption", config)
-        
+
         return {"status": "success"}
     except Exception as e:
         logger.error(f"Failed to update JoyCaptioner configuration: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to update JoyCaptioner configuration: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update JoyCaptioner configuration: {e}"
+        )
 
 
 @app.get("/api/captioner-config/{name}")
 async def get_captioner_config(name: str):
     """
     Get a captioner's current configuration.
-    
+
     Args:
         name (str): Name of the captioner
-        
+
     Returns:
         dict: Captioner configuration
-        
+
     Raises:
         HTTPException: If captioner not found
     """
     from app.caption_generation import captioner_manager
-    
+
     config = captioner_manager.get_captioner_config(name)
     if config is None:
         raise HTTPException(
             status_code=400,
             detail=f"Unknown caption generator: {name}",
         )
-    
+
     return config

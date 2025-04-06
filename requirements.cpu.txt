@@ -30,3 +30,6 @@ pydantic
 
 # Type hints
 typing-extensions 
+
+# Development dependencies
+black  # Code formatter 

@@ -60,15 +60,15 @@ class CaptionGenerator(ABC):
             @property
             def caption_type(self) -> str:
                 return "caption"
-                
+
             @property
             def description(self) -> str:
                 return "My custom caption generator"
-                
+
             @property
             def version(self) -> str:
                 return "1.0.0"
-                
+
             @property
             def config_schema(self) -> dict:
                 return {
@@ -148,62 +148,62 @@ class CaptionGenerator(ABC):
             - No leading dot
         """
         pass
-        
+
     @property
     @abstractmethod
     def description(self) -> str:
         """
         Human-readable description of the captioner.
-        
+
         Returns:
             str: Description of what this captioner does and its strengths
-            
+
         Notes:
             - Should be concise but informative
             - Can include information about the model's specialty
             - Used for UI display and documentation
         """
         pass
-        
+
     @property
     @abstractmethod
     def version(self) -> str:
         """
         Version information for this captioner.
-        
+
         Returns:
             str: Version string in semver format (e.g., "1.0.0")
-            
+
         Notes:
             - Should follow semantic versioning when possible
             - Used for compatibility checking and updates
         """
         pass
-        
+
     @property
     @abstractmethod
     def config_schema(self) -> Dict[str, Any]:
         """
         JSON Schema for configuration options.
-        
+
         Returns:
             Dict[str, Any]: JSON Schema describing available configuration options
-            
+
         Notes:
             - Should follow JSON Schema specification
             - Used for UI generation and validation
             - Should include descriptions for each option
         """
         pass
-    
+
     @property
     def features(self) -> List[str]:
         """
         List of special features/capabilities this captioner supports.
-        
+
         Returns:
             List[str]: List of feature identifiers
-            
+
         Notes:
             - Optional property with default implementation
             - Can include capabilities like "batch_processing", "multilingual", etc.

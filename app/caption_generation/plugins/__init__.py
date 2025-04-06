@@ -20,4 +20,4 @@ The plugin system will automatically discover and load all valid plugins.
 """
 
 # This file is intentionally empty beyond docstring
-# Plugin registration is handled by each plugin's __init__.py 
+# Plugin registration is handled by each plugin's __init__.py

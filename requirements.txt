@@ -32,3 +32,6 @@ pydantic  # Used in models.py
 
 # Type hints
 typing-extensions  # Commonly needed for advanced type hints
+
+# Development dependencies
+black  # Code formatter

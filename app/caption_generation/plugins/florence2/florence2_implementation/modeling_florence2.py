@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" PyTorch Florence-2 model."""
+"""PyTorch Florence-2 model."""
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
