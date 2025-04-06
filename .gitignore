@@ -5,5 +5,4 @@ venv/
 dist/
 *.db
 *.db-*
-package-lock.json
 .env
