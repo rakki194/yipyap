@@ -14,12 +14,19 @@ The frontend of yipyap is built with SolidJS, a reactive JavaScript framework th
 
 Components are organized in feature-based directories under `/src/components`, with CSS modules or shared stylesheets for styling. Global styles are defined in `/src/styles.css`, while theme-specific styles are in `/src/themes.css`. All tests are centralized in the `/src/test/__tests__/` directory, organized by functionality including component tests, context tests, utility tests, and internationalization tests.
 
+## Demo
+
+---
+
+![Yipyap Demo](docs/yipyap_demo_optimized.gif)
+
 ## Table of Contents
 
 ---
 
 - [yipyap](#yipyap)
   - [Introduction](#introduction)
+  - [Demo](#demo)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
     - [Core Features](#core-features)
