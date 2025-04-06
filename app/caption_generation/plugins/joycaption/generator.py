@@ -31,9 +31,9 @@ logger = logging.getLogger("uvicorn.error")
 
 class JoyCaptionerGenerator(CaptionGenerator):
     """
-    JoyCaptioner-based caption generator.
+    JoyCaption caption generator.
 
-    This generator wraps the external JoyCaptioner script to provide
+    This generator wraps the external JoyCaption script to provide
     high-quality, customizable captions for images.
 
     Args:

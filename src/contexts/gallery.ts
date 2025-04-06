@@ -466,19 +466,16 @@ export function makeGalleryState() {
         image.name,
         generator
       );
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || response.statusText);
-      }
 
-      const data = await response.json();
-      if (data.success && data.caption) {
+      // The response is already a parsed JSON object from the generateCaption function
+      // No need to call response.ok or response.text() or response.json()
+      if (response.success && response.caption) {
         // Update local captions with the generated tags
         updateLocalCaptions(
           image,
           {
             type: generator === "wdv3" ? "wd" : "tags",
-            caption: data.caption,
+            caption: response.caption,
           },
           database
         );

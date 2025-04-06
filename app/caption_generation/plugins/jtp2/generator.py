@@ -78,42 +78,42 @@ class JTP2Generator(CaptionGenerator):
     @property
     def description(self) -> str:
         return "Joint Tagger Project PILOT2 - Specialized tagger for furry artwork"
-        
+
     @property
     def version(self) -> str:
         return "1.0.0"
-        
+
     @property
     def caption_type(self) -> str:
         return "tags"
-        
+
     @property
     def config_schema(self) -> Dict[str, Any]:
         return {
             "type": "object",
             "properties": {
                 "model_path": {
-                    "type": "string", 
-                    "description": "Path to the model file"
+                    "type": "string",
+                    "description": "Path to the model file",
                 },
                 "tags_path": {
-                    "type": "string", 
-                    "description": "Path to the tags dictionary file"
+                    "type": "string",
+                    "description": "Path to the tags dictionary file",
                 },
                 "threshold": {
-                    "type": "number", 
-                    "minimum": 0, 
-                    "maximum": 1, 
-                    "description": "Confidence threshold for tag selection"
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Confidence threshold for tag selection",
                 },
                 "force_cpu": {
-                    "type": "boolean", 
-                    "description": "Whether to force CPU inference"
-                }
+                    "type": "boolean",
+                    "description": "Whether to force CPU inference",
+                },
             },
-            "required": ["model_path", "tags_path"]
+            "required": ["model_path", "tags_path"],
         }
-    
+
     @property
     def features(self) -> List[str]:
         return ["gpu_acceleration", "configurable_threshold"]
@@ -121,7 +121,7 @@ class JTP2Generator(CaptionGenerator):
     def _check_dependencies(self) -> bool:
         """
         Check if all required dependencies are available.
-        
+
         Returns:
             bool: True if all dependencies are available, False otherwise
         """
@@ -129,44 +129,46 @@ class JTP2Generator(CaptionGenerator):
         if not is_module_available("torch"):
             logger.warning("JTP2 captioner requires PyTorch, but it is not installed")
             return False
-            
+
         # Check for timm
         if not is_module_available("timm"):
             logger.warning("JTP2 captioner requires timm, but it is not installed")
             return False
-            
+
         # Check for safetensors
         if not is_module_available("safetensors"):
-            logger.warning("JTP2 captioner requires safetensors, but it is not installed")
+            logger.warning(
+                "JTP2 captioner requires safetensors, but it is not installed"
+            )
             return False
-            
+
         # Check for Pillow
         if not is_module_available("PIL"):
             logger.warning("JTP2 captioner requires Pillow, but it is not installed")
             return False
-            
+
         return True
 
     def is_available(self) -> bool:
         """
         Check if the JTP2 captioner is available.
-        
+
         Returns:
             bool: True if the captioner is available, False otherwise
         """
         # Check for required libraries
         if not self._has_required_libs:
             return False
-            
+
         # Check for model and tags files
         if not self.model_path.exists():
             logger.warning(f"JTP2 model file not found: {self.model_path}")
             return False
-            
+
         if not self.tags_path.exists():
             logger.warning(f"JTP2 tags file not found: {self.tags_path}")
             return False
-            
+
         return True
 
     def _initialize(self) -> None:
@@ -184,7 +186,7 @@ class JTP2Generator(CaptionGenerator):
         """
         if self._initialized:
             return
-            
+
         if not self.is_available():
             raise RuntimeError("JTP2 caption generation is not available")
 
@@ -197,7 +199,7 @@ class JTP2Generator(CaptionGenerator):
             from torchvision import transforms
             from torchvision.transforms import InterpolationMode
             import torchvision.transforms.functional as TF
-            
+
             # Helper classes for JTP2
             class Fit(nn.Module):
                 def __init__(
@@ -208,7 +210,9 @@ class JTP2Generator(CaptionGenerator):
                     pad: float | None = None,
                 ):
                     super().__init__()
-                    self.bounds = (bounds, bounds) if isinstance(bounds, int) else bounds
+                    self.bounds = (
+                        (bounds, bounds) if isinstance(bounds, int) else bounds
+                    )
                     self.interpolation = interpolation
                     self.grow = grow
                     self.pad = pad
@@ -236,7 +240,7 @@ class JTP2Generator(CaptionGenerator):
                     lpad = wpad
                     rpad = wpad - lpad
                     return TF.pad(img, (lpad, tpad, rpad, bpad), self.pad)
-            
+
             class CompositeAlpha(nn.Module):
                 def __init__(self, bg_image=0.5):
                     super().__init__()
@@ -251,16 +255,20 @@ class JTP2Generator(CaptionGenerator):
                         return rgb
                     else:
                         return img
-            
+
             class GatedHead(nn.Module):
-                def __init__(self, in_features: Tuple[int], num_classes: int = 1000):
+                def __init__(self, in_features, num_classes: int = 1000):
                     super().__init__()
-                    self.gate = nn.Linear(in_features[0], num_classes)
-                    self.head = nn.Linear(in_features[0], num_classes)
+                    # Convert to int if it's not already
+                    if isinstance(in_features, (list, tuple)):
+                        in_features = in_features[0]
+
+                    self.gate = nn.Linear(in_features, num_classes)
+                    self.head = nn.Linear(in_features, num_classes)
 
                 def forward(self, x: torch.Tensor) -> torch.Tensor:
                     return torch.sigmoid(self.gate(x)) * self.head(x)
-            
+
             # Set up image transformation pipeline
             self._transform = transforms.Compose(
                 [
@@ -276,9 +284,14 @@ class JTP2Generator(CaptionGenerator):
 
             # Initialize model
             self._model = timm.create_model(
-                "vit_so400m_patch14_siglip_384.webli", pretrained=False, num_classes=9083
+                "vit_so400m_patch14_siglip_384.webli",
+                pretrained=False,
+                num_classes=9083,
             )
-            self._model.head = GatedHead(min(self._model.head.weight.shape), 9083)
+
+            # Get the input feature dimension
+            in_features = self._model.head.weight.shape[1]  # This will be an integer
+            self._model.head = GatedHead(in_features, 9083)
 
             # Load model weights
             safetensors.torch.load_model(self._model, str(self.model_path))
@@ -295,9 +308,9 @@ class JTP2Generator(CaptionGenerator):
             with open(self.tags_path, "r", encoding="utf-8") as file:
                 tags = json.load(file)
             self._tags = [tag.replace("_", " ") for tag in tags.keys()]
-            
+
             self._initialized = True
-            
+
         except Exception as e:
             logger.error(f"Failed to initialize JTP2 model: {e}", exc_info=True)
             raise RuntimeError(f"Failed to initialize JTP2 model: {e}")
@@ -305,44 +318,44 @@ class JTP2Generator(CaptionGenerator):
     def _generate_sync(self, image_path: Path) -> str:
         """
         Synchronous implementation of tag generation.
-        
+
         Args:
             image_path (Path): Path to the image
-            
+
         Returns:
             str: Generated tags as a comma-separated string
-            
+
         Raises:
             Exception: If generation fails
         """
         # Import torch here to avoid issues if it's not installed
         import torch
-        
+
         try:
             # Load and preprocess the image
             img = Image.open(image_path).convert("RGB")
             img_tensor = self._transform(img).unsqueeze(0)
-            
+
             # Move to GPU if available
             if torch.cuda.is_available() and not self.force_cpu:
                 img_tensor = img_tensor.cuda()
                 if torch.cuda.get_device_capability()[0] >= 7:
                     img_tensor = img_tensor.half()
-            
+
             # Run inference
             with torch.no_grad():
                 output = self._model(img_tensor)
                 probs = torch.sigmoid(output).cpu().numpy()[0]
-            
+
             # Process results
             tags = []
             for i, (tag, prob) in enumerate(zip(self._tags, probs)):
                 if prob > self.threshold:
                     tags.append(tag)
-            
+
             # Return comma-separated list
             return ", ".join(tags)
-            
+
         except Exception as e:
             logger.error(f"Error generating tags with JTP2: {e}", exc_info=True)
             raise
@@ -381,10 +394,10 @@ class JTP2Generator(CaptionGenerator):
 def get_generator(config: Dict[str, Any]) -> JTP2Generator:
     """
     Factory function to create a JTP2Generator instance.
-    
+
     Args:
         config (Dict[str, Any]): Configuration for the generator
-        
+
     Returns:
         JTP2Generator: A configured generator instance
     """
@@ -392,5 +405,5 @@ def get_generator(config: Dict[str, Any]) -> JTP2Generator:
         model_path=Path(config.get("model_path")),
         tags_path=Path(config.get("tags_path")),
         threshold=config.get("threshold", 0.2),
-        force_cpu=config.get("force_cpu", False)
-    ) 
+        force_cpu=config.get("force_cpu", False),
+    )
