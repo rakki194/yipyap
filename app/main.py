@@ -1197,3 +1197,51 @@ async def get_captioner_config(name: str):
         )
 
     return config
+
+
+# Add this after other routes but before the middleware
+@app.get("/api/debug/routes")
+async def list_routes():
+    """List all mounted routes for debugging"""
+    routes = []
+
+    # Add routes from FastAPI router
+    for route in app.routes:
+        routes.append(
+            {
+                "path": getattr(route, "path", ""),
+                "name": getattr(route, "name", ""),
+                "methods": getattr(route, "methods", []),
+            }
+        )
+
+    # Add mounted static paths
+    for name, mount in app.routes[0].app.named_middleware.items():
+        if hasattr(mount, "directory"):
+            routes.append(
+                {
+                    "path": f"/{name}",
+                    "type": "static",
+                    "directory": str(mount.directory),
+                }
+            )
+
+    return routes
+
+
+# Add a direct route to handle pixelings assets
+@app.get("/pixelings/{filename:path}")
+@app.head("/pixelings/{filename:path}")
+async def serve_pixelings(filename: str):
+    """Serve pixelings assets directly from dist/assets/pixelings"""
+    asset_path = Path(f"dist/assets/pixelings/{filename}").resolve()
+
+    # Basic security check to prevent directory traversal
+    if not str(asset_path).startswith(str(Path("dist/assets/pixelings").resolve())):
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    if not asset_path.exists():
+        logger.error(f"Pixeling asset not found: {filename}")
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    return FileResponse(asset_path)

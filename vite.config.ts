@@ -190,7 +190,7 @@ const viteConfig = (env) => {
     plugins.push(
       gzipPlugin(),
       gzipPlugin({
-        customCompression: (content) => brotliPromise(Buffer.from(content)),
+        customCompression: (content) => brotliPromise(Buffer.from(content.toString())),
         fileName: ".br",
       })
     );
@@ -232,11 +232,17 @@ const viteConfig = (env) => {
           // Disable manual chunk splitting
           manualChunks: undefined,
           // Configure asset file names
-          assetFileNames: (assetInfo) => {
-            if (!assetInfo.name) return 'assets/[name]-[hash][extname]';
+          assetFileNames: (assetInfo: any) => {
+            const name = assetInfo.name || '';
+            if (!name) return 'assets/[name]-[hash][extname]';
 
-            const info = assetInfo.name.split('.');
+            const info = name.split('.');
             const ext = info[info.length - 1];
+
+            // Special handling for pixelings to preserve their paths
+            if (name.includes('pixelings/')) {
+              return name;
+            }
 
             if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
               return `assets/images/[name]-[hash][extname]`;
