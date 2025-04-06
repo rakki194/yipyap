@@ -1,7 +1,7 @@
 The MIT License (MIT)
 =====================
 
-Copyright © `2024` `elias-gaeros`
+Copyright © `2024` elias-gaeros & rakki194
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

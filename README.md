@@ -105,7 +105,7 @@ Components are organized in feature-based directories under `/src/components`, w
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/elias-gaeros/yipyap
+    git clone https://github.com/rakki194/yipyap
     cd yipyap
     ```
 
@@ -363,7 +363,7 @@ Before you begin, ensure you have the following installed on your host system:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/elias-gaeros/yipyap.git
+   git clone https://github.com/rakki194/yipyap.git
    cd yipyap
    ```
 
