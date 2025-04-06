@@ -470,11 +470,19 @@ export function makeGalleryState() {
       // The response is already a parsed JSON object from the generateCaption function
       // No need to call response.ok or response.text() or response.json()
       if (response.success && response.caption) {
-        // Update local captions with the generated tags
+        // Update local captions with the generated tags 
+        // Special handling for different caption generators
+        let captionType = generator;
+
+        // Map generator names to caption file types according to the backend
+        if (generator === "wdv3") captionType = "wd";
+        else if (generator === "jtp2") captionType = "tags";
+        else if (generator === "florence2") captionType = "florence";
+
         updateLocalCaptions(
           image,
           {
-            type: generator === "wdv3" ? "wd" : "tags",
+            type: captionType,
             caption: response.caption,
           },
           database

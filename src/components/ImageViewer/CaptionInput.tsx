@@ -7,6 +7,7 @@ import {
   createEffect,
   Index,
   onCleanup,
+  createMemo,
 } from "solid-js";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import { createSelection } from "@solid-primitives/selection";
@@ -139,7 +140,7 @@ export const CaptionInput: Component<
 
   createEffect(() => {
     if (props.state === "expanded") {
-      if (isTagInput()) {
+      if (shouldRenderTagInput()) {
         inputRef?.focus();
       } else {
         textareaRef?.focus();
@@ -147,18 +148,49 @@ export const CaptionInput: Component<
     }
   });
 
-  const isTagInput = () => type() === "wd" || type() === "tags";
+  // Explicitly check for tag-based caption types only
+  const isTagInput = () => {
+    const currentType = type();
+    // Hard-code specific caption types as tag-based formats
+    // Any other caption type (including florence/florence2) will be rendered as text
+    return currentType === "wd" || currentType === "tags";
+  };
+
   const isE621Input = () => type() === "e621";
   const isTomlInput = () => type() === "toml";
 
-  const tags = () => (isTagInput() ? splitAndCleanTags(caption()) : []);
+  // Create reactive signals that derive from the caption type
+  // These ensure immediate updates when the caption type changes
+  const shouldRenderTagInput = createMemo(() => isTagInput());
+  const shouldRenderE621Input = createMemo(() => isE621Input());
+  const shouldRenderTomlInput = createMemo(() => isTomlInput());
+
+  // Force re-evaluation of captions when component loads or caption changes
+  createEffect(() => {
+    // This effect creates a dependency on both the caption type and content
+    const captionType = type();
+    const captionContent = caption();
+    const renderMode = shouldRenderTagInput() ? "tags"
+      : shouldRenderE621Input() ? "e621"
+        : shouldRenderTomlInput() ? "toml"
+          : "textarea";
+
+    console.debug(`Caption rendering: type="${captionType}", mode="${renderMode}", length=${captionContent.length}`);
+
+    // Force textarea to update its value when content changes
+    if (renderMode === "textarea" && textareaRef) {
+      textareaRef.value = captionContent;
+    }
+  });
+
+  const tags = () => (shouldRenderTagInput() ? splitAndCleanTags(caption()) : []);
 
   const handleEditorInput = (e: Event, node: HTMLElement) => {
     const [selNode, start, end] = selection();
     if (node === selNode) {
-      if (isE621Input()) {
+      if (shouldRenderE621Input()) {
         handleE621Input(e as InputEvent, node);
-      } else if (isTomlInput()) {
+      } else if (shouldRenderTomlInput()) {
         handleTomlInput(e as InputEvent, node);
       }
       // Restore selection after content update
@@ -169,10 +201,10 @@ export const CaptionInput: Component<
   const handleEditorKeyDown = (e: KeyboardEvent, node: HTMLElement) => {
     const [selNode, start, end] = selection();
     if (node === selNode) {
-      if (isE621Input()) {
+      if (shouldRenderE621Input()) {
         handleE621KeyDown(e, node);
         calculateE621Line(node);
-      } else if (isTomlInput()) {
+      } else if (shouldRenderTomlInput()) {
         handleTomlKeyDown(e, node);
         calculateTomlLine(node);
       }
@@ -182,16 +214,16 @@ export const CaptionInput: Component<
   const handleEditorPaste = (e: ClipboardEvent, node: HTMLElement) => {
     const [selNode, start, end] = selection();
     if (node === selNode) {
-      if (isE621Input()) {
+      if (shouldRenderE621Input()) {
         handleE621Paste(e, node);
-      } else if (isTomlInput()) {
+      } else if (shouldRenderTomlInput()) {
         handleTomlPaste(e, node);
       }
       // Selection will be updated after paste
       requestAnimationFrame(() => {
-        if (isE621Input()) {
+        if (shouldRenderE621Input()) {
           calculateE621Line(node);
-        } else if (isTomlInput()) {
+        } else if (shouldRenderTomlInput()) {
           calculateTomlLine(node);
         }
       });
@@ -199,20 +231,12 @@ export const CaptionInput: Component<
   };
 
   const handleEditorScroll = (e: Event) => {
-    if (isE621Input()) {
+    if (shouldRenderE621Input()) {
       handleE621Scroll(e);
-    } else if (isTomlInput()) {
+    } else if (shouldRenderTomlInput()) {
       handleTomlScroll(e);
     }
   };
-
-  // Force re-evaluation of captions when component loads
-  createEffect(() => {
-    // This effect creates a dependency on the caption type
-    // and will re-evaluate the UI when it changes
-    const captionType = type();
-    console.debug("Caption type:", captionType, "Is tag input:", isTagInput());
-  });
 
   return (
     <div
@@ -249,7 +273,7 @@ export const CaptionInput: Component<
         </button>
       </div>
 
-      {isTagInput() ? (
+      {shouldRenderTagInput() ? (
         <div class="tags-container">
           <div class="tags-list">
             <Index each={tags()}>
@@ -289,28 +313,28 @@ export const CaptionInput: Component<
             </button>
           </div>
         </div>
-      ) : isE621Input() || isTomlInput() ? (
+      ) : shouldRenderE621Input() || shouldRenderTomlInput() ? (
         <div
-          class={isE621Input() ? "e621-editor" : "toml-editor"}
+          class={shouldRenderE621Input() ? "e621-editor" : "toml-editor"}
           classList={{
-            "invalid-json": isE621Input() && !isValidJSON(caption() || ""),
-            "invalid-toml": isTomlInput() && !isValidTOML()
+            "invalid-json": shouldRenderE621Input() && !isValidJSON(caption() || ""),
+            "invalid-toml": shouldRenderTomlInput() && !isValidTOML()
           }}
         >
           <div
             ref={editorRef}
-            class={isE621Input() ? "e621-content" : "toml-content"}
+            class={shouldRenderE621Input() ? "e621-content" : "toml-content"}
             contentEditable="plaintext-only"
             spellcheck={false}
-            innerHTML={isE621Input() ? e621HighlightedContent() : tomlHighlightedContent()}
+            innerHTML={shouldRenderE621Input() ? e621HighlightedContent() : tomlHighlightedContent()}
             onInput={(e) => handleEditorInput(e, e.currentTarget)}
             onKeyDown={(e) => handleEditorKeyDown(e, e.currentTarget)}
             onPaste={(e) => handleEditorPaste(e, e.currentTarget)}
             onScroll={handleEditorScroll}
             onSelect={(e) => {
-              if (isE621Input()) {
+              if (shouldRenderE621Input()) {
                 calculateE621Line(e.currentTarget);
-              } else if (isTomlInput()) {
+              } else if (shouldRenderTomlInput()) {
                 calculateTomlLine(e.currentTarget);
               }
             }}

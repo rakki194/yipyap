@@ -22,7 +22,7 @@ pandas  # Used by WDv3Generator
 numpy  # Used by WDv3Generator
 onnxruntime  # Used by WDv3Generator
 
-transformers  # Used by Florence2Generator
+transformers  # Used by Florence2Generato
 #flash_attn # Used by Florence2Generator
 # Install using:
 # pip install flash-attn --no-build-isolation

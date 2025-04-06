@@ -233,6 +233,13 @@ const ModelBody = (props: {
     // This creates a dependency on the captions array
     // and will cause a re-render when it changes
     const captions = props.captions;
+
+    // Immediately update the focusedType if it's not set
+    if (captions.length > 0 && focused() && focusedType() === null) {
+      setFocusedType(captions[0][0]);
+    }
+
+    // Log caption types for debugging
     console.debug("Captions updated:", captions.map(c => c[0]).join(", "));
   });
 
@@ -630,6 +637,12 @@ const ExpandableMenu = (props: {
   const [isExpanded, setIsExpanded] = createSignal(false);
   const { t } = useAppContext();
 
+  const handleGenerateTags = async (type: string) => {
+    setIsExpanded(false);
+    await props.generateTags(type);
+    // No refresh needed - we'll handle this properly in the CaptionInput component
+  };
+
   return (
     <>
       <button
@@ -645,28 +658,19 @@ const ExpandableMenu = (props: {
         <div class="generate-tags-dropdown card">
           <button
             type="button"
-            onClick={() => {
-              props.generateTags("jtp2");
-              setIsExpanded(false);
-            }}
+            onClick={() => handleGenerateTags("jtp2")}
           >
             Generate with JTP2
           </button>
           <button
             type="button"
-            onClick={() => {
-              props.generateTags("wdv3");
-              setIsExpanded(false);
-            }}
+            onClick={() => handleGenerateTags("wdv3")}
           >
             Generate with WDv3
           </button>
           <button
             type="button"
-            onClick={() => {
-              props.generateTags("florence2");
-              setIsExpanded(false);
-            }}
+            onClick={() => handleGenerateTags("florence2")}
           >
             Generate with Florence2
           </button>
