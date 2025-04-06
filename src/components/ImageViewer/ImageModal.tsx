@@ -23,6 +23,8 @@ import { useAppContext } from "~/contexts/app";
 import { captionIconsMap } from "~/icons";
 import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 import { useDoubleTap } from "~/composables/useDoubleTap";
+import { useCaptioners } from "~/contexts/captioners";
+import type { CaptionerInfo } from "~/resources/browse";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -690,6 +692,7 @@ const CaptionCreationButton = (props: {
 }) => {
   const [isExpanded, setIsExpanded] = createSignal(false);
   const { t } = useAppContext();
+  const { captioners, loading, error } = useCaptioners();
 
   const handleCreateCaption = async (type: string) => {
     try {
@@ -712,18 +715,39 @@ const CaptionCreationButton = (props: {
       </button>
       <Show when={isExpanded()}>
         <div class="caption-type-dropdown card">
-          <For each={Object.entries(captionIconsMap)}>
-            {([type, icon]) => (
-              <button
-                type="button"
-                class="caption-type-option"
-                onClick={() => handleCreateCaption(type)}
-              >
-                <span class="icon">{getIcon(icon)}</span>
-                {t(`gallery.captionTypes.${type}`)}
-              </button>
-            )}
-          </For>
+          <Show when={loading()}>
+            <div class="caption-type-loading">
+              <span class="icon spinning">{getIcon("spinner")}</span>
+              {t('common.loading')}
+            </div>
+          </Show>
+          <Show when={error()}>
+            <div class="caption-type-error">
+              <span class="icon">{getIcon("error")}</span>
+              {t('common.error')}
+            </div>
+          </Show>
+          <Show when={!loading() && !error() && captioners()}>
+            <For each={Object.entries(captioners() || {})}>
+              {([name, info]) => (
+                <button
+                  type="button"
+                  class="caption-type-option"
+                  onClick={() => handleCreateCaption(name)}
+                  title={info.description}
+                >
+                  <span class="icon">{getIcon(captionIconsMap[info.caption_type as keyof typeof captionIconsMap] || "caption")}</span>
+                  {t(`gallery.captionTypes.${name}`, { name })}
+                </button>
+              )}
+            </For>
+          </Show>
+          <Show when={!loading() && !error() && Object.keys(captioners() || {}).length === 0}>
+            <div class="caption-type-empty">
+              <span class="icon">{getIcon("info")}</span>
+              {t('gallery.noCaptioners')}
+            </div>
+          </Show>
         </div>
       </Show>
     </div>

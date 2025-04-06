@@ -21,6 +21,7 @@ safetensors
 huggingface_hub
 pandas
 numpy
+onnxruntime
 
 # Data validation
 pydantic

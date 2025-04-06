@@ -462,37 +462,123 @@ export async function deleteCaption(
 }
 
 /**
- * Generates a new caption for an image using the specified generator.
+ * Represents a captioner's configuration schema property
  * 
- * @param path - The directory path containing the image
- * @param name - The image filename 
- * @param generator - The caption generator to use (e.g. 'jtp2', 'wdv3')
- * @param force - Whether to force regeneration if caption exists
- * @returns Promise resolving to the API Response
- * 
- * @remarks
- * - Handles path normalization for root directory
- * - Uses POST request to trigger generation
+ * @interface ConfigSchemaProperty
  */
+export interface ConfigSchemaProperty {
+  type: string;
+  description: string;
+  minimum?: number;
+  maximum?: number;
+  enum?: string[];
+}
+
+/**
+ * Represents a captioner's configuration schema
+ * 
+ * @interface ConfigSchema
+ */
+export interface ConfigSchema {
+  type: string;
+  properties: Record<string, ConfigSchemaProperty>;
+  required?: string[];
+}
+
+/**
+ * Represents information about a captioner plugin
+ * 
+ * @interface CaptionerInfo
+ */
+export interface CaptionerInfo {
+  name: string;
+  description: string;
+  version: string;
+  caption_type: string;
+  features: string[];
+  config_schema: ConfigSchema;
+}
+
+/**
+ * Fetches information about all available captioners.
+ * 
+ * @returns Promise with record of captioner name to its information
+ */
+export async function getAvailableCaptioners(): Promise<Record<string, CaptionerInfo>> {
+  return retryFetch('/api/captioners')
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          throw new Error(`Failed to fetch captioners: ${text}`);
+        });
+      }
+      return response.json();
+    });
+}
+
+/**
+ * Fetches the current configuration for a specific captioner.
+ * 
+ * @param name - The name of the captioner
+ * @returns Promise with the captioner's configuration
+ */
+export async function getCaptionerConfig(name: string): Promise<Record<string, any>> {
+  return retryFetch(`/api/captioner-config/${name}`)
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          throw new Error(`Failed to fetch captioner config: ${text}`);
+        });
+      }
+      return response.json();
+    });
+}
+
+/**
+ * Updates the configuration for a specific captioner.
+ * 
+ * @param name - The name of the captioner
+ * @param config - The new configuration values
+ * @returns Promise with the update result
+ */
+export async function updateCaptionerConfig(name: string, config: Record<string, any>): Promise<{ success: boolean }> {
+  return retryFetch(`/api/captioner-config/${name}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(config)
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          throw new Error(`Failed to update captioner config: ${text}`);
+        });
+      }
+      return response.json();
+    });
+}
+
+// Update the existing generateCaption function to match our TypeScript interface
 export async function generateCaption(
   path: string,
   name: string,
   generator: string,
   force: boolean = false
-): Promise<Response> {
-  // Remove any leading or trailing slashes and handle root path
-  const cleanPath = path.replace(/^\/+|\/+$/g, '');
-  // For root directory, use "_" as path to match API expectation
-  const imagePath = cleanPath ? `${cleanPath}/${name}` : `_/${name}`;
+): Promise<{ success: boolean, caption: string }> {
+  const suffix = path.startsWith('/') ? '_' : '';
+  const fullPath = joinUrlParts(path === '/' ? suffix : path, name).trim();
+  const forceParam = force ? '&force=true' : '';
 
-  return retryFetch(
-    `/api/generate-caption/${imagePath}?generator=${generator}&force=${force}`,
-    {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-      },
-      maxAttempts: 5
-    }
-  );
+  return retryFetch(`/api/generate-caption/${fullPath}?generator=${generator}${forceParam}`, {
+    method: 'POST',
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(text => {
+          throw new Error(`Failed to generate caption: ${text}`);
+        });
+      }
+      return response.json();
+    });
 }

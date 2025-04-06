@@ -38,7 +38,7 @@ from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from email.utils import parsedate_to_datetime, format_datetime
-from typing import List
+from typing import List, Dict, Any
 import shutil
 import aiofiles
 
@@ -110,41 +110,9 @@ WDV3_CHAR_THRESHOLD = float(os.getenv("WDV3_CHAR_THRESHOLD", "0.75"))
 JTP2_THRESHOLD = float(os.getenv("JTP2_THRESHOLD", "0.2"))
 JTP2_FORCE_CPU = os.getenv("JTP2_FORCE_CPU", "false").lower() == "true"
 
-# Initialize caption generators with graceful fallback
-caption_generators = {}
-
-if hasattr(caption_generation, "JTP2Generator"):
-    try:
-        logger.info(f"Initializing JTP2 generator with model path: {JTP2_MODEL_PATH}")
-        jtp2_generator = caption_generation.JTP2Generator(
-            model_path=JTP2_MODEL_PATH,
-            tags_path=JTP2_TAGS_PATH,
-            threshold=JTP2_THRESHOLD,
-            force_cpu=JTP2_FORCE_CPU,
-        )
-        if jtp2_generator.is_available():
-            caption_generators["jtp2"] = jtp2_generator
-            logger.info("JTP2 caption generator initialized successfully")
-        else:
-            logger.warning(
-                "JTP2 caption generator is not available - initialization check failed"
-            )
-    except Exception as e:
-        logger.error(f"Failed to initialize JTP2 caption generator: {e}", exc_info=True)
-
-if hasattr(caption_generation, "WDv3Generator"):
-    try:
-        wdv3_generator = caption_generation.WDv3Generator(
-            model_name=WDV3_MODEL_NAME,
-            gen_threshold=WDV3_GEN_THRESHOLD,
-            char_threshold=WDV3_CHAR_THRESHOLD,
-        )
-        if wdv3_generator.is_available():
-            caption_generators["wdv3"] = wdv3_generator
-        else:
-            logger.warning("WDv3 caption generator is not available")
-    except Exception as e:
-        logger.warning(f"Failed to initialize WDv3 caption generator: {e}")
+# Import caption manager when needed - lazy loading
+# This allows the application to start even if caption dependencies are missing
+logger.info("Caption generator plugins will be loaded on demand")
 
 
 @app.get("/api/browse")
@@ -550,6 +518,52 @@ if not is_dev:
         return FileResponse("dist/index.html")
 
 
+@app.get("/api/captioners")
+async def get_captioners():
+    """
+    Get information about all available captioners.
+    
+    Returns:
+        dict: Dictionary of captioner information indexed by name
+        
+    Each captioner entry contains:
+    - name: Unique identifier
+    - description: Human-readable description
+    - version: Version information
+    - caption_type: Type of captions produced
+    - features: List of supported features
+    - config_schema: JSON Schema for configuration options
+    """
+    from app.caption_generation import captioner_manager
+    return captioner_manager.get_available_captioners()
+
+
+@app.put("/api/captioner-config/{name}")
+async def update_captioner_config(name: str, config: dict):
+    """
+    Update a captioner's configuration.
+    
+    Args:
+        name (str): Name of the captioner to update
+        config (dict): New configuration values
+        
+    Returns:
+        dict: Success status
+        
+    Raises:
+        HTTPException: If captioner not found or update fails
+    """
+    from app.caption_generation import captioner_manager
+    
+    if not captioner_manager.update_captioner_config(name, config):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown caption generator: {name}",
+        )
+    
+    return {"success": True}
+
+
 @app.post("/api/generate-caption/{path:path}")
 async def generate_caption(
     path: str,
@@ -563,17 +577,14 @@ async def generate_caption(
     - "subdir/image.png" for subdirectory images
     """
     try:
-        if generator not in caption_generators:
+        from app.caption_generation import captioner_manager
+        
+        captioner = captioner_manager.get_captioner(generator)
+        if not captioner:
+            available = captioner_manager.get_captioner_names()
             raise HTTPException(
                 status_code=400,
-                detail=f"Unknown caption generator: {generator}. Available generators: {list(caption_generators.keys())}",
-            )
-
-        gen = caption_generators[generator]
-        if not gen.is_available():
-            raise HTTPException(
-                status_code=503,
-                detail=f"Caption generator {generator} is not available. Reason: initialization failed",
+                detail=f"Unknown caption generator: {generator}. Available generators: {available}",
             )
 
         # Handle root directory case
@@ -588,7 +599,7 @@ async def generate_caption(
             )
 
         # Check if caption already exists
-        caption_path = image_path.with_suffix(f".{gen.caption_type}")
+        caption_path = image_path.with_suffix(f".{captioner.caption_type}")
         if not force and caption_path.exists():
             raise HTTPException(
                 status_code=400, detail=f"Caption already exists: {caption_path}"
@@ -596,7 +607,7 @@ async def generate_caption(
 
         # Generate caption
         try:
-            caption = await gen.generate(image_path)
+            caption = await captioner.generate(image_path)
         except Exception as e:
             logger.error(
                 f"Error generating caption with {generator}: {e}", exc_info=True
@@ -607,7 +618,7 @@ async def generate_caption(
             )
 
         # Save caption
-        await data_source.save_caption(image_path, caption, gen.caption_type)
+        await data_source.save_caption(image_path, caption, captioner.caption_type)
 
         return {"success": True, "caption": caption}
 
@@ -636,9 +647,13 @@ async def update_jtp2_config(config: dict):
 
     Raises:
         HTTPException: If reinitialization fails
+        
+    Deprecated:
+        Use /api/captioner-config/jtp2 instead
     """
     global JTP2_MODEL_PATH, JTP2_TAGS_PATH, JTP2_THRESHOLD, JTP2_FORCE_CPU
-
+    
+    # Update global variables for backward compatibility
     if "model_path" in config:
         JTP2_MODEL_PATH = Path(config["model_path"])
     if "tags_path" in config:
@@ -654,21 +669,19 @@ async def update_jtp2_config(config: dict):
     if "force_cpu" in config:
         JTP2_FORCE_CPU = bool(config["force_cpu"])
 
-    # Reinitialize caption generator with new settings
-    if "jtp2" in caption_generators:
-        try:
-            caption_generators["jtp2"] = caption_generation.JTP2Generator(
-                model_path=JTP2_MODEL_PATH,
-                tags_path=JTP2_TAGS_PATH,
-                threshold=JTP2_THRESHOLD,
-                force_cpu=JTP2_FORCE_CPU,
-            )
-            logger.info("JTP2 caption generator reinitialized with new settings")
-        except Exception as e:
-            logger.error(f"Failed to reinitialize JTP2 generator: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
-
-    return {"success": True}
+    # Update the captioner using the new system
+    try:
+        from app.caption_generation import captioner_manager
+        
+        success = captioner_manager.update_captioner_config("jtp2", config)
+        if not success:
+            logger.warning("JTP2 captioner not available in the plugin system")
+            
+        logger.info("JTP2 configuration updated")
+        return {"success": True}
+    except Exception as e:
+        logger.error(f"Failed to update JTP2 configuration: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/upload/{path:path}")
@@ -905,8 +918,26 @@ async def move_items(
 
 @app.put("/api/wdv3-config")
 async def update_wdv3_config(config: dict):
-    """Update WDv3 model configuration."""
+    """
+    Update WDv3 model configuration.
+    
+    Args:
+        config (dict): Configuration parameters
+            - model_name (str, optional): Model architecture ("vit", "swinv2", "convnext") 
+            - gen_threshold (float, optional): General tag threshold
+            - char_threshold (float, optional): Character tag threshold
+            
+    Returns:
+        dict: Success status
+        
+    Raises:
+        HTTPException: If update fails
+        
+    Deprecated:
+        Use /api/captioner-config/wdv3 instead
+    """
     try:
+        # Validate parameters
         if "model_name" in config:
             if config["model_name"] not in MODEL_REPO_MAP:
                 raise HTTPException(
@@ -933,24 +964,19 @@ async def update_wdv3_config(config: dict):
                 )
             os.environ["WDV3_CHAR_THRESHOLD"] = str(char_threshold)
 
-        # Reinitialize WDv3 generator with new settings
-        if "wdv3" in caption_generators:
-            try:
-                wdv3_generator = caption_generation.WDv3Generator(
-                    model_name=os.getenv("WDV3_MODEL_NAME", "vit"),
-                    gen_threshold=float(os.getenv("WDV3_GEN_THRESHOLD", "0.35")),
-                    char_threshold=float(os.getenv("WDV3_CHAR_THRESHOLD", "0.75")),
-                )
-                if wdv3_generator.is_available():
-                    caption_generators["wdv3"] = wdv3_generator
-                else:
-                    logger.warning(
-                        "WDv3 caption generator is not available after config update"
-                    )
-            except Exception as e:
-                logger.warning(f"Failed to reinitialize WDv3 caption generator: {e}")
-
-        return {"success": True, "message": "WDv3 configuration updated successfully"}
+        # Update the captioner using the new system
+        try:
+            from app.caption_generation import captioner_manager
+            
+            success = captioner_manager.update_captioner_config("wdv3", config)
+            if not success:
+                logger.warning("WDv3 captioner not available in the plugin system")
+                
+            logger.info("WDv3 configuration updated")
+            return {"success": True, "message": "WDv3 configuration updated successfully"}
+        except Exception as e:
+            logger.error(f"Failed to update WDv3 configuration: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
 
     except HTTPException:
         raise
@@ -1028,3 +1054,132 @@ async def update_favorite_state(path: str, config: dict = Body(...)):
     except Exception as e:
         logger.error(f"Error updating favorite state for {path}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/api/florence2-config", tags=["generation"], deprecated=True)
+async def update_florence2_config(config: Dict[str, Any]):
+    """
+    Update Florence2 model configuration.
+    
+    This updates the Florence2 captioner configuration with new parameters.
+    
+    Args:
+        config (Dict[str, Any]): Configuration parameters for Florence2.
+            - script_path (str, optional): Path to the Florence2 script.
+            - use_gpu (bool, optional): Whether to use GPU for inference.
+            - precision (str, optional): Precision for model inference (fp16/fp32).
+            - max_tokens (int, optional): Maximum number of tokens in generated caption.
+            
+    Returns:
+        Dict[str, Any]: Status indicating success
+        
+    Raises:
+        HTTPException: If the configuration could not be updated
+        
+    Note:
+        This endpoint is deprecated. Please use /api/captioner-config/florence2 instead.
+    """
+    try:
+        # Update environment variables for backward compatibility
+        if "script_path" in config:
+            os.environ["FLORENCE2_PATH"] = config["script_path"]
+            
+        # Validate parameters
+        if "max_tokens" in config and config["max_tokens"] < 1:
+            raise ValueError("max_tokens must be greater than 0")
+            
+        if "precision" in config and config["precision"] not in ["fp16", "fp32"]:
+            raise ValueError("precision must be one of: fp16, fp32")
+            
+        if "use_gpu" in config:
+            os.environ["FLORENCE2_FORCE_CPU"] = str(not config["use_gpu"]).lower()
+            
+        if "precision" in config:
+            os.environ["FLORENCE2_PRECISION"] = config["precision"]
+            
+        if "max_tokens" in config:
+            os.environ["FLORENCE2_MAX_TOKENS"] = str(config["max_tokens"])
+        
+        # Update the configuration through the captioner manager
+        from app.caption_generation import captioner_manager
+        await captioner_manager.update_captioner_config("florence2", config)
+        
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Failed to update Florence2 configuration: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update Florence2 configuration: {e}")
+
+
+@app.put("/api/joycaption-config", tags=["generation"], deprecated=True)
+async def update_joycaption_config(config: Dict[str, Any]):
+    """
+    Update JoyCaptioner model configuration.
+    
+    This updates the JoyCaptioner configuration with new parameters.
+    
+    Args:
+        config (Dict[str, Any]): Configuration parameters for JoyCaptioner.
+            - script_path (str, optional): Path to the JoyCaptioner script.
+            - model_path (str, optional): Path to the JoyCaptioner model.
+            - caption_type (str, optional): Type of caption to generate.
+            - length (str, optional): Length of caption ('short', 'medium', 'long').
+            - force_cpu (bool, optional): Whether to force CPU inference.
+            
+    Returns:
+        Dict[str, Any]: Status indicating success
+        
+    Raises:
+        HTTPException: If the configuration could not be updated
+        
+    Note:
+        This endpoint is deprecated. Please use /api/captioner-config/joycaption instead.
+    """
+    try:
+        # Update environment variables for backward compatibility
+        if "script_path" in config:
+            os.environ["JOYCAPTION_PATH"] = config["script_path"]
+            
+        if "model_path" in config:
+            os.environ["JOYCAPTION_MODEL_PATH"] = config["model_path"]
+            
+        # Validate parameters
+        if "caption_type" in config and config["caption_type"] not in ["emotional", "detailed", "simple"]:
+            raise ValueError("caption_type must be one of: emotional, detailed, simple")
+            
+        if "length" in config and config["length"] not in ["short", "medium", "long"]:
+            raise ValueError("length must be one of: short, medium, long")
+        
+        # Update the configuration through the captioner manager
+        from app.caption_generation import captioner_manager
+        await captioner_manager.update_captioner_config("joycaption", config)
+        
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Failed to update JoyCaptioner configuration: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update JoyCaptioner configuration: {e}")
+
+
+@app.get("/api/captioner-config/{name}")
+async def get_captioner_config(name: str):
+    """
+    Get a captioner's current configuration.
+    
+    Args:
+        name (str): Name of the captioner
+        
+    Returns:
+        dict: Captioner configuration
+        
+    Raises:
+        HTTPException: If captioner not found
+    """
+    from app.caption_generation import captioner_manager
+    
+    config = captioner_manager.get_captioner_config(name)
+    if config is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown caption generator: {name}",
+        )
+    
+    return config

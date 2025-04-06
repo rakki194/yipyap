@@ -3,6 +3,7 @@ import { type ParentComponent } from "solid-js";
 import { Router } from "@solidjs/router";
 import { routes } from "./router";
 import { AppProvider } from "./contexts/app";
+import { CaptionerProvider } from "./contexts/captioners";
 import { NotificationContainer } from "./components/Notification/NotificationContainer";
 import useConnectionStatus from "./composables/useConnectionStatus";
 import "./styles.css";
@@ -17,9 +18,11 @@ const Layout: ParentComponent = (props) => {
   return (
     <>
       <AppProvider>
-        {props.children}
-        <NotificationContainer />
-        <ConnectionMonitor />
+        <CaptionerProvider>
+          {props.children}
+          <NotificationContainer />
+          <ConnectionMonitor />
+        </CaptionerProvider>
       </AppProvider>
     </>
   );
