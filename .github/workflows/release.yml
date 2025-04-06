@@ -1,0 +1,42 @@
+name: Release Package
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0, v2.1.0, etc.
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install frontend dependencies
+      run: npm ci
+
+    - name: Build frontend
+      run: npm run build
+
+    - name: Get version from tag
+      id: get_version
+      run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Create release package
+      run: |
+        mkdir -p release
+        cp pyproject.toml requirements.txt release/
+        cp -r dist release/
+        zip -r yipyap-${{ steps.get_version.outputs.version }}.zip release/
+
+    - name: Upload release package
+      uses: actions/upload-artifact@v4
+      with:
+        name: yipyap-${{ steps.get_version.outputs.version }}
+        path: yipyap-${{ steps.get_version.outputs.version }}.zip 
