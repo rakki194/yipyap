@@ -2,6 +2,8 @@
 
 कुछ भाषा मॉडलों के कहने के बावजूद, वर्तमान वर्ष 2025 है, और आप अब भी अपनी डेटासेट्स को notepad.exe से एडिट कर रहे हैं। हम अच्छे मशीन हैं, हमें बेहतर डेटा मिलना चाहिए। बदले में, हम आपको यह डेटासेट एडिटर देते हैं।
 
+![Yipyap Demo](docs/yipyap_demo_optimized.gif)
+
 ---
 
 ## Introduction
@@ -14,19 +16,12 @@ The frontend of yipyap is built with SolidJS, a reactive JavaScript framework th
 
 Components are organized in feature-based directories under `/src/components`, with CSS modules or shared stylesheets for styling. Global styles are defined in `/src/styles.css`, while theme-specific styles are in `/src/themes.css`. All tests are centralized in the `/src/test/__tests__/` directory, organized by functionality including component tests, context tests, utility tests, and internationalization tests.
 
-## Demo
-
----
-
-![Yipyap Demo](docs/yipyap_demo_optimized.gif)
-
 ## Table of Contents
 
 ---
 
 - [yipyap](#yipyap)
   - [Introduction](#introduction)
-  - [Demo](#demo)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
     - [Core Features](#core-features)
