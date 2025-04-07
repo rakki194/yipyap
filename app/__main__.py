@@ -89,6 +89,11 @@ def setup_logging(is_dev: bool):
     uvicorn_error_logger = logging.getLogger("uvicorn.error")
     uvicorn_error_logger.addHandler(file_handler)
 
+    # Set watchfiles log level to WARNING to prevent spam
+    # This prevents the debug messages about file changes
+    watchfiles_logger = logging.getLogger("watchfiles")
+    watchfiles_logger.setLevel(logging.WARNING)
+
 
 def run_development_server(dev_port: int, backend_port: int):
     """Starts the development servers with Vite frontend and hot-reloading."""
@@ -123,6 +128,10 @@ def run_development_server(dev_port: int, backend_port: int):
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
 
+    # Get absolute path for better exclusion matching
+    project_dir = os.path.abspath(os.path.curdir)
+    logs_absolute_path = os.path.join(project_dir, "logs")
+
     # Start uvicorn with reload
     reload = os.getenv("RELOAD", "true").lower()[:1] in "1yt"
     uvicorn.run(
@@ -133,10 +142,15 @@ def run_development_server(dev_port: int, backend_port: int):
         reload=reload,
         reload_dirs=["app"],
         reload_excludes=[
-            "logs/*",
-            "*.log",
-            "cache.db",
-        ],  # Exclude logs directory and any log files
+            logs_absolute_path,  # Absolute path to logs directory
+            "logs",  # Directory name
+            "logs/*",  # All files in logs directory
+            "*.log",  # All log files
+            "*.log.*",  # All rotated log files
+            "cache.db",  # Database cache
+            "__pycache__",  # Python cache
+            "node_modules",  # Node modules
+        ],
     )
 
     frontend.terminate()
