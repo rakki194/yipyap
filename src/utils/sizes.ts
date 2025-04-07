@@ -20,7 +20,7 @@ interface ConfigResponse {
  * @throws Error if the fetch request fails
  */
 const fetchSizes = async () => {
-  const response = await retryFetch("/config");
+  const response = await retryFetch("/api/config");
   const config = await response.json();
   return config as ConfigResponse;
 };

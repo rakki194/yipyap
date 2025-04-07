@@ -1,11 +1,11 @@
 {
-  "name": "image-browser-frontend",
-  "version": "1.0.0",
+  "name": "yipyap",
+  "version": "0.1.0-beta.1",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && mkdir -p dist/assets/pixelings && cp -r dist/pixelings/* dist/assets/pixelings/",
+    "build": "vite build",
     "serve": "vite preview",
     "check": "tsc --noEmit",
     "types": "tsc --emitDeclarationOnly",

@@ -24,7 +24,9 @@ import { captionIconsMap } from "~/icons";
 import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 import { useDoubleTap } from "~/composables/useDoubleTap";
 import { useCaptioners } from "~/contexts/captioners";
-import type { CaptionerInfo } from "~/resources/browse";
+import cactus_png from "./pixelings/cactus.png";
+import chimken_png from "./pixelings/chimken.png";
+import fonx_png from "./pixelings/fonx.png";
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -37,9 +39,9 @@ interface ImageModalProps {
 }
 
 const NO_CAPTION_IMAGES = [
-  '/pixelings/cactus.png',
-  '/pixelings/chimken.png',
-  '/pixelings/fonx.png',
+  cactus_png,
+  chimken_png,
+  fonx_png,
 ] as const;
 
 // Add this helper function near the top of the file

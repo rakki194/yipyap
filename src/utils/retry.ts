@@ -20,9 +20,9 @@ const defaultOptions: Required<RetryOptions> = {
   backoffFactor: 2,
   shouldRetry: (error: Error) => {
     // Retry on connection refused or network errors
-    return error.message.includes('ECONNREFUSED') || 
-           error.message.includes('Failed to fetch') ||
-           error.message.includes('NetworkError');
+    return error.message.includes('ECONNREFUSED') ||
+      error.message.includes('Failed to fetch') ||
+      error.message.includes('NetworkError');
   }
 };
 
@@ -70,6 +70,14 @@ export async function retryFetch(
 
   throw lastError!;
 }
+
+/**
+ * Callback function type for processing JSON data items in a stream
+ * @template T The type of data being processed
+ * @param data The parsed JSON data item
+ * @param index The sequential index of the data item in the stream
+ */
+export type StreamingJsonCallback<T> = (data: T, index: number) => void;
 
 /**
  * Wraps the streaming JSON fetch with retry logic

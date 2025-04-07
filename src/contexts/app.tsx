@@ -583,9 +583,7 @@ const createAppContext = (): AppContext => {
     get thumbnailSize() {
       return store.thumbnailSize;
     },
-    setThumbnailSize: (size: number) => {
-      setStore("thumbnailSize", size);
-    },
+    setThumbnailSize,
     createNotification: (notification: {
       message: string;
       type: "error" | "success" | "info" | "warning";
