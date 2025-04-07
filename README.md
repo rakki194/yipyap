@@ -128,8 +128,17 @@ Components are organized in feature-based directories under `/src/components`, w
 
 4. Run the application:
 
+   Linux/MacOS
+
     ```bash
-    ROOT_DIR=$HOME/datasets uvicorn app.main:app --reload --log-level=trace
+    ROOT_DIR=$HOME/datasets python -m app
+    ```
+
+    Windows Powershell
+
+    ```pwsh
+    $env:ROOT_DIR = "$HOME\datasets"
+    python -m app
     ```
 
 The application will be available at `http://localhost:8000`
