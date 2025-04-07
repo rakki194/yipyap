@@ -45,8 +45,49 @@ import os
 import signal
 import uvicorn
 import logging
+import logging.handlers
 
 logger = logging.getLogger(__name__)
+
+
+def setup_logging(is_dev: bool):
+    """
+    Configure logging to output to both console and log files.
+    Logs will be stored in the logs directory with daily rotation.
+    """
+    # Create logs directory if it doesn't exist
+    logs_dir = Path("logs")
+    logs_dir.mkdir(exist_ok=True)
+
+    # Create formatter
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    # Setup file handler for rotating logs
+    file_handler = logging.handlers.TimedRotatingFileHandler(
+        logs_dir / "backend.log", when="midnight", backupCount=7  # Keep logs for a week
+    )
+    file_handler.setFormatter(formatter)
+
+    # Setup console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+
+    # Configure root logger
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG if is_dev else logging.INFO)
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(console_handler)
+
+    # Set uvicorn access logger to use file handler
+    uvicorn_logger = logging.getLogger("uvicorn.access")
+    uvicorn_logger.addHandler(file_handler)
+
+    # Set uvicorn error logger to use file handler
+    uvicorn_error_logger = logging.getLogger("uvicorn.error")
+    uvicorn_error_logger.addHandler(file_handler)
 
 
 def run_development_server(dev_port: int, backend_port: int):
@@ -129,7 +170,8 @@ def main():
         os.environ.setdefault("BACKEND_PORT", str(dev_port + 1 if is_dev else dev_port))
     )
 
-    logging.basicConfig(level=logging.DEBUG if is_dev else logging.INFO)
+    # Configure logging with file and console output
+    setup_logging(is_dev)
 
     logger.info(f"Starting server in {'development' if is_dev else 'production'} mode")
     logger.info(f"DEV_PORT: {dev_port}, BACKEND_PORT: {backend_port}")

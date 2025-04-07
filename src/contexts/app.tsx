@@ -23,6 +23,7 @@ import { createNotification } from "~/components/Notification/NotificationContai
 import { TransformationsProvider } from "./transformations";
 import { BreadcrumbNavigation } from "~/components/Gallery/Breadcrumb/BreadcrumbNavigation";
 import getIcon from "~/icons";
+import { logger } from "~/utils/logger";
 
 /**
  * Interface defining the shape of the app context.
@@ -199,8 +200,9 @@ const createAppContext = (): AppContext => {
   createEffect<Location>((prev) => {
     if (prev && prev.pathname !== location.pathname) {
       setStore("prevRoute", prev);
+      logger.debug(`Route changed: ${prev.pathname} -> ${location.pathname}`);
     }
-    return { ...location };
+    return location;
   });
 
   // Effects for persisting settings
@@ -311,6 +313,7 @@ const createAppContext = (): AppContext => {
     };
 
     try {
+      logger.info("Updating JTP2 config");
       // Optimistically update the UI
       if (config.model_path) setStore("jtp2ModelPath", config.model_path);
       if (config.tags_path) setStore("jtp2TagsPath", config.tags_path);
@@ -332,7 +335,7 @@ const createAppContext = (): AppContext => {
       //  'success'
       //);
     } catch (error) {
-      console.error("Failed to update JTP2 config:", error);
+      logger.error("Failed to update JTP2 config:", error instanceof Error ? error : new Error(String(error)));
 
       // Revert the changes on error
       setStore("jtp2ModelPath", prevState.model_path);
@@ -347,8 +350,9 @@ const createAppContext = (): AppContext => {
       localStorage.setItem("jtp2ForceCpu", prevState.force_cpu.toString());
 
       notify(
-        getTranslationValue(translationData(), 'settings.jtp2ConfigUpdateError') || 'Failed to update JTP2 settings',
-        'error'
+        error instanceof Error ? error.message : String(error),
+        "error",
+        "jtp2"
       );
       throw error;
     }
@@ -399,7 +403,14 @@ const createAppContext = (): AppContext => {
 
     try {
       const value = getTranslationValue(translations, key, params);
-      return value || key;
+      const translatedValue = value || key;
+
+      // Log missing translations to help during development or for adding new languages
+      if (translatedValue === key && import.meta.env.DEV) {
+        logger.warn(`Missing translation for key: ${key} in locale: ${store.locale}`);
+      }
+
+      return translatedValue;
     } catch (error) {
       console.warn(`Translation error for key "${key}":`, error);
       return key;
@@ -440,16 +451,23 @@ const createAppContext = (): AppContext => {
     group?: string,
     icon?: "spinner" | "success" | "error" | "info" | "warning"
   ) => {
-    // If message is a translation key and we have translations loaded, translate it
-    const translatedMessage = getTranslationValue(translationData(), message) || message;
+    const notification = createNotification(
+      message,
+      type,
+      group,
+      icon ?? (type === "error" ? "error" : type === "success" ? "success" : type === "warning" ? "warning" : "info")
+    );
 
     if (typeof window !== "undefined" && (window as any).__notificationContainer) {
-      (window as any).__notificationContainer.addNotification({
-        message: translatedMessage,
-        type,
-        group,
-        icon: icon || type
-      });
+      (window as any).__notificationContainer.addNotification(notification);
+    }
+
+    if (type === "error") {
+      logger.error(`Notification: ${message}`, new Error(message));
+    } else if (type === "warning") {
+      logger.warn(`Notification: ${message}`);
+    } else {
+      logger.info(`Notification: ${message}`);
     }
   };
 
@@ -520,23 +538,36 @@ const createAppContext = (): AppContext => {
       return store.theme;
     },
     setTheme: (theme: Theme) => {
+      document.documentElement.classList.remove(store.theme);
+      document.documentElement.classList.add(theme);
+      localStorage.setItem("theme", theme);
       setStore("theme", theme);
+      logger.info(`Theme changed to: ${theme}`);
     },
     // Settings
     get instantDelete() {
       return store.instantDelete;
     },
-    setInstantDelete: (value: boolean) => setStore("instantDelete", value),
+    setInstantDelete: (value: boolean) => {
+      localStorage.setItem("instantDelete", value.toString());
+      setStore("instantDelete", value);
+      logger.debug(`Instant delete setting changed to: ${value}`);
+    },
     get disableAnimations() {
       return store.disableAnimations;
     },
-    setDisableAnimations: (value: boolean) =>
-      setStore("disableAnimations", value),
+    setDisableAnimations: (value: boolean) => {
+      localStorage.setItem("disableAnimations", value.toString());
+      setStore("disableAnimations", value);
+      logger.debug(`Disable animations setting changed to: ${value}`);
+    },
     get disableNonsense() {
       return store.disableNonsense;
     },
     setDisableNonsense(value: boolean) {
+      localStorage.setItem("disableNonsense", value.toString());
       setStore("disableNonsense", value);
+      logger.debug(`Disable nonsense setting changed to: ${value}`);
     },
     get jtp2() {
       return {
@@ -570,7 +601,9 @@ const createAppContext = (): AppContext => {
       return store.locale;
     },
     setLocale: (locale: Locale) => {
+      localStorage.setItem("locale", locale);
       setStore("locale", locale);
+      logger.info(`Locale changed to: ${locale}`);
     },
     t: (key: string, params?: { [key: string]: any }) => {
       return t(key, params);

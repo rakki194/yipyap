@@ -42,6 +42,7 @@ from email.utils import parsedate_to_datetime, format_datetime
 from typing import List, Dict, Any
 import shutil
 import aiofiles
+import logging.handlers
 
 from .data_access import CachedFileSystemDataSource
 from . import utils
@@ -60,6 +61,26 @@ is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
 logger.info(f"Starting server in {'development' if is_dev else 'production'} mode")
 
 app = FastAPI()
+
+# Create logs directory if it doesn't exist
+logs_dir = Path("logs")
+logs_dir.mkdir(exist_ok=True)
+
+# Configure frontend logger
+frontend_logger = logging.getLogger("frontend")
+frontend_logger.setLevel(logging.DEBUG)
+
+# Create formatter
+formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+# Setup file handler for rotating frontend logs
+frontend_file_handler = logging.handlers.TimedRotatingFileHandler(
+    logs_dir / "frontend.log", when="midnight", backupCount=7  # Keep logs for a week
+)
+frontend_file_handler.setFormatter(formatter)
+frontend_logger.addHandler(frontend_file_handler)
 
 
 async def serve_spa(request: Request, call_next):
@@ -1200,6 +1221,54 @@ async def list_routes():
             )
 
     return routes
+
+
+@app.post("/api/log")
+async def log_frontend_messages(request: Request):
+    """
+    Endpoint to receive and store logs from the frontend.
+
+    Stores logs in a dedicated frontend.log file that rotates daily.
+    """
+    try:
+        log_data = await request.json()
+        logs = log_data.get("logs", "")
+
+        if not logs:
+            return {"status": "error", "message": "No logs provided"}
+
+        # Split logs by line and record each one
+        for log_line in logs.splitlines():
+            # Skip empty lines
+            if not log_line.strip():
+                continue
+
+            # Parse log level from the log line (assume format: TIMESTAMP - LEVEL - MESSAGE)
+            parts = log_line.split(" - ", 2)
+            if len(parts) >= 3:
+                level = parts[1].lower()
+                message = parts[2]
+
+                # Log with appropriate level
+                if level == "debug":
+                    frontend_logger.debug(message)
+                elif level == "info":
+                    frontend_logger.info(message)
+                elif level == "warn":
+                    frontend_logger.warning(message)
+                elif level == "error":
+                    frontend_logger.error(message)
+                else:
+                    # Default to info level if parsing fails
+                    frontend_logger.info(log_line)
+            else:
+                # If parsing fails, log the entire line as info
+                frontend_logger.info(log_line)
+
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Error processing frontend logs: {e}")
+        return {"status": "error", "message": str(e)}
 
 
 # # Add a direct route to handle pixelings assets
