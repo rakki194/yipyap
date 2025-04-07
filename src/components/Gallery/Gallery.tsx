@@ -17,6 +17,7 @@ import { useGalleryEffects } from '../../composables/useGalleryEffects';
 import getIcon from "~/icons";
 import "./Gallery.css";
 import { NewFolderDialog } from "./NewFolderDialog";
+import { logger } from '~/utils/logger';
 
 export const Gallery: Component = () => {
   const gallery = useGallery();
@@ -62,7 +63,7 @@ export const Gallery: Component = () => {
           await gallery.deleteImage(imageIdx);
         } catch (error) {
           failedImages++;
-          console.error('Failed to delete image at index:', imageIdx, error);
+          logger.error('Failed to delete image at index:', imageIdx, error);
         }
       }
       if (failedImages > 0) {
@@ -152,7 +153,7 @@ export const Gallery: Component = () => {
       >
         <Show when={gallery.data()}>
           {(data) => {
-            console.debug('Gallery rendering with data:', {
+            logger.debug('Gallery rendering with data:', {
               path: data().path,
               itemCount: data().items?.length,
               totalFolders: data().total_folders,

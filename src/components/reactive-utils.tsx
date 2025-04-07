@@ -1,4 +1,5 @@
 import { JSX, Accessor, createSignal } from "solid-js";
+import { logger } from '~/utils/logger';
 
 export interface ReactiveImage {
   img: HTMLImageElement;
@@ -62,7 +63,7 @@ export const makeImage = (
   };
 
   img.onerror = (event) => {
-    console.error(`Failed to load image: ${src}`, event);
+    logger.error(`Failed to load image: ${src}`, event);
     cleanup();
   };
 
@@ -79,7 +80,7 @@ export const makeImage = (
     isLoaded,
     unload: () => {
       if (import.meta.env.DEV) {
-        console.debug("makeImage: unloading image", src);
+        logger.debug("makeImage: unloading image", src);
       }
       img.setAttribute('src', ''); // Use setAttribute instead of src property
       cleanup();

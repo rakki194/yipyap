@@ -1,5 +1,6 @@
 import { createSignal, createEffect } from "solid-js";
 import { createSelection, getTextNodes } from "@solid-primitives/selection";
+import { logger } from '~/utils/logger';
 
 export function useE621Editor(
   caption: () => string,
@@ -182,7 +183,7 @@ export function useE621Editor(
           setSelection([element, targetOffset, targetOffset]);
         }
       } catch (error) {
-        console.error('Error restoring cursor position:', error);
+        logger.error('Error restoring cursor position:', error);
       }
     });
   };
@@ -257,7 +258,7 @@ export function useE621Editor(
       setLineCount(countLinesInElement(tempDiv));
       setHighlightedContent(syntaxHighlight(code));
     } catch (error) {
-      console.error('Error updating content:', error);
+      logger.error('Error updating content:', error);
       setLineCount(1);
     }
   });

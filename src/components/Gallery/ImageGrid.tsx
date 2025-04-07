@@ -13,6 +13,7 @@ import type {
   BrowsePagesCached,
 } from "~/resources/browse";
 import { useAppContext } from "~/contexts/app";
+import { logger } from '~/utils/logger';
 
 /**
  * Grid component that displays images and directories in a responsive layout
@@ -43,7 +44,7 @@ export const ImageGrid = (props: {
 
   // Add debug logging for props
   createEffect(() => {
-    console.debug('ImageGrid received props:', {
+    logger.debug('ImageGrid received props:', {
       path: props.path,
       itemCount: props.items?.length,
       hasData: !!props.data
@@ -285,14 +286,14 @@ export const ImageItem = (props: {
 
     const itemData = props.item();
     if (!itemData) {
-      console.error('handleDragStart: Item data is undefined', {
+      logger.error('handleDragStart: Item data is undefined', {
         idx: props.idx,
         path: props.path
       });
       return;
     }
 
-    console.debug('handleDragStart:', {
+    logger.debug('handleDragStart:', {
       idx: props.idx,
       path: props.path,
       name: itemData.name,
@@ -306,12 +307,12 @@ export const ImageItem = (props: {
         .map(idx => {
           const data = gallery.data();
           if (!data) {
-            console.debug('No gallery data available for selected item', { idx });
+            logger.debug('No gallery data available for selected item', { idx });
             return null;
           }
           const item = data.items[idx];
           if (!item || item.type !== 'image') {
-            console.debug('Invalid item in selection', { idx, item });
+            logger.debug('Invalid item in selection', { idx, item });
             return null;
           }
           return {
@@ -323,7 +324,7 @@ export const ImageItem = (props: {
         })
         .filter(Boolean);
 
-      console.debug('Setting drag data for multi-selection:', { selectedItems });
+      logger.debug('Setting drag data for multi-selection:', { selectedItems });
       e.dataTransfer.setData('application/x-yipyap-items', JSON.stringify(selectedItems));
     }
 
@@ -334,7 +335,7 @@ export const ImageItem = (props: {
       name: itemData.name,
       idx: props.idx
     };
-    console.debug('Setting individual drag item:', dragItem);
+    logger.debug('Setting individual drag item:', dragItem);
     e.dataTransfer.setData('application/x-yipyap-item', JSON.stringify(dragItem));
     e.dataTransfer.effectAllowed = 'move';
   };

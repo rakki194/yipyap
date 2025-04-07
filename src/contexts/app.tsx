@@ -195,7 +195,7 @@ const createAppContext = (): AppContext => {
   // Previous Location tracking
   const location = useLocation();
   if (import.meta.env.DEV) {
-    console.log("createAppContext");
+    logger.info("createAppContext");
   }
   createEffect<Location>((prev) => {
     if (prev && prev.pathname !== location.pathname) {
@@ -361,7 +361,7 @@ const createAppContext = (): AppContext => {
   const [translationData] = createResource(
     () => {
       const currentLocale = store.locale;
-      console.debug('Translation resource source function - Initial state:', {
+      logger.debug('Translation resource source function - Initial state:', {
         currentLocale,
         type: typeof currentLocale,
         isValidLocale: Object.keys(translations).includes(currentLocale)
@@ -372,14 +372,14 @@ const createAppContext = (): AppContext => {
         return currentLocale as Locale;
       }
 
-      console.debug('Falling back to default locale:', {
+      logger.debug('Falling back to default locale:', {
         reason: 'Invalid locale',
         fallbackLocale: 'en'
       });
       return 'en' as Locale;
     },
     async (locale: Locale) => {
-      console.debug('Translation loader starting:', {
+      logger.debug('Translation loader starting:', {
         locale,
         hasTranslator: !!translations[locale]
       });
@@ -388,7 +388,7 @@ const createAppContext = (): AppContext => {
         const translationModule = await translations[locale]();
         return translationModule.default;
       } catch (error) {
-        console.error('Translation loading error:', error);
+        logger.error('Translation loading error:', error);
         if (locale !== 'en') {
           return (await translations['en']()).default;
         }
@@ -412,7 +412,7 @@ const createAppContext = (): AppContext => {
 
       return translatedValue;
     } catch (error) {
-      console.warn(`Translation error for key "${key}":`, error);
+      logger.warn(`Translation error for key "${key}":`, error);
       return key;
     }
   };
@@ -437,7 +437,7 @@ const createAppContext = (): AppContext => {
       window.dispatchEvent(new CustomEvent('thumbnailSizeChanged'));
 
     } catch (error) {
-      console.error('Error updating thumbnail size:', error);
+      logger.error('Error updating thumbnail size:', error);
       notify(
         getTranslationValue(translationData(), 'settings.thumbnailSizeUpdateError') || 'Failed to update thumbnail size',
         'error'
@@ -506,7 +506,7 @@ const createAppContext = (): AppContext => {
       //  'success'
       //);
     } catch (error) {
-      console.error("Failed to update WDv3 config:", error);
+      logger.error("Failed to update WDv3 config:", error);
 
       // Revert the changes on error
       setStore("wdv3ModelName", prevState.model_name);

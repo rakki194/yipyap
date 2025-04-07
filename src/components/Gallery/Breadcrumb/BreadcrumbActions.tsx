@@ -12,6 +12,7 @@ import getIcon from "~/icons";
 import "./BreadcrumbActions.css";
 import { Tooltip } from "~/components/Tooltip/Tooltip";
 import { Toggle } from "~/components/Toggle/Toggle";
+import { logger } from '~/utils/logger';
 
 const BatchTransformDialog: Component<{
   onClose: () => void;
@@ -188,7 +189,7 @@ const BatchTransformButton: Component = () => {
 
       app.notify(t('notifications.batchTransformSuccess'), 'success');
     } catch (error) {
-      console.error('Error applying batch transformations:', error);
+      logger.error('Error applying batch transformations:', error);
       app.notify(t('notifications.batchTransformError'), 'error');
     }
   };
@@ -261,7 +262,7 @@ export const BreadcrumbActions: Component = () => {
         "success"
       );
     } catch (error) {
-      console.error("Error deleting folder:", error);
+      logger.error("Error deleting folder:", error);
       app.notify(
         t('notifications.folderDeleteError'),
         "error"

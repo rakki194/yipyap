@@ -27,6 +27,7 @@ import { useCaptioners } from "~/contexts/captioners";
 import cactus_png from "./pixelings/cactus.png";
 import chimken_png from "./pixelings/chimken.png";
 import fonx_png from "./pixelings/fonx.png";
+import { logger } from '~/utils/logger';
 
 interface ImageModalProps {
   imageInfo: ImageInfoType;
@@ -217,7 +218,7 @@ const ModelBody = (props: {
         throw result;
       }
     } catch (error) {
-      console.error("Error creating caption:", error);
+      logger.error("Error creating caption:", error);
       // On error, revert focus state
       setFocused(false);
       setFocusedType(null);
@@ -242,7 +243,7 @@ const ModelBody = (props: {
     }
 
     // Log caption types for debugging
-    console.debug("Captions updated:", captions.map(c => c[0]).join(", "));
+    logger.debug("Captions updated:", captions.map(c => c[0]).join(", "));
   });
 
   return (
@@ -393,7 +394,7 @@ const FavoriteButton = (props: {
 
   const getStarIcon = (state: number | undefined) => {
     const flooredState = Math.floor(state ?? 0);
-    console.debug('getStarIcon input:', { original: state, floored: flooredState });
+    logger.debug('getStarIcon input:', { original: state, floored: flooredState });
     switch (flooredState) {
       case 0: return "star";
       case 1: return "starOneQuarter";
@@ -409,7 +410,7 @@ const FavoriteButton = (props: {
   const getNextState = (currentState: number | undefined) => {
     const current = currentState ?? 0;
     const nextState = Math.floor((current + 1) % 7);
-    console.debug('getNextState:', {
+    logger.debug('getNextState:', {
       currentState: current,
       currentStateType: typeof current,
       nextState,
@@ -421,13 +422,13 @@ const FavoriteButton = (props: {
   const handleClick = (e: MouseEvent) => {
     e.stopPropagation();
     const currentState = favoriteState();
-    console.debug('Current favorite_state:', {
+    logger.debug('Current favorite_state:', {
       value: currentState,
       type: typeof currentState,
       original: props.imageInfo.favorite_state
     });
     const nextState = getNextState(currentState);
-    console.debug('Setting favorite state:', {
+    logger.debug('Setting favorite state:', {
       image: props.imageInfo.name,
       nextState,
       nextStateType: typeof nextState
@@ -550,11 +551,11 @@ const DeleteButton = (props: {
                   // Refresh gallery data
                   gallery.refetchGallery();
                 } else {
-                  console.error(`Error deleting image at index ${idx}:`, response);
+                  logger.error(`Error deleting image at index ${idx}:`, response);
                   throw new Error('Failed to delete image');
                 }
               } catch (error) {
-                console.error(`Error deleting image at index ${idx}:`, error);
+                logger.error(`Error deleting image at index ${idx}:`, error);
                 throw error;
               }
             })
@@ -723,7 +724,7 @@ const CaptionCreationButton = (props: {
       await props.onCreateCaption(type);
       setIsExpanded(false);
     } catch (error) {
-      console.error("Error creating caption:", error);
+      logger.error("Error creating caption:", error);
     }
   };
 

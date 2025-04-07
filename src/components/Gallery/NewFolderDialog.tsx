@@ -5,6 +5,7 @@ import { useGlobalEscapeManager } from "~/composables/useGlobalEscapeManager";
 import { DirectoryItem } from "~/resources/browse";
 import getIcon from "~/icons";
 import "./NewFolderDialog.css";
+import { logger } from '~/utils/logger';
 
 interface NewFolderDialogProps {
   onClose: () => void;
@@ -94,7 +95,7 @@ export const NewFolderDialog: Component<NewFolderDialogProps> = (props) => {
       props.onClose();
 
     } catch (error) {
-      console.error("Error creating folder:", error);
+      logger.error("Error creating folder:", error);
       app.notify(
         t('notifications.folderCreateError'),
         "error"

@@ -22,6 +22,7 @@ import { useCaptionHistory } from "~/composables/useCaptionHistory";
 import { useTagManagement } from "~/composables/useTagManagement";
 import { useE621Editor } from "~/composables/useE621Editor";
 import { useTomlEditor } from "~/composables/useTomlEditor";
+import { logger } from '~/utils/logger';
 
 type CaptionType = "wd" | "e621" | "tags" | string;
 
@@ -134,7 +135,7 @@ export const CaptionInput: Component<
     try {
       await deleteCaption(type());
     } catch (error) {
-      console.error("Error deleting caption:", error);
+      logger.error("Error deleting caption:", error);
     }
   };
 
@@ -175,7 +176,7 @@ export const CaptionInput: Component<
         : shouldRenderTomlInput() ? "toml"
           : "textarea";
 
-    console.debug(`Caption rendering: type="${captionType}", mode="${renderMode}", length=${captionContent.length}`);
+    logger.debug(`Caption rendering: type="${captionType}", mode="${renderMode}", length=${captionContent.length}`);
 
     // Force textarea to update its value when content changes
     if (renderMode === "textarea" && textareaRef) {

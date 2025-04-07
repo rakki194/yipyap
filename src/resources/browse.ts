@@ -22,6 +22,7 @@ import {
   Setter,
 } from "solid-js";
 import { joinUrlParts } from "~/utils";
+import { logger } from '~/utils/logger';
 
 /**
  * Represents the header information for a folder listing response.
@@ -146,7 +147,7 @@ function fetchPage(
       }
     }
   ).catch((error) => {
-    console.error('Error fetching page:', error);
+    logger.error('Error fetching page:', error);
     onError(error);
   });
 }
@@ -302,7 +303,7 @@ export function createGalleryResourceCached(
       }
 
       if (import.meta.env.DEV) {
-        console.debug("fetching page", { path, page });
+        logger.debug("fetching page", { path, page });
       }
       const result = await fetchPageItemsAsSignals(path, page);
 
@@ -334,7 +335,7 @@ export function createGalleryResourceCached(
       };
 
       if (import.meta.env.DEV) {
-        console.debug("fetched page", { path, page, result, pages, items });
+        logger.debug("fetched page", { path, page, result, pages, items });
       }
 
       return value;
@@ -403,7 +404,7 @@ export async function deleteImage(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Failed to delete image", {
+    logger.error("Failed to delete image", {
       path,
       imageName,
       confirm,
@@ -452,7 +453,7 @@ export async function deleteCaption(
     const errorText = await response.text();
     throw new Error(`Failed to delete caption: ${errorText}`);
   } catch (error) {
-    console.error("Delete caption error:", error);
+    logger.error("Delete caption error:", error);
     throw error;
   }
 }

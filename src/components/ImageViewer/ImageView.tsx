@@ -3,6 +3,7 @@ import { createEffect, createMemo, on, onMount, onCleanup, splitProps, createSig
 import type { JSX } from "solid-js";
 import type { ImageInfo } from "~/types";
 import { useAppContext } from "~/contexts/app";
+import { logger } from '~/utils/logger';
 
 interface ImageViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
   imageInfo: ImageInfo;
@@ -41,8 +42,7 @@ export const ImageView = (props: ImageViewProps) => {
 
         // Always show thumbnail if available, regardless of preview state
         if (img.thumbnail_img.isLoaded()) {
-          if (import.meta.env.DEV)
-            console.debug("fallback: showing thumbnail");
+          logger.debug("fallback: showing thumbnail");
           return (
             <img
               src={img.thumbnail_img.img.src}
@@ -53,8 +53,7 @@ export const ImageView = (props: ImageViewProps) => {
         }
 
         // Show loading spinner if neither image is loaded
-        if (import.meta.env.DEV)
-          console.debug("fallback: showing spinner");
+        logger.debug("fallback: showing spinner");
         img.thumbnail_img.setPriority("high");
         return (
           <span

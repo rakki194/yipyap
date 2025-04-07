@@ -31,7 +31,7 @@ import { createConfigResource, getThumbnailComputedSize } from "~/utils/sizes";
 import { useSelection } from "./selection";
 import { joinUrlParts, replaceExtension, cacheNavigation } from "~/utils";
 import { useAppContext } from "~/contexts/app";
-import getIcon from "~/icons";
+import { logger } from '~/utils/logger';
 
 export interface GalleryState {
   viewMode: "grid" | "list";
@@ -108,9 +108,7 @@ const getImageInfo = (item: AnyItem, idx: number, pathParam?: string) => {
     },
   };
 
-  if (import.meta.env.DEV) {
-    console.debug("ImageInfo", idx, imageInfo);
-  }
+  logger.debug("ImageInfo", idx, imageInfo);
 
   return imageInfo;
 };
@@ -146,7 +144,7 @@ const loadFolderCache = (): FolderCache | null => {
 
     return data;
   } catch (error) {
-    console.error('Error loading folder cache:', error);
+    logger.error('Error loading folder cache:', error);
     return null;
   }
 };
@@ -160,7 +158,7 @@ const saveFolderCache = (folders: FolderInfo[]) => {
     };
     localStorage.setItem(FOLDER_CACHE_KEY, JSON.stringify(cache));
   } catch (error) {
-    console.error('Error saving folder cache:', error);
+    logger.error('Error saving folder cache:', error);
   }
 };
 
@@ -194,8 +192,7 @@ export function makeGalleryState() {
 
   // Data sources and actions
   const [config, refetchConfig] = createConfigResource();
-  if (import.meta.env.DEV)
-    createEffect(() => config() && console.debug("Config", config()));
+  createEffect(() => config() && logger.debug("Config", config()));
 
   // Our data source for directory listings. Calls the `/browse` and memoizes pages.
   const [backendData, { refetch, mutate: setData }] =
@@ -205,7 +202,7 @@ export function makeGalleryState() {
         page: state.page,
         page_size: 100,
       };
-      console.debug('Gallery resource requesting data:', navState);
+      logger.debug('Gallery resource requesting data:', navState);
       return navState;
     });
 
@@ -333,7 +330,7 @@ export function makeGalleryState() {
 
       return response;
     } catch (error) {
-      console.error("Failed to save caption:", error);
+      logger.error("Failed to save caption:", error);
       return new Error("Failed to save caption");
     }
   });
@@ -347,7 +344,7 @@ export function makeGalleryState() {
         throw new Error('Invalid state value: must be a number');
       }
 
-      console.debug('setFavoriteState input:', {
+      logger.debug('setFavoriteState input:', {
         image: image.name,
         state,
         stateType: typeof state
@@ -374,7 +371,7 @@ export function makeGalleryState() {
         throw new Error('Invalid state value: must be between 0 and 6');
       }
 
-      console.debug('Processed state:', {
+      logger.debug('Processed state:', {
         original: state,
         intState,
         intStateType: typeof intState
@@ -385,7 +382,7 @@ export function makeGalleryState() {
       const imagePath = basePath ? `${basePath}/${image.name}` : image.name;
 
       const payload = { favorite_state: intState };
-      console.debug('API request:', {
+      logger.debug('API request:', {
         url: `/api/favorite/${imagePath}`,
         payload,
         payloadStringified: JSON.stringify(payload)
@@ -401,7 +398,7 @@ export function makeGalleryState() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('API error response:', {
+        logger.error('API error response:', {
           status: response.status,
           errorData,
           requestPayload: payload
@@ -419,19 +416,19 @@ export function makeGalleryState() {
       // Update the ImageData state
       const setter = database.setters[image.name];
       if (setter) {
-        console.debug('Updating ImageData state:', {
+        logger.debug('Updating ImageData state:', {
           name: image.name,
           newState: intState,
           updatedImageData
         });
         setter(updatedImageData);
       } else {
-        console.warn('No setter found for image:', image.name);
+        logger.warn('No setter found for image:', image.name);
       }
 
       // Update the ImageInfo state directly
       image.favorite_state = intState;
-      console.debug('Updated ImageInfo state:', {
+      logger.debug('Updated ImageInfo state:', {
         name: image.name,
         newState: intState,
         currentState: image.favorite_state
@@ -439,7 +436,7 @@ export function makeGalleryState() {
 
       return response;
     } catch (error) {
-      console.error("Failed to update favorite state:", error);
+      logger.error("Failed to update favorite state:", error);
       throw error; // Re-throw to allow proper error handling upstream
     }
   });
@@ -496,7 +493,7 @@ export function makeGalleryState() {
         );
       }
     } catch (error) {
-      console.error("Error generating tags:", error);
+      logger.error("Error generating tags:", error);
       app.notify(
         error instanceof Error ? error.message : "Failed to generate tags",
         "error",
@@ -523,9 +520,7 @@ export function makeGalleryState() {
         confirm
       );
 
-      if (import.meta.env.DEV) {
-        console.debug("Delete image response", { idx, fileName: item.file_name });
-      }
+      logger.debug("Delete image response", { idx, fileName: item.file_name });
 
       // Delete the idx'th image from the database using slice and spread
       const items = [
@@ -547,7 +542,7 @@ export function makeGalleryState() {
 
       return items;
     } catch (error) {
-      if (import.meta.env.DEV) console.error("Failed to delete image", error);
+      if (import.meta.env.DEV) logger.error("Failed to delete image", error);
       return new Error("Failed to delete image");
     }
   });
@@ -572,7 +567,7 @@ export function makeGalleryState() {
 
       return { success: true };
     } catch (error) {
-      if (import.meta.env.DEV) console.error("Failed to delete caption", error);
+      if (import.meta.env.DEV) logger.error("Failed to delete caption", error);
 
       // Revert local state on error
       const originalCaptions = image.captions;
@@ -586,7 +581,7 @@ export function makeGalleryState() {
   const windowSize = createWindowSize();
 
   const invalidate = () => {
-    console.debug('Invalidating gallery data');
+    logger.debug('Invalidating gallery data');
     refetch();
     if (refetchConfig.refetch) {
       refetchConfig.refetch();
@@ -594,22 +589,22 @@ export function makeGalleryState() {
   };
 
   const refetchGallery = () => {
-    console.debug('Starting gallery refetch');
+    logger.debug('Starting gallery refetch');
     batch(() => {
       // Clear all data first
-      console.debug('Clearing existing data');
+      logger.debug('Clearing existing data');
       setData(undefined);
       clearImageCache();
 
       // Reset page and selection state
-      console.debug('Resetting page and selection state');
+      logger.debug('Resetting page and selection state');
       setState({ page: 1 });
       selection.select(null);
       selection.clearMultiSelect();
       selection.clearFolderMultiSelect();
 
       // Then trigger a refetch
-      console.debug('Triggering refetch');
+      logger.debug('Triggering refetch');
       invalidate();
     });
   };
@@ -648,7 +643,7 @@ export function makeGalleryState() {
         return folders;
       })
       .catch(error => {
-        console.error('Error fetching folders:', error);
+        logger.error('Error fetching folders:', error);
         return [];
       })
       .finally(() => {
@@ -737,7 +732,7 @@ export function makeGalleryState() {
   // Add effect to monitor data changes
   createEffect(() => {
     const data = backendData();
-    console.debug('Gallery data updated:', {
+    logger.debug('Gallery data updated:', {
       path: data?.path,
       totalItems: data?.items?.length,
       totalFolders: data?.total_folders,
