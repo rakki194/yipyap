@@ -534,7 +534,7 @@ def generate_caption(
 
         # Try to load the image with PIL
         try:
-            # For JXL files, we need pillow_jxl_plugin
+            # For JXL files, we need pillow_jxl
             if image_path.suffix.lower() == ".jxl":
                 try:
                     import pillow_jxl

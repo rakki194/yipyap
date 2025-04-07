@@ -169,11 +169,9 @@ class Florence2Generator(CaptionGenerator):
             logger.warning("Transformers not found, required for Florence2")
             return False
 
-        # Check for pillow_jxl_plugin (optional)
-        if not is_module_available("pillow_jxl_plugin"):
-            logger.warning(
-                "pillow_jxl_plugin not found, JXL images may require conversion"
-            )
+        # Check for pillow_jxl (optional)
+        if not is_module_available("pillow_jxl"):
+            logger.warning("pillow_jxl not found, JXL images may require conversion")
             # We continue anyway, just with a warning
 
         # Check JTP model if specified
