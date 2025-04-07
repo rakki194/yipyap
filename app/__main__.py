@@ -46,53 +46,129 @@ import signal
 import uvicorn
 import logging
 import logging.handlers
+from uvicorn.config import LOGGING_CONFIG
 
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(is_dev: bool):
+def make_log_config(is_dev: bool):
     """
-    Configure logging to output to both console and log files.
+    Configure logging by extending uvicorn's default configuration.
     Logs will be stored in the logs directory with daily rotation.
     """
     # Create logs directory if it doesn't exist
     logs_dir = Path("logs")
     logs_dir.mkdir(exist_ok=True)
 
-    # Create formatter
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+    # Create our custom logging config by extending uvicorn's config
+    custom_config = LOGGING_CONFIG.copy()
+
+    # Add our custom formatters
+    custom_config["formatters"].update(
+        {
+            "custom": {
+                "()": "logging.Formatter",
+                "fmt": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            }
+        }
     )
 
-    # Setup file handler for rotating logs
-    file_handler = logging.handlers.TimedRotatingFileHandler(
-        logs_dir / "backend.log", when="midnight", backupCount=7  # Keep logs for a week
+    # Add our custom handlers
+    custom_config["handlers"].update(
+        {
+            "file": {
+                "class": "logging.handlers.TimedRotatingFileHandler",
+                "formatter": "custom",
+                "filename": str(logs_dir / "backend.log"),
+                "when": "midnight",
+                "backupCount": 7,
+            },
+            "frontend_file": {
+                "class": "logging.handlers.TimedRotatingFileHandler",
+                "formatter": "custom",
+                "filename": str(logs_dir / "frontend.log"),
+                "when": "midnight",
+                "backupCount": 7,
+            },
+        }
     )
-    file_handler.setFormatter(formatter)
 
-    # Setup console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
+    # Add our custom loggers
+    custom_config["loggers"].update(
+        {
+            "frontend": {
+                "handlers": ["frontend_file"],
+                "propagate": False,
+            },
+            "watchfiles": {
+                "level": "INFO",
+                "propagate": False,
+            },
+        }
+    )
 
-    # Configure root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG if is_dev else logging.INFO)
-    root_logger.addHandler(file_handler)
-    root_logger.addHandler(console_handler)
+    # Update existing loggers to use our file handler and set appropriate levels
+    log_level = "DEBUG" if is_dev else "INFO"
+    for logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access", "frontend"]:
+        if logger_name in custom_config["loggers"]:
+            logger_config = custom_config["loggers"][logger_name]
+            logger_config["level"] = log_level
+            if "handlers" not in logger_config:
+                logger_config["handlers"] = []
+            logger_config["handlers"].append("file")
 
-    # Set uvicorn access logger to use file handler
-    uvicorn_logger = logging.getLogger("uvicorn.access")
-    uvicorn_logger.addHandler(file_handler)
+    return custom_config
 
-    # Set uvicorn error logger to use file handler
-    uvicorn_error_logger = logging.getLogger("uvicorn.error")
-    uvicorn_error_logger.addHandler(file_handler)
 
-    # Set watchfiles log level to WARNING to prevent spam
-    # This prevents the debug messages about file changes
-    watchfiles_logger = logging.getLogger("watchfiles")
-    watchfiles_logger.setLevel(logging.WARNING)
+def run_uvicorn_reload(app, **kwargs):
+    """
+    uvicorn.run with reload enabled but respects reload_dirs
+    """
+    from uvicorn.config import Config
+    from uvicorn.server import Server
+    from uvicorn.supervisors.watchfilesreload import (
+        WatchFilesReload as ChangeReloadOriginal,
+    )
+    from uvicorn.supervisors.watchfilesreload import FileFilter
+    from watchfiles import watch
+
+    class ChangeReload(ChangeReloadOriginal):
+        """
+        A custom Uvicorn reloader that actually only watches reload_dirs
+        """
+
+        def __init__(
+            self,
+            config: Config,
+            target,
+            sockets,
+        ) -> None:
+            super().__init__(config, target, sockets)
+            self.reloader_name = "WatchFiles"
+            self.reload_dirs = list(config.reload_dirs)
+
+            self.watch_filter = FileFilter(config)
+            self.watcher = watch(
+                *self.reload_dirs,
+                watch_filter=None,
+                stop_event=self.should_exit,
+                # using yield_on_timeout here mostly to make sure tests don't
+                # hang forever, won't affect the class's behavior
+                yield_on_timeout=True,
+            )
+
+    config = Config(app, **kwargs)
+    server = Server(config=config)
+
+    try:
+        sock = config.bind_socket()
+        ChangeReload(config, target=server.run, sockets=[sock]).run()
+    except KeyboardInterrupt:
+        pass  # pragma: full coverage
+    finally:
+        if config.uds and os.path.exists(config.uds):
+            os.remove(config.uds)  # pragma: py-win32
 
 
 def run_development_server(dev_port: int, backend_port: int):
@@ -128,36 +204,17 @@ def run_development_server(dev_port: int, backend_port: int):
     signal.signal(signal.SIGINT, cleanup)
     signal.signal(signal.SIGTERM, cleanup)
 
-    # Get absolute path for better exclusion matching
-    project_dir = os.path.abspath(os.path.curdir)
-    logs_absolute_path = os.path.join(project_dir, "logs")
-
     # Start uvicorn with reload
     reload = os.getenv("RELOAD", "true").lower()[:1] in "1yt"
-    uvicorn.run(
+    run = run_uvicorn_reload if reload else uvicorn.run
+    run(
         "app.main:app",
         host="localhost",
         port=backend_port,
         log_level="debug" if reload else "info",
         reload=reload,
         reload_dirs=["app"],
-        reload_excludes=[
-            logs_absolute_path,  # Absolute path to logs directory
-            "logs",  # Directory name
-            "logs/*",  # All files in logs directory
-            "*.log",  # All log files
-            "*.log.*",  # All rotated log files
-            "cache.db",  # Database cache
-            "__pycache__",  # Python cache
-            "node_modules",  # Node modules
-            "src",  # Frontend source files
-            "dist",  # Frontend build
-            "public",  # Frontend public files
-            "data",  # Data directory
-            "*.json",  # JSON files
-            "*.md",  # Markdown files
-            "*.txt",  # Text files
-        ],
+        log_config=make_log_config(True),
     )
 
     frontend.terminate()
@@ -179,8 +236,8 @@ def run_production_server(backend_port: int):
         "app.main:app",
         host="localhost",
         port=backend_port,
-        log_level="debug",  # Keep debug level for consistency
-        reload=False,
+        log_level="info",
+        log_config=make_log_config(False),
     )
 
 
@@ -195,9 +252,6 @@ def main():
     backend_port = int(
         os.environ.setdefault("BACKEND_PORT", str(dev_port + 1 if is_dev else dev_port))
     )
-
-    # Configure logging with file and console output
-    setup_logging(is_dev)
 
     logger.info(f"Starting server in {'development' if is_dev else 'production'} mode")
     logger.info(f"DEV_PORT: {dev_port}, BACKEND_PORT: {backend_port}")

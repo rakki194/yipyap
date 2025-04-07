@@ -5,6 +5,7 @@ import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { MoveDialog } from "./MoveDialog";
 import getIcon from "~/icons";
 import "./MultiSelectActions.css";
+import { logger } from '~/utils/logger';
 
 export const MultiSelectActions: Component = () => {
   const gallery = useGallery();
@@ -77,7 +78,7 @@ export const MultiSelectActions: Component = () => {
 
       app.notify(app.t('gallery.moveSuccess'), 'success');
     } catch (error) {
-      console.error('Error moving items:', error);
+      logger.error('Error moving items:', error);
       app.notify(app.t('gallery.moveError'), 'error');
     } finally {
       setIsMoving(false);
@@ -237,7 +238,7 @@ export const MultiSelectActions: Component = () => {
                 gallery.refetchGallery();
               }
             } catch (error) {
-              console.error('Error in bulk delete operation:', error);
+              logger.error('Error in bulk delete operation:', error);
               app.notify(
                 app.t('gallery.deleteError'),
                 "error"

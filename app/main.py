@@ -42,7 +42,6 @@ from email.utils import parsedate_to_datetime, format_datetime
 from typing import List, Dict, Any
 import shutil
 import aiofiles
-import logging.handlers
 
 from .data_access import CachedFileSystemDataSource
 from . import utils
@@ -66,21 +65,8 @@ app = FastAPI()
 logs_dir = Path("logs")
 logs_dir.mkdir(exist_ok=True)
 
-# Configure frontend logger
+# Get the frontend logger from the logging system
 frontend_logger = logging.getLogger("frontend")
-frontend_logger.setLevel(logging.DEBUG)
-
-# Create formatter
-formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
-)
-
-# Setup file handler for rotating frontend logs
-frontend_file_handler = logging.handlers.TimedRotatingFileHandler(
-    logs_dir / "frontend.log", when="midnight", backupCount=7  # Keep logs for a week
-)
-frontend_file_handler.setFormatter(formatter)
-frontend_logger.addHandler(frontend_file_handler)
 
 
 async def serve_spa(request: Request, call_next):
@@ -1223,47 +1209,73 @@ async def list_routes():
     return routes
 
 
+LEVEL_MAP = logging.getLevelNamesMapping()
+
+
 @app.post("/api/log")
 async def log_frontend_messages(request: Request):
     """
     Endpoint to receive and store logs from the frontend.
 
     Stores logs in a dedicated frontend.log file that rotates daily.
+    Each log entry is a JSON object containing:
+    - timestamp: ISO format timestamp
+    - level: Log level (DEBUG, INFO, WARN, ERROR)
+    - message: Formatted message string
+    - args: Original arguments passed to the logger
+    - error: Optional error object with message and stack trace
+    - callSite: Optional call site information (file, line, column)
     """
     try:
         log_data = await request.json()
-        logs = log_data.get("logs", "")
+        logs = log_data.get("logs", [])
 
         if not logs:
             return {"status": "error", "message": "No logs provided"}
 
-        # Split logs by line and record each one
-        for log_line in logs.splitlines():
-            # Skip empty lines
-            if not log_line.strip():
+        # Process each log entry
+        for entry in logs:
+            # Skip empty entries
+            if not entry:
                 continue
 
-            # Parse log level from the log line (assume format: TIMESTAMP - LEVEL - MESSAGE)
-            parts = log_line.split(" - ", 2)
-            if len(parts) >= 3:
-                level = parts[1].lower()
-                message = parts[2]
+            # Get log level from the entry
+            level_name = entry.get("level", "INFO")
+            level = LEVEL_MAP.get(level_name, logging.INFO)
+            if not frontend_logger.isEnabledFor(level):
+                continue
 
-                # Log with appropriate level
-                if level == "debug":
-                    frontend_logger.debug(message)
-                elif level == "info":
-                    frontend_logger.info(message)
-                elif level == "warn":
-                    frontend_logger.warning(message)
-                elif level == "error":
-                    frontend_logger.error(message)
+            # Get message and args
+            message = entry.get("message", "")
+            args = entry.get("args", [])
+
+            # Format message with args if present
+            if args:
+                # Handle template literals like console methods
+                if "%" in message:
+                    try:
+                        message = message % args
+                    except (TypeError, ValueError):
+                        # If template formatting fails, append args as is
+                        message = f"{message} {' '.join(str(arg) for arg in args)}"
                 else:
-                    # Default to info level if parsing fails
-                    frontend_logger.info(log_line)
-            else:
-                # If parsing fails, log the entire line as info
-                frontend_logger.info(log_line)
+                    # If no template, append args
+                    message = f"{message} {' '.join(str(arg) for arg in args)}"
+
+            # Add call site information if present
+            call_site = entry.get("callSite")
+            if call_site:
+                message = f"[{call_site['file']}:{call_site['line']}:{call_site['column']}] {message}"
+
+            # If there's an error object, include its details
+            error = entry.get("error")
+            if error:
+                error_msg = f"Error: {error.get('message', '')}"
+                if error.get("stack"):
+                    error_msg += f"\nStack trace:\n{error['stack']}"
+                message = f"{message}\n{error_msg}"
+
+            frontend_logger._log(level, message, (), {})
 
         return {"status": "success"}
     except Exception as e:

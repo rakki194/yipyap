@@ -55,6 +55,7 @@ import { onCleanup } from "solid-js";
 import { useGallery } from "~/contexts/GalleryContext";
 import { useAppContext } from "~/contexts/app";
 import { useFileUpload } from "./useFileUpload";
+import { logger } from '~/utils/logger';
 
 /**
  * Props for configuring drag and drop behavior
@@ -164,7 +165,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         const item = JSON.parse(itemData);
         const items = itemsData ? JSON.parse(itemsData) : [item];
 
-        console.log('Drag and drop items:', {
+        logger.info('Drag and drop items:', {
           singleItem: item,
           multiItems: items,
           itemsData: itemsData,
@@ -240,7 +241,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           return acc;
         }, {});
 
-        console.log('Items grouped by path:', {
+        logger.info('Items grouped by path:', {
           itemsByPath,
           totalItems: allItems.length,
           itemTypes: allItems.map((i: DragItem) => i.type),
@@ -253,7 +254,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           (Object.entries(itemsByPath) as [string, DragItem[]][]).map(async ([sourcePath, pathItems]) => {
             // Skip if source and target are the same
             if (sourcePath === targetPath) {
-              console.log('Skipping same directory:', { sourcePath, targetPath });
+              logger.info('Skipping same directory:', { sourcePath, targetPath });
               return null;
             }
 
@@ -263,7 +264,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
               preserve_txt: appContext.preserveTxt
             };
 
-            console.log('Move API payload:', {
+            logger.info('Move API payload:', {
               sourcePath,
               targetPath,
               payload: movePayload,
@@ -281,7 +282,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
 
             if (!response.ok) {
               const errorText = await response.text();
-              console.error('Move API error:', {
+              logger.error('Move API error:', {
                 sourcePath,
                 status: response.status,
                 statusText: response.statusText,
@@ -304,7 +305,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           };
         }, { moved: [], failed: [], failed_reasons: {} });
 
-        console.log('Combined move results:', result);
+        logger.info('Combined move results:', result);
 
         // Show success/failure notifications
         if (result.moved.length > 0) {
@@ -371,7 +372,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
             //  t("gallery.moveFailed", { files: otherFiles.join(", ") }),
             //  "error"
             //);
-            console.log("Move failed", otherFiles);
+            logger.info("Move failed", otherFiles);
           }
         }
 
@@ -386,7 +387,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
 
         return;
       } catch (err) {
-        console.error('Failed to move items:', err);
+        logger.error('Failed to move items:', err);
         appContext.notify(
           t("gallery.moveError", { error: err instanceof Error ? err.message : "Unknown error" }),
           "error"
@@ -465,7 +466,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
           await uploadFiles(dt.files);
         }
       } catch (err) {
-        console.error('Error processing dropped items:', err);
+        logger.error('Error processing dropped items:', err);
         appContext.notify(
           t("gallery.uploadError", { error: err instanceof Error ? err.message : "Unknown error" }),
           "error"
@@ -552,7 +553,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
         selectedItems.push(itemData);
       }
 
-      console.log('Setting drag data:', {
+      logger.info('Setting drag data:', {
         selectedImages,
         selectedFolders,
         combinedItems: selectedItems,
@@ -581,7 +582,7 @@ export const useDragAndDrop = ({ onDragStateChange }: DragAndDropProps) => {
       });
     } else {
       // Single item drag
-      console.log('Single item drag:', {
+      logger.info('Single item drag:', {
         itemData,
         type: isDraggingDirectory ? 'directory' : 'image'
       });

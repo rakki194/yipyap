@@ -9,6 +9,11 @@
  * logger.warn('This is a warning message');
  * logger.error('This is an error message', new Error('Something went wrong'));
  * logger.debug('This is a debug message');
+ * 
+ * // Supports all console.* methods functionality:
+ * logger.info('Multiple args:', 123, { foo: 'bar' });
+ * logger.warn('Template literal: %s %s', 'hello', 'world');
+ * logger.error('Error with context:', new Error('oops'), { context: 'details' });
  * ```
  */
 
@@ -28,9 +33,26 @@ interface LoggerConfig {
     maxLogEntries: number;
 }
 
+// Log entry interface
+interface LogEntry {
+    timestamp: string;
+    level: string;
+    message: string;
+    args: unknown[];
+    error?: {
+        message: string;
+        stack?: string;
+    };
+    callSite?: {
+        file: string;
+        line: number;
+        column: number;
+    };
+}
+
 // Default configuration
 const DEFAULT_CONFIG: LoggerConfig = {
-    level: LogLevel.INFO,
+    level: import.meta.env.DEV ? LogLevel.DEBUG : LogLevel.INFO,
     enableConsole: true,
     enableFileLogging: true,
     maxLogEntries: 1000 // Number of log entries to keep in memory before flushing
@@ -39,7 +61,7 @@ const DEFAULT_CONFIG: LoggerConfig = {
 // Logger class
 class Logger {
     private config: LoggerConfig;
-    private logBuffer: string[] = [];
+    private logBuffer: LogEntry[] = [];
     private logFlushInterval: number | null = null;
 
     constructor(config: Partial<LoggerConfig> = {}) {
@@ -70,46 +92,107 @@ class Logger {
     private flushLogs(): void {
         if (this.logBuffer.length === 0) return;
 
-        const logs = this.logBuffer.join('\n');
-        this.logBuffer = [];
-
         // Send logs to the server
         fetch('/api/log', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ logs }),
+            body: JSON.stringify({ logs: this.logBuffer }),
             // Use keepalive to ensure the request completes even if the page is unloading
             keepalive: true
         }).catch(error => {
             // If logging fails, output to console as fallback
             console.error('Failed to send logs to server:', error);
         });
+
+        // Clear the buffer after sending
+        this.logBuffer = [];
     }
 
     /**
-     * Format log entry with timestamp
+     * Get call site information from stack trace
      */
-    private formatLogEntry(level: LogLevel, message: string, error?: Error): string {
-        const timestamp = new Date().toISOString();
-        let logEntry = `${timestamp} - ${level.toUpperCase()} - ${message}`;
+    private getCallSite(): { file: string; line: number; column: number } | undefined {
+        const stack = new Error().stack;
+        if (!stack) return undefined;
 
-        if (error) {
-            logEntry += `\n${error.stack || error.message || String(error)}`;
+        // Skip the first line (Error) and the second line (getCallSite)
+        const lines = stack.split('\n').slice(2);
+
+        // Find the first line that's not from our logger
+        const callSiteLine = lines.find(line =>
+            !line.includes('logger.ts') &&
+            !line.includes('Logger.')
+        );
+
+        if (!callSiteLine) return undefined;
+
+        // Parse the call site line
+        // Format: "    at functionName (file:line:column)"
+        const match = callSiteLine.match(/at .+ \((.+):(\d+):(\d+)\)/);
+        if (!match) return undefined;
+
+        const [, file, line, column] = match;
+        return {
+            file: file.split('/').pop() || file, // Just get the filename
+            line: parseInt(line, 10),
+            column: parseInt(column, 10)
+        };
+    }
+
+    /**
+     * Format log entry
+     */
+    private formatLogEntry(level: LogLevel, ...args: unknown[]): LogEntry {
+        const timestamp = new Date().toISOString();
+        const callSite = this.getCallSite();
+
+        // Handle template literals like console methods
+        let message: string;
+        let filteredArgs: unknown[] = [];
+
+        if (typeof args[0] === 'string' && args[0].includes('%')) {
+            // Use the same formatting as console methods
+            message = args.reduce((str: string, arg, i) => {
+                if (i === 0) return str;
+                return str.replace(/%[sdifoOc]/, String(arg));
+            }, args[0]);
+            // For template literals, only include the format arguments
+            filteredArgs = args.slice(1);
+        } else {
+            // Keep the first argument as the message
+            message = String(args[0]);
+            // For non-template messages, don't include the first argument in args
+            filteredArgs = args.slice(1).filter(arg => !(arg instanceof Error));
         }
 
-        return logEntry;
+        // Extract error if present
+        const error = args.find(arg => arg instanceof Error) as Error | undefined;
+        const errorEntry = error ? {
+            message: error.message,
+            stack: error.stack
+        } : undefined;
+
+        return {
+            timestamp,
+            level: level.toUpperCase(),
+            message,
+            args: filteredArgs,
+            error: errorEntry,
+            callSite
+        };
     }
 
     /**
      * Add entry to log buffer and flush if needed
      */
-    private addLogEntry(level: LogLevel, message: string, error?: Error): void {
-        const logEntry = this.formatLogEntry(level, message, error);
+    private addLogEntry(level: LogLevel, ...args: unknown[]): void {
+        const logEntry = this.formatLogEntry(level, ...args);
 
         // Add to buffer
         this.logBuffer.push(logEntry);
+        console.debug('Added log entry:', logEntry); //FIXME: Remove
 
         // Flush if buffer is full
         if (this.logBuffer.length >= this.config.maxLogEntries) {
@@ -120,60 +203,68 @@ class Logger {
     /**
      * Log debug message
      */
-    debug(message: string, error?: Error): void {
-        if (this.shouldLog(LogLevel.DEBUG)) {
-            if (this.config.enableConsole) {
-                console.debug(message, error || '');
-            }
+    debug(...args: unknown[]): void {
+        if (!this.shouldLog(LogLevel.DEBUG)) return;
 
-            if (this.config.enableFileLogging) {
-                this.addLogEntry(LogLevel.DEBUG, message, error);
-            }
+        // Handle file logging
+        if (this.config.enableFileLogging) {
+            this.addLogEntry(LogLevel.DEBUG, ...args);
+        }
+
+        // Handle console logging
+        if (this.config.enableConsole && window.console) {
+            console.debug(...args);
         }
     }
 
     /**
      * Log info message
      */
-    info(message: string, error?: Error): void {
-        if (this.shouldLog(LogLevel.INFO)) {
-            if (this.config.enableConsole) {
-                console.info(message, error || '');
-            }
+    info(...args: unknown[]): void {
+        if (!this.shouldLog(LogLevel.INFO)) return;
 
-            if (this.config.enableFileLogging) {
-                this.addLogEntry(LogLevel.INFO, message, error);
-            }
+        // Handle file logging
+        if (this.config.enableFileLogging) {
+            this.addLogEntry(LogLevel.INFO, ...args);
+        }
+
+        // Handle console logging
+        if (this.config.enableConsole && window.console) {
+            console.info(...args);
         }
     }
 
     /**
      * Log warning message
      */
-    warn(message: string, error?: Error): void {
-        if (this.shouldLog(LogLevel.WARN)) {
-            if (this.config.enableConsole) {
-                console.warn(message, error || '');
-            }
+    warn(...args: unknown[]): void {
+        if (!this.shouldLog(LogLevel.WARN)) return;
 
-            if (this.config.enableFileLogging) {
-                this.addLogEntry(LogLevel.WARN, message, error);
-            }
+        // Handle file logging
+        if (this.config.enableFileLogging) {
+            this.addLogEntry(LogLevel.WARN, ...args);
+        }
+
+        // Handle console logging
+        if (this.config.enableConsole && window.console) {
+            console.warn(...args);
         }
     }
 
     /**
      * Log error message
      */
-    error(message: string, error?: Error): void {
-        if (this.shouldLog(LogLevel.ERROR)) {
-            if (this.config.enableConsole) {
-                console.error(message, error || '');
-            }
+    error(...args: unknown[]): void {
+        if (!this.shouldLog(LogLevel.ERROR)) return;
 
-            if (this.config.enableFileLogging) {
-                this.addLogEntry(LogLevel.ERROR, message, error);
-            }
+        // Handle file logging
+        if (this.config.enableFileLogging) {
+            this.addLogEntry(LogLevel.ERROR, ...args);
+        }
+
+        // Handle console logging
+        if (this.config.enableConsole && window.console) {
+            console.error(...args);
         }
     }
 
