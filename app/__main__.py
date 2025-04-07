@@ -132,6 +132,11 @@ def run_development_server(dev_port: int, backend_port: int):
         log_level="debug" if reload else "info",
         reload=reload,
         reload_dirs=["app"],
+        reload_excludes=[
+            "logs/*",
+            "*.log",
+            "cache.db",
+        ],  # Exclude logs directory and any log files
     )
 
     frontend.terminate()
