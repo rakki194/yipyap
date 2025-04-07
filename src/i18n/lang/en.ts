@@ -172,6 +172,7 @@ export default {
     noResults: "No results",
     pathNotFound: "Path not found",
     uploadFiles: "Upload files",
+    uploadFolder: "Upload folder",
     deleteCurrentFolder: "Delete current folder",
     moveNotImplemented: "Moving items is not yet implemented",
     folderCount: createPluralTranslation({

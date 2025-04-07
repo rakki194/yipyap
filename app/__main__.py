@@ -150,6 +150,13 @@ def run_development_server(dev_port: int, backend_port: int):
             "cache.db",  # Database cache
             "__pycache__",  # Python cache
             "node_modules",  # Node modules
+            "src",  # Frontend source files
+            "dist",  # Frontend build
+            "public",  # Frontend public files
+            "data",  # Data directory
+            "*.json",  # JSON files
+            "*.md",  # Markdown files
+            "*.txt",  # Text files
         ],
     )
 

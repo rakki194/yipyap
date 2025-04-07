@@ -187,6 +187,7 @@ export interface GalleryTranslations {
   noResults: string;
   pathNotFound: string;
   uploadFiles?: string;
+  uploadFolder?: string;
   deleteCurrentFolder?: string;
   moveNotImplemented?: string;
   folderCount: TranslationValue;
