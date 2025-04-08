@@ -55,8 +55,7 @@ MODEL_REPO_MAP = {
 
 logger = logging.getLogger("uvicorn.error")
 
-# Move environment detection to top, before app creation
-is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
+is_dev = os.getenv("ENVIRONMENT", "production").lower() == "development"
 logger.info(f"Starting server in {'development' if is_dev else 'production'} mode")
 
 app = FastAPI()

@@ -3,7 +3,7 @@ name: Release Package
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags like v1.0.0, v2.1.0, etc.
+      - "v*" # Trigger on version tags like v1.0.0, v2.1.0, etc.
 
 # Add permissions for creating releases
 permissions:
@@ -16,46 +16,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Required for getting git history
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for getting git history
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
 
-    - name: Install frontend dependencies
-      run: npm ci
+      - name: Install frontend dependencies
+        run: npm ci
 
-    - name: Build frontend
-      run: npm run build
+      - name: Build frontend
+        run: npm run build
 
-    - name: Get version from tag
-      id: get_version
-      run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: Get version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-    - name: Get release notes
-      id: get_release_notes
-      run: |
-        echo "notes<<EOF" >> $GITHUB_OUTPUT
-        git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"* %s" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+      - name: Create release package
+        run: |
+          mkdir -p yipyap-${{ steps.get_version.outputs.version }}
+          cp pyproject.toml requirements.txt README.md yipyap-${{ steps.get_version.outputs.version }}/
+          cp -r dist yipyap-${{ steps.get_version.outputs.version }}/
+          cp -r app yipyap-${{ steps.get_version.outputs.version }}/
+          zip -r yipyap-${{ steps.get_version.outputs.version }}.zip yipyap-${{ steps.get_version.outputs.version }}
 
-    - name: Create release package
-      run: |
-        mkdir -p yipyap-${{ steps.get_version.outputs.version }}
-        cp pyproject.toml requirements.txt yipyap-${{ steps.get_version.outputs.version }}/
-        cp -r dist yipyap-${{ steps.get_version.outputs.version }}/
-        cp -r app yipyap-${{ steps.get_version.outputs.version }}/
-        zip -r yipyap-${{ steps.get_version.outputs.version }}.zip yipyap-${{ steps.get_version.outputs.version }}
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: yipyap-${{ steps.get_version.outputs.version }}.zip
-        name: Release ${{ steps.get_version.outputs.version }}
-        body: ${{ steps.get_release_notes.outputs.notes }}
-        draft: false
-        prerelease: false 
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: yipyap-${{ steps.get_version.outputs.version }}.zip
+          name: Release ${{ steps.get_version.outputs.version }}
+          body: ${{ steps.get_release_notes.outputs.notes }}
+          draft: false
+          prerelease: false
