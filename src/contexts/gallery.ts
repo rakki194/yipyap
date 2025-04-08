@@ -800,7 +800,7 @@ function filterFunctions(obj: Record<string, any>) {
   );
 }
 
-const CAPTION_TYPE_ORDER: Record<string, number> = {
+export const CAPTION_TYPE_ORDER: Record<string, number> = {
   '.e621': 0,
   '.tags': 1,
   '.wd': 2,

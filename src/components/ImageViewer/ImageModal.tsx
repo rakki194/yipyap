@@ -16,6 +16,7 @@ import { ImageInfo } from "./ImageInfo";
 import { CaptionInput } from "./CaptionInput";
 import "./styles.css";
 import { useGallery } from "~/contexts/GalleryContext";
+import { CAPTION_TYPE_ORDER } from "~/contexts/gallery";
 import getIcon from "~/icons";
 import { useAction } from "@solidjs/router";
 import type { ImageInfo as ImageInfoType, Captions, SaveCaption } from "~/types";
@@ -145,9 +146,21 @@ const ModelBody = (props: {
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
   const [isExpanded, setIsExpanded] = createSignal(false);
 
+  // Create a sorted version of the captions that maintains consistent order
+  const sortedCaptions = createMemo(() => {
+    return [...props.captions].sort((a, b) => {
+      const orderA = CAPTION_TYPE_ORDER[`.${a[0]}`] ?? 999;
+      const orderB = CAPTION_TYPE_ORDER[`.${b[0]}`] ?? 999;
+      return orderA - orderB;
+    });
+  });
+
+  // Keep track of the previous focused type to handle reordering
+  const [prevFocusedType, setPrevFocusedType] = createSignal<string | null>(null);
+
   const handleDoubleTap = () => {
     // Double tap detected - cycle to next caption
-    const currentCaptions = props.captions;
+    const currentCaptions = sortedCaptions();
     if (currentCaptions.length > 0) {
       const currentIndex = currentCaptions.findIndex(
         ([type]) => type === focusedType()
@@ -231,19 +244,30 @@ const ModelBody = (props: {
     return AVAILABLE_CAPTION_TYPES.some(type => !existingTypes.has(type));
   };
 
-  // Force re-rendering of captions when they change
+  // Update focus when captions change or are reordered
   createEffect(() => {
-    // This creates a dependency on the captions array
-    // and will cause a re-render when it changes
-    const captions = props.captions;
+    const captions = sortedCaptions();
+    const currentFocusedType = focusedType();
 
-    // Immediately update the focusedType if it's not set
-    if (captions.length > 0 && focused() && focusedType() === null) {
-      setFocusedType(captions[0][0]);
+    // If we have a focused type and it still exists in the captions, keep it
+    if (currentFocusedType && captions.some(([type]) => type === currentFocusedType)) {
+      setPrevFocusedType(currentFocusedType);
+      return;
     }
 
-    // Log caption types for debugging
-    logger.debug("Captions updated:", captions.map(c => c[0]).join(", "));
+    // If we lost our focused type but have a previous one that exists, use that
+    const prevType = prevFocusedType();
+    if (prevType && captions.some(([type]) => type === prevType)) {
+      setFocusedType(prevType);
+      return;
+    }
+
+    // Otherwise, if we're focused and have captions, focus the first one
+    if (captions.length > 0 && focused()) {
+      setFocusedType(captions[0][0]);
+    } else {
+      setFocusedType(null);
+    }
   });
 
   return (
@@ -277,7 +301,7 @@ const ModelBody = (props: {
             }
           >
             <>
-              <Index each={props.captions}>
+              <Index each={sortedCaptions()}>
                 {(caption, idx) => (
                   <CaptionInput
                     caption={caption()}
