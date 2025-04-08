@@ -145,6 +145,7 @@ const ModelBody = (props: {
   const [focusedType, setFocusedType] = createSignal<string | null>(null);
   const [getStyle, setStyle] = createSignal<JSX.CSSProperties>();
   const [isExpanded, setIsExpanded] = createSignal(false);
+  const [shouldAutoFocus, setShouldAutoFocus] = createSignal(false);
 
   // Create a sorted version of the captions that maintains consistent order
   const sortedCaptions = createMemo(() => {
@@ -171,6 +172,8 @@ const ModelBody = (props: {
           : currentIndex + 1;
       setFocused(true);
       setFocusedType(currentCaptions[nextIndex][0]);
+      // Set auto-focus when explicitly interacting with captions
+      setShouldAutoFocus(true);
     }
   };
 
@@ -183,7 +186,16 @@ const ModelBody = (props: {
   createEffect(() => {
     if (alwaysShowCaptionEditor) {
       setFocused(true);
+      // Don't auto-focus when alwaysShowCaptionEditor changes
+      setShouldAutoFocus(false);
     }
+  });
+
+  // Reset auto-focus when switching images
+  createEffect(() => {
+    // Create a dependency on the image path
+    props.imageInfo.download_path;
+    setShouldAutoFocus(false);
   });
 
   // Update the style of the image info based on the layout and focus
@@ -214,36 +226,6 @@ const ModelBody = (props: {
     return path;
   });
 
-  const saveCaption = useAction(gallery.saveCaption);
-
-  const handleCreateCaption = async (type: string) => {
-    try {
-      // Set focus immediately
-      setFocused(true);
-      setFocusedType(type);
-
-      const result = await saveCaption({
-        type,
-        caption: ""
-      });
-
-      if (result instanceof Error) {
-        throw result;
-      }
-    } catch (error) {
-      logger.error("Error creating caption:", error);
-      // On error, revert focus state
-      setFocused(false);
-      setFocusedType(null);
-    }
-  };
-
-  // Add this function to check for missing caption types
-  const hasMissingCaptionTypes = () => {
-    const existingTypes = new Set(props.captions.map(([type]) => type));
-    return AVAILABLE_CAPTION_TYPES.some(type => !existingTypes.has(type));
-  };
-
   // Update focus when captions change or are reordered
   createEffect(() => {
     const captions = sortedCaptions();
@@ -265,16 +247,57 @@ const ModelBody = (props: {
     // Otherwise, if we're focused and have captions, focus the first one
     if (captions.length > 0 && focused()) {
       setFocusedType(captions[0][0]);
+      // Don't auto-focus when setting initial focus
+      setShouldAutoFocus(false);
     } else {
       setFocusedType(null);
     }
   });
 
+  const saveCaption = useAction(gallery.saveCaption);
+
+  const handleCreateCaption = async (type: string) => {
+    try {
+      // Set focus immediately
+      setFocused(true);
+      setFocusedType(type);
+      // Set auto-focus when explicitly creating a caption
+      setShouldAutoFocus(true);
+
+      const result = await saveCaption({
+        type,
+        caption: ""
+      });
+
+      if (result instanceof Error) {
+        throw result;
+      }
+    } catch (error) {
+      logger.error("Error creating caption:", error);
+      // On error, revert focus state
+      setFocused(false);
+      setFocusedType(null);
+      setShouldAutoFocus(false);
+    }
+  };
+
+  // Add this function to check for missing caption types
+  const hasMissingCaptionTypes = () => {
+    const existingTypes = new Set(props.captions.map(([type]) => type));
+    return AVAILABLE_CAPTION_TYPES.some(type => !existingTypes.has(type));
+  };
+
   return (
     <div class="modal-body" classList={{ [props.layout.layout]: true }}>
       <ImageView
         imageInfo={props.imageInfo}
-        onClick={() => !alwaysShowCaptionEditor && setFocused((f) => !f)}
+        onClick={() => {
+          if (!alwaysShowCaptionEditor) {
+            setFocused((f) => !f);
+            // Set auto-focus when explicitly clicking to show editor
+            setShouldAutoFocus(true);
+          }
+        }}
       />
       <div
         class="image-info"
@@ -284,6 +307,8 @@ const ModelBody = (props: {
         onClick={(e) => {
           if (!alwaysShowCaptionEditor) {
             setFocused(true);
+            // Set auto-focus when explicitly clicking editor area
+            setShouldAutoFocus(true);
           }
         }}
       >
@@ -305,7 +330,11 @@ const ModelBody = (props: {
                 {(caption, idx) => (
                   <CaptionInput
                     caption={caption()}
-                    onClick={() => setFocusedType(caption()[0])}
+                    onClick={() => {
+                      setFocusedType(caption()[0]);
+                      // Set auto-focus when explicitly clicking a caption
+                      setShouldAutoFocus(true);
+                    }}
                     state={
                       focusedType() === null || !focused()
                         ? null
@@ -313,6 +342,7 @@ const ModelBody = (props: {
                           ? "expanded"
                           : "collapsed"
                     }
+                    shouldAutoFocus={shouldAutoFocus()}
                   />
                 )}
               </Index>

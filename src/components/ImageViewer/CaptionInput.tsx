@@ -31,10 +31,11 @@ export const CaptionInput: Component<
     caption: [CaptionType, string];
     state: "expanded" | "collapsed" | null;
     onClick: () => void;
+    shouldAutoFocus?: boolean;
   } & JSX.HTMLAttributes<HTMLDivElement>
 > = (props) => {
   const { t } = useAppContext();
-  const [localProps, rest] = splitProps(props, ["caption"]);
+  const [localProps, rest] = splitProps(props, ["caption", "shouldAutoFocus"]);
   const type = () => localProps.caption[0];
   const caption = () => localProps.caption[1];
   const { deleteCaption: deleteCaptionAction } = useGallery();
@@ -140,12 +141,17 @@ export const CaptionInput: Component<
   };
 
   createEffect(() => {
-    if (props.state === "expanded") {
+    if (props.state === "expanded" && props.shouldAutoFocus) {
       if (shouldRenderTagInput()) {
         inputRef?.focus();
       } else {
         textareaRef?.focus();
       }
+    } else if (props.state !== "expanded") {
+      // When collapsing, explicitly blur the inputs
+      inputRef?.blur();
+      textareaRef?.blur();
+      editorRef?.blur();
     }
   });
 
@@ -254,9 +260,17 @@ export const CaptionInput: Component<
     const currentCaption = caption();
     if (editorRef && currentCaption !== editorRef.innerText) {
       editorRef.innerText = currentCaption;
+      // Ensure we blur when switching images
+      if (!props.shouldAutoFocus) {
+        editorRef.blur();
+      }
     }
     if (textareaRef && currentCaption !== textareaRef.value) {
       textareaRef.value = currentCaption;
+      // Ensure we blur when switching images
+      if (!props.shouldAutoFocus) {
+        textareaRef.blur();
+      }
     }
   });
 
