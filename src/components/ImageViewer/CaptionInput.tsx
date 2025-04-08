@@ -186,16 +186,17 @@ export const CaptionInput: Component<
 
   const tags = () => (shouldRenderTagInput() ? splitAndCleanTags(caption()) : []);
 
-  const handleEditorInput = (e: Event, node: HTMLElement) => {
-    const [selNode, start, end] = selection();
-    if (node === selNode) {
-      if (shouldRenderE621Input()) {
-        handleE621Input(e as InputEvent, node);
-      } else if (shouldRenderTomlInput()) {
-        handleTomlInput(e as InputEvent, node);
+  const handleEditorInput = (e: Event, editor: HTMLDivElement) => {
+    const newText = editor.innerText;
+    if (shouldRenderE621Input()) {
+      handleE621Input(e as InputEvent, editor);
+    } else if (shouldRenderTomlInput()) {
+      handleTomlInput(e as InputEvent, editor);
+    } else {
+      // Only save if the text has actually changed
+      if (newText !== caption()) {
+        saveWithHistory(newText);
       }
-      // Restore selection after content update
-      setSelection([node, start, end]);
     }
   };
 
@@ -238,6 +239,26 @@ export const CaptionInput: Component<
       handleTomlScroll(e);
     }
   };
+
+  // Create an effect to handle submission state
+  createEffect(() => {
+    const sub = submission;
+    if (sub && typeof sub === 'object' && 'error' in sub && sub.error) {
+      // If there was an error, the original text will be restored by the gallery context
+      logger.error("Error saving caption:", sub.error);
+    }
+  });
+
+  // Create an effect to update the editor content when caption changes
+  createEffect(() => {
+    const currentCaption = caption();
+    if (editorRef && currentCaption !== editorRef.innerText) {
+      editorRef.innerText = currentCaption;
+    }
+    if (textareaRef && currentCaption !== textareaRef.value) {
+      textareaRef.value = currentCaption;
+    }
+  });
 
   return (
     <div
@@ -328,15 +349,15 @@ export const CaptionInput: Component<
             contentEditable="plaintext-only"
             spellcheck={false}
             innerHTML={shouldRenderE621Input() ? e621HighlightedContent() : tomlHighlightedContent()}
-            onInput={(e) => handleEditorInput(e, e.currentTarget)}
-            onKeyDown={(e) => handleEditorKeyDown(e, e.currentTarget)}
-            onPaste={(e) => handleEditorPaste(e, e.currentTarget)}
+            onInput={(e) => handleEditorInput(e, e.currentTarget as HTMLDivElement)}
+            onKeyDown={(e) => handleEditorKeyDown(e, e.currentTarget as HTMLElement)}
+            onPaste={(e) => handleEditorPaste(e, e.currentTarget as HTMLElement)}
             onScroll={handleEditorScroll}
             onSelect={(e) => {
               if (shouldRenderE621Input()) {
-                calculateE621Line(e.currentTarget);
+                calculateE621Line(e.currentTarget as HTMLElement);
               } else if (shouldRenderTomlInput()) {
-                calculateTomlLine(e.currentTarget);
+                calculateTomlLine(e.currentTarget as HTMLElement);
               }
             }}
           />

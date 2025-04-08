@@ -308,13 +308,16 @@ export function makeGalleryState() {
 
     try {
       // Update local state immediately for better UX
+      const originalCaptions = image.captions;
+      const originalCaption = originalCaptions.find(([t]) => t === type)?.[1];
+
       updateLocalCaptions(image, {
         type,
         caption
       }, database);
 
       // Then make the API call
-      const response = await fetch(`/caption/${database.path}/${image.name}`, {
+      const response = await fetch(`/api/caption/${database.path}/${image.name}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type, caption })
@@ -322,16 +325,15 @@ export function makeGalleryState() {
 
       if (!response.ok) {
         // Revert local state on error
-        const originalCaptions = image.captions;
-        const originalCaption = originalCaptions.find(([t]) => t === type)?.[1];
         updateLocalCaptions(image, { type, caption: originalCaption }, database);
-        throw new Error(`Failed to save caption: ${await response.text()}`);
+        const errorText = await response.text();
+        throw new Error(`Failed to save caption: ${errorText}`);
       }
 
       return response;
     } catch (error) {
       logger.error("Failed to save caption:", error);
-      return new Error("Failed to save caption");
+      return error instanceof Error ? error : new Error("Failed to save caption");
     }
   });
 
