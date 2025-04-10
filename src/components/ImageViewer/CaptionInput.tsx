@@ -248,6 +248,16 @@ export const CaptionInput: Component<
   const handleNewTagInput = (e: InputEvent) => {
     const value = (e.target as HTMLInputElement).value;
     setNewTag(value);
+
+    // Don't show suggestions for empty input
+    if (!value || value.trim() === "") {
+      setIsOpen(false);
+      if (suggestionsList) {
+        suggestionsList.classList.remove('visible');
+      }
+      return;
+    }
+
     setQuery(value);
 
     // Log what we're doing
@@ -513,14 +523,20 @@ export const CaptionInput: Component<
   // Add a function to handle caption input for showing suggestions
   const handleCaptionInput = (value: string) => {
     // Only process if we have a value
-    if (!value) return;
+    if (!value || value.trim() === "") {
+      setIsOpen(false);
+      if (suggestionsList) {
+        suggestionsList.classList.remove('visible');
+      }
+      return;
+    }
 
     // Get the currently selected word or text near cursor
     const currentWord = getCurrentWordFromValue(value);
 
     console.log(`Caption input detected, current word: "${currentWord}"`);
 
-    // Show suggestions if we have at least 2 characters
+    // Show suggestions only if we have at least 2 characters in the current word
     const shouldShowSuggestions = currentWord.length >= 2;
     console.log(`Should show caption suggestions: ${shouldShowSuggestions}`);
 
@@ -873,7 +889,7 @@ export const CaptionInput: Component<
       <Portal>
         <div
           class="tag-suggestions-portal"
-          classList={{ visible: isOpen() }}
+          classList={{ visible: isOpen() && suggestions() && suggestions().length > 0 }}
           ref={suggestionsList}
           style={{
             "z-index": "9999",
@@ -884,7 +900,7 @@ export const CaptionInput: Component<
             "border-radius": "8px",
             "box-shadow": "0 8px 16px rgba(0, 0, 0, 0.4)",
             "overflow-y": "auto",
-            "display": isOpen() ? "block" : "none",
+            "display": isOpen() && suggestions() && suggestions().length > 0 ? "block" : "none",
             "top": "0px",
             "left": "0px",
             "width": "300px",
@@ -925,12 +941,6 @@ export const CaptionInput: Component<
                 </div>
               )}
             </For>
-          </Show>
-
-          <Show when={isOpen() && (!suggestions() || suggestions().length === 0)}>
-            <div class="no-suggestions" style="padding: 10px 12px; color: var(--text-secondary, #666); font-style: italic;">
-              {t("caption.no_suggestions") || "No suggestions found"}
-            </div>
           </Show>
         </div>
       </Portal>
