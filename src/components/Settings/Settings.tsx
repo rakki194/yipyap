@@ -415,7 +415,7 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                 </Tooltip>
               </div>
 
-              <div class="setting-item">
+              <div class="setting-group">
                 <Tooltip content={t('settings.preserveTxtTooltip')} position="top">
                   <label>
                     <Toggle
@@ -424,6 +424,19 @@ export const Settings: Component<{ onClose: () => void }> = (props) => {
                       title={t('settings.preserveTxt')}
                     />
                     {t('settings.preserveTxt')}
+                  </label>
+                </Tooltip>
+              </div>
+
+              <div class="setting-group">
+                <Tooltip content={t('settings.replaceUnderscoresDesc')} position="top">
+                  <label>
+                    <Toggle
+                      checked={app.replaceUnderscoresInTags}
+                      onChange={(checked) => app.setReplaceUnderscoresInTags(checked)}
+                      title={t('settings.replaceUnderscores')}
+                    />
+                    {t('settings.replaceUnderscores')}
                   </label>
                 </Tooltip>
               </div>

@@ -8,7 +8,9 @@ import {
   Index,
   onCleanup,
   createMemo,
+  Show,
 } from "solid-js";
+import { Portal } from "solid-js/web";
 import { Submission, useAction, useSubmission } from "@solidjs/router";
 import { createSelection } from "@solid-primitives/selection";
 import getIcon, { captionIconsMap } from "~/icons";
@@ -20,6 +22,7 @@ import "./CaptionInput.css";
 import { useAppContext } from "~/contexts/app";
 import { useCaptionHistory } from "~/composables/useCaptionHistory";
 import { useTagManagement } from "~/composables/useTagManagement";
+import { useTagAutocomplete } from "~/composables/useTagAutocomplete";
 import { useE621Editor } from "~/composables/useE621Editor";
 import { useTomlEditor } from "~/composables/useTomlEditor";
 import { logger } from '~/utils/logger';
@@ -90,18 +93,92 @@ export const CaptionInput: Component<
   let editorRef!: HTMLDivElement;
   let textareaRef!: HTMLTextAreaElement;
   let inputRef!: HTMLInputElement;
+  let suggestionsList!: HTMLDivElement;
+
+  const {
+    query,
+    setQuery,
+    suggestions,
+    selectedIndex,
+    setSelectedIndex,
+    isOpen,
+    setIsOpen,
+    selectNextSuggestion,
+    selectPreviousSuggestion,
+    getSelectedSuggestion,
+    clearSuggestions,
+  } = useTagAutocomplete();
 
   const handleNewTagKeyDown = (e: KeyboardEvent) => {
     if (!containerRef) return;
 
     if (e.key === "Escape") {
       e.preventDefault();
-      if (newTag()) {
+      if (isOpen()) {
+        clearSuggestions();
+      } else if (newTag()) {
         setNewTag("");
       } else {
         props.onClick(); // This will collapse the input
       }
       return;
+    }
+
+    // Enhanced suggestion navigation with keyboard
+    if (isOpen()) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        console.log("ArrowDown pressed, selecting next suggestion");
+        selectNextSuggestion();
+
+        // Make sure the selected item is visible in the dropdown
+        setTimeout(() => {
+          const selectedElement = suggestionsList?.querySelector('.tag-suggestion.selected');
+          selectedElement?.scrollIntoView({ block: 'nearest' });
+        }, 10);
+        return;
+      }
+
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        console.log("ArrowUp pressed, selecting previous suggestion");
+        selectPreviousSuggestion();
+
+        // Make sure the selected item is visible in the dropdown
+        setTimeout(() => {
+          const selectedElement = suggestionsList?.querySelector('.tag-suggestion.selected');
+          selectedElement?.scrollIntoView({ block: 'nearest' });
+        }, 10);
+        return;
+      }
+
+      if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        console.log("Enter/Tab pressed with open suggestions");
+        const selected = getSelectedSuggestion();
+        if (selected) {
+          console.log("Adding selected suggestion:", selected);
+          setNewTag(selected);
+
+          // If Enter was pressed, also add the tag
+          if (e.key === "Enter") {
+            addTag(selected, tags());
+            setNewTag("");
+          }
+
+          clearSuggestions();
+        } else if (e.key === "Enter" && newTag()) {
+          // If no suggestion is selected but we have input text, add it as a tag
+          console.log("Adding new tag from input:", newTag());
+          addTag(newTag(), tags());
+        }
+
+        // If Enter was pressed and there was a selection, also add the tag
+        if (e.key === "Enter" && selected) {
+          addTag(selected, tags());
+        }
+        return;
+      }
     }
 
     if (e.shiftKey && e.key === "ArrowUp") {
@@ -130,6 +207,54 @@ export const CaptionInput: Component<
         (tagText as HTMLElement).click();
       }
     }
+  };
+
+  // Add this function to handle positioning of the suggestions dropdown
+  const positionSuggestions = () => {
+    if (suggestionsList && inputRef) {
+      // Get the position of the input field
+      const rect = inputRef.getBoundingClientRect();
+
+      // Position the suggestions directly below the input
+      suggestionsList.style.top = `${rect.bottom}px`;
+      suggestionsList.style.left = `${rect.left}px`;
+      suggestionsList.style.width = `${rect.width}px`;
+
+      console.log("Positioned suggestions:", {
+        top: suggestionsList.style.top,
+        left: suggestionsList.style.left,
+        width: suggestionsList.style.width
+      });
+    }
+  };
+
+  // Modify the handleNewTagInput function to call positionSuggestions
+  const handleNewTagInput = (e: InputEvent) => {
+    const value = (e.target as HTMLInputElement).value;
+    setNewTag(value);
+    setQuery(value);
+
+    // Log what we're doing
+    console.log(`Tag input changed to: "${value}"`);
+
+    // Show suggestions if we have at least 2 characters
+    const shouldShowSuggestions = value.length >= 2;
+    console.log(`Should show suggestions: ${shouldShowSuggestions}`);
+
+    setIsOpen(shouldShowSuggestions);
+
+    // Force the suggestions list to be visible if needed
+    if (shouldShowSuggestions && suggestionsList) {
+      console.log("Forcing suggestions list to be visible");
+      suggestionsList.classList.add('visible');
+      positionSuggestions();
+    }
+  };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (suggestion: string) => {
+    setNewTag(suggestion);
+    clearSuggestions();
   };
 
   const handleDeleteCaption = async () => {
@@ -274,6 +399,71 @@ export const CaptionInput: Component<
     }
   });
 
+  // Create an effect to log suggestions when the component is open
+  createEffect(() => {
+    if (isOpen() && suggestions()) {
+      console.log("Current suggestions:", suggestions());
+    }
+  });
+
+  // Create an effect to log suggestions and visibility state
+  createEffect(() => {
+    console.log("Autocomplete state:", {
+      isOpen: isOpen(),
+      hasSuggestions: suggestions() && suggestions().length > 0,
+      suggestionCount: suggestions() ? suggestions().length : 0,
+      suggestions: suggestions(),
+      query: query()
+    });
+
+    // Log DOM element details after render
+    setTimeout(() => {
+      if (suggestionsList) {
+        console.log("Suggestions DOM element:", {
+          element: suggestionsList,
+          isVisible: suggestionsList.classList.contains('visible'),
+          display: window.getComputedStyle(suggestionsList).display,
+          parentVisible: suggestionsList.parentElement ? window.getComputedStyle(suggestionsList.parentElement).display : 'unknown'
+        });
+      }
+    }, 100);
+  });
+
+  // Add a window resize event listener and cleanup
+  createEffect(() => {
+    // When the component is mounted, add a resize listener
+    const handleResize = () => {
+      if (isOpen()) {
+        positionSuggestions();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener when the component is unmounted
+    onCleanup(() => {
+      window.removeEventListener('resize', handleResize);
+    });
+  });
+
+  // Add code to ensure selected index updates and focus is maintained
+  createEffect(() => {
+    // When suggestions or selection changes, ensure the input keeps focus
+    // This creates a dependency on suggestions and selectedIndex
+    const currentSuggestions = suggestions();
+    const currentIndex = selectedIndex();
+
+    if (isOpen() && currentSuggestions && currentSuggestions.length > 0) {
+      // Keep focus on the input element
+      setTimeout(() => {
+        if (inputRef && document.activeElement !== inputRef) {
+          console.log("Restoring focus to input");
+          inputRef.focus();
+        }
+      }, 10);
+    }
+  });
+
   return (
     <div
       {...rest}
@@ -325,28 +515,55 @@ export const CaptionInput: Component<
             </Index>
           </div>
           <div class="new-tag-input">
-            <input
-              ref={inputRef}
-              type="text"
-              value={newTag()}
-              onInput={(e) => setNewTag(e.currentTarget.value)}
-              onKeyDown={handleNewTagKeyDown}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addTag(newTag(), tags());
-                }
-              }}
-              placeholder={t('gallery.addTag')}
-            />
-            <button
-              type="button"
-              class="icon add-tag"
-              onClick={() => addTag(newTag(), tags())}
-              title="Add tag"
-            >
-              {getIcon("plus")}
-            </button>
+            <div class="tag-input-container">
+              <input
+                ref={inputRef}
+                type="text"
+                value={newTag()}
+                onInput={handleNewTagInput}
+                onKeyDown={handleNewTagKeyDown}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && !isOpen()) {
+                    e.preventDefault();
+                    addTag(newTag(), tags());
+                  }
+                }}
+                onFocus={() => {
+                  console.log("Input focused, current value:", newTag());
+                  if (newTag().length >= 2) {
+                    console.log("Value is long enough to show suggestions");
+                    setQuery(newTag());
+                    setIsOpen(true);
+                    // Ensure the suggestions list is visible in the DOM
+                    if (suggestionsList) {
+                      suggestionsList.classList.add('visible');
+                      console.log("Added visible class to suggestions list on focus");
+                      positionSuggestions();
+                    }
+                  }
+                }}
+                onBlur={() => {
+                  // Delay hiding suggestions to allow clicking on them
+                  console.log("Input blurred, delaying hiding suggestions");
+                  setTimeout(() => {
+                    setIsOpen(false);
+                    if (suggestionsList) {
+                      suggestionsList.classList.remove('visible');
+                      console.log("Removed visible class from suggestions list on blur");
+                    }
+                  }, 200);
+                }}
+                placeholder={t('gallery.addTag')}
+              />
+              <button
+                type="button"
+                class="icon add-tag"
+                onClick={() => addTag(newTag(), tags())}
+                title="Add tag"
+              >
+                {getIcon("plus")}
+              </button>
+            </div>
           </div>
         </div>
       ) : shouldRenderE621Input() || shouldRenderTomlInput() ? (
@@ -383,6 +600,71 @@ export const CaptionInput: Component<
           placeholder={t('gallery.addCaption')}
         />
       )}
+
+      <Portal>
+        <div
+          class="tag-suggestions-portal"
+          classList={{ visible: isOpen() }}
+          ref={suggestionsList}
+          style={{
+            "z-index": "9999",
+            "position": "fixed",
+            "max-height": "300px",
+            "background-color": "var(--bg-color, white)",
+            "border": "3px solid var(--border-color, #ccc)",
+            "border-radius": "8px",
+            "box-shadow": "0 8px 16px rgba(0, 0, 0, 0.4)",
+            "overflow-y": "auto",
+            "display": isOpen() ? "block" : "none",
+            "top": "0px",
+            "left": "0px",
+            "width": "300px",
+            "padding": "5px"
+          }}
+        >
+          <Show when={suggestions() && suggestions().length > 0}>
+            <For each={suggestions()}>
+              {(suggestion, index) => (
+                <div
+                  class="tag-suggestion"
+                  classList={{
+                    selected: index() === selectedIndex(),
+                  }}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSuggestionClick(suggestion);
+                    }
+                  }}
+                  tabIndex={0}
+                  style={{
+                    "padding": "10px 12px",
+                    "cursor": "pointer",
+                    "border-bottom": "1px solid var(--border-color-light, #eee)",
+                    "background-color": index() === selectedIndex()
+                      ? "var(--hover-bg, #f0f0f0)"
+                      : "transparent",
+                    "color": index() === selectedIndex()
+                      ? "var(--text-primary, #000)"
+                      : "var(--text-secondary, #333)",
+                    "font-weight": index() === selectedIndex() ? "bold" : "normal",
+                    "border-radius": "4px",
+                    "transition": "background-color 0.1s ease, color 0.1s ease"
+                  }}
+                >
+                  {suggestion}
+                </div>
+              )}
+            </For>
+          </Show>
+
+          <Show when={isOpen() && (!suggestions() || suggestions().length === 0)}>
+            <div class="no-suggestions" style="padding: 10px 12px; color: var(--text-secondary, #666); font-style: italic;">
+              {t("caption.no_suggestions") || "No suggestions found"}
+            </div>
+          </Show>
+        </div>
+      </Portal>
     </div>
   );
 };

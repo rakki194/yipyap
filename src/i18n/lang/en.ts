@@ -110,6 +110,8 @@ export default {
     thumbnailSize: "Thumbnail size",
     thumbnailSizeDescription: "The size of thumbnails in the gallery",
     thumbnailSizeUpdateError: "Failed to update thumbnail size",
+    replaceUnderscores: "Replace underscores with spaces in tag suggestions",
+    replaceUnderscoresDesc: "Show spaces instead of underscores when displaying tag suggestions while preserving the original tag format",
   },
   tools: {
     removeCommas: "Remove commas",

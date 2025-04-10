@@ -58,6 +58,13 @@ logger = logging.getLogger("uvicorn.error")
 is_dev = os.getenv("ENVIRONMENT", "production").lower() == "development"
 logger.info(f"Starting server in {'development' if is_dev else 'production'} mode")
 
+# Paths for tag autocompletion
+FLORENCE2_BASE_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "caption_generation/plugins/florence2/florence2_implementation",
+)
+JTP2_BASE_PATH = os.path.expanduser(os.getenv("JTP2_PATH", "~/source/repos/JTP2"))
+
 app = FastAPI()
 
 # Create logs directory if it doesn't exist
@@ -1280,6 +1287,72 @@ async def log_frontend_messages(request: Request):
     except Exception as e:
         logger.error(f"Error processing frontend logs: {e}")
         return {"status": "error", "message": str(e)}
+
+
+@app.get("/api/tags/autocomplete")
+async def get_tag_suggestions(q: str, limit: int = 10):
+    """Get tag suggestions based on a query string."""
+    logger.info(f"Getting tag suggestions for query: '{q}'")
+
+    # Define the two potential tags files
+    florence2_tags_file = os.path.join(FLORENCE2_BASE_PATH, "tags.json")
+    jtp2_tags_file = os.path.join(JTP2_BASE_PATH, "tags.json")
+
+    # Use Florence2 tags if available, otherwise try JTP2 tags
+    if os.path.exists(florence2_tags_file):
+        tags_file = florence2_tags_file
+        logger.info(f"Using Florence2 tags file: {florence2_tags_file}")
+    elif os.path.exists(jtp2_tags_file):
+        tags_file = jtp2_tags_file
+        logger.info(f"Using JTP2 tags file: {jtp2_tags_file}")
+    else:
+        logger.warning("No tags file found for autocomplete")
+        return {"suggestions": []}
+
+    try:
+        # Load the tags
+        with open(tags_file, "r", encoding="utf-8") as f:
+            tags_data = json.load(f)
+
+        # Extract tag names based on the structure of the JSON file
+        # Florence2 tags have a specific structure
+        if "categories" in tags_data:
+            # Florence2 tags structure
+            all_tags = []
+            for category in tags_data["categories"]:
+                for tag in category["tags"]:
+                    all_tags.append(tag["name"])
+        else:
+            # JTP2 or simple tags list
+            all_tags = tags_data
+
+        logger.info(f"Loaded {len(all_tags)} tags from {os.path.basename(tags_file)}")
+
+        # Filter tags by the query (case insensitive)
+        q = q.lower()
+        logger.info(f"Filtering tags with query: '{q}'")
+
+        # First get tags that start with the query
+        starts_with = [tag for tag in all_tags if tag.lower().startswith(q)]
+        logger.info(f"Found {len(starts_with)} tags that start with '{q}'")
+
+        # Then get tags that contain the query but don't start with it
+        contains = [
+            tag
+            for tag in all_tags
+            if q in tag.lower() and not tag.lower().startswith(q)
+        ]
+        logger.info(f"Found {len(contains)} additional tags that contain '{q}'")
+
+        # Combine and limit the results
+        suggestions = starts_with + contains
+        suggestions = suggestions[:limit]
+
+        logger.info(f"Returning {len(suggestions)} suggestions: {suggestions}")
+        return {"suggestions": suggestions}
+    except Exception as e:
+        logger.error(f"Error getting tag suggestions: {str(e)}")
+        return {"suggestions": []}
 
 
 # # Add a direct route to handle pixelings assets

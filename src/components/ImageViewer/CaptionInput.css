@@ -50,10 +50,12 @@
   position: sticky;
   bottom: 0;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   background: var(--bg-color);
   padding: var(--half-spacing) 0;
   z-index: 2;
+  width: 100%;
 }
 
 .new-tag-input input {
@@ -493,4 +495,69 @@
 
 .toml-editor ::-webkit-scrollbar-thumb:hover {
   opacity: 0.5;
+}
+
+.tag-input-container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+.tag-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--card-bg, #ffffff);
+  border: 2px solid var(--border-color, #cccccc);
+  border-radius: var(--border-radius, 4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  margin-top: 0;
+  display: none !important;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.tag-suggestions.visible {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.tag-suggestion {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--border-color-light, #eeeeee);
+  color: var(--text-primary, #000000);
+  font-weight: normal;
+}
+
+.tag-suggestion:last-child {
+  border-bottom: none;
+}
+
+.tag-suggestion:hover,
+.tag-suggestion.selected {
+  background-color: var(--hover-bg, #f5f5f5);
+}
+
+.no-suggestions {
+  padding: 10px 12px;
+  color: var(--text-secondary, #666666);
+  font-style: italic;
+  font-weight: normal;
+}
+
+.new-tag-input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 8px;
 }

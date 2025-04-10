@@ -208,6 +208,7 @@ export const TagBubble: Component<{
    * @returns OKLCHColor object with lightness, chroma, and hue values
    */
   const getTagLCH = createMemo(() =>
+    // Always use the original tag with underscores for consistent color generation
     tagColorGenerator.getTagColor(app.theme, props.tag)
   );
 

@@ -98,6 +98,8 @@ export interface AppContext {
     icon?: "spinner" | "success" | "error" | "info" | "warning";
     progress?: number;
   }) => void;
+  readonly replaceUnderscoresInTags: boolean;
+  setReplaceUnderscoresInTags: (value: boolean) => void;
 }
 
 const translations: Record<Locale, () => Promise<{ default: Translations }>> = {
@@ -158,6 +160,7 @@ const createAppContext = (): AppContext => {
     wdv3GenThreshold: number;
     wdv3CharThreshold: number;
     wdv3ForceCpu: boolean;
+    replaceUnderscoresInTags: boolean;
   }>({
     theme: getInitialTheme(),
     instantDelete: localStorage.getItem("instantDelete") === "true",
@@ -190,6 +193,7 @@ const createAppContext = (): AppContext => {
     wdv3GenThreshold: parseFloat(localStorage.getItem("wdv3GenThreshold") || "0.35"),
     wdv3CharThreshold: parseFloat(localStorage.getItem("wdv3CharThreshold") || "0.75"),
     wdv3ForceCpu: localStorage.getItem("wdv3ForceCpu") === "true",
+    replaceUnderscoresInTags: localStorage.getItem("replaceUnderscoresInTags") === "false" ? false : true,
   });
 
   // Previous Location tracking
@@ -267,6 +271,9 @@ const createAppContext = (): AppContext => {
   );
   createRenderEffect(() =>
     localStorage.setItem("wdv3ForceCpu", store.wdv3ForceCpu.toString())
+  );
+  createRenderEffect(() =>
+    localStorage.setItem("replaceUnderscoresInTags", store.replaceUnderscoresInTags.toString())
   );
 
   const setJtp2ModelPath = (value: string) => {
@@ -528,6 +535,10 @@ const createAppContext = (): AppContext => {
     }
   };
 
+  const setReplaceUnderscoresInTags = (value: boolean) => {
+    setStore("replaceUnderscoresInTags", value);
+  };
+
   const appContext: AppContext = {
     get prevRoute() {
       return store.prevRoute;
@@ -670,6 +681,10 @@ const createAppContext = (): AppContext => {
         setForceCpu: (value: boolean) => updateWdv3Config({ force_cpu: value }),
       } as WDv3Settings;
     },
+    get replaceUnderscoresInTags() {
+      return store.replaceUnderscoresInTags;
+    },
+    setReplaceUnderscoresInTags,
   };
 
   return appContext;

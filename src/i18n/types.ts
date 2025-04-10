@@ -123,6 +123,8 @@ export interface SettingsTranslations {
   thumbnailSize: string;
   thumbnailSizeDescription: string;
   thumbnailSizeUpdateError: string;
+  replaceUnderscores: string;
+  replaceUnderscoresDesc: string;
 }
 
 export interface ToolsTranslations {
