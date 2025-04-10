@@ -209,18 +209,34 @@ export const CaptionInput: Component<
     }
   };
 
-  // Add this function to handle positioning of the suggestions dropdown
+  // Update the function to handle positioning of the suggestions dropdown for all input types
   const positionSuggestions = () => {
-    if (suggestionsList && inputRef) {
-      // Get the position of the input field
-      const rect = inputRef.getBoundingClientRect();
+    if (!suggestionsList) return;
 
-      // Position the suggestions directly below the input
+    let targetElement: HTMLElement | null = null;
+
+    // Determine which input is active based on the current caption type
+    if (shouldRenderTagInput() && inputRef) {
+      // For tag input
+      targetElement = inputRef;
+    } else if (shouldRenderE621Input() || shouldRenderTomlInput()) {
+      // For JSON/TOML editor
+      targetElement = editorRef;
+    } else if (textareaRef) {
+      // For plain text textarea
+      targetElement = textareaRef;
+    }
+
+    if (targetElement) {
+      // Get the position of the target element
+      const rect = targetElement.getBoundingClientRect();
+
+      // Position the suggestions below the input
       suggestionsList.style.top = `${rect.bottom}px`;
       suggestionsList.style.left = `${rect.left}px`;
       suggestionsList.style.width = `${rect.width}px`;
 
-      console.log("Positioned suggestions:", {
+      console.log(`Positioned suggestions below ${shouldRenderTagInput() ? 'tag input' : shouldRenderE621Input() ? 'JSON editor' : shouldRenderTomlInput() ? 'TOML editor' : 'textarea'}:`, {
         top: suggestionsList.style.top,
         left: suggestionsList.style.left,
         width: suggestionsList.style.width
@@ -319,6 +335,8 @@ export const CaptionInput: Component<
 
   const handleEditorInput = (e: Event, editor: HTMLDivElement) => {
     const newText = editor.innerText;
+
+    // Process based on editor type
     if (shouldRenderE621Input()) {
       handleE621Input(e as InputEvent, editor);
     } else if (shouldRenderTomlInput()) {
@@ -329,9 +347,37 @@ export const CaptionInput: Component<
         saveWithHistory(newText);
       }
     }
+
+    // Show suggestions for all editor types
+    handleCaptionInput(newText);
   };
 
   const handleEditorKeyDown = (e: KeyboardEvent, node: HTMLElement) => {
+    // Handle suggestion navigation if suggestions are open
+    if (isOpen()) {
+      if (e.key === "ArrowDown" && suggestions()?.length > 0) {
+        e.preventDefault();
+        selectNextSuggestion();
+        return;
+      }
+      if (e.key === "ArrowUp" && suggestions()?.length > 0) {
+        e.preventDefault();
+        selectPreviousSuggestion();
+        return;
+      }
+      if (e.key === "Enter" && getSelectedSuggestion()) {
+        e.preventDefault();
+        insertSuggestionIntoEditor(node);
+        return;
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setIsOpen(false);
+        return;
+      }
+    }
+
+    // Original editor key handling
     const [selNode, start, end] = selection();
     if (node === selNode) {
       if (shouldRenderE621Input()) {
@@ -463,6 +509,202 @@ export const CaptionInput: Component<
       }, 10);
     }
   });
+
+  // Add a function to handle caption input for showing suggestions
+  const handleCaptionInput = (value: string) => {
+    // Only process if we have a value
+    if (!value) return;
+
+    // Get the currently selected word or text near cursor
+    const currentWord = getCurrentWordFromValue(value);
+
+    console.log(`Caption input detected, current word: "${currentWord}"`);
+
+    // Show suggestions if we have at least 2 characters
+    const shouldShowSuggestions = currentWord.length >= 2;
+    console.log(`Should show caption suggestions: ${shouldShowSuggestions}`);
+
+    if (shouldShowSuggestions) {
+      setQuery(currentWord);
+      setIsOpen(true);
+
+      // Force the suggestions list to be visible
+      if (suggestionsList) {
+        console.log("Forcing suggestions list to be visible for caption");
+        suggestionsList.classList.add('visible');
+        positionSuggestions();
+      }
+    } else {
+      setIsOpen(false);
+      if (suggestionsList) {
+        suggestionsList.classList.remove('visible');
+      }
+    }
+  };
+
+  // Helper function to get the current word near cursor in various input types
+  const getCurrentWordFromValue = (value: string): string => {
+    let cursorPosition = 0;
+    let text = value;
+
+    // For textarea, get cursor position
+    if (textareaRef && document.activeElement === textareaRef) {
+      cursorPosition = textareaRef.selectionStart || 0;
+      text = textareaRef.value;
+    }
+    // For contenteditable editors
+    else if (editorRef && document.activeElement === editorRef) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(editorRef);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        cursorPosition = preCaretRange.toString().length;
+      }
+      text = editorRef.innerText;
+    }
+
+    // Extract the current word around cursor position
+    if (!text) return "";
+
+    // Find word boundaries around cursor
+    let startPos = cursorPosition;
+    while (startPos > 0 && !/\s/.test(text.charAt(startPos - 1))) {
+      startPos--;
+    }
+
+    let endPos = cursorPosition;
+    while (endPos < text.length && !/\s/.test(text.charAt(endPos))) {
+      endPos++;
+    }
+
+    return text.substring(startPos, endPos);
+  };
+
+  // Add a function to insert the selected suggestion into the caption
+  const insertSuggestionIntoCaption = () => {
+    const suggestion = getSelectedSuggestion();
+    if (!suggestion) return;
+
+    console.log("Inserting suggestion into caption:", suggestion);
+
+    // Handle insertion based on current active element
+    if (textareaRef && document.activeElement === textareaRef) {
+      // For textarea - replace the current word with the suggestion
+      const currentPos = textareaRef.selectionStart || 0;
+      const text = textareaRef.value;
+
+      // Find word boundaries
+      let startPos = currentPos;
+      while (startPos > 0 && !/\s/.test(text.charAt(startPos - 1))) {
+        startPos--;
+      }
+
+      let endPos = currentPos;
+      while (endPos < text.length && !/\s/.test(text.charAt(endPos))) {
+        endPos++;
+      }
+
+      // Replace the word with suggestion
+      const newText = text.substring(0, startPos) + suggestion + text.substring(endPos);
+      textareaRef.value = newText;
+      saveWithHistory(newText);
+
+      // Set cursor position after the inserted suggestion
+      textareaRef.selectionStart = startPos + suggestion.length;
+      textareaRef.selectionEnd = startPos + suggestion.length;
+    }
+
+    // Clear suggestions after insertion
+    clearSuggestions();
+  };
+
+  // Function to insert a suggestion into the editor
+  const insertSuggestionIntoEditor = (editor: HTMLElement) => {
+    const suggestion = getSelectedSuggestion();
+    if (!suggestion || !editor) return;
+
+    console.log("Inserting suggestion into editor:", suggestion);
+
+    // Get the current selection
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    // Get the current range
+    const range = selection.getRangeAt(0);
+
+    // Find word boundaries
+    const currentText = editor.innerText;
+    const currentPosition = getCaretPositionInEditor(editor);
+
+    // Find word boundaries around cursor
+    let startPos = currentPosition;
+    while (startPos > 0 && !/\s/.test(currentText.charAt(startPos - 1))) {
+      startPos--;
+    }
+
+    let endPos = currentPosition;
+    while (endPos < currentText.length && !/\s/.test(currentText.charAt(endPos))) {
+      endPos++;
+    }
+
+    // Create a new range for the word
+    const wordRange = document.createRange();
+    let startNode: Node = editor;
+    let endNode: Node = editor;
+
+    // For text nodes within the editor
+    if (editor.firstChild && editor.firstChild.nodeType === Node.TEXT_NODE) {
+      startNode = editor.firstChild;
+      endNode = editor.firstChild;
+    }
+
+    // Set the range to cover the current word
+    try {
+      wordRange.setStart(startNode, startPos);
+      wordRange.setEnd(endNode, endPos);
+
+      // Delete the current word
+      wordRange.deleteContents();
+
+      // Insert the suggestion
+      const textNode = document.createTextNode(suggestion);
+      wordRange.insertNode(textNode);
+
+      // Position cursor after the inserted suggestion
+      range.setStartAfter(textNode);
+      range.setEndAfter(textNode);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      // Update the editor content
+      if (shouldRenderE621Input()) {
+        handleE621Input({ target: editor } as any, editor);
+      } else if (shouldRenderTomlInput()) {
+        handleTomlInput({ target: editor } as any, editor);
+      } else {
+        saveWithHistory(editor.innerText);
+      }
+    } catch (error) {
+      console.error("Error inserting suggestion:", error);
+    }
+
+    // Clear suggestions
+    clearSuggestions();
+  };
+
+  // Helper function to get caret position in contenteditable
+  const getCaretPositionInEditor = (editor: HTMLElement): number => {
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return 0;
+
+    const range = selection.getRangeAt(0);
+    const preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(editor);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+    return preCaretRange.toString().length;
+  };
 
   return (
     <div
@@ -598,6 +840,33 @@ export const CaptionInput: Component<
           ref={textareaRef}
           use:preserveState={[caption, saveWithHistory]}
           placeholder={t('gallery.addCaption')}
+          onInput={(e) => {
+            saveWithHistory(e.currentTarget.value);
+            handleCaptionInput(e.currentTarget.value);
+          }}
+          onKeyDown={(e) => {
+            // Handle navigation of suggestions with arrow keys
+            if (isOpen()) {
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                selectNextSuggestion();
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                selectPreviousSuggestion();
+              } else if (e.key === "Enter" && getSelectedSuggestion()) {
+                e.preventDefault();
+                insertSuggestionIntoCaption();
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setIsOpen(false);
+              }
+            }
+          }}
+          onFocus={() => handleCaptionInput(textareaRef.value)}
+          onBlur={() => {
+            // Delay hiding suggestions
+            setTimeout(() => setIsOpen(false), 200);
+          }}
         />
       )}
 
