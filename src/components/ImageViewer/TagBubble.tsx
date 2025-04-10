@@ -13,9 +13,11 @@
  * - Accessibility support with ARIA attributes
  */
 
-import { Component, createMemo, createSignal, Show } from "solid-js";
+import { Component, createMemo, createSignal, Show, onCleanup, onMount } from "solid-js";
 import { useAppContext } from "~/contexts/app";
 import getIcon from "~/icons";
+import { useTagAutocomplete } from "~/composables/useTagAutocomplete";
+import { Portal } from "solid-js/web";
 
 /**
  * Focus directive that programmatically focuses an HTML element
@@ -178,7 +180,35 @@ export const TagBubble: Component<{
   const [isEditing, setIsEditing] = createSignal(false);
   let inputRef: HTMLInputElement | undefined;
   let contentRef: HTMLDivElement | undefined;
+  let suggestionsList: HTMLDivElement | undefined;
+  let tagBubbleRef: HTMLDivElement | undefined;
   const tagColorGenerator = createTagColorGenerator();
+  
+  // Initialize tag autocomplete
+  const {
+    query,
+    setQuery,
+    suggestions,
+    selectedIndex,
+    setSelectedIndex,
+    isOpen,
+    setIsOpen,
+    selectNextSuggestion,
+    selectPreviousSuggestion,
+    getSelectedSuggestion,
+    clearSuggestions,
+  } = useTagAutocomplete();
+
+  /**
+   * Close all suggestions and exit editing mode
+   */
+  const closeAllSuggestions = () => {
+    clearSuggestions();
+    setIsOpen(false);
+    if (suggestionsList) {
+      suggestionsList.classList.remove('visible');
+    }
+  };
 
   /**
    * Initiates the tag editing mode
@@ -196,9 +226,69 @@ export const TagBubble: Component<{
           inputRef.style.minWidth = `${width}px`;
           inputRef.style.fontSize = `calc(${currentFontSize} * 1.1)`;
           inputRef.style.padding = '2px 4px';
+          
+          // Initialize autocomplete with current tag value
+          setQuery(props.tag);
+          if (props.tag.length >= 2) {
+            setIsOpen(true);
+            positionSuggestions();
+          }
         }
       });
     }
+  };
+
+  // Global click handler to detect clicks outside component
+  const handleDocumentClick = (e: MouseEvent) => {
+    if (!isEditing()) return;
+    
+    // Check if click was inside our component or suggestions list
+    const target = e.target as Node;
+    const isClickInsideTagBubble = tagBubbleRef?.contains(target);
+    const isClickInsideSuggestions = suggestionsList?.contains(target);
+    
+    // If clicking outside both tag bubble and suggestions
+    if (!isClickInsideTagBubble && !isClickInsideSuggestions) {
+      if (inputRef) {
+        handleSubmit(inputRef.value);
+      }
+      closeAllSuggestions();
+      setIsEditing(false);
+    }
+  };
+  
+  // Set up and clean up global event listeners
+  onMount(() => {
+    document.addEventListener('mousedown', handleDocumentClick);
+  });
+  
+  onCleanup(() => {
+    document.removeEventListener('mousedown', handleDocumentClick);
+    closeAllSuggestions();
+  });
+
+  // Position the suggestions dropdown below the input
+  const positionSuggestions = () => {
+    if (!suggestionsList || !inputRef) return;
+    
+    const rect = inputRef.getBoundingClientRect();
+    
+    // Position the suggestions below the input
+    suggestionsList.style.top = `${rect.bottom + 2}px`;
+    suggestionsList.style.left = `${rect.left}px`;
+    suggestionsList.style.width = `${rect.width}px`;
+    
+    // Make sure suggestions are visible
+    suggestionsList.classList.add('visible');
+  };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (suggestion: string) => {
+    if (inputRef) {
+      inputRef.value = suggestion;
+      handleSubmit(suggestion);
+    }
+    closeAllSuggestions();
   };
 
   /**
@@ -268,6 +358,7 @@ export const TagBubble: Component<{
       props.onEdit(newValue);
     }
     setIsEditing(false);
+    closeAllSuggestions();
   };
 
   /**
@@ -277,6 +368,45 @@ export const TagBubble: Component<{
    * @param e - Keyboard event
    */
   const handleKeyDown = (e: KeyboardEvent) => {
+    // Handle autocomplete navigation when suggestions are open
+    if (isOpen() && suggestions() && suggestions().length > 0) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        selectNextSuggestion();
+        return;
+      }
+      
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        selectPreviousSuggestion();
+        return;
+      }
+      
+      if (e.key === "Enter" || e.key === "Tab") {
+        e.preventDefault();
+        const selected = getSelectedSuggestion();
+        if (selected) {
+          if (inputRef) {
+            inputRef.value = selected;
+          }
+          if (e.key === "Enter") {
+            handleSubmit(selected);
+          }
+          closeAllSuggestions();
+        } else if (e.key === "Enter" && inputRef) {
+          handleSubmit(inputRef.value);
+        }
+        return;
+      }
+      
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeAllSuggestions();
+        return;
+      }
+    }
+    
+    // Continue with existing keyboard navigation
     if (e.shiftKey) {
       const now = Date.now();
 
@@ -322,6 +452,33 @@ export const TagBubble: Component<{
       }
     }
   };
+  
+  // Handle input changes for autocomplete
+  const handleInputChange = (e: InputEvent) => {
+    const value = (e.target as HTMLInputElement).value;
+    
+    // Don't show suggestions for empty input
+    if (!value || value.trim() === "") {
+      setIsOpen(false);
+      if (suggestionsList) {
+        suggestionsList.classList.remove('visible');
+      }
+      return;
+    }
+    
+    setQuery(value);
+    
+    // Show suggestions if we have at least 2 characters
+    if (value.length >= 2) {
+      setIsOpen(true);
+      positionSuggestions();
+    } else {
+      setIsOpen(false);
+      if (suggestionsList) {
+        suggestionsList.classList.remove('visible');
+      }
+    }
+  };
 
   return (
     <div
@@ -335,6 +492,7 @@ export const TagBubble: Component<{
         "font-weight": isEditing() ? "bold" : "normal",
         ...getHoverStyles(),
       }}
+      ref={tagBubbleRef}
     >
       <div class="tag-content" ref={contentRef}>
         <Show
@@ -351,16 +509,24 @@ export const TagBubble: Component<{
                 "box-sizing": "border-box",
                 transition: "all 0.2s ease", // Smooth transition for size changes
               }}
+              onInput={handleInputChange}
               onKeyDown={handleKeyDown}
               onKeyPress={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && !isOpen()) {
                   handleSubmit(e.currentTarget.value);
                 }
                 if (e.key === "Escape") {
                   setIsEditing(false);
+                  closeAllSuggestions();
                 }
               }}
-              onBlur={(e) => handleSubmit(e.currentTarget.value)}
+              onFocus={() => {
+                if (inputRef && inputRef.value.length >= 2) {
+                  setQuery(inputRef.value);
+                  setIsOpen(true);
+                  positionSuggestions();
+                }
+              }}
               ref={inputRef}
               placeholder={t('gallery.addTag')}
             />
@@ -379,6 +545,40 @@ export const TagBubble: Component<{
       >
         {getIcon("dismiss")}
       </button>
+      
+      {/* Tag suggestions dropdown */}
+      <Portal>
+        <Show when={isEditing() && isOpen() && suggestions() && suggestions().length > 0}>
+          <div
+            class="tag-suggestions-portal tag-suggestions visible"
+            ref={suggestionsList}
+            style={{
+              "z-index": "9999",
+              "position": "fixed",
+              "max-height": "200px",
+              "overflow-y": "auto",
+              "background-color": "var(--card-bg, white)",
+              "border": "1px solid var(--border-color, #ccc)",
+              "border-radius": "4px",
+              "box-shadow": "0 4px 12px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            {suggestions().length > 0 ? (
+              suggestions().map((suggestion: string, index: number) => (
+                <div
+                  class="tag-suggestion"
+                  classList={{ selected: index === selectedIndex() }}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  {suggestion}
+                </div>
+              ))
+            ) : (
+              <div class="no-suggestions">No suggestions found</div>
+            )}
+          </div>
+        </Show>
+      </Portal>
     </div>
   );
 };
