@@ -87,15 +87,20 @@ export function useTagAutocomplete() {
         });
     };
 
-    // Modified to return the original tag with underscores
+    // Modified to return the displayed version (with spaces) if the setting is enabled
     const getSelectedSuggestion = () => {
         if (
             selectedIndex() >= 0 &&
             suggestions() &&
             selectedIndex() < suggestions().length
         ) {
-            // Return the original suggestion with underscores
-            return originalSuggestions()[selectedIndex()];
+            if (app.replaceUnderscoresInTags) {
+                // Return the displayed version with spaces
+                return suggestions()[selectedIndex()];
+            } else {
+                // Return the original suggestion with underscores
+                return originalSuggestions()[selectedIndex()];
+            }
         }
         return null;
     };
